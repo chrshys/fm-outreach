@@ -131,16 +131,24 @@ test("fetches all settings for CASL footer", () => {
   assert.match(source, /api\.settings\.getAll/);
 });
 
-test("reads senderName from settings", () => {
-  assert.match(source, /settings\.senderName/);
+test("reads sender_name from settings", () => {
+  assert.match(source, /settings\.sender_name/);
 });
 
-test("reads senderAddress from settings", () => {
-  assert.match(source, /settings\.senderAddress/);
+test("reads business_name from settings", () => {
+  assert.match(source, /settings\.business_name/);
 });
 
-test("reads unsubscribeUrl from settings", () => {
-  assert.match(source, /settings\.unsubscribeUrl/);
+test("reads sender_address from settings", () => {
+  assert.match(source, /settings\.sender_address/);
+});
+
+test("reads sender_email from settings", () => {
+  assert.match(source, /settings\.sender_email/);
+});
+
+test("reads sender_phone from settings", () => {
+  assert.match(source, /settings\.sender_phone/);
 });
 
 // --- Prompt 1: Analysis ---
@@ -199,17 +207,21 @@ test("generation prompt includes CASL footer requirement", () => {
   assert.match(source, /footer/i);
 });
 
-test("CASL footer template includes sender name, address, and unsubscribe link", () => {
+test("CASL footer template includes sender name, business name, address, contact, and unsubscribe", () => {
   assert.match(source, /\{\{senderName\}\}/);
+  assert.match(source, /\{\{businessName\}\}/);
   assert.match(source, /\{\{senderAddress\}\}/);
-  assert.match(source, /\{\{unsubscribeUrl\}\}/);
+  assert.match(source, /\{\{senderContact\}\}/);
+  assert.match(source, /\[Unsubscribe\]/);
 });
 
 test("builds CASL footer from settings values", () => {
   assert.match(source, /function\s+buildCaslFooter\(/);
   assert.match(source, /senderName/);
+  assert.match(source, /businessName/);
   assert.match(source, /senderAddress/);
-  assert.match(source, /unsubscribeUrl/);
+  assert.match(source, /senderEmail/);
+  assert.match(source, /senderPhone/);
 });
 
 // --- Template placeholder substitution ---

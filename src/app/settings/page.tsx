@@ -68,7 +68,9 @@ export default function SettingsPage() {
 
   // Sender Identity state
   const [senderName, setSenderName] = useState("")
+  const [businessName, setBusinessName] = useState("")
   const [senderEmail, setSenderEmail] = useState("")
+  const [senderPhone, setSenderPhone] = useState("")
   const [senderAddress, setSenderAddress] = useState("")
   const [emailSignature, setEmailSignature] = useState("")
   const [savingSender, setSavingSender] = useState(false)
@@ -84,7 +86,9 @@ export default function SettingsPage() {
       anthropic_api_key: settings.anthropic_api_key ?? "",
     })
     setSenderName(settings.sender_name ?? "")
+    setBusinessName(settings.business_name ?? "")
     setSenderEmail(settings.sender_email ?? "")
+    setSenderPhone(settings.sender_phone ?? "")
     setSenderAddress(settings.sender_address ?? "")
     setEmailSignature(settings.email_signature ?? "")
   }, [settings])
@@ -123,7 +127,9 @@ export default function SettingsPage() {
       await setBatch({
         items: [
           { key: "sender_name", value: senderName },
+          { key: "business_name", value: businessName },
           { key: "sender_email", value: senderEmail },
+          { key: "sender_phone", value: senderPhone },
           { key: "sender_address", value: senderAddress },
           { key: "email_signature", value: emailSignature },
         ],
@@ -239,6 +245,15 @@ export default function SettingsPage() {
                 )}
               </div>
               <div className="space-y-2">
+                <Label htmlFor="business_name">Business Name</Label>
+                <Input
+                  id="business_name"
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="Your business or organization name"
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="sender_email">Sender Email</Label>
                 <Input
                   id="sender_email"
@@ -258,6 +273,16 @@ export default function SettingsPage() {
                 {senderErrors.sender_email && (
                   <p className="text-sm text-destructive">{senderErrors.sender_email}</p>
                 )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sender_phone">Phone Number</Label>
+                <Input
+                  id="sender_phone"
+                  type="tel"
+                  value={senderPhone}
+                  onChange={(e) => setSenderPhone(e.target.value)}
+                  placeholder="(555) 123-4567"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="sender_address">

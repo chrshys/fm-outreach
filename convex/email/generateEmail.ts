@@ -50,8 +50,11 @@ Respond ONLY with valid JSON matching this exact shape. No markdown, no explanat
 const CASL_FOOTER_TEMPLATE = `
 
 ---
-This email was sent by {{senderName}}, {{senderAddress}}.
-To unsubscribe, visit: {{unsubscribeUrl}}`;
+{{senderName}}
+{{businessName}}
+{{senderAddress}}
+{{senderContact}}
+[Unsubscribe]`;
 
 function buildLeadContext(lead: LeadData): string {
   const lines: string[] = [];
@@ -90,11 +93,22 @@ function parseGeneratedEmail(text: string): GeneratedEmail {
   };
 }
 
-function buildCaslFooter(senderName: string, senderAddress: string, unsubscribeUrl: string): string {
+function buildCaslFooter(opts: {
+  senderName: string;
+  businessName: string;
+  senderAddress: string;
+  senderEmail: string;
+  senderPhone: string;
+}): string {
+  const contactParts: string[] = [];
+  if (opts.senderEmail) contactParts.push(opts.senderEmail);
+  if (opts.senderPhone) contactParts.push(opts.senderPhone);
+
   return CASL_FOOTER_TEMPLATE
-    .replace("{{senderName}}", senderName)
-    .replace("{{senderAddress}}", senderAddress)
-    .replace("{{unsubscribeUrl}}", unsubscribeUrl);
+    .replace("{{senderName}}", opts.senderName)
+    .replace("{{businessName}}", opts.businessName)
+    .replace("{{senderAddress}}", opts.senderAddress)
+    .replace("{{senderContact}}", contactParts.join(" | "));
 }
 
 async function callClaude(
@@ -166,9 +180,11 @@ export const generateEmail = action({
 
     // Fetch CASL settings
     const settings = await ctx.runQuery(api.settings.getAll, {});
-    const senderName = settings.senderName ?? "";
-    const senderAddress = settings.senderAddress ?? "";
-    const unsubscribeUrl = settings.unsubscribeUrl ?? "";
+    const senderName = settings.sender_name ?? "";
+    const businessName = settings.business_name ?? "";
+    const senderAddress = settings.sender_address ?? "";
+    const senderEmail = settings.sender_email ?? "";
+    const senderPhone = settings.sender_phone ?? "";
 
     const leadContext = buildLeadContext(lead);
 
@@ -189,7 +205,13 @@ export const generateEmail = action({
     }
 
     // Prompt 2: Email generation (Sonnet — higher quality)
-    const caslFooter = buildCaslFooter(senderName, senderAddress, unsubscribeUrl);
+    const caslFooter = buildCaslFooter({
+      senderName,
+      businessName,
+      senderAddress,
+      senderEmail,
+      senderPhone,
+    });
 
     const generationSystemPrompt = `You are writing an outreach email for Fruitland Market, a local online marketplace for farms and food producers in Ontario. Generate a JSON object with "subject" and "body" fields.
 
