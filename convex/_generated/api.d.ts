@@ -35,6 +35,7 @@ import type * as lib_clusterBreakdown from "../lib/clusterBreakdown.js";
 import type * as lib_csvParser from "../lib/csvParser.js";
 import type * as lib_dbscan from "../lib/dbscan.js";
 import type * as lib_emailStats from "../lib/emailStats.js";
+import type * as lib_followUpsDue from "../lib/followUpsDue.js";
 import type * as lib_getSettings from "../lib/getSettings.js";
 import type * as lib_leadsList from "../lib/leadsList.js";
 import type * as lib_pipelineStats from "../lib/pipelineStats.js";
@@ -89,6 +90,7 @@ declare const fullApi: ApiFromModules<{
   "lib/csvParser": typeof lib_csvParser;
   "lib/dbscan": typeof lib_dbscan;
   "lib/emailStats": typeof lib_emailStats;
+  "lib/followUpsDue": typeof lib_followUpsDue;
   "lib/getSettings": typeof lib_getSettings;
   "lib/leadsList": typeof lib_leadsList;
   "lib/pipelineStats": typeof lib_pipelineStats;
