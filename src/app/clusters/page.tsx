@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useQuery } from "convex/react"
-import { MapPin, Sparkles, Users } from "lucide-react"
+import { useAction, useQuery } from "convex/react"
+import { Loader2, MapPin, Sparkles, Users } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 
@@ -30,7 +30,26 @@ type Cluster = {
 
 export default function ClustersPage() {
   const clusters = useQuery(api.clusters.list) as Cluster[] | undefined
+  const autoGenerate = useAction(api.clusters.autoGenerate)
   const [selectedClusterId, setSelectedClusterId] = useState<Id<"clusters"> | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [generateResult, setGenerateResult] = useState<string | null>(null)
+
+  async function handleAutoGenerate() {
+    setIsGenerating(true)
+    setGenerateResult(null)
+    setSelectedClusterId(null)
+    try {
+      const result = await autoGenerate()
+      setGenerateResult(
+        `Created ${result.clustersCreated} clusters, assigned ${result.leadsAssigned} leads`
+      )
+    } catch {
+      setGenerateResult("Failed to generate clusters")
+    } finally {
+      setIsGenerating(false)
+    }
+  }
 
   return (
     <AppLayout>
@@ -42,10 +61,19 @@ export default function ClustersPage() {
               Group leads by geographic proximity for targeted outreach.
             </p>
           </div>
-          <Button>
-            <Sparkles className="size-4" />
-            Auto-generate Clusters
-          </Button>
+          <div className="flex items-center gap-3">
+            {generateResult && (
+              <p className="text-sm text-muted-foreground">{generateResult}</p>
+            )}
+            <Button onClick={handleAutoGenerate} disabled={isGenerating}>
+              {isGenerating ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Sparkles className="size-4" />
+              )}
+              {isGenerating ? "Generating..." : "Auto-generate Clusters"}
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[340px_1fr]">

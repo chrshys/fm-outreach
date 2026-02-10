@@ -24,7 +24,7 @@ test("renders two-column grid layout", () => {
 
 test("renders Auto-generate Clusters button", () => {
   assert.match(source, /Auto-generate Clusters/)
-  assert.match(source, /<Button>/)
+  assert.match(source, /<Button/)
 })
 
 test("renders cluster cards with name, lead count, and radius", () => {
