@@ -303,6 +303,7 @@ export const listWithCoords = query({
         type: lead.type,
         city: lead.city,
         status: lead.status,
+        contactEmail: lead.contactEmail,
         latitude: lead.latitude as number,
         longitude: lead.longitude as number,
         clusterId: lead.clusterId,

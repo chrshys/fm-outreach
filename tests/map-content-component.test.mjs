@@ -50,9 +50,9 @@ test("maps over leads array to render markers", () => {
   assert.match(source, /center=\{\[lead\.latitude,\s*lead\.longitude\]/)
 })
 
-test("shows lead name and type in popup", () => {
-  assert.match(source, /lead\.name/)
-  assert.match(source, /lead\.city/)
+test("imports and renders MarkerPopup inside Popup", () => {
+  assert.match(source, /import\s+\{.*MarkerPopup.*\}\s+from\s+["']\.\/marker-popup["']/)
+  assert.match(source, /<MarkerPopup/)
 })
 
 test("exports MapContent as default export", () => {
@@ -61,4 +61,8 @@ test("exports MapContent as default export", () => {
 
 test("accepts leads prop with typed LeadMarker array", () => {
   assert.match(source, /leads:\s*LeadMarker\[\]/)
+})
+
+test("LeadMarker type includes contactEmail as optional", () => {
+  assert.match(source, /contactEmail\?:\s*string/)
 })

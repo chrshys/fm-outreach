@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css"
 
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet"
 
+import { MarkerPopup } from "./marker-popup"
 import { getStatusColor } from "./status-colors"
 
 const NIAGARA_CENTER: [number, number] = [43.08, -79.08]
@@ -15,6 +16,7 @@ type LeadMarker = {
   type: string
   city: string
   status: string
+  contactEmail?: string
   latitude: number
   longitude: number
   clusterId?: string
@@ -22,10 +24,6 @@ type LeadMarker = {
 
 type MapContentProps = {
   leads: LeadMarker[]
-}
-
-function formatType(type: string) {
-  return type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 export default function MapContent({ leads }: MapContentProps) {
@@ -55,12 +53,14 @@ export default function MapContent({ leads }: MapContentProps) {
             }}
           >
             <Popup>
-              <div className="text-sm">
-                <p className="font-semibold">{lead.name}</p>
-                <p className="text-muted-foreground">
-                  {formatType(lead.type)} · {lead.city}
-                </p>
-              </div>
+              <MarkerPopup
+                id={lead._id}
+                name={lead.name}
+                type={lead.type}
+                city={lead.city}
+                status={lead.status}
+                contactEmail={lead.contactEmail}
+              />
             </Popup>
           </CircleMarker>
         )
