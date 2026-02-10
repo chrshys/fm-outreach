@@ -127,10 +127,28 @@ test("copies text using navigator.clipboard.writeText", () => {
   assert.match(source, /navigator\.clipboard\.writeText\(dmText\)/)
 })
 
+test("wraps clipboard.writeText in try-catch for error handling", () => {
+  assert.match(source, /try\s*\{\s*\n\s*await navigator\.clipboard\.writeText\(dmText\)/)
+  assert.match(source, /\}\s*catch\s*\{\s*\n\s*return/)
+})
+
 test("shows Copied! state after copying", () => {
   assert.match(source, /setCopied\(true\)/)
   assert.match(source, />\s*Copied!\s*</)
   assert.match(source, /<Check\s/)
+})
+
+test("uses ref-based timeout for copied state reset", () => {
+  assert.match(source, /copyTimeoutRef/)
+  assert.match(source, /useRef<ReturnType<typeof setTimeout> \| null>\(null\)/)
+})
+
+test("clears previous copy timeout before setting new one", () => {
+  assert.match(source, /if \(copyTimeoutRef\.current\)\s*\{\s*\n\s*clearTimeout\(copyTimeoutRef\.current\)/)
+})
+
+test("cleans up copy timeout in resetState", () => {
+  assert.match(source, /function resetState[\s\S]*?clearTimeout\(copyTimeoutRef\.current\)/)
 })
 
 // --- Log activity prompt ---

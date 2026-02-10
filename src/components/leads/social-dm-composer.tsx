@@ -1,7 +1,7 @@
 "use client"
 
 import { useAction, useMutation } from "convex/react"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Check, ClipboardCopy, Loader2, MessageCircle, Sparkles } from "lucide-react"
 
 import { api } from "../../../convex/_generated/api"
@@ -42,6 +42,7 @@ export function SocialDmComposer({ leadId, leadName }: SocialDmComposerProps) {
   const generateDM = useAction(api.social.generateDM.generateDM)
   const createActivity = useMutation(api.activities.create)
 
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [channel, setChannel] = useState<SocialChannel | "">("")
   const [dmText, setDmText] = useState("")
@@ -60,6 +61,10 @@ export function SocialDmComposer({ leadId, leadName }: SocialDmComposerProps) {
     setCopied(false)
     setShowLogPrompt(false)
     setIsLogging(false)
+    if (copyTimeoutRef.current) {
+      clearTimeout(copyTimeoutRef.current)
+      copyTimeoutRef.current = null
+    }
   }
 
   function handleOpenChange(open: boolean) {
@@ -103,12 +108,21 @@ export function SocialDmComposer({ leadId, leadName }: SocialDmComposerProps) {
       return
     }
 
-    await navigator.clipboard.writeText(dmText)
+    try {
+      await navigator.clipboard.writeText(dmText)
+    } catch {
+      return
+    }
+
     setCopied(true)
     setShowLogPrompt(true)
 
-    setTimeout(() => {
+    if (copyTimeoutRef.current) {
+      clearTimeout(copyTimeoutRef.current)
+    }
+    copyTimeoutRef.current = setTimeout(() => {
       setCopied(false)
+      copyTimeoutRef.current = null
     }, 2000)
   }
 
