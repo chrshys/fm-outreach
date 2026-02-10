@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useConvex } from "convex/react"
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
 import type { KeyboardEvent, MouseEvent } from "react"
@@ -21,6 +22,7 @@ import { AppLayout } from "@/components/layout/app-layout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Table,
   TableBody,
@@ -295,6 +297,15 @@ export default function LeadsPage() {
           <h2 className="text-xl font-semibold tracking-tight">Leads</h2>
           <p className="text-muted-foreground">Track outreach and follow-up timing by lead.</p>
         </div>
+
+        <Tabs defaultValue="all">
+          <TabsList variant="line">
+            <TabsTrigger value="all">All Leads</TabsTrigger>
+            <TabsTrigger value="social" asChild>
+              <Link href="/leads/social">Social Outreach</Link>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         <LeadSearch value={searchTerm} onChange={setSearchTerm} />
         <LeadFilters value={filters} onChange={setFilters} />

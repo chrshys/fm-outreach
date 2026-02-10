@@ -342,6 +342,87 @@ export const listAllSummary = query({
   },
 });
 
+const socialActivityTypes = [
+  "social_dm_sent",
+  "social_dm_replied",
+  "social_followed",
+  "social_commented",
+] as const;
+
+const outreachNoReplyStatuses = new Set([
+  "outreach_started",
+  "no_response",
+  "bounced",
+]);
+
+export const listSocialOutreach = query({
+  args: {},
+  handler: async (ctx) => {
+    const allLeads = await ctx.db.query("leads").collect();
+
+    const hasSocialLinks = (lead: typeof allLeads[number]) => {
+      const ig = lead.socialLinks?.instagram?.trim();
+      const fb = lead.socialLinks?.facebook?.trim();
+      return Boolean(ig) || Boolean(fb);
+    };
+
+    const socialLeads = allLeads.filter(
+      (lead) =>
+        lead.status === "no_email" ||
+        (hasSocialLinks(lead) && outreachNoReplyStatuses.has(lead.status)),
+    );
+
+    const results = await Promise.all(
+      socialLeads.map(async (lead) => {
+        const activities = await ctx.db
+          .query("activities")
+          .withIndex("by_leadId", (q) => q.eq("leadId", lead._id))
+          .collect();
+
+        const socialActivities = activities.filter((a) =>
+          (socialActivityTypes as readonly string[]).includes(a.type),
+        );
+
+        const lastSocialTouch =
+          socialActivities.length > 0
+            ? Math.max(...socialActivities.map((a) => a.createdAt))
+            : undefined;
+
+        return {
+          _id: lead._id,
+          name: lead.name,
+          city: lead.city,
+          status: lead.status,
+          socialLinks: lead.socialLinks,
+          nextFollowUpAt: lead.nextFollowUpAt,
+          lastSocialTouch,
+        };
+      }),
+    );
+
+    // Sort by follow-up due date — overdue first, then soonest, then no date
+    const now = Date.now();
+    results.sort((a, b) => {
+      const aDate = a.nextFollowUpAt;
+      const bDate = b.nextFollowUpAt;
+
+      if (aDate === undefined && bDate === undefined) return 0;
+      if (aDate === undefined) return 1;
+      if (bDate === undefined) return -1;
+
+      const aOverdue = aDate < now;
+      const bOverdue = bDate < now;
+
+      if (aOverdue && !bOverdue) return -1;
+      if (!aOverdue && bOverdue) return 1;
+
+      return aDate - bDate;
+    });
+
+    return results;
+  },
+});
+
 export const bulkAssignCluster = mutation({
   args: {
     leadIds: v.array(v.id("leads")),
