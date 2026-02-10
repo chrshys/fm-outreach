@@ -56,14 +56,18 @@ export function DataFreshness({ leadId, enrichedAt, enrichmentSources }: DataFre
   const batchEnrich = useAction(api.enrichment.batchEnrichPublic.batchEnrich)
   const [isEnriching, setIsEnriching] = useState(false)
   const enrichmentSinceRef = useRef(0)
+  const hasBeenEnriched = enrichedAt !== undefined
 
-  async function handleReEnrich() {
+  async function handleEnrich() {
     setIsEnriching(true)
     enrichmentSinceRef.current = Date.now()
-    toast.info("Re-enriching lead...")
+    toast.info(hasBeenEnriched ? "Re-enriching lead..." : "Enriching lead...")
 
     try {
-      const result = await batchEnrich({ leadIds: [leadId], force: true })
+      const result = await batchEnrich({
+        leadIds: [leadId],
+        force: hasBeenEnriched ? true : undefined,
+      })
       const { succeeded, failed } = result as {
         succeeded: number
         failed: number
@@ -71,14 +75,14 @@ export function DataFreshness({ leadId, enrichedAt, enrichmentSources }: DataFre
       }
 
       if (failed === 0 && succeeded > 0) {
-        toast.success("Re-enrichment complete")
+        toast.success("Enrichment complete")
       } else if (failed > 0) {
-        toast.error("Re-enrichment failed")
+        toast.error("Enrichment failed")
       } else {
-        toast.info("Re-enrichment skipped")
+        toast.info("Enrichment skipped")
       }
     } catch {
-      toast.error("Re-enrichment failed. Please try again.")
+      toast.error("Enrichment failed. Please try again.")
     } finally {
       setIsEnriching(false)
     }
@@ -109,14 +113,14 @@ export function DataFreshness({ leadId, enrichedAt, enrichmentSources }: DataFre
           variant="outline"
           size="sm"
           disabled={isEnriching}
-          onClick={handleReEnrich}
+          onClick={handleEnrich}
         >
           {isEnriching ? (
             <RefreshCw className="mr-1.5 size-3.5 animate-spin" />
           ) : (
             <Sparkles className="mr-1.5 size-3.5" />
           )}
-          {isEnriching ? "Enriching..." : "Re-enrich"}
+          {isEnriching ? "Enriching..." : hasBeenEnriched ? "Re-enrich" : "Enrich"}
         </Button>
       </div>
 

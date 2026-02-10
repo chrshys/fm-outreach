@@ -89,15 +89,21 @@ test("formats source fetch date with Intl.DateTimeFormat", () => {
   assert.match(source, /new Intl\.DateTimeFormat.*format\(new Date\(entry\.fetchedAt\)\)/s);
 });
 
-// --- Re-enrich button ---
+// --- Enrich / Re-enrich button ---
 
-test("renders re-enrich button", () => {
-  assert.match(source, /Re-enrich/);
+test("renders enrich button", () => {
+  assert.match(source, /Enrich/);
   assert.match(source, /<Button/);
 });
 
-test("calls batchEnrich with force true", () => {
-  assert.match(source, /force:\s*true/);
+test("shows 'Enrich' for never-enriched leads and 'Re-enrich' for previously enriched leads", () => {
+  assert.match(source, /hasBeenEnriched/);
+  assert.match(source, /Re-enrich/);
+  assert.match(source, /"Enrich"/);
+});
+
+test("only passes force true when re-enriching previously enriched leads", () => {
+  assert.match(source, /force:\s*hasBeenEnriched\s*\?\s*true\s*:\s*undefined/);
 });
 
 test("uses batchEnrichPublic action", () => {
@@ -119,8 +125,9 @@ test("shows enrichment progress indicator during enrichment", () => {
 
 // --- Toast notifications ---
 
-test("shows toast on re-enrichment start", () => {
-  assert.match(source, /toast\.info.*Re-enriching/);
+test("shows appropriate toast for first enrichment vs re-enrichment", () => {
+  assert.match(source, /toast\.info.*Enriching lead/);
+  assert.match(source, /Re-enriching lead/);
 });
 
 test("shows toast on success or failure", () => {
