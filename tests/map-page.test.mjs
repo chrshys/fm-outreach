@@ -9,7 +9,22 @@ test("wraps the map page content with AppLayout", () => {
   assert.match(source, /<AppLayout>[\s\S]*<\/AppLayout>/)
 })
 
-test("renders map placeholder heading and phase copy", () => {
-  assert.match(source, /<h2[^>]*>Map<\/h2>/)
-  assert.match(source, /Coming in Phase 4/)
+test("uses useQuery to fetch leads with coords", () => {
+  assert.match(source, /import\s+\{.*useQuery.*\}\s+from\s+"convex\/react"/)
+  assert.match(source, /useQuery\(api\.leads\.listWithCoords\)/)
+})
+
+test("dynamically imports MapContent with ssr disabled", () => {
+  assert.match(source, /import\s+dynamic\s+from\s+"next\/dynamic"/)
+  assert.match(source, /dynamic\(/)
+  assert.match(source, /ssr:\s*false/)
+  assert.match(source, /import\("@\/components\/map\/map-content"\)/)
+})
+
+test("renders map container at full height minus topbar", () => {
+  assert.match(source, /calc\(100vh/)
+})
+
+test("passes leads to MapContent", () => {
+  assert.match(source, /<MapContent\s+leads=\{/)
 })
