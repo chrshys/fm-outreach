@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useMutation, useQuery } from "convex/react"
 import { Loader2, Pencil, Plus, Star, Trash2 } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
@@ -72,6 +72,15 @@ export function EmailTemplates() {
   const createTemplate = useMutation(api.emailTemplates.create)
   const updateTemplate = useMutation(api.emailTemplates.update)
   const removeTemplate = useMutation(api.emailTemplates.remove)
+  const ensureSeeded = useMutation(api.emailTemplates.ensureSeeded)
+  const seededRef = useRef(false)
+
+  useEffect(() => {
+    if (templates !== undefined && templates.length === 0 && !seededRef.current) {
+      seededRef.current = true
+      void ensureSeeded()
+    }
+  }, [templates, ensureSeeded])
 
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)

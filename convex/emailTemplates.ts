@@ -1,6 +1,7 @@
 import { v } from "convex/values"
 
 import { mutation, query } from "./_generated/server"
+import { defaultTemplates } from "./seeds/seedTemplates"
 
 const SEQUENCE_ORDER = ["initial", "follow_up_1", "follow_up_2", "follow_up_3"] as const
 
@@ -101,5 +102,28 @@ export const remove = mutation({
       throw new Error("Template not found")
     }
     await ctx.db.delete(args.id)
+  },
+})
+
+export const ensureSeeded = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const existing = await ctx.db.query("emailTemplates").collect()
+    if (existing.length > 0) {
+      return { inserted: 0, skipped: existing.length }
+    }
+
+    let inserted = 0
+    for (const template of defaultTemplates) {
+      await ctx.db.insert("emailTemplates", {
+        name: template.name,
+        sequenceType: template.sequenceType,
+        prompt: template.prompt,
+        subject: template.subject,
+        isDefault: template.isDefault,
+      })
+      inserted += 1
+    }
+    return { inserted, skipped: 0 }
   },
 })
