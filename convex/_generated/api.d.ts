@@ -10,6 +10,7 @@
 
 import type * as activities from "../activities.js";
 import type * as clusters from "../clusters.js";
+import type * as crons from "../crons.js";
 import type * as enrichment_batchEnrich from "../enrichment/batchEnrich.js";
 import type * as enrichment_batchEnrichPublic from "../enrichment/batchEnrichPublic.js";
 import type * as enrichment_claudeAnalysis from "../enrichment/claudeAnalysis.js";
@@ -33,6 +34,7 @@ import type * as seeds_importLeads from "../seeds/importLeads.js";
 import type * as seeds_importLeadsMapper from "../seeds/importLeadsMapper.js";
 import type * as seeds_runSeed from "../seeds/runSeed.js";
 import type * as settings from "../settings.js";
+import type * as smartlead_analyticsCron from "../smartlead/analyticsCron.js";
 import type * as smartlead_client from "../smartlead/client.js";
 import type * as smartlead_rateLimiter from "../smartlead/rateLimiter.js";
 import type * as smartlead_webhookHandlers from "../smartlead/webhookHandlers.js";
@@ -46,6 +48,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   activities: typeof activities;
   clusters: typeof clusters;
+  crons: typeof crons;
   "enrichment/batchEnrich": typeof enrichment_batchEnrich;
   "enrichment/batchEnrichPublic": typeof enrichment_batchEnrichPublic;
   "enrichment/claudeAnalysis": typeof enrichment_claudeAnalysis;
@@ -69,6 +72,7 @@ declare const fullApi: ApiFromModules<{
   "seeds/importLeadsMapper": typeof seeds_importLeadsMapper;
   "seeds/runSeed": typeof seeds_runSeed;
   settings: typeof settings;
+  "smartlead/analyticsCron": typeof smartlead_analyticsCron;
   "smartlead/client": typeof smartlead_client;
   "smartlead/rateLimiter": typeof smartlead_rateLimiter;
   "smartlead/webhookHandlers": typeof smartlead_webhookHandlers;
