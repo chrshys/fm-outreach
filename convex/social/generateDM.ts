@@ -175,7 +175,6 @@ export const generateDM = action({
       throw new Error("ANTHROPIC_API_KEY is not configured");
     }
 
-    // @ts-expect-error — deep type instantiation in generated Convex API types
     const lead = await ctx.runQuery(api.leads.get, { leadId: args.leadId });
     if (!lead) {
       throw new Error("Lead not found");

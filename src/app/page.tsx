@@ -52,7 +52,6 @@ type ActiveCampaignResult = {
 }
 
 export default function HomePage() {
-  // @ts-expect-error Convex FilterApi deep type instantiation with dashboard module
   const pipeline = useQuery(api.dashboard.pipelineStats) as PipelineStats | undefined
   const emailStats = useQuery(api.dashboard.emailStats) as EmailStatsResult | undefined
   const socialStats = useQuery(api.dashboard.socialStats) as SocialStatsResult | undefined
