@@ -33,6 +33,19 @@ const STALENESS_CONFIG: Record<StalenessLevel, { label: string; className: strin
   stale: { label: "Stale", className: "bg-red-100 text-red-800" },
 }
 
+type EnrichmentSourceEntry = { source: string; detail?: string; fetchedAt: number }
+
+function latestBySource(sources: EnrichmentSourceEntry[]): EnrichmentSourceEntry[] {
+  const map = new Map<string, EnrichmentSourceEntry>()
+  for (const entry of sources) {
+    const existing = map.get(entry.source)
+    if (!existing || entry.fetchedAt > existing.fetchedAt) {
+      map.set(entry.source, entry)
+    }
+  }
+  return [...map.values()]
+}
+
 type DataFreshnessProps = {
   leadId: Id<"leads">
   enrichedAt?: number
@@ -43,10 +56,6 @@ export function DataFreshness({ leadId, enrichedAt, enrichmentSources }: DataFre
   const batchEnrich = useAction(api.enrichment.batchEnrichPublic.batchEnrich)
   const [isEnriching, setIsEnriching] = useState(false)
   const enrichmentSinceRef = useRef(0)
-
-  const uniqueSources = enrichmentSources
-    ? [...new Set(enrichmentSources.map((s) => s.source))]
-    : []
 
   async function handleReEnrich() {
     setIsEnriching(true)
@@ -111,11 +120,27 @@ export function DataFreshness({ leadId, enrichedAt, enrichmentSources }: DataFre
         </Button>
       </div>
 
-      {uniqueSources.length > 0 && (
-        <p>
-          <span className="font-medium">Enrichment sources:</span>{" "}
-          {uniqueSources.map((s) => SOURCE_LABELS[s] ?? s).join(", ")}
-        </p>
+      {enrichmentSources && enrichmentSources.length > 0 && (
+        <div>
+          <p className="font-medium mb-2">Enrichment sources:</p>
+          <div className="flex flex-wrap gap-1.5">
+            {latestBySource(enrichmentSources).map((entry) => (
+              <Badge
+                key={entry.source}
+                variant="outline"
+                className="font-normal"
+              >
+                {SOURCE_LABELS[entry.source] ?? entry.source}
+                {" \u00B7 "}
+                {new Intl.DateTimeFormat("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                }).format(new Date(entry.fetchedAt))}
+              </Badge>
+            ))}
+          </div>
+        </div>
       )}
 
       {isEnriching && (

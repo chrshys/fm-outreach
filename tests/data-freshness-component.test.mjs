@@ -67,8 +67,26 @@ test("displays enrichment source labels", () => {
   assert.match(source, /Website/);
 });
 
-test("deduplicates sources", () => {
-  assert.match(source, /new Set\(/);
+test("deduplicates sources via latestBySource helper", () => {
+  assert.match(source, /function\s+latestBySource/);
+  assert.match(source, /new Map</);
+});
+
+// --- Source badges ---
+
+test("renders each source as an outline Badge with fetch date", () => {
+  assert.match(source, /variant="outline"/);
+  assert.match(source, /entry\.fetchedAt/);
+  assert.match(source, /entry\.source/);
+});
+
+test("latestBySource keeps only latest entry per source", () => {
+  assert.match(source, /entry\.fetchedAt\s*>\s*existing\.fetchedAt/);
+});
+
+test("formats source fetch date with Intl.DateTimeFormat", () => {
+  // The source badges format dates the same way as Last enriched
+  assert.match(source, /new Intl\.DateTimeFormat.*format\(new Date\(entry\.fetchedAt\)\)/s);
 });
 
 // --- Re-enrich button ---
