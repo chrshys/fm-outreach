@@ -35,6 +35,26 @@ export const updateName = mutation({
   },
 })
 
+export const update = mutation({
+  args: {
+    clusterId: v.id("clusters"),
+    name: v.optional(v.string()),
+    radiusKm: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const patch: Record<string, string | number> = {}
+    if (args.name !== undefined) {
+      patch.name = args.name
+    }
+    if (args.radiusKm !== undefined) {
+      patch.radiusKm = args.radiusKm
+    }
+    if (Object.keys(patch).length > 0) {
+      await ctx.db.patch(args.clusterId, patch)
+    }
+  },
+})
+
 // --- Internal helpers for autoGenerate ---
 
 export const getLeadsWithCoords = internalQuery({
