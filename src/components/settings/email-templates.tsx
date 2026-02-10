@@ -8,6 +8,7 @@ import type { Id } from "../../../convex/_generated/dataModel"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Card,
   CardContent,
@@ -358,6 +359,21 @@ export function EmailTemplates() {
               {errors.prompt && (
                 <p className="text-sm text-destructive">{errors.prompt}</p>
               )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="template-is-default"
+                checked={form.isDefault}
+                onCheckedChange={(checked) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    isDefault: checked === true,
+                  }))
+                }
+              />
+              <Label htmlFor="template-is-default">
+                Set as default for this sequence type
+              </Label>
             </div>
             <DialogFooter>
               <DialogClose asChild>
