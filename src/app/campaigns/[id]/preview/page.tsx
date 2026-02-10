@@ -12,6 +12,7 @@ import {
   Loader2,
   Mail,
   RefreshCw,
+  Rocket,
   Save,
   X,
   XCircle,
@@ -29,6 +30,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -304,10 +313,15 @@ export default function CampaignPreviewPage({ params }: PageParams) {
   }) as GeneratedEmailItem[] | undefined
 
   const bulkUpdate = useMutation(api.generatedEmails.bulkUpdateStatus)
+  const pushToSmartlead = useAction(
+    api.campaigns.pushToSmartlead.pushToSmartlead,
+  )
 
   const [selectedEmailId, setSelectedEmailId] = useState<
     Id<"generatedEmails"> | null
   >(null)
+  const [showPushDialog, setShowPushDialog] = useState(false)
+  const [isPushing, setIsPushing] = useState(false)
 
   const selectedEmail =
     emails?.find((e) => e._id === selectedEmailId) ?? emails?.[0] ?? null
@@ -322,6 +336,22 @@ export default function CampaignPreviewPage({ params }: PageParams) {
       toast.success(`${result.updated} email${result.updated === 1 ? "" : "s"} approved`)
     } catch {
       toast.error("Failed to approve emails")
+    }
+  }
+
+  async function handlePushToSmartlead() {
+    setIsPushing(true)
+    try {
+      const result = await pushToSmartlead({ campaignId })
+      setShowPushDialog(false)
+      toast.success(
+        `Campaign pushed to Smartlead — ${result.sequenceSteps} sequence step${result.sequenceSteps === 1 ? "" : "s"}, ${result.leadsAdded} lead${result.leadsAdded === 1 ? "" : "s"} added`,
+      )
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Push failed"
+      toast.error(message)
+    } finally {
+      setIsPushing(false)
     }
   }
 
@@ -348,6 +378,9 @@ export default function CampaignPreviewPage({ params }: PageParams) {
   const approvedCount = emails.filter((e) => e.status === "approved").length
   const rejectedCount = emails.filter((e) => e.status === "rejected").length
   const pendingCount = emails.length - approvedCount - rejectedCount
+  const allApproved =
+    emails.length > 0 && approvedCount + rejectedCount === emails.length && approvedCount > 0
+  const canPush = campaign.status === "draft" && !campaign.smartleadCampaignId && allApproved
 
   return (
     <AppLayout title="Campaigns">
@@ -384,6 +417,16 @@ export default function CampaignPreviewPage({ params }: PageParams) {
               >
                 <CheckCheck className="mr-1.5 size-4" />
                 Approve All
+              </Button>
+            ) : null}
+            {campaign.status === "draft" && !campaign.smartleadCampaignId ? (
+              <Button
+                size="sm"
+                disabled={!canPush}
+                onClick={() => setShowPushDialog(true)}
+              >
+                <Rocket className="mr-1.5 size-4" />
+                Push to Smartlead
               </Button>
             ) : null}
             <Button variant="outline" asChild>
@@ -468,6 +511,39 @@ export default function CampaignPreviewPage({ params }: PageParams) {
             </Card>
           </div>
         )}
+
+        <Dialog open={showPushDialog} onOpenChange={setShowPushDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Push to Smartlead</DialogTitle>
+              <DialogDescription>
+                This will create the campaign in Smartlead and add{" "}
+                {approvedCount} lead{approvedCount === 1 ? "" : "s"}. You&apos;ll
+                need to launch it from Smartlead or click Launch below.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowPushDialog(false)}
+                disabled={isPushing}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => void handlePushToSmartlead()}
+                disabled={isPushing}
+              >
+                {isPushing ? (
+                  <Loader2 className="mr-1.5 size-4 animate-spin" />
+                ) : (
+                  <Rocket className="mr-1.5 size-4" />
+                )}
+                {isPushing ? "Pushing…" : "Confirm Push"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </section>
     </AppLayout>
   )
