@@ -138,6 +138,21 @@ async function placeDetails(
   };
 }
 
+export const fetchPlaceDetails = action({
+  args: {
+    placeId: v.string(),
+  },
+  handler: async (_ctx, args): Promise<GooglePlacesResult> => {
+    const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+
+    if (!apiKey) {
+      throw new Error("Missing GOOGLE_PLACES_API_KEY environment variable");
+    }
+
+    return placeDetails(args.placeId, apiKey);
+  },
+});
+
 export const enrichFromGooglePlaces = action({
   args: {
     name: v.string(),

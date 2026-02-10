@@ -77,7 +77,7 @@ export const enrichLead = internalAction({
     let websiteHtml: string | undefined;
     let websiteUrl = lead.website;
 
-    // Step 3: Google Places — run if no placeId
+    // Step 3: Google Places — search if no placeId, or fetch details if placeId exists but phone/website missing
     let placesResult: GooglePlacesResult | null = null;
     if (!lead.placeId) {
       try {
@@ -88,16 +88,26 @@ export const enrichLead = internalAction({
       } catch {
         // Google Places failed — continue pipeline
       }
+    } else if (!lead.contactPhone || !lead.website || force) {
+      // Lead already has placeId but missing phone or website — fetch details
+      try {
+        placesResult = await ctx.runAction(
+          api.enrichment.googlePlaces.fetchPlaceDetails,
+          { placeId: lead.placeId },
+        );
+      } catch {
+        // Google Places details fetch failed — continue pipeline
+      }
+    }
 
-      if (placesResult) {
-        sources.push({
-          source: "google_places",
-          detail: placesResult.placeId,
-          fetchedAt: Date.now(),
-        });
-        if (!websiteUrl && placesResult.website) {
-          websiteUrl = placesResult.website;
-        }
+    if (placesResult) {
+      sources.push({
+        source: "google_places",
+        detail: placesResult.placeId,
+        fetchedAt: Date.now(),
+      });
+      if (!websiteUrl && placesResult.website) {
+        websiteUrl = placesResult.website;
       }
     }
 
