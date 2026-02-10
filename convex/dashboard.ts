@@ -51,6 +51,7 @@ export const activeCampaigns = query({
   args: {},
   handler: async (ctx) => {
     const campaigns = await ctx.db.query("campaigns").collect();
-    return buildActiveCampaigns(campaigns);
+    const emails = await ctx.db.query("emails").collect();
+    return buildActiveCampaigns(campaigns, emails);
   },
 });

@@ -33,7 +33,7 @@ function loadTsModule(relativePath) {
 
 test("buildActiveCampaigns returns empty array when no campaigns", () => {
   const { buildActiveCampaigns } = loadTsModule("convex/lib/activeCampaigns.ts");
-  const result = buildActiveCampaigns([]);
+  const result = buildActiveCampaigns([], []);
   assert.deepEqual(result, []);
 });
 
@@ -41,13 +41,13 @@ test("buildActiveCampaigns filters only active and paused campaigns", () => {
   const { buildActiveCampaigns } = loadTsModule("convex/lib/activeCampaigns.ts");
   const campaigns = [
     { _id: "1", name: "Draft Campaign", status: "draft", leadCount: 10 },
-    { _id: "2", name: "Active Campaign", status: "active", leadCount: 20, stats: { sent: 100, opened: 50, clicked: 10, replied: 5, bounced: 2 } },
-    { _id: "3", name: "Paused Campaign", status: "paused", leadCount: 15, stats: { sent: 80, opened: 40, clicked: 8, replied: 4, bounced: 1 } },
+    { _id: "2", name: "Active Campaign", status: "active", leadCount: 20, smartleadCampaignId: "sl-2" },
+    { _id: "3", name: "Paused Campaign", status: "paused", leadCount: 15, smartleadCampaignId: "sl-3" },
     { _id: "4", name: "Completed Campaign", status: "completed", leadCount: 30 },
     { _id: "5", name: "Pushed Campaign", status: "pushed", leadCount: 5 },
   ];
 
-  const result = buildActiveCampaigns(campaigns);
+  const result = buildActiveCampaigns(campaigns, []);
 
   assert.equal(result.length, 2);
   assert.equal(result[0]._id, "2");
@@ -56,7 +56,7 @@ test("buildActiveCampaigns filters only active and paused campaigns", () => {
   assert.equal(result[1].status, "paused");
 });
 
-test("buildActiveCampaigns computes openRate and replyRate correctly", () => {
+test("buildActiveCampaigns computes openRate and replyRate from email records", () => {
   const { buildActiveCampaigns } = loadTsModule("convex/lib/activeCampaigns.ts");
   const campaigns = [
     {
@@ -64,18 +64,25 @@ test("buildActiveCampaigns computes openRate and replyRate correctly", () => {
       name: "Test Campaign",
       status: "active",
       leadCount: 50,
-      stats: { sent: 200, opened: 100, clicked: 20, replied: 10, bounced: 5 },
+      smartleadCampaignId: "sl-1",
     },
   ];
+  const emails = [
+    ...Array.from({ length: 200 }, (_, i) => ({
+      smartleadCampaignId: "sl-1",
+      ...(i < 100 ? { openedAt: Date.now() } : {}),
+      ...(i < 10 ? { repliedAt: Date.now() } : {}),
+    })),
+  ];
 
-  const result = buildActiveCampaigns(campaigns);
+  const result = buildActiveCampaigns(campaigns, emails);
 
   assert.equal(result[0].stats.sent, 200);
   assert.equal(result[0].stats.openRate, 0.5);
   assert.equal(result[0].stats.replyRate, 0.05);
 });
 
-test("buildActiveCampaigns returns zero rates when no emails sent", () => {
+test("buildActiveCampaigns returns zero rates when no emails exist for campaign", () => {
   const { buildActiveCampaigns } = loadTsModule("convex/lib/activeCampaigns.ts");
   const campaigns = [
     {
@@ -83,24 +90,24 @@ test("buildActiveCampaigns returns zero rates when no emails sent", () => {
       name: "New Active",
       status: "active",
       leadCount: 10,
-      stats: { sent: 0, opened: 0, clicked: 0, replied: 0, bounced: 0 },
+      smartleadCampaignId: "sl-1",
     },
   ];
 
-  const result = buildActiveCampaigns(campaigns);
+  const result = buildActiveCampaigns(campaigns, []);
 
   assert.equal(result[0].stats.sent, 0);
   assert.equal(result[0].stats.openRate, 0);
   assert.equal(result[0].stats.replyRate, 0);
 });
 
-test("buildActiveCampaigns handles missing stats gracefully", () => {
+test("buildActiveCampaigns handles campaign without smartleadCampaignId", () => {
   const { buildActiveCampaigns } = loadTsModule("convex/lib/activeCampaigns.ts");
   const campaigns = [
-    { _id: "1", name: "No Stats", status: "paused", leadCount: 5 },
+    { _id: "1", name: "No Smartlead", status: "paused", leadCount: 5 },
   ];
 
-  const result = buildActiveCampaigns(campaigns);
+  const result = buildActiveCampaigns(campaigns, []);
 
   assert.equal(result.length, 1);
   assert.equal(result[0].stats.sent, 0);
@@ -111,17 +118,46 @@ test("buildActiveCampaigns handles missing stats gracefully", () => {
 test("buildActiveCampaigns includes name and leadCount in results", () => {
   const { buildActiveCampaigns } = loadTsModule("convex/lib/activeCampaigns.ts");
   const campaigns = [
-    { _id: "1", name: "Ontario Farms", status: "active", leadCount: 42, stats: { sent: 10, opened: 5, clicked: 2, replied: 1, bounced: 0 } },
+    { _id: "1", name: "Ontario Farms", status: "active", leadCount: 42, smartleadCampaignId: "sl-1" },
+  ];
+  const emails = [
+    { smartleadCampaignId: "sl-1", openedAt: Date.now() },
   ];
 
-  const result = buildActiveCampaigns(campaigns);
+  const result = buildActiveCampaigns(campaigns, emails);
 
   assert.equal(result[0].name, "Ontario Farms");
   assert.equal(result[0].leadCount, 42);
 });
 
-test("convex/dashboard.ts exports activeCampaigns query", () => {
+test("buildActiveCampaigns only counts emails matching campaign smartleadCampaignId", () => {
+  const { buildActiveCampaigns } = loadTsModule("convex/lib/activeCampaigns.ts");
+  const campaigns = [
+    { _id: "1", name: "Camp A", status: "active", leadCount: 10, smartleadCampaignId: "sl-a" },
+    { _id: "2", name: "Camp B", status: "active", leadCount: 5, smartleadCampaignId: "sl-b" },
+  ];
+  const emails = [
+    { smartleadCampaignId: "sl-a" },
+    { smartleadCampaignId: "sl-a", openedAt: Date.now() },
+    { smartleadCampaignId: "sl-a", openedAt: Date.now(), repliedAt: Date.now() },
+    { smartleadCampaignId: "sl-b" },
+    { smartleadCampaignId: "sl-b", openedAt: Date.now() },
+    { smartleadCampaignId: "sl-unrelated" },
+  ];
+
+  const result = buildActiveCampaigns(campaigns, emails);
+
+  assert.equal(result[0].stats.sent, 3);
+  assert.equal(result[0].stats.openRate, 2 / 3);
+  assert.equal(result[0].stats.replyRate, 1 / 3);
+  assert.equal(result[1].stats.sent, 2);
+  assert.equal(result[1].stats.openRate, 0.5);
+  assert.equal(result[1].stats.replyRate, 0);
+});
+
+test("convex/dashboard.ts exports activeCampaigns query that uses emails table", () => {
   const source = fs.readFileSync("convex/dashboard.ts", "utf8");
   assert.match(source, /export\s+const\s+activeCampaigns\s*=\s*query\(/);
   assert.match(source, /buildActiveCampaigns/);
+  assert.match(source, /ctx\.db\.query\("emails"\)/);
 });

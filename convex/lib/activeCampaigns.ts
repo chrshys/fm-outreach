@@ -3,13 +3,13 @@ interface CampaignRow {
   name: string;
   status: string;
   leadCount: number;
-  stats?: {
-    sent: number;
-    opened: number;
-    clicked: number;
-    replied: number;
-    bounced: number;
-  };
+  smartleadCampaignId?: string;
+}
+
+interface EmailRow {
+  smartleadCampaignId: string;
+  openedAt?: number;
+  repliedAt?: number;
 }
 
 export interface ActiveCampaignResult {
@@ -26,13 +26,34 @@ export interface ActiveCampaignResult {
 
 export function buildActiveCampaigns(
   campaigns: CampaignRow[],
+  emails: EmailRow[],
 ): ActiveCampaignResult[] {
+  // Index emails by smartleadCampaignId for O(1) lookup
+  const emailsByCampaign = new Map<
+    string,
+    { sent: number; opened: number; replied: number }
+  >();
+
+  for (const email of emails) {
+    let bucket = emailsByCampaign.get(email.smartleadCampaignId);
+    if (!bucket) {
+      bucket = { sent: 0, opened: 0, replied: 0 };
+      emailsByCampaign.set(email.smartleadCampaignId, bucket);
+    }
+    bucket.sent++;
+    if (email.openedAt) bucket.opened++;
+    if (email.repliedAt) bucket.replied++;
+  }
+
   return campaigns
     .filter((c) => c.status === "active" || c.status === "paused")
     .map((c) => {
-      const sent = c.stats?.sent ?? 0;
-      const opened = c.stats?.opened ?? 0;
-      const replied = c.stats?.replied ?? 0;
+      const bucket = c.smartleadCampaignId
+        ? emailsByCampaign.get(c.smartleadCampaignId)
+        : undefined;
+      const sent = bucket?.sent ?? 0;
+      const opened = bucket?.opened ?? 0;
+      const replied = bucket?.replied ?? 0;
 
       return {
         _id: c._id,
