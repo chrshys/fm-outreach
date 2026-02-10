@@ -15,6 +15,7 @@ import {
   RefreshCw,
   Rocket,
   Save,
+  Sparkles,
   X,
   XCircle,
 } from "lucide-react"
@@ -313,6 +314,7 @@ export default function CampaignPreviewPage({ params }: PageParams) {
     campaignId,
   }) as GeneratedEmailItem[] | undefined
 
+  const batchGenerateAction = useAction(api.email.batchGenerate.batchGenerate)
   const bulkUpdate = useMutation(api.generatedEmails.bulkUpdateStatus)
   const pushToSmartlead = useAction(
     api.campaigns.pushToSmartlead.pushToSmartlead,
@@ -324,6 +326,7 @@ export default function CampaignPreviewPage({ params }: PageParams) {
   const [selectedEmailId, setSelectedEmailId] = useState<
     Id<"generatedEmails"> | null
   >(null)
+  const [isGenerating, setIsGenerating] = useState(false)
   const [showPushDialog, setShowPushDialog] = useState(false)
   const [isPushing, setIsPushing] = useState(false)
   const [showLaunchDialog, setShowLaunchDialog] = useState(false)
@@ -331,6 +334,21 @@ export default function CampaignPreviewPage({ params }: PageParams) {
 
   const selectedEmail =
     emails?.find((e) => e._id === selectedEmailId) ?? emails?.[0] ?? null
+
+  async function handleGenerateEmails() {
+    setIsGenerating(true)
+    try {
+      const result = await batchGenerateAction({ campaignId })
+      toast.success(
+        `Generated ${result.succeeded} email${result.succeeded === 1 ? "" : "s"}${result.skipped > 0 ? ` (${result.skipped} skipped)` : ""}${result.failed > 0 ? ` — ${result.failed} failed` : ""}`,
+      )
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Generation failed"
+      toast.error(message)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
 
   async function handleApproveAll() {
     try {
@@ -470,11 +488,25 @@ export default function CampaignPreviewPage({ params }: PageParams) {
         {emails.length === 0 ? (
           <Card>
             <CardContent className="p-4">
-              <div className="flex flex-col items-center gap-2 py-8">
+              <div className="flex flex-col items-center gap-3 py-8">
                 <Mail className="size-8 text-muted-foreground" />
                 <p className="text-muted-foreground text-sm">
-                  No emails generated yet. Run batch generation first.
+                  No emails generated yet.
                 </p>
+                {campaign.status === "draft" ? (
+                  <Button
+                    size="sm"
+                    onClick={() => void handleGenerateEmails()}
+                    disabled={isGenerating}
+                  >
+                    {isGenerating ? (
+                      <Loader2 className="mr-1.5 size-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="mr-1.5 size-4" />
+                    )}
+                    {isGenerating ? "Generating…" : "Generate Emails"}
+                  </Button>
+                ) : null}
               </div>
             </CardContent>
           </Card>

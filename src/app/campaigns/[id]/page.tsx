@@ -14,6 +14,7 @@ import {
   Reply,
   Rocket,
   Send,
+  Sparkles,
   TriangleAlert,
   Users,
 } from "lucide-react"
@@ -94,6 +95,7 @@ export default function CampaignDetailPage({ params }: PageParams) {
   )
   const leads = useQuery(api.campaigns.listLeads, { campaignId })
   const emails = useQuery(api.generatedEmails.listByCampaign, { campaignId })
+  const batchGenerateAction = useAction(api.email.batchGenerate.batchGenerate)
   const pushToSmartlead = useAction(
     api.campaigns.pushToSmartlead.pushToSmartlead,
   )
@@ -101,10 +103,28 @@ export default function CampaignDetailPage({ params }: PageParams) {
     api.campaigns.launchCampaign.launchCampaign,
   )
 
+  const [showGenerateDialog, setShowGenerateDialog] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
   const [showPushDialog, setShowPushDialog] = useState(false)
   const [isPushing, setIsPushing] = useState(false)
   const [showLaunchDialog, setShowLaunchDialog] = useState(false)
   const [isLaunching, setIsLaunching] = useState(false)
+
+  async function handleGenerateEmails() {
+    setIsGenerating(true)
+    try {
+      const result = await batchGenerateAction({ campaignId })
+      setShowGenerateDialog(false)
+      toast.success(
+        `Generated ${result.succeeded} email${result.succeeded === 1 ? "" : "s"}${result.skipped > 0 ? ` (${result.skipped} skipped)` : ""}${result.failed > 0 ? ` — ${result.failed} failed` : ""}`,
+      )
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Generation failed"
+      toast.error(message)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
 
   async function handlePushToSmartlead() {
     setIsPushing(true)
@@ -203,6 +223,15 @@ export default function CampaignDetailPage({ params }: PageParams) {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {campaign.status === "draft" && emails.length === 0 ? (
+              <Button
+                size="sm"
+                onClick={() => setShowGenerateDialog(true)}
+              >
+                <Sparkles className="mr-1.5 size-4" />
+                Generate Emails
+              </Button>
+            ) : null}
             {campaign.status === "draft" && !campaign.smartleadCampaignId ? (
               <Button
                 size="sm"
@@ -425,6 +454,39 @@ export default function CampaignDetailPage({ params }: PageParams) {
                   <Play className="mr-1.5 size-4" />
                 )}
                 {isLaunching ? "Launching…" : "Confirm Launch"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showGenerateDialog} onOpenChange={setShowGenerateDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Generate Emails</DialogTitle>
+              <DialogDescription>
+                This will use AI to generate personalized emails for all{" "}
+                {campaign.leadCount} lead{campaign.leadCount === 1 ? "" : "s"} in
+                this campaign. You can review and edit them before sending.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowGenerateDialog(false)}
+                disabled={isGenerating}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => void handleGenerateEmails()}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <Loader2 className="mr-1.5 size-4 animate-spin" />
+                ) : (
+                  <Sparkles className="mr-1.5 size-4" />
+                )}
+                {isGenerating ? "Generating…" : "Confirm Generate"}
               </Button>
             </DialogFooter>
           </DialogContent>
