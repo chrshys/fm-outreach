@@ -9,6 +9,7 @@
  */
 
 import type * as activities from "../activities.js";
+import type * as campaigns from "../campaigns.js";
 import type * as clusters from "../clusters.js";
 import type * as crons from "../crons.js";
 import type * as email_generateEmail from "../email/generateEmail.js";
@@ -52,6 +53,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   activities: typeof activities;
+  campaigns: typeof campaigns;
   clusters: typeof clusters;
   crons: typeof crons;
   "email/generateEmail": typeof email_generateEmail;
