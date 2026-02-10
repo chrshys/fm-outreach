@@ -1,6 +1,7 @@
 import { httpRouter } from "convex/server";
 
 import { httpAction } from "./_generated/server";
+import { internal } from "./_generated/api";
 
 const VALID_EVENT_TYPES = [
   "EMAIL_SENT",
@@ -25,7 +26,17 @@ function isValidEventType(type: unknown): type is SmartleadEventType {
   );
 }
 
-const smartleadWebhook = httpAction(async (_ctx, request) => {
+const EVENT_HANDLER_MAP = {
+  EMAIL_SENT: internal.smartlead.webhookHandlers.handleEmailSent,
+  EMAIL_OPEN: internal.smartlead.webhookHandlers.handleEmailOpen,
+  EMAIL_LINK_CLICK: internal.smartlead.webhookHandlers.handleEmailLinkClick,
+  EMAIL_REPLY: internal.smartlead.webhookHandlers.handleEmailReply,
+  LEAD_UNSUBSCRIBED: internal.smartlead.webhookHandlers.handleLeadUnsubscribed,
+  LEAD_CATEGORY_UPDATED:
+    internal.smartlead.webhookHandlers.handleLeadCategoryUpdated,
+} as const;
+
+const smartleadWebhook = httpAction(async (ctx, request) => {
   if (request.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
@@ -52,8 +63,8 @@ const smartleadWebhook = httpAction(async (_ctx, request) => {
 
   console.log(`[smartlead-webhook] Received ${event_type} event`);
 
-  // TODO: dispatch to handlers in convex/smartlead/webhookHandlers.ts
-  // e.g. await ctx.runMutation(internal.smartlead.webhookHandlers[event_type], body)
+  const handler = EVENT_HANDLER_MAP[event_type];
+  await ctx.runMutation(handler, { payload: body as Record<string, unknown> });
 
   return new Response("OK", { status: 200 });
 });

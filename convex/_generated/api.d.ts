@@ -19,6 +19,7 @@ import type * as enrichment_orchestrator from "../enrichment/orchestrator.js";
 import type * as enrichment_orchestratorHelpers from "../enrichment/orchestratorHelpers.js";
 import type * as enrichment_socialDiscovery from "../enrichment/socialDiscovery.js";
 import type * as enrichment_websiteScraper from "../enrichment/websiteScraper.js";
+import type * as http from "../http.js";
 import type * as leads from "../leads.js";
 import type * as lib_activitiesList from "../lib/activitiesList.js";
 import type * as lib_csvParser from "../lib/csvParser.js";
@@ -33,6 +34,8 @@ import type * as seeds_importLeadsMapper from "../seeds/importLeadsMapper.js";
 import type * as seeds_runSeed from "../seeds/runSeed.js";
 import type * as settings from "../settings.js";
 import type * as smartlead_client from "../smartlead/client.js";
+import type * as smartlead_rateLimiter from "../smartlead/rateLimiter.js";
+import type * as smartlead_webhookHandlers from "../smartlead/webhookHandlers.js";
 
 import type {
   ApiFromModules,
@@ -52,6 +55,7 @@ declare const fullApi: ApiFromModules<{
   "enrichment/orchestratorHelpers": typeof enrichment_orchestratorHelpers;
   "enrichment/socialDiscovery": typeof enrichment_socialDiscovery;
   "enrichment/websiteScraper": typeof enrichment_websiteScraper;
+  http: typeof http;
   leads: typeof leads;
   "lib/activitiesList": typeof lib_activitiesList;
   "lib/csvParser": typeof lib_csvParser;
@@ -66,6 +70,8 @@ declare const fullApi: ApiFromModules<{
   "seeds/runSeed": typeof seeds_runSeed;
   settings: typeof settings;
   "smartlead/client": typeof smartlead_client;
+  "smartlead/rateLimiter": typeof smartlead_rateLimiter;
+  "smartlead/webhookHandlers": typeof smartlead_webhookHandlers;
 }>;
 
 /**

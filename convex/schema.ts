@@ -160,6 +160,12 @@ export default defineSchema({
     value: v.string(),
   }).index("by_key", ["key"]),
 
+  emailBlockList: defineTable({
+    email: v.string(),
+    reason: v.string(),
+    blockedAt: v.number(),
+  }).index("by_email", ["email"]),
+
   campaigns: defineTable({
     name: v.string(),
     smartleadCampaignId: v.optional(v.string()),
