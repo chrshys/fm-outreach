@@ -32,6 +32,7 @@ import type * as seeds_importLeads from "../seeds/importLeads.js";
 import type * as seeds_importLeadsMapper from "../seeds/importLeadsMapper.js";
 import type * as seeds_runSeed from "../seeds/runSeed.js";
 import type * as settings from "../settings.js";
+import type * as smartlead_client from "../smartlead/client.js";
 
 import type {
   ApiFromModules,
@@ -64,6 +65,7 @@ declare const fullApi: ApiFromModules<{
   "seeds/importLeadsMapper": typeof seeds_importLeadsMapper;
   "seeds/runSeed": typeof seeds_runSeed;
   settings: typeof settings;
+  "smartlead/client": typeof smartlead_client;
 }>;
 
 /**
