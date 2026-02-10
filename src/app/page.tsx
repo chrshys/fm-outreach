@@ -7,6 +7,7 @@ import { api } from "../../convex/_generated/api"
 
 import { AppLayout } from "@/components/layout/app-layout"
 import { MetricCards } from "@/components/dashboard/metric-cards"
+import { PipelineFunnel } from "@/components/dashboard/pipeline-funnel"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -53,33 +54,6 @@ type ActiveCampaignResult = {
   stats: { sent: number; openRate: number; replyRate: number }
 }
 
-const PIPELINE_ORDER = [
-  "new_lead",
-  "enriched",
-  "outreach_started",
-  "replied",
-  "meeting_booked",
-  "onboarded",
-] as const
-
-const PIPELINE_LABELS: Record<string, string> = {
-  new_lead: "New",
-  enriched: "Enriched",
-  outreach_started: "Outreach",
-  replied: "Replied",
-  meeting_booked: "Meeting",
-  onboarded: "Onboarded",
-}
-
-const PIPELINE_COLORS: Record<string, string> = {
-  new_lead: "bg-blue-500",
-  enriched: "bg-indigo-500",
-  outreach_started: "bg-amber-500",
-  replied: "bg-violet-500",
-  meeting_booked: "bg-emerald-500",
-  onboarded: "bg-green-500",
-}
-
 const campaignStatusStyles: Record<string, string> = {
   active: "bg-emerald-100 text-emerald-800",
   paused: "bg-amber-100 text-amber-800",
@@ -122,10 +96,6 @@ export default function HomePage() {
     : 0
   const overdueCount = followUps?.overdue.length ?? 0
 
-  const pipelineMax = pipeline
-    ? Math.max(...PIPELINE_ORDER.map((s) => pipeline[s] ?? 0), 1)
-    : 1
-
   const topClusters = clusterBreakdown
     ? [...clusterBreakdown.clusters].sort((a, b) => b.count - a.count).slice(0, 3)
     : []
@@ -156,33 +126,7 @@ export default function HomePage() {
             {/* Middle row: 2 wider cards */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2" data-testid="middle-row">
               {/* Pipeline Funnel */}
-              <Card>
-                <CardHeader className="p-4">
-                  <CardTitle>Pipeline</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="space-y-2">
-                    {PIPELINE_ORDER.map((status) => {
-                      const count = pipeline?.[status] ?? 0
-                      const widthPct = Math.max((count / pipelineMax) * 100, 2)
-                      return (
-                        <div key={status} className="flex items-center gap-3">
-                          <span className="w-20 shrink-0 text-sm text-muted-foreground">
-                            {PIPELINE_LABELS[status]}
-                          </span>
-                          <div className="flex-1">
-                            <div
-                              className={`h-5 rounded ${PIPELINE_COLORS[status]}`}
-                              style={{ width: `${widthPct}%` }}
-                            />
-                          </div>
-                          <span className="w-8 text-right text-sm font-medium">{count}</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+              <PipelineFunnel pipeline={pipeline} />
 
               {/* Active Campaigns */}
               <Card>

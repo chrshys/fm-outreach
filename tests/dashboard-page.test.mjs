@@ -41,16 +41,9 @@ test("renders middle row with 2 wider cards in a 2-column grid", () => {
   assert.match(source, /lg:grid-cols-2/)
 })
 
-test("pipeline funnel card shows pipeline stages as horizontal bars", () => {
-  assert.match(source, /Pipeline/)
-  assert.match(source, /PIPELINE_ORDER\.map/)
-  // Verify all pipeline stages are defined
-  assert.match(source, /new_lead/)
-  assert.match(source, /enriched/)
-  assert.match(source, /outreach_started/)
-  assert.match(source, /replied/)
-  assert.match(source, /meeting_booked/)
-  assert.match(source, /onboarded/)
+test("imports and renders PipelineFunnel component", () => {
+  assert.match(source, /import\s+\{\s*PipelineFunnel\s*\}\s+from\s+"@\/components\/dashboard\/pipeline-funnel"/)
+  assert.match(source, /<PipelineFunnel pipeline=\{pipeline\}/)
 })
 
 test("active campaigns card links campaign names to /campaigns/[id]", () => {
