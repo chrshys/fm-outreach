@@ -37,7 +37,7 @@ test("fetches clusters with list query", () => {
 })
 
 test("uses campaigns.create mutation", () => {
-  assert.match(source, /useMutation\(api\.campaigns\.create\)/)
+  assert.match(source, /useMutation\([\s\S]*?api\.campaigns\.create[\s\S]*?\)/)
 })
 
 // Step 1: Name

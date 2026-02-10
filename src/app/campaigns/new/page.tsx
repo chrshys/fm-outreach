@@ -152,7 +152,10 @@ const statusStyles: Record<LeadStatus, string> = {
 
 export default function NewCampaignPage() {
   const router = useRouter()
-  const createCampaign = useMutation(api.campaigns.create)
+  const createCampaign = useMutation(
+    // @ts-expect-error — TS2589: api type tree too deep for this component
+    api.campaigns.create,
+  )
   const leads = useQuery(api.leads.listAllSummary) as LeadSummary[] | undefined
   const templates = useQuery(api.emailTemplates.list) as Template[] | undefined
   const clusters = useQuery(api.clusters.list) as Cluster[] | undefined
@@ -294,12 +297,27 @@ export default function NewCampaignPage() {
 
       if (selectionMode === "cluster" && selectedClusterId) {
         args.targetClusterId = selectedClusterId as Id<"clusters">
+        // Resolve concrete lead IDs so downstream queries/actions work
+        const clusterLeadIds = leads!
+          .filter((l) => l.clusterId === selectedClusterId)
+          .map((l) => l._id)
+        args.targetLeadIds = clusterLeadIds as Id<"leads">[]
       } else if (selectionMode === "filter") {
         args.targetFilter = {
           ...(filterStatus !== "all" && { status: filterStatus }),
           ...(filterType !== "all" && { type: filterType }),
           ...(filterRegion !== "all" && { region: filterRegion }),
         }
+        // Resolve concrete lead IDs so downstream queries/actions work
+        const filteredLeadIds = leads!
+          .filter((l) => {
+            if (filterStatus !== "all" && l.status !== filterStatus) return false
+            if (filterType !== "all" && l.type !== filterType) return false
+            if (filterRegion !== "all" && l.region !== filterRegion) return false
+            return true
+          })
+          .map((l) => l._id)
+        args.targetLeadIds = filteredLeadIds as Id<"leads">[]
       } else if (selectionMode === "manual") {
         args.targetLeadIds = [...manualSelectedIds] as Id<"leads">[]
       }
