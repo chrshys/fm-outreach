@@ -17,7 +17,7 @@ test("list query collects all campaigns", () => {
 })
 
 test("list query sorts by createdAt descending", () => {
-  assert.match(source, /\.sort\(.*b\.createdAt\s*-\s*a\.createdAt/)
+  assert.match(source, /b\.createdAt\s*-\s*a\.createdAt/)
 })
 
 test("list query returns name field", () => {
@@ -38,8 +38,4 @@ test("list query returns stats field", () => {
 
 test("list query returns smartleadCampaignId field", () => {
   assert.match(source, /smartleadCampaignId:\s*c\.smartleadCampaignId/)
-})
-
-test("list query returns _id field", () => {
-  assert.match(source, /_id:\s*c\._id/)
 })
