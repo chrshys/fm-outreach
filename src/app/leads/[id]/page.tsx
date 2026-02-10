@@ -13,6 +13,7 @@ import { AppLayout } from "@/components/layout/app-layout"
 import { ActivityTimeline } from "@/components/leads/activity-timeline"
 import { DataFreshness } from "@/components/leads/data-freshness"
 import { EmailComposer } from "@/components/leads/email-composer"
+import { SocialDmComposer } from "@/components/leads/social-dm-composer"
 import { FollowUpReminder } from "@/components/leads/follow-up-reminder"
 import { LogActivity } from "@/components/leads/log-activity"
 import { StatusSelector } from "@/components/leads/status-selector"
@@ -521,6 +522,7 @@ export default function LeadDetailPage() {
 
                   <LogActivity leadId={leadId} />
                   <EmailComposer leadId={leadId} leadName={lead.name} />
+                  <SocialDmComposer leadId={leadId} leadName={lead.name} />
                 </CardContent>
               </Card>
             </div>
