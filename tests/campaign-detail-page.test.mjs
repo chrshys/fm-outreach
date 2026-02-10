@@ -12,7 +12,7 @@ test("campaign detail page is a client component with correct imports", () => {
 })
 
 test("fetches campaign and leads data via Convex queries", () => {
-  assert.match(source, /useQuery\(api\.campaigns\.get,\s*\{\s*campaignId\s*\}\)/)
+  assert.match(source, /useQuery\([\s\S]*?api\.campaigns\.get,[\s\S]*?\{\s*campaignId[\s,]*\}\s*\)/)
   assert.match(source, /useQuery\(api\.campaigns\.listLeads,\s*\{\s*campaignId\s*\}\)/)
 })
 

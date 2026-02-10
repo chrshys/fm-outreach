@@ -87,7 +87,11 @@ export default function CampaignDetailPage({ params }: PageParams) {
   const { id } = use(params)
   const campaignId = id as Id<"campaigns">
 
-  const campaign = useQuery(api.campaigns.get, { campaignId })
+  const campaign = useQuery(
+    // @ts-expect-error — TS2589: api type tree too deep for this component
+    api.campaigns.get,
+    { campaignId },
+  )
   const leads = useQuery(api.campaigns.listLeads, { campaignId })
   const emails = useQuery(api.generatedEmails.listByCampaign, { campaignId })
   const pushToSmartlead = useAction(
