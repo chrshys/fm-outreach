@@ -44,6 +44,31 @@ export const enrichLead = internalAction({
     const force = args.force ?? false;
     const overwrite = args.overwrite ?? force;
 
+    // Step 0: Check if lead's email is on the block list (unsubscribed)
+    if (lead.contactEmail) {
+      const isBlocked = await ctx.runQuery(
+        api.smartlead.unsubscribe.isUnsubscribed,
+        { email: lead.contactEmail },
+      );
+      if (isBlocked) {
+        await ctx.runMutation(internal.enrichment.orchestratorHelpers.logActivity, {
+          leadId: args.leadId,
+          type: "enrichment_skipped",
+          description: "Enrichment skipped — lead email is on the block list (unsubscribed)",
+          metadata: { email: lead.contactEmail },
+        });
+
+        return {
+          leadId: args.leadId,
+          skipped: true,
+          sources: [],
+          emailFound: !!lead.contactEmail,
+          status: lead.contactEmail ? "enriched" : "no_email",
+          fieldsUpdated: [],
+        };
+      }
+    }
+
     // Step 1: Check cooldown
     if (
       !force &&
