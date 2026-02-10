@@ -67,6 +67,13 @@ test("word counter shows destructive color when out of 50-125 range", () => {
   assert.match(composerSource, /text-destructive/);
 });
 
+// --- Frontend: CASL footer stripping ---
+
+test("frontend countWords strips CASL footer before counting", () => {
+  assert.match(composerSource, /text\.indexOf\("\\n---\\n"\)/);
+  assert.match(composerSource, /footerIndex !== -1 \? text\.slice\(0, footerIndex\) : text/);
+});
+
 // --- Prompt still includes word count instruction ---
 
 test("generation prompt includes 50-125 word constraint", () => {

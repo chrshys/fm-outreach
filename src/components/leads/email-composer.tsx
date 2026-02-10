@@ -40,7 +40,9 @@ type EmailComposerProps = {
 }
 
 function countWords(text: string): number {
-  return text.trim().split(/\s+/).filter(Boolean).length
+  const footerIndex = text.indexOf("\n---\n")
+  const content = footerIndex !== -1 ? text.slice(0, footerIndex) : text
+  return content.trim().split(/\s+/).filter(Boolean).length
 }
 
 type EnrichmentData = {

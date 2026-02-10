@@ -126,7 +126,12 @@ test("displays word count indicator", () => {
 })
 
 test("countWords splits on whitespace and filters empty", () => {
-  assert.match(source, /text\.trim\(\)\.split\(\/\\s\+\/\)\.filter\(Boolean\)\.length/)
+  assert.match(source, /content\.trim\(\)\.split\(\/\\s\+\/\)\.filter\(Boolean\)\.length/)
+})
+
+test("countWords strips CASL footer before counting", () => {
+  assert.match(source, /text\.indexOf\("\\n---\\n"\)/)
+  assert.match(source, /footerIndex !== -1 \? text\.slice\(0, footerIndex\) : text/)
 })
 
 // --- Save Draft ---
