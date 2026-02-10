@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo } from "react"
-import Link from "next/link"
 import { useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
 
@@ -12,12 +11,7 @@ import { MetricCards } from "@/components/dashboard/metric-cards"
 import { PipelineFunnel } from "@/components/dashboard/pipeline-funnel"
 import { SocialTouches } from "@/components/dashboard/social-touches"
 import { ClustersCard } from "@/components/dashboard/clusters-card"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { NeedsFollowUp } from "@/components/dashboard/needs-follow-up"
 
 type PipelineStats = Record<string, number>
 
@@ -55,18 +49,6 @@ type ActiveCampaignResult = {
   status: "active" | "paused"
   leadCount: number
   stats: { sent: number; openRate: number; replyRate: number }
-}
-
-function daysOverdue(nextFollowUpAt: number, now: number): number {
-  const MS_PER_DAY = 86_400_000
-  return Math.floor((now - nextFollowUpAt) / MS_PER_DAY)
-}
-
-function toLabel(value: string): string {
-  return value
-    .split("_")
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join(" ")
 }
 
 export default function HomePage() {
@@ -151,49 +133,14 @@ export default function HomePage() {
             </div>
 
             {/* Follow-up Section */}
-            {followUps && (followUps.dueToday.length > 0 || followUps.overdue.length > 0) && (
-              <Card data-testid="follow-ups-section">
-                <CardHeader className="p-4">
-                  <CardTitle>Needs Follow-up</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="space-y-2">
-                    {[...followUps.overdue, ...followUps.dueToday].map((lead) => {
-                      const days = daysOverdue(lead.nextFollowUpAt, now)
-                      const overdueText =
-                        days > 0
-                          ? `${days} day${days === 1 ? "" : "s"} overdue`
-                          : "Due today"
-                      return (
-                        <div key={lead._id} className="flex items-center justify-between text-sm">
-                          <div className="min-w-0 flex-1">
-                            <Link
-                              href={`/leads/${lead._id}`}
-                              className="font-medium hover:underline"
-                            >
-                              {lead.name}
-                            </Link>
-                            <span className="ml-2 text-muted-foreground">
-                              {lead.city} &middot; {toLabel(lead.type)}
-                            </span>
-                          </div>
-                          <span className={days > 0 ? "text-red-600 shrink-0" : "text-muted-foreground shrink-0"}>
-                            {overdueText}
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                  <div className="mt-3">
-                    <Link
-                      href="/leads?needsFollowUp=true"
-                      className="text-sm text-primary hover:underline"
-                    >
-                      View all
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
+            {followUps && (
+              <NeedsFollowUp
+                stats={{
+                  dueToday: followUps.dueToday,
+                  overdue: followUps.overdue,
+                  now,
+                }}
+              />
             )}
           </>
         )}

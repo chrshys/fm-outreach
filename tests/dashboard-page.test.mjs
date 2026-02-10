@@ -79,21 +79,15 @@ test("clusters card uses ClustersCard component with cluster breakdown data", ()
   assert.match(source, /clusterBreakdown\?\.unclustered/)
 })
 
-test("follow-up section lists leads with links to /leads/[id]", () => {
-  assert.match(source, /data-testid="follow-ups-section"/)
-  assert.match(source, /Needs Follow-up/)
-  assert.match(source, /href=\{`\/leads\/\$\{lead\._id\}`\}/)
+test("follow-up section uses NeedsFollowUp component", () => {
+  assert.match(source, /import\s+\{\s*NeedsFollowUp\s*\}\s+from\s+"@\/components\/dashboard\/needs-follow-up"/)
+  assert.match(source, /<NeedsFollowUp/)
 })
 
-test("follow-up section shows overdue text in red and due-today items", () => {
-  assert.match(source, /overdue/)
-  assert.match(source, /Due today/)
-  assert.match(source, /text-red-600/)
-})
-
-test("follow-up section has View all link", () => {
-  assert.match(source, /View all/)
-  assert.match(source, /\/leads\?needsFollowUp=true/)
+test("follow-up section passes followUps data and now to NeedsFollowUp", () => {
+  assert.match(source, /dueToday: followUps\.dueToday/)
+  assert.match(source, /overdue: followUps\.overdue/)
+  assert.match(source, /now/)
 })
 
 test("shows loading state while data is undefined", () => {
