@@ -20,6 +20,14 @@ export const list = query({
   },
 })
 
+export const getAll = query({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db.query("settings").collect()
+    return Object.fromEntries(rows.map((row) => [row.key, row.value]))
+  },
+})
+
 export const set = mutation({
   args: { key: v.string(), value: v.string() },
   handler: async (ctx, args) => {
