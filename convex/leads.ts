@@ -288,6 +288,28 @@ export const bulkUpdateStatus = mutation({
   },
 });
 
+export const listWithCoords = query({
+  args: {},
+  handler: async (ctx) => {
+    const allLeads = await ctx.db.query("leads").collect();
+    return allLeads
+      .filter(
+        (lead) =>
+          lead.latitude !== undefined && lead.longitude !== undefined,
+      )
+      .map((lead) => ({
+        _id: lead._id,
+        name: lead.name,
+        type: lead.type,
+        city: lead.city,
+        status: lead.status,
+        latitude: lead.latitude as number,
+        longitude: lead.longitude as number,
+        clusterId: lead.clusterId,
+      }));
+  },
+});
+
 export const bulkAssignCluster = mutation({
   args: {
     leadIds: v.array(v.id("leads")),
