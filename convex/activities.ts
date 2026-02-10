@@ -61,6 +61,7 @@ export const create = mutation({
       v.literal("note_added"),
       v.literal("phone_call"),
       v.literal("social_dm_sent"),
+      v.literal("social_dm_replied"),
       v.literal("social_commented"),
       v.literal("social_followed"),
     ),
@@ -81,7 +82,23 @@ export const create = mutation({
     }
 
     const now = Date.now();
-    await ctx.db.patch(args.leadId, { updatedAt: now });
+
+    // Auto-advance lead status to "replied" when logging a social DM reply
+    if (
+      args.type === "social_dm_replied" &&
+      (lead.status === "outreach_started" || lead.status === "no_email")
+    ) {
+      await ctx.db.patch(args.leadId, { status: "replied", updatedAt: now });
+      await ctx.db.insert("activities", {
+        leadId: args.leadId,
+        type: "status_changed",
+        description: `Lead status changed from ${lead.status} to replied`,
+        metadata: { oldStatus: lead.status, newStatus: "replied" },
+        createdAt: now,
+      });
+    } else {
+      await ctx.db.patch(args.leadId, { updatedAt: now });
+    }
 
     const activity: {
       leadId: typeof args.leadId;

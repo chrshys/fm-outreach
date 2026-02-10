@@ -9,9 +9,9 @@ test("create mutation accepts social_commented and social_followed types", () =>
   assert.match(source, /v\.literal\("social_followed"\)/)
 })
 
-test("create mutation type union includes all five manual activity types", () => {
+test("create mutation type union includes all six manual activity types", () => {
   assert.match(
     source,
-    /type:\s*v\.union\(\s*v\.literal\("note_added"\),\s*v\.literal\("phone_call"\),\s*v\.literal\("social_dm_sent"\),\s*v\.literal\("social_commented"\),\s*v\.literal\("social_followed"\),\s*\)/s
+    /type:\s*v\.union\(\s*v\.literal\("note_added"\),\s*v\.literal\("phone_call"\),\s*v\.literal\("social_dm_sent"\),\s*v\.literal\("social_dm_replied"\),\s*v\.literal\("social_commented"\),\s*v\.literal\("social_followed"\),\s*\)/s
   )
 })

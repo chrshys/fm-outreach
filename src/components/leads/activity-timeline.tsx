@@ -108,6 +108,11 @@ const activityMetaByType: Record<string, ActivityMeta> = {
     iconClassName: "text-indigo-600",
     dotClassName: "bg-indigo-500",
   },
+  social_dm_replied: {
+    icon: Reply,
+    iconClassName: "text-emerald-600",
+    dotClassName: "bg-emerald-500",
+  },
   enrichment_started: {
     icon: Sparkles,
     iconClassName: "text-teal-600",
