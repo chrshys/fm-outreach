@@ -76,6 +76,8 @@ const defaultFilters: LeadFiltersValue = {
   source: "all",
   hasEmail: false,
   hasSocial: false,
+  hasFacebook: false,
+  hasInstagram: false,
   needsFollowUp: false,
 }
 
@@ -143,6 +145,8 @@ export default function LeadsPage() {
       source: filters.source === "all" ? undefined : filters.source,
       hasEmail: filters.hasEmail ? true : undefined,
       hasSocial: filters.hasSocial ? true : undefined,
+      hasFacebook: filters.hasFacebook ? true : undefined,
+      hasInstagram: filters.hasInstagram ? true : undefined,
       needsFollowUp: filters.needsFollowUp ? true : undefined,
       sortBy,
       sortOrder,
@@ -360,7 +364,8 @@ export default function LeadsPage() {
                 </Button>
               </TableHead>
               <TableHead>Contact Email</TableHead>
-              <TableHead>Social</TableHead>
+              <TableHead className="w-12 text-center">FB</TableHead>
+              <TableHead className="w-12 text-center">IG</TableHead>
               <TableHead>Last Activity</TableHead>
               <TableHead>Follow-up Due</TableHead>
             </TableRow>
@@ -368,19 +373,19 @@ export default function LeadsPage() {
           <TableBody>
             {isLoadingLeads ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-muted-foreground text-center">
+                <TableCell colSpan={10} className="text-muted-foreground text-center">
                   Loading leads...
                 </TableCell>
               </TableRow>
             ) : loadError ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center text-red-600">
+                <TableCell colSpan={10} className="text-center text-red-600">
                   {loadError}
                 </TableCell>
               </TableRow>
             ) : filteredLeads.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-muted-foreground text-center">
+                <TableCell colSpan={10} className="text-muted-foreground text-center">
                   No leads match the selected filters.
                 </TableCell>
               </TableRow>
@@ -415,11 +420,11 @@ export default function LeadsPage() {
                     <Badge className={statusClassNames[lead.status]}>{toLabel(lead.status)}</Badge>
                   </TableCell>
                   <TableCell>{lead.contactEmail?.trim() || "-"}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Badge variant={social.facebook ? "default" : "outline"}>FB</Badge>
-                      <Badge variant={social.instagram ? "default" : "outline"}>IG</Badge>
-                    </div>
+                  <TableCell className="text-center">
+                    {social.facebook ? <Badge variant="default">&#10003;</Badge> : <span className="text-muted-foreground">-</span>}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {social.instagram ? <Badge variant="default">&#10003;</Badge> : <span className="text-muted-foreground">-</span>}
                   </TableCell>
                   <TableCell>{formatDate(lead.updatedAt)}</TableCell>
                   <TableCell>

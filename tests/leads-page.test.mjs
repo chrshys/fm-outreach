@@ -22,12 +22,14 @@ test("renders the leads data table columns", () => {
   for (const column of [
     "Type",
     "Contact Email",
-    "Social",
     "Last Activity",
     "Follow-up Due",
   ]) {
     assert.match(source, new RegExp(`<TableHead>${column}<\\/TableHead>`))
   }
+
+  assert.match(source, /TableHead[^>]*>FB<\/TableHead>/)
+  assert.match(source, /TableHead[^>]*>IG<\/TableHead>/)
 
   for (const sortableColumn of ["Name", "City", "Status"]) {
     assert.match(source, new RegExp(`>\\s*${sortableColumn}\\s*<`))
@@ -63,8 +65,8 @@ test("includes loading/empty states, checkbox, status badge, and social indicato
   assert.match(source, /import\s+\{\s*Checkbox\s*\}\s+from\s+"@\/components\/ui\/checkbox"/)
   assert.match(source, /import\s+\{\s*Badge\s*\}\s+from\s+"@\/components\/ui\/badge"/)
   assert.match(source, /Select all leads/)
-  assert.match(source, />FB<\/Badge>/)
-  assert.match(source, />IG<\/Badge>/)
+  assert.match(source, /social\.facebook \? <Badge/)
+  assert.match(source, /social\.instagram \? <Badge/)
   assert.match(source, /Overdue/)
 })
 

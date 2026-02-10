@@ -47,6 +47,8 @@ export const list = query({
     clusterId: v.optional(v.id("clusters")),
     hasEmail: v.optional(v.boolean()),
     hasSocial: v.optional(v.boolean()),
+    hasFacebook: v.optional(v.boolean()),
+    hasInstagram: v.optional(v.boolean()),
     source: v.optional(leadSourceValidator),
     needsFollowUp: v.optional(v.boolean()),
     sortBy: v.optional(
@@ -65,6 +67,8 @@ export const list = query({
         clusterId: args.clusterId,
         hasEmail: args.hasEmail,
         hasSocial: args.hasSocial,
+        hasFacebook: args.hasFacebook,
+        hasInstagram: args.hasInstagram,
         source: args.source,
         needsFollowUp: args.needsFollowUp,
         now: Date.now(),

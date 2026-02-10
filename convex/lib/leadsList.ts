@@ -46,6 +46,8 @@ export type LeadListFilters = {
   clusterId?: string;
   hasEmail?: boolean;
   hasSocial?: boolean;
+  hasFacebook?: boolean;
+  hasInstagram?: boolean;
   source?: LeadSource;
   needsFollowUp?: boolean;
   now: number;
@@ -68,6 +70,14 @@ function hasSocial(lead: LeadListItem): boolean {
     (typeof lead.socialLinks?.instagram === "string" && lead.socialLinks.instagram.trim().length > 0) ||
       (typeof lead.socialLinks?.facebook === "string" && lead.socialLinks.facebook.trim().length > 0),
   );
+}
+
+function hasFacebook(lead: LeadListItem): boolean {
+  return typeof lead.socialLinks?.facebook === "string" && lead.socialLinks.facebook.trim().length > 0;
+}
+
+function hasInstagram(lead: LeadListItem): boolean {
+  return typeof lead.socialLinks?.instagram === "string" && lead.socialLinks.instagram.trim().length > 0;
 }
 
 function matchesFilters(lead: LeadListItem, filters: LeadListFilters): boolean {
@@ -100,6 +110,22 @@ function matchesFilters(lead: LeadListItem, filters: LeadListFilters): boolean {
   }
 
   if (filters.hasSocial === false && hasSocial(lead)) {
+    return false;
+  }
+
+  if (filters.hasFacebook === true && !hasFacebook(lead)) {
+    return false;
+  }
+
+  if (filters.hasFacebook === false && hasFacebook(lead)) {
+    return false;
+  }
+
+  if (filters.hasInstagram === true && !hasInstagram(lead)) {
+    return false;
+  }
+
+  if (filters.hasInstagram === false && hasInstagram(lead)) {
     return false;
   }
 

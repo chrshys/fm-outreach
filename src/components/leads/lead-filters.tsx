@@ -46,6 +46,8 @@ export type LeadFiltersValue = {
   source: LeadSource | "all"
   hasEmail: boolean
   hasSocial: boolean
+  hasFacebook: boolean
+  hasInstagram: boolean
   needsFollowUp: boolean
 }
 
@@ -96,6 +98,20 @@ export function LeadFilters({ value, onChange }: LeadFiltersProps) {
           key: "hasSocial",
           label: "Has Social",
           clear: () => onChange({ ...value, hasSocial: false }),
+        }
+      : null,
+    value.hasFacebook
+      ? {
+          key: "hasFacebook",
+          label: "Has Facebook",
+          clear: () => onChange({ ...value, hasFacebook: false }),
+        }
+      : null,
+    value.hasInstagram
+      ? {
+          key: "hasInstagram",
+          label: "Has Instagram",
+          clear: () => onChange({ ...value, hasInstagram: false }),
         }
       : null,
     value.needsFollowUp
@@ -167,6 +183,22 @@ export function LeadFilters({ value, onChange }: LeadFiltersProps) {
           onClick={() => onChange({ ...value, hasSocial: !value.hasSocial })}
         >
           Has Social
+        </Button>
+        <Button
+          type="button"
+          variant={value.hasFacebook ? "default" : "outline"}
+          size="sm"
+          onClick={() => onChange({ ...value, hasFacebook: !value.hasFacebook })}
+        >
+          Has Facebook
+        </Button>
+        <Button
+          type="button"
+          variant={value.hasInstagram ? "default" : "outline"}
+          size="sm"
+          onClick={() => onChange({ ...value, hasInstagram: !value.hasInstagram })}
+        >
+          Has Instagram
         </Button>
         <Button
           type="button"
