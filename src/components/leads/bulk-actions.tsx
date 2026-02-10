@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { useMutation } from "convex/react"
+import { useAction, useMutation } from "convex/react"
+import { Sparkles } from "lucide-react"
+import { toast } from "sonner"
 import type { Id } from "../../../convex/_generated/dataModel"
 import { api } from "../../../convex/_generated/api"
 
@@ -35,7 +37,9 @@ function toLabel(value: string) {
 export function BulkActions({ selectedLeadIds, clusterOptions, onComplete }: BulkActionsProps) {
   const bulkUpdateStatus = useMutation(api.leads.bulkUpdateStatus)
   const bulkAssignCluster = useMutation(api.leads.bulkAssignCluster)
+  const batchEnrich = useAction(api.enrichment.batchEnrichPublic.batchEnrich)
   const [isApplying, setIsApplying] = useState(false)
+  const [isEnriching, setIsEnriching] = useState(false)
 
   if (selectedLeadIds.length === 0) {
     return null
@@ -66,6 +70,32 @@ export function BulkActions({ selectedLeadIds, clusterOptions, onComplete }: Bul
       onComplete()
     } finally {
       setIsApplying(false)
+    }
+  }
+
+  async function handleEnrichSelected() {
+    setIsEnriching(true)
+    toast.info(`Enriching ${selectedLeadIds.length} lead${selectedLeadIds.length === 1 ? "" : "s"}...`)
+
+    try {
+      const result = await batchEnrich({ leadIds: selectedLeadIds })
+      const { succeeded, failed, skipped } = result as {
+        succeeded: number
+        failed: number
+        skipped: number
+      }
+
+      if (failed === 0) {
+        toast.success(`Enrichment complete: ${succeeded} enriched, ${skipped} skipped`)
+      } else {
+        toast.warning(`Enrichment done: ${succeeded} enriched, ${failed} failed, ${skipped} skipped`)
+      }
+
+      onComplete()
+    } catch {
+      toast.error("Enrichment failed. Please try again.")
+    } finally {
+      setIsEnriching(false)
     }
   }
 
@@ -106,6 +136,17 @@ export function BulkActions({ selectedLeadIds, clusterOptions, onComplete }: Bul
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        disabled={isEnriching || isApplying}
+        onClick={handleEnrichSelected}
+      >
+        <Sparkles className="mr-1.5 size-3.5" />
+        {isEnriching ? "Enriching..." : "Enrich Selected"}
+      </Button>
     </div>
   )
 }
