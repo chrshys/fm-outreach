@@ -10,6 +10,7 @@ import { ActiveCampaigns } from "@/components/dashboard/active-campaigns"
 import { EmailActivity } from "@/components/dashboard/email-activity"
 import { MetricCards } from "@/components/dashboard/metric-cards"
 import { PipelineFunnel } from "@/components/dashboard/pipeline-funnel"
+import { SocialTouches } from "@/components/dashboard/social-touches"
 import {
   Card,
   CardContent,
@@ -135,27 +136,13 @@ export default function HomePage() {
               />
 
               {/* Social Touches */}
-              <Card>
-                <CardHeader className="p-4">
-                  <CardTitle>Social Touches (7d)</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">DMs Sent</span>
-                      <span className="font-medium">{socialStats?.last7Days.dmsSent ?? 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Replies</span>
-                      <span className="font-medium">{socialStats?.last7Days.dmReplies ?? 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Follows</span>
-                      <span className="font-medium">{socialStats?.last7Days.follows ?? 0}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <SocialTouches
+                stats={{
+                  dmsSent: socialStats?.last7Days.dmsSent ?? 0,
+                  dmReplies: socialStats?.last7Days.dmReplies ?? 0,
+                  follows: socialStats?.last7Days.follows ?? 0,
+                }}
+              />
 
               {/* Clusters */}
               <Card>

@@ -65,7 +65,8 @@ test("email activity card shows sent, opened, clicked for last 7 days", () => {
 })
 
 test("social touches card shows DMs, replies, follows for last 7 days", () => {
-  assert.match(source, /Social Touches \(7d\)/)
+  assert.match(source, /import\s+\{\s*SocialTouches\s*\}\s+from\s+"@\/components\/dashboard\/social-touches"/)
+  assert.match(source, /<SocialTouches/)
   assert.match(source, /socialStats\?\.last7Days\.dmsSent/)
   assert.match(source, /socialStats\?\.last7Days\.dmReplies/)
   assert.match(source, /socialStats\?\.last7Days\.follows/)
