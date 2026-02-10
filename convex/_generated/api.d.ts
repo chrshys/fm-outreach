@@ -9,6 +9,7 @@
  */
 
 import type * as activities from "../activities.js";
+import type * as clusters from "../clusters.js";
 import type * as leads from "../leads.js";
 import type * as lib_activitiesList from "../lib/activitiesList.js";
 import type * as lib_csvParser from "../lib/csvParser.js";
@@ -28,6 +29,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   activities: typeof activities;
+  clusters: typeof clusters;
   leads: typeof leads;
   "lib/activitiesList": typeof lib_activitiesList;
   "lib/csvParser": typeof lib_csvParser;

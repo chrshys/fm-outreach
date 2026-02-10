@@ -1,10 +1,17 @@
 "use client"
 
+import { useMemo, useState } from "react"
 import dynamic from "next/dynamic"
 import { useQuery } from "convex/react"
 
 import { api } from "../../../convex/_generated/api"
 import { AppLayout } from "@/components/layout/app-layout"
+import {
+  MapFilters,
+  defaultMapFilters,
+  filterLeads,
+} from "@/components/map/map-filters"
+import type { MapFiltersValue } from "@/components/map/map-filters"
 
 const MapContent = dynamic(() => import("@/components/map/map-content"), {
   ssr: false,
@@ -17,11 +24,28 @@ const MapContent = dynamic(() => import("@/components/map/map-content"), {
 
 export default function MapPage() {
   const leads = useQuery(api.leads.listWithCoords)
+  const clusters = useQuery(api.clusters.list)
+  const [filters, setFilters] = useState<MapFiltersValue>(defaultMapFilters)
+
+  const clusterOptions = useMemo(
+    () => (clusters ?? []).map((c) => ({ id: c._id, name: c.name })),
+    [clusters],
+  )
+
+  const filteredLeads = useMemo(
+    () => filterLeads(leads ?? [], filters),
+    [leads, filters],
+  )
 
   return (
     <AppLayout>
-      <div className="h-[calc(100vh-73px)] -m-6">
-        <MapContent leads={leads ?? []} />
+      <div className="relative h-[calc(100vh-73px)] -m-6">
+        <MapContent leads={filteredLeads} />
+        <MapFilters
+          value={filters}
+          onChange={setFilters}
+          clusters={clusterOptions}
+        />
       </div>
     </AppLayout>
   )
