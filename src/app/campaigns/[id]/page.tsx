@@ -1,8 +1,8 @@
 "use client"
 
-import { use } from "react"
+import { use, useState } from "react"
 import Link from "next/link"
-import { useQuery } from "convex/react"
+import { useAction, useQuery } from "convex/react"
 import {
   ArrowLeft,
   Calendar,
@@ -10,11 +10,13 @@ import {
   Loader2,
   Mail,
   MousePointerClick,
+  Play,
   Reply,
   Send,
   TriangleAlert,
   Users,
 } from "lucide-react"
+import { toast } from "sonner"
 
 import { api } from "../../../../convex/_generated/api"
 import type { Id } from "../../../../convex/_generated/dataModel"
@@ -26,6 +28,14 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import {
   Table,
   TableBody,
@@ -78,6 +88,26 @@ export default function CampaignDetailPage({ params }: PageParams) {
 
   const campaign = useQuery(api.campaigns.get, { campaignId })
   const leads = useQuery(api.campaigns.listLeads, { campaignId })
+  const launchCampaignAction = useAction(
+    api.campaigns.launchCampaign.launchCampaign,
+  )
+
+  const [showLaunchDialog, setShowLaunchDialog] = useState(false)
+  const [isLaunching, setIsLaunching] = useState(false)
+
+  async function handleLaunchCampaign() {
+    setIsLaunching(true)
+    try {
+      await launchCampaignAction({ campaignId })
+      setShowLaunchDialog(false)
+      toast.success("Campaign launched — emails will start sending shortly")
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Launch failed"
+      toast.error(message)
+    } finally {
+      setIsLaunching(false)
+    }
+  }
 
   if (campaign === undefined || leads === undefined) {
     return (
@@ -139,12 +169,23 @@ export default function CampaignDetailPage({ params }: PageParams) {
               </span>
             </div>
           </div>
-          <Button variant="outline" asChild>
-            <Link href="/campaigns">
-              <ArrowLeft className="size-4" />
-              Back
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            {campaign.status === "pushed" ? (
+              <Button
+                size="sm"
+                onClick={() => setShowLaunchDialog(true)}
+              >
+                <Play className="mr-1.5 size-4" />
+                Launch Campaign
+              </Button>
+            ) : null}
+            <Button variant="outline" asChild>
+              <Link href="/campaigns">
+                <ArrowLeft className="size-4" />
+                Back
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -280,6 +321,38 @@ export default function CampaignDetailPage({ params }: PageParams) {
             </Card>
           )}
         </div>
+        <Dialog open={showLaunchDialog} onOpenChange={setShowLaunchDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Launch Campaign</DialogTitle>
+              <DialogDescription>
+                This will start sending emails to all {campaign.leadCount} lead
+                {campaign.leadCount === 1 ? "" : "s"} in this campaign. Are you
+                sure you want to launch?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowLaunchDialog(false)}
+                disabled={isLaunching}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => void handleLaunchCampaign()}
+                disabled={isLaunching}
+              >
+                {isLaunching ? (
+                  <Loader2 className="mr-1.5 size-4 animate-spin" />
+                ) : (
+                  <Play className="mr-1.5 size-4" />
+                )}
+                {isLaunching ? "Launching…" : "Confirm Launch"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </section>
     </AppLayout>
   )

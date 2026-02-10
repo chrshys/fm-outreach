@@ -10,6 +10,7 @@
 
 import type * as activities from "../activities.js";
 import type * as campaigns from "../campaigns.js";
+import type * as campaigns_launchCampaign from "../campaigns/launchCampaign.js";
 import type * as campaigns_pushToSmartlead from "../campaigns/pushToSmartlead.js";
 import type * as clusters from "../clusters.js";
 import type * as crons from "../crons.js";
@@ -57,6 +58,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   activities: typeof activities;
   campaigns: typeof campaigns;
+  "campaigns/launchCampaign": typeof campaigns_launchCampaign;
   "campaigns/pushToSmartlead": typeof campaigns_pushToSmartlead;
   clusters: typeof clusters;
   crons: typeof crons;
