@@ -21,6 +21,39 @@ export const listByLead = query({
   },
 });
 
+export const enrichmentProgress = query({
+  args: {
+    leadIds: v.array(v.id("leads")),
+    since: v.number(),
+  },
+  handler: async (ctx, args) => {
+    if (args.leadIds.length === 0) {
+      return { started: 0, finished: 0, skipped: 0, total: 0 };
+    }
+
+    let started = 0;
+    let finished = 0;
+    let skipped = 0;
+
+    for (const leadId of args.leadIds) {
+      const activities = await ctx.db
+        .query("activities")
+        .withIndex("by_leadId", (q) => q.eq("leadId", leadId))
+        .collect();
+
+      for (const activity of activities) {
+        if (activity.createdAt < args.since) continue;
+
+        if (activity.type === "enrichment_started") started++;
+        else if (activity.type === "enrichment_finished") finished++;
+        else if (activity.type === "enrichment_skipped") skipped++;
+      }
+    }
+
+    return { started, finished, skipped, total: args.leadIds.length };
+  },
+});
+
 export const create = mutation({
   args: {
     leadId: v.id("leads"),

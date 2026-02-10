@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useAction, useMutation } from "convex/react"
 import { Sparkles } from "lucide-react"
 import { toast } from "sonner"
 import type { Id } from "../../../convex/_generated/dataModel"
 import { api } from "../../../convex/_generated/api"
 
+import { EnrichmentProgress } from "@/components/leads/enrichment-progress"
 import { LEAD_STATUSES, type LeadStatus } from "@/components/leads/lead-filters"
 import { Button } from "@/components/ui/button"
 import {
@@ -40,6 +41,8 @@ export function BulkActions({ selectedLeadIds, clusterOptions, onComplete }: Bul
   const batchEnrich = useAction(api.enrichment.batchEnrichPublic.batchEnrich)
   const [isApplying, setIsApplying] = useState(false)
   const [isEnriching, setIsEnriching] = useState(false)
+  const [enrichingLeadIds, setEnrichingLeadIds] = useState<Id<"leads">[]>([])
+  const enrichmentSinceRef = useRef(0)
 
   if (selectedLeadIds.length === 0) {
     return null
@@ -75,6 +78,8 @@ export function BulkActions({ selectedLeadIds, clusterOptions, onComplete }: Bul
 
   async function handleEnrichSelected() {
     setIsEnriching(true)
+    setEnrichingLeadIds([...selectedLeadIds])
+    enrichmentSinceRef.current = Date.now()
     toast.info(`Enriching ${selectedLeadIds.length} lead${selectedLeadIds.length === 1 ? "" : "s"}...`)
 
     try {
@@ -96,57 +101,67 @@ export function BulkActions({ selectedLeadIds, clusterOptions, onComplete }: Bul
       toast.error("Enrichment failed. Please try again.")
     } finally {
       setIsEnriching(false)
+      setEnrichingLeadIds([])
     }
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-md border bg-muted/30 p-3">
-      <p className="mr-2 text-sm font-medium">{selectedLeadIds.length} selected</p>
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-2 rounded-md border bg-muted/30 p-3">
+        <p className="mr-2 text-sm font-medium">{selectedLeadIds.length} selected</p>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button type="button" variant="outline" size="sm" disabled={isApplying}>
-            Change Status
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          {LEAD_STATUSES.map((status) => (
-            <DropdownMenuItem key={status} onClick={() => handleChangeStatus(status)}>
-              {toLabel(status)}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button type="button" variant="outline" size="sm" disabled={isApplying}>
-            Assign to Cluster
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          {clusterOptions.length === 0 ? (
-            <DropdownMenuItem disabled>No clusters available</DropdownMenuItem>
-          ) : (
-            clusterOptions.map((cluster) => (
-              <DropdownMenuItem key={cluster.id} onClick={() => handleAssignCluster(cluster.id)}>
-                {cluster.name}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button type="button" variant="outline" size="sm" disabled={isApplying}>
+              Change Status
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            {LEAD_STATUSES.map((status) => (
+              <DropdownMenuItem key={status} onClick={() => handleChangeStatus(status)}>
+                {toLabel(status)}
               </DropdownMenuItem>
-            ))
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={isEnriching || isApplying}
-        onClick={handleEnrichSelected}
-      >
-        <Sparkles className="mr-1.5 size-3.5" />
-        {isEnriching ? "Enriching..." : "Enrich Selected"}
-      </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button type="button" variant="outline" size="sm" disabled={isApplying}>
+              Assign to Cluster
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            {clusterOptions.length === 0 ? (
+              <DropdownMenuItem disabled>No clusters available</DropdownMenuItem>
+            ) : (
+              clusterOptions.map((cluster) => (
+                <DropdownMenuItem key={cluster.id} onClick={() => handleAssignCluster(cluster.id)}>
+                  {cluster.name}
+                </DropdownMenuItem>
+              ))
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={isEnriching || isApplying}
+          onClick={handleEnrichSelected}
+        >
+          <Sparkles className="mr-1.5 size-3.5" />
+          {isEnriching ? "Enriching..." : "Enrich Selected"}
+        </Button>
+      </div>
+
+      {isEnriching && enrichingLeadIds.length > 0 && (
+        <EnrichmentProgress
+          leadIds={enrichingLeadIds}
+          since={enrichmentSinceRef.current}
+        />
+      )}
     </div>
   )
 }
