@@ -6,6 +6,7 @@ import { useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
 
 import { AppLayout } from "@/components/layout/app-layout"
+import { MetricCards } from "@/components/dashboard/metric-cards"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -143,61 +144,14 @@ export default function HomePage() {
         ) : (
           <>
             {/* Top row: 4 metric cards */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" data-testid="metric-cards">
-              <Card>
-                <CardHeader className="p-4">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Sellers Onboarded
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <p className="text-2xl font-bold">{onboarded} / 100</p>
-                  <p className="text-xs text-muted-foreground">Goal progress</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="p-4">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Total Leads
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <p className="text-2xl font-bold">{totalLeads}</p>
-                  <p className="text-xs text-muted-foreground">All statuses</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="p-4">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Replies (30d)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <p className="text-2xl font-bold">{replies30d}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {pct(replies30d, sent30d)} reply rate
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="p-4">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Follow-ups Due
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <p className="text-2xl font-bold">{followUpCount}</p>
-                  {overdueCount > 0 ? (
-                    <p className="text-xs text-red-600">{overdueCount} overdue</p>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">None overdue</p>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+            <MetricCards
+              onboarded={onboarded}
+              totalLeads={totalLeads}
+              replies30d={replies30d}
+              sent30d={sent30d}
+              followUpCount={followUpCount}
+              overdueCount={overdueCount}
+            />
 
             {/* Middle row: 2 wider cards */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2" data-testid="middle-row">
