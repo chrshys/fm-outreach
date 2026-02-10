@@ -7,6 +7,7 @@ import { Check, ClipboardCopy, Loader2, MessageCircle, Sparkles } from "lucide-r
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import { Button } from "@/components/ui/button"
+import { FollowUpPrompt } from "./follow-up-prompt"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -49,6 +50,7 @@ export function SocialDmComposer({ leadId, leadName }: SocialDmComposerProps) {
   const [copied, setCopied] = useState(false)
   const [showLogPrompt, setShowLogPrompt] = useState(false)
   const [isLogging, setIsLogging] = useState(false)
+  const [showFollowUpPrompt, setShowFollowUpPrompt] = useState(false)
 
   function resetState() {
     setChannel("")
@@ -125,6 +127,7 @@ export function SocialDmComposer({ leadId, leadName }: SocialDmComposerProps) {
       })
       setShowLogPrompt(false)
       setIsOpen(false)
+      setShowFollowUpPrompt(true)
     } finally {
       setIsLogging(false)
     }
@@ -261,6 +264,12 @@ export function SocialDmComposer({ leadId, leadName }: SocialDmComposerProps) {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
+      <FollowUpPrompt
+        leadId={leadId}
+        open={showFollowUpPrompt}
+        onOpenChange={setShowFollowUpPrompt}
+      />
     </>
   )
 }

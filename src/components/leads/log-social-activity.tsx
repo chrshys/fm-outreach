@@ -18,6 +18,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import { FollowUpPrompt } from "./follow-up-prompt"
 
 type SocialActivityType = "social_dm_sent" | "social_commented" | "social_followed"
 type SocialChannel = "facebook" | "instagram"
@@ -65,6 +66,7 @@ export function LogSocialActivity({ leadId, className }: LogSocialActivityProps)
   const [activeAction, setActiveAction] = useState<SocialAction | null>(null)
   const [notes, setNotes] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showFollowUpPrompt, setShowFollowUpPrompt] = useState(false)
 
   function openDialog(action: SocialAction) {
     setNotes("")
@@ -90,8 +92,12 @@ export function LogSocialActivity({ leadId, className }: LogSocialActivityProps)
         description,
         channel: activeAction.channel,
       })
+      const wasDmSent = activeAction.type === "social_dm_sent"
       setActiveAction(null)
       setNotes("")
+      if (wasDmSent) {
+        setShowFollowUpPrompt(true)
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -154,6 +160,12 @@ export function LogSocialActivity({ leadId, className }: LogSocialActivityProps)
           </form>
         </DialogContent>
       </Dialog>
+
+      <FollowUpPrompt
+        leadId={leadId}
+        open={showFollowUpPrompt}
+        onOpenChange={setShowFollowUpPrompt}
+      />
     </div>
   )
 }

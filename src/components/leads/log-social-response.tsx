@@ -18,6 +18,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import { FollowUpPrompt } from "./follow-up-prompt"
 
 type SocialChannel = "facebook" | "instagram"
 
@@ -33,6 +34,7 @@ export function LogSocialResponse({ leadId, className }: LogSocialResponseProps)
   const [channel, setChannel] = useState<SocialChannel>("facebook")
   const [summary, setSummary] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showFollowUpPrompt, setShowFollowUpPrompt] = useState(false)
 
   function openDialog(ch: SocialChannel) {
     setSummary("")
@@ -60,6 +62,7 @@ export function LogSocialResponse({ leadId, className }: LogSocialResponseProps)
       })
       setOpen(false)
       setSummary("")
+      setShowFollowUpPrompt(true)
     } finally {
       setIsSubmitting(false)
     }
@@ -112,6 +115,12 @@ export function LogSocialResponse({ leadId, className }: LogSocialResponseProps)
           </form>
         </DialogContent>
       </Dialog>
+
+      <FollowUpPrompt
+        leadId={leadId}
+        open={showFollowUpPrompt}
+        onOpenChange={setShowFollowUpPrompt}
+      />
     </div>
   )
 }
