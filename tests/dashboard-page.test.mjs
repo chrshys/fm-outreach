@@ -9,7 +9,119 @@ test("wraps the dashboard page content with AppLayout", () => {
   assert.match(source, /<AppLayout>[\s\S]*<\/AppLayout>/)
 })
 
-test("renders dashboard placeholder heading and phase copy", () => {
-  assert.match(source, /<h2[^>]*>Dashboard<\/h2>/)
-  assert.match(source, /Coming in Phase 10/)
+test("is a client component", () => {
+  assert.match(source, /^"use client"/)
+})
+
+test("queries all six dashboard endpoints", () => {
+  assert.match(source, /useQuery\(api\.dashboard\.pipelineStats\)/)
+  assert.match(source, /useQuery\(api\.dashboard\.emailStats\)/)
+  assert.match(source, /useQuery\(api\.dashboard\.socialStats\)/)
+  assert.match(source, /useQuery\(api\.dashboard\.clusterBreakdown\)/)
+  assert.match(source, /useQuery\(api\.dashboard\.followUpsDue\)/)
+  assert.match(source, /useQuery\(api\.dashboard\.activeCampaigns\)/)
+})
+
+test("renders top row with 4 metric cards in a 4-column grid", () => {
+  assert.match(source, /data-testid="metric-cards"/)
+  assert.match(source, /lg:grid-cols-4/)
+  assert.match(source, /Sellers Onboarded/)
+  assert.match(source, /Total Leads/)
+  assert.match(source, /Replies \(30d\)/)
+  assert.match(source, /Follow-ups Due/)
+})
+
+test("Sellers Onboarded card shows X / 100 with goal progress subtext", () => {
+  assert.match(source, /\{onboarded\} \/ 100/)
+  assert.match(source, /Goal progress/)
+})
+
+test("Total Leads card shows count with All statuses subtext", () => {
+  assert.match(source, /\{totalLeads\}/)
+  assert.match(source, /All statuses/)
+})
+
+test("Replies card shows reply rate percentage", () => {
+  assert.match(source, /reply rate/)
+  assert.match(source, /pct\(replies30d, sent30d\)/)
+})
+
+test("Follow-ups Due card shows overdue count in red", () => {
+  assert.match(source, /text-red-600.*overdue/)
+  assert.match(source, /None overdue/)
+})
+
+test("renders middle row with 2 wider cards in a 2-column grid", () => {
+  assert.match(source, /data-testid="middle-row"/)
+  assert.match(source, /lg:grid-cols-2/)
+})
+
+test("pipeline funnel card shows pipeline stages as horizontal bars", () => {
+  assert.match(source, /Pipeline/)
+  assert.match(source, /PIPELINE_ORDER\.map/)
+  // Verify all pipeline stages are defined
+  assert.match(source, /new_lead/)
+  assert.match(source, /enriched/)
+  assert.match(source, /outreach_started/)
+  assert.match(source, /replied/)
+  assert.match(source, /meeting_booked/)
+  assert.match(source, /onboarded/)
+})
+
+test("active campaigns card links campaign names to /campaigns/[id]", () => {
+  assert.match(source, /Active Campaigns/)
+  assert.match(source, /href=\{`\/campaigns\/\$\{campaign\._id\}`\}/)
+  assert.match(source, /No active campaigns/)
+})
+
+test("campaign status uses badge with active/paused styles", () => {
+  assert.match(source, /bg-emerald-100 text-emerald-800/)
+  assert.match(source, /bg-amber-100 text-amber-800/)
+})
+
+test("renders bottom row with 3 cards in a 3-column grid", () => {
+  assert.match(source, /data-testid="bottom-row"/)
+  assert.match(source, /lg:grid-cols-3/)
+})
+
+test("email activity card shows sent, opened, clicked for last 7 days", () => {
+  assert.match(source, /Email Activity \(7d\)/)
+  assert.match(source, /emailStats\?\.last7Days\.sent/)
+  assert.match(source, /emailStats\?\.last7Days\.opened/)
+  assert.match(source, /emailStats\?\.last7Days\.clicked/)
+})
+
+test("social touches card shows DMs, replies, follows for last 7 days", () => {
+  assert.match(source, /Social Touches \(7d\)/)
+  assert.match(source, /socialStats\?\.last7Days\.dmsSent/)
+  assert.match(source, /socialStats\?\.last7Days\.dmReplies/)
+  assert.match(source, /socialStats\?\.last7Days\.follows/)
+})
+
+test("clusters card shows top 3 clusters and unclustered count", () => {
+  assert.match(source, /Clusters/)
+  assert.match(source, /topClusters/)
+  assert.match(source, /Unclustered/)
+  assert.match(source, /\.slice\(0, 3\)/)
+})
+
+test("follow-up section lists leads with links to /leads/[id]", () => {
+  assert.match(source, /data-testid="follow-ups-section"/)
+  assert.match(source, /Needs Follow-up/)
+  assert.match(source, /href=\{`\/leads\/\$\{lead\._id\}`\}/)
+})
+
+test("follow-up section shows overdue text in red and due-today items", () => {
+  assert.match(source, /overdue/)
+  assert.match(source, /Due today/)
+  assert.match(source, /text-red-600/)
+})
+
+test("follow-up section has View all link", () => {
+  assert.match(source, /View all/)
+  assert.match(source, /\/leads\?needsFollowUp=true/)
+})
+
+test("shows loading state while data is undefined", () => {
+  assert.match(source, /Loading dashboard\.\.\./)
 })
