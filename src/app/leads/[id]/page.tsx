@@ -16,6 +16,7 @@ import { EmailComposer } from "@/components/leads/email-composer"
 import { SocialDmComposer } from "@/components/leads/social-dm-composer"
 import { FollowUpReminder } from "@/components/leads/follow-up-reminder"
 import { LogActivity } from "@/components/leads/log-activity"
+import { LogSocialActivity } from "@/components/leads/log-social-activity"
 import { StatusSelector } from "@/components/leads/status-selector"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -521,6 +522,7 @@ export default function LeadDetailPage() {
                   )}
 
                   <LogActivity leadId={leadId} />
+                  <LogSocialActivity leadId={leadId} />
                   <EmailComposer leadId={leadId} leadName={lead.name} />
                   <SocialDmComposer leadId={leadId} leadName={lead.name} />
                 </CardContent>

@@ -7,7 +7,7 @@ const source = fs.readFileSync("convex/activities.ts", "utf8")
 test("exports manual activity create mutation with expected args", () => {
   assert.match(source, /export const create = mutation\(/)
   assert.match(source, /leadId:\s*v\.id\("leads"\)/)
-  assert.match(source, /type:\s*v\.union\(\s*v\.literal\("note_added"\),\s*v\.literal\("phone_call"\),\s*v\.literal\("social_dm_sent"\),\s*\)/s)
+  assert.match(source, /type:\s*v\.union\(\s*v\.literal\("note_added"\),\s*v\.literal\("phone_call"\),\s*v\.literal\("social_dm_sent"\),\s*v\.literal\("social_commented"\),\s*v\.literal\("social_followed"\),\s*\)/s)
   assert.match(source, /description:\s*v\.string\(\)/)
   assert.match(source, /channel:\s*v\.optional\(\s*v\.union\(\s*v\.literal\("phone"\),\s*v\.literal\("facebook"\),\s*v\.literal\("instagram"\),\s*\),\s*\)/s)
   assert.match(source, /metadata:\s*v\.optional\(v\.any\(\)\)/)

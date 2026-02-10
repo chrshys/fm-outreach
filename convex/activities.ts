@@ -61,6 +61,8 @@ export const create = mutation({
       v.literal("note_added"),
       v.literal("phone_call"),
       v.literal("social_dm_sent"),
+      v.literal("social_commented"),
+      v.literal("social_followed"),
     ),
     description: v.string(),
     channel: v.optional(
