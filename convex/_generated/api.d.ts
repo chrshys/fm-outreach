@@ -24,6 +24,7 @@ import type * as enrichment_orchestrator from "../enrichment/orchestrator.js";
 import type * as enrichment_orchestratorHelpers from "../enrichment/orchestratorHelpers.js";
 import type * as enrichment_socialDiscovery from "../enrichment/socialDiscovery.js";
 import type * as enrichment_websiteScraper from "../enrichment/websiteScraper.js";
+import type * as generatedEmails from "../generatedEmails.js";
 import type * as http from "../http.js";
 import type * as leads from "../leads.js";
 import type * as lib_activitiesList from "../lib/activitiesList.js";
@@ -69,6 +70,7 @@ declare const fullApi: ApiFromModules<{
   "enrichment/orchestratorHelpers": typeof enrichment_orchestratorHelpers;
   "enrichment/socialDiscovery": typeof enrichment_socialDiscovery;
   "enrichment/websiteScraper": typeof enrichment_websiteScraper;
+  generatedEmails: typeof generatedEmails;
   http: typeof http;
   leads: typeof leads;
   "lib/activitiesList": typeof lib_activitiesList;

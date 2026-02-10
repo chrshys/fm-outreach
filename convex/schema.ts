@@ -172,6 +172,13 @@ export default defineSchema({
     templateId: v.id("emailTemplates"),
     subject: v.string(),
     body: v.string(),
+    status: v.optional(
+      v.union(
+        v.literal("generated"),
+        v.literal("edited"),
+        v.literal("approved"),
+      ),
+    ),
     generatedAt: v.number(),
   })
     .index("by_campaignId", ["campaignId"])
