@@ -170,6 +170,58 @@ function InlineEditableValue({ value, multiline = false, onSave }: InlineEditabl
   )
 }
 
+function StructuredDescriptionDisplay({
+  data,
+}: {
+  data: { summary: string; specialties: string[]; certifications: string[] }
+}) {
+  const hasSpecialties = data.specialties.length > 0
+  const hasCertifications = data.certifications.length > 0
+
+  if (!hasSpecialties && !hasCertifications) return null
+
+  return (
+    <div className="space-y-1">
+      {hasSpecialties ? (
+        <p>
+          <span className="font-medium">Specialties:</span>{" "}
+          {data.specialties.join(", ")}
+        </p>
+      ) : null}
+      {hasCertifications ? (
+        <p>
+          <span className="font-medium">Certifications:</span>{" "}
+          {data.certifications.join(", ")}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+function StructuredProductsDisplay({
+  products,
+}: {
+  products: Array<{ name: string; category: string }>
+}) {
+  const grouped = new Map<string, string[]>()
+  for (const product of products) {
+    const existing = grouped.get(product.category) ?? []
+    existing.push(product.name)
+    grouped.set(product.category, existing)
+  }
+
+  return (
+    <div className="space-y-1">
+      {Array.from(grouped.entries()).map(([category, items]) => (
+        <p key={category}>
+          <span className="font-medium">{formatLabel(category)}:</span>{" "}
+          {items.join(", ")}
+        </p>
+      ))}
+    </div>
+  )
+}
+
 export default function LeadDetailPage() {
   const params = useParams<{ id: string }>()
   const leadId = params.id as Id<"leads">
@@ -324,9 +376,25 @@ export default function LeadDetailPage() {
                     <span className="font-medium">Province:</span>{" "}
                     <InlineEditableValue value={lead.province} onSave={(value) => updateField("province", value)} />
                   </p>
+                  {lead.farmDescription ? (
+                    <p>
+                      <span className="font-medium">Description:</span>{" "}
+                      {lead.farmDescription}
+                    </p>
+                  ) : null}
+                  {(lead.enrichmentData as Record<string, unknown> | undefined)?.structuredDescription ? (
+                    <StructuredDescriptionDisplay
+                      data={(lead.enrichmentData as Record<string, unknown>).structuredDescription as { summary: string; specialties: string[]; certifications: string[] }}
+                    />
+                  ) : null}
                   <p>
                     <span className="font-medium">Products:</span> {lead.products?.join(", ") ?? "Unknown"}
                   </p>
+                  {((lead.enrichmentData as Record<string, unknown> | undefined)?.structuredProducts as Array<{ name: string; category: string }> | undefined)?.length ? (
+                    <StructuredProductsDisplay
+                      products={(lead.enrichmentData as Record<string, unknown>).structuredProducts as Array<{ name: string; category: string }>}
+                    />
+                  ) : null}
                   <p>
                     <span className="font-medium">Sales channels:</span>{" "}
                     {lead.salesChannels?.join(", ") ?? "Unknown"}

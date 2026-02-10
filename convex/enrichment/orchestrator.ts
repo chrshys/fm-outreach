@@ -299,10 +299,42 @@ export const enrichLead = internalAction({
       fieldsUpdated.push("socialLinks");
     }
 
+    // From Claude analysis — structured data
+    if (claudeResult) {
+      const existingData = (lead.enrichmentData as Record<string, unknown> | undefined) ?? {};
+      const hasStructuredProducts =
+        claudeResult.structuredProducts && claudeResult.structuredProducts.length > 0;
+      const hasStructuredDescription =
+        claudeResult.structuredDescription &&
+        (claudeResult.structuredDescription.specialties.length > 0 ||
+          claudeResult.structuredDescription.certifications.length > 0 ||
+          claudeResult.structuredDescription.summary.length > 0);
+
+      if (hasStructuredProducts || hasStructuredDescription) {
+        patch.enrichmentData = {
+          ...existingData,
+          ...(patch.enrichmentData as Record<string, unknown> | undefined),
+          ...(hasStructuredProducts
+            ? { structuredProducts: claudeResult.structuredProducts }
+            : {}),
+          ...(hasStructuredDescription
+            ? { structuredDescription: claudeResult.structuredDescription }
+            : {}),
+        };
+        if (hasStructuredProducts) {
+          fieldsUpdated.push("enrichmentData.structuredProducts");
+        }
+        if (hasStructuredDescription) {
+          fieldsUpdated.push("enrichmentData.structuredDescription");
+        }
+      }
+    }
+
     // From website scraper — platform detection
     if (scraperResult?.platform && (!lead.enrichmentData?.platform || force)) {
       patch.enrichmentData = {
         ...(lead.enrichmentData as Record<string, unknown> | undefined),
+        ...(patch.enrichmentData as Record<string, unknown> | undefined),
         platform: scraperResult.platform,
       };
       fieldsUpdated.push("enrichmentData.platform");
