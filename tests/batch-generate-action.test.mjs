@@ -49,6 +49,10 @@ test("saveGeneratedEmail sets generatedAt timestamp", () => {
   assert.match(source, /generatedAt:\s*Date\.now\(\)/)
 })
 
+test("saveGeneratedEmail sets default status to generated", () => {
+  assert.match(source, /status:\s*"generated"/)
+})
+
 test("saveGeneratedEmail accepts campaignId, leadId, templateId, subject, body", () => {
   // Within saveGeneratedEmail args block
   const mutationMatch = source.match(/saveGeneratedEmail\s*=\s*internalMutation\(\{[\s\S]*?args:\s*\{([\s\S]*?)\},\s*\n\s*handler/)
