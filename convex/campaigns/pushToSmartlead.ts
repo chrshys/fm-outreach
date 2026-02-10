@@ -14,9 +14,9 @@ import {
 const MAX_LEADS_PER_BATCH = 100;
 const SEQUENCE_DELAYS: Record<string, number> = {
   initial: 0,
-  follow_up_1: 3,
-  follow_up_2: 5,
-  follow_up_3: 7,
+  follow_up_1: 4,
+  follow_up_2: 8,
+  follow_up_3: 14,
 };
 
 // --- Internal mutations ---
