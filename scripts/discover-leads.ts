@@ -34,7 +34,6 @@ async function main(): Promise<void> {
 
   console.log(`Discovering leads in ${region}${province ? `, ${province}` : ""}...`);
 
-  // @ts-expect-error — deep type instantiation in generated Convex API types
   const discoverRef = api.discovery.discoverLeads.discoverLeads;
   const result = await convex.action(discoverRef, {
     region,

@@ -150,12 +150,12 @@ test("adds social_discovery to sources when links found", () => {
 // --- Step 8: Merge results ---
 
 test("only overwrites empty fields unless forced", () => {
-  // Check that various field assignments guard on empty + force
-  assert.match(source, /!lead\.contactPhone\s*\|\|\s*force/);
-  assert.match(source, /!lead\.website\s*\|\|\s*force/);
-  assert.match(source, /!lead\.contactEmail\s*\|\|\s*force/);
-  assert.match(source, /!lead\.contactName\s*\|\|\s*force/);
-  assert.match(source, /!lead\.farmDescription\s*\|\|\s*force/);
+  // Check that various field assignments guard on empty + overwrite
+  assert.match(source, /!lead\.contactPhone\s*\|\|\s*overwrite/);
+  assert.match(source, /!lead\.website\s*\|\|\s*overwrite/);
+  assert.match(source, /!lead\.contactEmail\s*\|\|\s*overwrite/);
+  assert.match(source, /!lead\.contactName\s*\|\|\s*overwrite/);
+  assert.match(source, /!lead\.farmDescription\s*\|\|\s*overwrite/);
 });
 
 test("picks website scraper email first, then Hunter highest confidence", () => {
@@ -205,7 +205,7 @@ test("only updates status for progressable statuses unless forced", () => {
   assert.match(source, /progressableStatuses/);
   assert.match(source, /new_lead/);
   assert.match(source, /no_email/);
-  assert.match(source, /progressableStatuses\.has\(lead\.status\)\s*\|\|\s*force/);
+  assert.match(source, /progressableStatuses\.has\(lead\.status\)\s*\|\|\s*overwrite/);
 });
 
 // --- Step 11: Consent source ---
@@ -227,7 +227,7 @@ test("only sets consentSource when email is found (emailSource is non-null)", ()
 });
 
 test("does not overwrite existing consentSource unless forced", () => {
-  assert.match(source, /!lead\.consentSource\s*\|\|\s*force/);
+  assert.match(source, /!lead\.consentSource\s*\|\|\s*overwrite/);
 });
 
 // --- Step 12: Log finished ---

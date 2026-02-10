@@ -21,7 +21,6 @@ async function main(): Promise<void> {
 
   console.log("Fetching outreach stats...\n");
 
-  // @ts-expect-error — deep type instantiation in generated Convex API types
   const pipelineP = convex.query(api.dashboard.pipelineStats);
   const emailP = convex.query(api.dashboard.emailStats);
   const socialP = convex.query(api.dashboard.socialStats);

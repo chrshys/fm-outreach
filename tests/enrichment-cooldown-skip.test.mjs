@@ -194,15 +194,18 @@ test("single lead re-enrich button does NOT pass force: true", () => {
 // --- UI: Data freshness shows staleness levels aligned with cooldown ---
 
 test("data freshness considers leads enriched within 30 days as 'fresh'", () => {
-  assert.match(dataFreshnessSource, /if\s*\(daysSince\s*<\s*30\)\s*return\s*"fresh"/);
+  const enrichmentLibSource = fs.readFileSync("src/lib/enrichment.ts", "utf8");
+  assert.match(enrichmentLibSource, /if\s*\(daysSince\s*<\s*30\)\s*return\s*"fresh"/);
 });
 
 test("data freshness shows 'aging' for 30-90 days", () => {
-  assert.match(dataFreshnessSource, /if\s*\(daysSince\s*<=\s*90\)\s*return\s*"aging"/);
+  const enrichmentLibSource = fs.readFileSync("src/lib/enrichment.ts", "utf8");
+  assert.match(enrichmentLibSource, /if\s*\(daysSince\s*<=\s*90\)\s*return\s*"aging"/);
 });
 
 test("data freshness shows 'stale' after 90 days", () => {
-  assert.match(dataFreshnessSource, /return\s*"stale"/);
+  const enrichmentLibSource = fs.readFileSync("src/lib/enrichment.ts", "utf8");
+  assert.match(enrichmentLibSource, /return\s*"stale"/);
 });
 
 // --- UI: Toast messages communicate skipped results ---

@@ -85,7 +85,7 @@ test("builds lead context with farm details", () => {
   assert.match(source, /function\s+buildLeadContext\(/);
   assert.match(source, /Farm name/);
   assert.match(source, /Contact name/);
-  assert.match(source, /City/);
+  assert.match(source, /Location/);
   assert.match(source, /Products/);
   assert.match(source, /Farm description/);
 });
@@ -139,7 +139,7 @@ test("exports countWords function", () => {
 // --- Prompt quality ---
 
 test("prompt instructs to reference specific farm details", () => {
-  assert.match(source, /Reference specific details/i);
+  assert.match(source, /mention at least one specific product/i);
 });
 
 test("prompt instructs to use only verified data", () => {

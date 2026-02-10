@@ -57,7 +57,6 @@ async function main(): Promise<void> {
   let leadId: string;
   let leadName: string;
 
-  // @ts-expect-error — deep type instantiation in generated Convex API types
   const searchRef = api.leads.search;
   const searchResults: LeadSummary[] = await convex.query(searchRef, { text: input });
 

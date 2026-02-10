@@ -241,7 +241,6 @@ export const discoverLeads = action({
       updatedAt: now,
     }));
 
-    // @ts-expect-error — deep type instantiation in generated Convex API types
     const insertRef = internal.discovery.discoverLeads.insertDiscoveredLeads;
     const result = await ctx.runMutation(insertRef, { leads });
 

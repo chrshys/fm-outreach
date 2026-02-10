@@ -43,7 +43,7 @@ test("DataFreshness derives hasBeenEnriched from enrichedAt prop", () => {
 });
 
 test("DataFreshness does not force when enriching for the first time", () => {
-  assert.match(dataFreshnessSource, /force:\s*hasBeenEnriched\s*\?\s*true\s*:\s*undefined/);
+  assert.match(dataFreshnessSource, /overwrite:\s*hasBeenEnriched\s*\?\s*true\s*:\s*undefined/);
 });
 
 test("DataFreshness calls batchEnrich with the lead ID", () => {
@@ -73,7 +73,7 @@ test("orchestrator fills contactPhone from Google Places result", () => {
 });
 
 test("phone is only filled when empty or forced", () => {
-  assert.match(orchestratorSource, /!lead\.contactPhone\s*\|\|\s*force.*placesResult\.phone/s);
+  assert.match(orchestratorSource, /!lead\.contactPhone\s*\|\|\s*overwrite.*placesResult\.phone/s);
 });
 
 // --- Pipeline: products are filled from Claude analysis ---
@@ -84,7 +84,7 @@ test("orchestrator fills products from Claude analysis", () => {
 });
 
 test("products are only filled when empty or forced", () => {
-  assert.match(orchestratorSource, /!lead\.products\s*\|\|\s*lead\.products\.length\s*===\s*0\s*\|\|\s*force/);
+  assert.match(orchestratorSource, /!lead\.products\s*\|\|\s*lead\.products\.length\s*===\s*0\s*\|\|\s*overwrite/);
 });
 
 // --- Pipeline: salesChannels are filled from Claude analysis ---

@@ -113,13 +113,11 @@ async function main(): Promise<void> {
     }
     filterDescription = `cluster "${match.name}"`;
 
-    // @ts-expect-error — deep type instantiation in generated Convex API types
     leads = await convex.query(api.leads.listAllSummary, {});
     leads = leads.filter((l) => l.clusterId === match._id);
   } else {
     filterDescription = `status:${filter.status}`;
 
-    // @ts-expect-error — deep type instantiation in generated Convex API types
     leads = await convex.query(api.leads.listAllSummary, {});
     leads = leads.filter((l) => l.status === filter.status);
   }
@@ -149,10 +147,10 @@ async function main(): Promise<void> {
       console.log(`Processing batch ${Math.floor(i / BATCH_SIZE) + 1} of ${Math.ceil(leads.length / BATCH_SIZE)}...`);
     }
 
-    // @ts-expect-error — deep type instantiation in generated Convex API types
     const enrichRef = api.enrichment.batchEnrichPublic.batchEnrich;
     const result: BatchResult = await convex.action(enrichRef, {
-      leadIds,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- CLI script passes runtime strings as Convex Ids
+      leadIds: leadIds as any,
       force,
     });
 

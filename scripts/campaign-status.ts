@@ -21,7 +21,6 @@ async function main(): Promise<void> {
 
   console.log("Fetching campaign status...\n");
 
-  // @ts-expect-error — deep type instantiation in generated Convex API types
   const campaigns = await convex.query(api.campaigns.listStatus);
 
   const report = formatCampaignStatusReport(campaigns);

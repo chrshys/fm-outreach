@@ -83,12 +83,12 @@ test("orchestrator fetches Place Details when lead has placeId but no website", 
   assert.match(orchestratorSource, /fetchPlaceDetails/);
 });
 
-test("orchestrator fetches Place Details when force is true even if phone exists", () => {
+test("orchestrator fetches Place Details when overwrite is true even if phone exists", () => {
   const step3Block = orchestratorSource.slice(
     orchestratorSource.indexOf("// Step 3: Google Places"),
     orchestratorSource.indexOf("// Step 4:"),
   );
-  assert.match(step3Block, /\|\|\s*force/);
+  assert.match(step3Block, /\|\|\s*overwrite/);
   assert.match(step3Block, /fetchPlaceDetails/);
 });
 
@@ -100,7 +100,7 @@ test("orchestrator fills contactPhone from Google Places result", () => {
 });
 
 test("contactPhone is only filled when empty or forced", () => {
-  assert.match(orchestratorSource, /!lead\.contactPhone\s*\|\|\s*force.*placesResult\.phone/s);
+  assert.match(orchestratorSource, /!lead\.contactPhone\s*\|\|\s*overwrite.*placesResult\.phone/s);
 });
 
 // --- Orchestrator: error handling for fetchPlaceDetails ---
