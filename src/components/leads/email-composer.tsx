@@ -2,10 +2,11 @@
 
 import { useAction, useQuery } from "convex/react"
 import { useState } from "react"
-import { Loader2, Mail, Sparkles } from "lucide-react"
+import { ChevronDown, ChevronRight, Loader2, Mail, Sparkles } from "lucide-react"
 
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -40,6 +41,98 @@ type EmailComposerProps = {
 
 function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length
+}
+
+type EnrichmentData = {
+  structuredDescription?: {
+    summary: string
+    specialties: string[]
+    certifications: string[]
+  }
+  structuredProducts?: Array<{ name: string; category: string }>
+}
+
+function FarmDetailsPanel({ leadId }: { leadId: Id<"leads"> }) {
+  const lead = useQuery(api.leads.get, { leadId })
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  if (!lead) return null
+
+  const enrichment = lead.enrichmentData as EnrichmentData | undefined
+  const hasProducts = (lead.products?.length ?? 0) > 0
+  const hasChannels = (lead.salesChannels?.length ?? 0) > 0
+  const hasDescription = Boolean(lead.farmDescription)
+  const hasSpecialties = (enrichment?.structuredDescription?.specialties?.length ?? 0) > 0
+  const hasCertifications = (enrichment?.structuredDescription?.certifications?.length ?? 0) > 0
+  const hasEnrichedProducts = (enrichment?.structuredProducts?.length ?? 0) > 0
+  const hasSocial = Boolean(lead.socialLinks?.instagram || lead.socialLinks?.facebook)
+
+  const detailCount = [
+    hasProducts,
+    hasChannels,
+    hasDescription,
+    hasSpecialties,
+    hasCertifications,
+    hasEnrichedProducts,
+    hasSocial,
+  ].filter(Boolean).length
+
+  return (
+    <div className="rounded-md border">
+      <button
+        type="button"
+        className="flex w-full items-center gap-2 p-3 text-left text-sm font-medium hover:bg-muted/50"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        {isExpanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
+        Farm Details
+        <Badge variant="secondary" className="ml-auto text-xs">
+          {detailCount} {detailCount === 1 ? "detail" : "details"} available
+        </Badge>
+      </button>
+      {isExpanded ? (
+        <div className="space-y-2 border-t px-3 py-2 text-xs text-muted-foreground">
+          <p><span className="font-medium text-foreground">Location:</span> {lead.city}</p>
+          {lead.contactName ? (
+            <p><span className="font-medium text-foreground">Contact:</span> {lead.contactName}</p>
+          ) : null}
+          {hasProducts ? (
+            <p><span className="font-medium text-foreground">Products:</span> {lead.products!.join(", ")}</p>
+          ) : null}
+          {hasEnrichedProducts ? (
+            <div>
+              <span className="font-medium text-foreground">Enriched Products:</span>
+              <span> {enrichment!.structuredProducts!.map((p) => p.name).join(", ")}</span>
+            </div>
+          ) : null}
+          {hasChannels ? (
+            <p><span className="font-medium text-foreground">Sales Channels:</span> {lead.salesChannels!.join(", ")}</p>
+          ) : null}
+          {lead.sellsOnline !== undefined ? (
+            <p><span className="font-medium text-foreground">Sells Online:</span> {lead.sellsOnline ? "Yes" : "No"}</p>
+          ) : null}
+          {hasDescription ? (
+            <p><span className="font-medium text-foreground">Description:</span> {lead.farmDescription}</p>
+          ) : null}
+          {hasSpecialties ? (
+            <p><span className="font-medium text-foreground">Specialties:</span> {enrichment!.structuredDescription!.specialties.join(", ")}</p>
+          ) : null}
+          {hasCertifications ? (
+            <p><span className="font-medium text-foreground">Certifications:</span> {enrichment!.structuredDescription!.certifications.join(", ")}</p>
+          ) : null}
+          {hasSocial ? (
+            <p>
+              <span className="font-medium text-foreground">Social:</span>{" "}
+              {[
+                lead.socialLinks?.instagram ? `IG: ${lead.socialLinks.instagram}` : "",
+                lead.socialLinks?.facebook ? `FB: ${lead.socialLinks.facebook}` : "",
+              ].filter(Boolean).join(", ")}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  )
 }
 
 export function EmailComposer({ leadId, leadName }: EmailComposerProps) {
@@ -134,6 +227,8 @@ export function EmailComposer({ leadId, leadName }: EmailComposerProps) {
           </SheetHeader>
 
           <div className="flex-1 space-y-4 overflow-y-auto px-4">
+            <FarmDetailsPanel leadId={leadId} />
+
             <div className="space-y-2">
               <Label htmlFor="email-template">Template</Label>
               <Select

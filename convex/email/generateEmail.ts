@@ -25,6 +25,22 @@ type AnthropicResponse = {
   error?: { type: string; message: string };
 };
 
+type StructuredProduct = {
+  name: string;
+  category: string;
+};
+
+type StructuredDescription = {
+  summary: string;
+  specialties: string[];
+  certifications: string[];
+};
+
+type EnrichmentData = {
+  structuredDescription?: StructuredDescription;
+  structuredProducts?: StructuredProduct[];
+};
+
 type LeadData = {
   name: string;
   contactName?: string;
@@ -35,6 +51,7 @@ type LeadData = {
   sellsOnline?: boolean;
   farmDescription?: string;
   socialLinks?: { instagram?: string; facebook?: string };
+  enrichmentData?: EnrichmentData;
 };
 
 const ANALYSIS_PROMPT = `You are analyzing a farm or food producer lead for outreach purposes. Based on the data provided, produce a structured JSON analysis with these fields:
@@ -70,6 +87,33 @@ function buildLeadContext(lead: LeadData): string {
   if (lead.socialLinks?.instagram) socialParts.push(`Instagram: ${lead.socialLinks.instagram}`);
   if (lead.socialLinks?.facebook) socialParts.push(`Facebook: ${lead.socialLinks.facebook}`);
   lines.push(`Social links: ${socialParts.length > 0 ? socialParts.join(", ") : "None"}`);
+
+  const enrichment = lead.enrichmentData;
+  if (enrichment?.structuredDescription) {
+    const desc = enrichment.structuredDescription;
+    if (desc.summary) {
+      lines.push(`Enriched summary: ${desc.summary}`);
+    }
+    if (desc.specialties?.length) {
+      lines.push(`Specialties: ${desc.specialties.join(", ")}`);
+    }
+    if (desc.certifications?.length) {
+      lines.push(`Certifications: ${desc.certifications.join(", ")}`);
+    }
+  }
+
+  if (enrichment?.structuredProducts?.length) {
+    const grouped = new Map<string, string[]>();
+    for (const product of enrichment.structuredProducts) {
+      const existing = grouped.get(product.category) ?? [];
+      existing.push(product.name);
+      grouped.set(product.category, existing);
+    }
+    const productLines = Array.from(grouped.entries())
+      .map(([category, items]) => `${category}: ${items.join(", ")}`)
+      .join("; ");
+    lines.push(`Detailed products: ${productLines}`);
+  }
 
   return lines.join("\n");
 }
