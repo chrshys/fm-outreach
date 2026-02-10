@@ -1,7 +1,7 @@
 import { v } from "convex/values"
 
 import type { Id } from "./_generated/dataModel"
-import { action, internalMutation, internalQuery, query } from "./_generated/server"
+import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server"
 import { internal } from "./_generated/api"
 import { dbscan, haversineDistance } from "./lib/dbscan"
 import type { GeoPoint } from "./lib/dbscan"
@@ -22,6 +22,16 @@ export const getLeads = query({
       .query("leads")
       .withIndex("by_clusterId", (q) => q.eq("clusterId", args.clusterId))
       .collect()
+  },
+})
+
+export const updateName = mutation({
+  args: {
+    clusterId: v.id("clusters"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.clusterId, { name: args.name })
   },
 })
 

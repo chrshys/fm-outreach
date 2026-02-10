@@ -1,0 +1,232 @@
+"use client"
+
+import dynamic from "next/dynamic"
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { useMutation, useQuery } from "convex/react"
+import type { KeyboardEvent } from "react"
+
+import { api } from "../../../convex/_generated/api"
+import type { Id } from "../../../convex/_generated/dataModel"
+import { Badge } from "@/components/ui/badge"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
+const ClusterMap = dynamic(() => import("./cluster-map"), { ssr: false })
+
+function toLabel(value: string) {
+  return value
+    .split("_")
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(" ")
+}
+
+function EditableClusterName({
+  value,
+  onSave,
+}: {
+  value: string
+  onSave: (name: string) => Promise<void>
+}) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [draft, setDraft] = useState(value)
+  const [optimisticValue, setOptimisticValue] = useState<string | null>(null)
+  const displayValue = optimisticValue ?? value
+
+  useEffect(() => {
+    if (!isEditing) {
+      setDraft(value)
+      setOptimisticValue(null)
+    }
+  }, [isEditing, value])
+
+  async function saveValue() {
+    if (draft === value) {
+      setIsEditing(false)
+      return
+    }
+
+    setIsSaving(true)
+    setOptimisticValue(draft)
+    setIsEditing(false)
+    try {
+      await onSave(draft)
+    } catch {
+      setOptimisticValue(null)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      event.preventDefault()
+      event.currentTarget.blur()
+      return
+    }
+
+    if (event.key === "Escape") {
+      setDraft(value)
+      setIsEditing(false)
+    }
+  }
+
+  if (isEditing) {
+    return (
+      <Input
+        autoFocus
+        value={draft}
+        disabled={isSaving}
+        className="text-xl font-semibold h-auto py-0.5"
+        onChange={(event) => setDraft(event.target.value)}
+        onBlur={() => void saveValue()}
+        onKeyDown={onKeyDown}
+      />
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      className="rounded-sm px-1 py-0.5 text-left text-xl font-semibold hover:bg-muted"
+      disabled={isSaving}
+      onClick={() => setIsEditing(true)}
+    >
+      {displayValue}
+    </button>
+  )
+}
+
+export function ClusterDetail({ clusterId }: { clusterId: Id<"clusters"> }) {
+  const clusters = useQuery(api.clusters.list)
+  const leads = useQuery(api.clusters.getLeads, { clusterId })
+  const updateName = useMutation(api.clusters.updateName)
+
+  const cluster = clusters?.find((c) => c._id === clusterId)
+
+  if (!cluster) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-muted-foreground">Loading cluster...</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <EditableClusterName
+          value={cluster.name}
+          onSave={async (name) => {
+            await updateName({ clusterId, name })
+          }}
+        />
+        <p className="text-sm text-muted-foreground mt-1">
+          {cluster.leadCount} leads within {cluster.radiusKm} km radius
+        </p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="p-4">
+            <CardDescription>Leads</CardDescription>
+            <CardTitle>{cluster.leadCount}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="p-4">
+            <CardDescription>Radius</CardDescription>
+            <CardTitle>{cluster.radiusKm} km</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="p-4">
+            <CardDescription>Center</CardDescription>
+            <CardTitle className="text-sm">
+              {cluster.centerLat.toFixed(2)}, {cluster.centerLng.toFixed(2)}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader className="p-4">
+          <CardTitle>Cluster Area</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <div className="h-[250px] w-full rounded-md overflow-hidden border">
+            <ClusterMap
+              centerLat={cluster.centerLat}
+              centerLng={cluster.centerLng}
+              radiusKm={cluster.radiusKm}
+              leads={
+                leads
+                  ?.filter((l) => l.latitude !== undefined && l.longitude !== undefined)
+                  .map((l) => ({
+                    _id: l._id,
+                    latitude: l.latitude as number,
+                    longitude: l.longitude as number,
+                    status: l.status,
+                  })) ?? []
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-3">Leads in Cluster</h3>
+        {leads === undefined ? (
+          <p className="text-muted-foreground text-sm">Loading leads...</p>
+        ) : leads.length === 0 ? (
+          <p className="text-muted-foreground text-sm">No leads assigned to this cluster.</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Email</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {leads.map((lead) => (
+                <TableRow key={lead._id}>
+                  <TableCell className="font-medium">
+                    <Link
+                      href={`/leads/${lead._id}`}
+                      className="hover:underline text-primary"
+                    >
+                      {lead.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{toLabel(lead.status)}</Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {lead.contactEmail ?? "—"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+    </div>
+  )
+}

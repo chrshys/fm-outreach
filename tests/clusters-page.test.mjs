@@ -47,8 +47,8 @@ test("shows instruction to select a cluster when none selected", () => {
   assert.match(source, /Select a cluster/)
 })
 
-test("ClusterDetail fetches leads for the cluster", () => {
-  assert.match(source, /useQuery\(api\.clusters\.getLeads/)
+test("imports ClusterDetail from cluster-detail component", () => {
+  assert.match(source, /import\s+\{\s*ClusterDetail\s*\}\s+from\s+"@\/components\/clusters\/cluster-detail"/)
 })
 
 test("renders loading state for clusters", () => {
