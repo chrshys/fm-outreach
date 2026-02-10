@@ -6,9 +6,9 @@ import { useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
 
 import { AppLayout } from "@/components/layout/app-layout"
+import { ActiveCampaigns } from "@/components/dashboard/active-campaigns"
 import { MetricCards } from "@/components/dashboard/metric-cards"
 import { PipelineFunnel } from "@/components/dashboard/pipeline-funnel"
-import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
@@ -52,16 +52,6 @@ type ActiveCampaignResult = {
   status: "active" | "paused"
   leadCount: number
   stats: { sent: number; openRate: number; replyRate: number }
-}
-
-const campaignStatusStyles: Record<string, string> = {
-  active: "bg-emerald-100 text-emerald-800",
-  paused: "bg-amber-100 text-amber-800",
-}
-
-function pct(n: number, d: number): string {
-  if (d === 0) return "0%"
-  return `${Math.round((n / d) * 100)}%`
 }
 
 function daysOverdue(nextFollowUpAt: number, now: number): number {
@@ -129,38 +119,7 @@ export default function HomePage() {
               <PipelineFunnel pipeline={pipeline} />
 
               {/* Active Campaigns */}
-              <Card>
-                <CardHeader className="p-4">
-                  <CardTitle>Active Campaigns</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  {campaigns && campaigns.length > 0 ? (
-                    <div className="space-y-3">
-                      {campaigns.map((campaign) => (
-                        <div key={campaign._id} className="flex items-center justify-between">
-                          <div className="min-w-0 flex-1">
-                            <Link
-                              href={`/campaigns/${campaign._id}`}
-                              className="text-sm font-medium hover:underline"
-                            >
-                              {campaign.name}
-                            </Link>
-                            <p className="text-xs text-muted-foreground">
-                              Sent {campaign.stats.sent} &mdash; Opened{" "}
-                              {pct(campaign.stats.openRate, 1)}
-                            </p>
-                          </div>
-                          <Badge className={campaignStatusStyles[campaign.status]}>
-                            {toLabel(campaign.status)}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No active campaigns</p>
-                  )}
-                </CardContent>
-              </Card>
+              <ActiveCampaigns campaigns={campaigns ?? []} />
             </div>
 
             {/* Bottom row: 3 cards */}

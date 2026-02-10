@@ -46,15 +46,9 @@ test("imports and renders PipelineFunnel component", () => {
   assert.match(source, /<PipelineFunnel pipeline=\{pipeline\}/)
 })
 
-test("active campaigns card links campaign names to /campaigns/[id]", () => {
-  assert.match(source, /Active Campaigns/)
-  assert.match(source, /href=\{`\/campaigns\/\$\{campaign\._id\}`\}/)
-  assert.match(source, /No active campaigns/)
-})
-
-test("campaign status uses badge with active/paused styles", () => {
-  assert.match(source, /bg-emerald-100 text-emerald-800/)
-  assert.match(source, /bg-amber-100 text-amber-800/)
+test("imports and renders ActiveCampaigns component", () => {
+  assert.match(source, /import\s+\{\s*ActiveCampaigns\s*\}\s+from\s+"@\/components\/dashboard\/active-campaigns"/)
+  assert.match(source, /<ActiveCampaigns campaigns=\{campaigns \?\? \[\]\}/)
 })
 
 test("renders bottom row with 3 cards in a 3-column grid", () => {
