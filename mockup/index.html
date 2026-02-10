@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FM Outreach Mockup</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo">FM</div>
+          <div>
+            <div class="brand-title">FM Outreach</div>
+            <div class="brand-subtitle">Seller CRM</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <button class="nav-item is-active" data-target="dashboard">Dashboard</button>
+          <button class="nav-item" data-target="leads">Leads</button>
+          <button class="nav-item" data-target="map">Map</button>
+          <button class="nav-item" data-target="clusters">Clusters</button>
+          <button class="nav-item" data-target="campaigns">Campaigns</button>
+          <button class="nav-item" data-target="settings">Settings</button>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="pill">Internal tool</div>
+          <div class="muted">Niagara focus</div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <div class="page-title" id="page-title">Dashboard</div>
+            <div class="muted">Last sync: Today 9:12 AM</div>
+          </div>
+          <div class="topbar-actions">
+            <button class="btn ghost">Import CSV</button>
+            <button class="btn">Discover Leads</button>
+          </div>
+        </header>
+
+        <section class="page is-visible" data-page="dashboard">
+          <div class="grid cols-4">
+            <div class="card">
+              <div class="card-title">Sellers onboarded</div>
+              <div class="metric">14 / 100</div>
+              <div class="muted">Goal progress</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Leads</div>
+              <div class="metric">482</div>
+              <div class="muted">All statuses</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Replies (30d)</div>
+              <div class="metric">32</div>
+              <div class="muted">6.6% reply rate</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Follow-ups due</div>
+              <div class="metric">18</div>
+              <div class="muted">6 overdue</div>
+            </div>
+          </div>
+
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="card-title">Pipeline</div>
+              <div class="funnel">
+                <div class="funnel-row">
+                  <span>New</span>
+                  <div class="bar w-70"></div>
+                  <span>210</span>
+                </div>
+                <div class="funnel-row">
+                  <span>Enriched</span>
+                  <div class="bar w-55"></div>
+                  <span>166</span>
+                </div>
+                <div class="funnel-row">
+                  <span>Outreach</span>
+                  <div class="bar w-45"></div>
+                  <span>134</span>
+                </div>
+                <div class="funnel-row">
+                  <span>Replied</span>
+                  <div class="bar w-20"></div>
+                  <span>32</span>
+                </div>
+                <div class="funnel-row">
+                  <span>Onboarded</span>
+                  <div class="bar w-10"></div>
+                  <span>14</span>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Active campaigns</div>
+              <div class="list">
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">Niagara Farms - Spring 2026</div>
+                    <div class="muted">Sent 312 • Opened 52%</div>
+                  </div>
+                  <div class="pill success">Active</div>
+                </div>
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">Roadside Stands - Feb 2026</div>
+                    <div class="muted">Sent 88 • Opened 46%</div>
+                  </div>
+                  <div class="pill warning">Paused</div>
+                </div>
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">CSA Farms - Feb 2026</div>
+                    <div class="muted">Draft • 74 leads ready</div>
+                  </div>
+                  <div class="pill">Draft</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid cols-3">
+            <div class="card">
+              <div class="card-title">Email activity (7d)</div>
+              <div class="stat-row">
+                <div class="stat">Sent <span>148</span></div>
+                <div class="stat">Opened <span>79</span></div>
+                <div class="stat">Clicked <span>22</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Social touches (7d)</div>
+              <div class="stat-row">
+                <div class="stat">DMs <span>34</span></div>
+                <div class="stat">Replies <span>6</span></div>
+                <div class="stat">Follows <span>18</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Clusters</div>
+              <div class="stat-row">
+                <div class="stat">Niagara <span>128</span></div>
+                <div class="stat">Hamilton <span>74</span></div>
+                <div class="stat">Unclustered <span>38</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-page="leads">
+          <div class="toolbar">
+            <div class="filters">
+              <div class="pill">Status: Enriched</div>
+              <div class="pill">Cluster: Niagara</div>
+              <div class="pill">Has Email</div>
+            </div>
+            <div class="toolbar-actions">
+              <button class="btn ghost">Bulk Actions</button>
+              <button class="btn">Add to Campaign</button>
+            </div>
+          </div>
+
+          <div class="split">
+            <div class="card">
+              <div class="card-title">Leads</div>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>City</th>
+                    <th>Status</th>
+                    <th>Email</th>
+                    <th>Social</th>
+                    <th>Freshness</th>
+                    <th>Follow-up</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="is-selected">
+                    <td>Niagara Orchard Co.</td>
+                    <td>farm</td>
+                    <td>Grimsby</td>
+                    <td><span class="badge blue">enriched</span></td>
+                    <td>hello@niagaraorchard.ca</td>
+                    <td><span class="badge">FB</span> <span class="badge">IG</span></td>
+                    <td><span class="badge green">Fresh</span></td>
+                    <td>Tomorrow</td>
+                  </tr>
+                  <tr>
+                    <td>Springbrook Farm</td>
+                    <td>farm</td>
+                    <td>St. Catharines</td>
+                    <td><span class="badge green">replied</span></td>
+                    <td>sales@springbrook.ca</td>
+                    <td><span class="badge">IG</span></td>
+                    <td><span class="badge amber">Aging</span></td>
+                    <td>—</td>
+                  </tr>
+                  <tr>
+                    <td>Canalside Market</td>
+                    <td>farmers_market</td>
+                    <td>Niagara-on-the-Lake</td>
+                    <td><span class="badge amber">outreach</span></td>
+                    <td>manager@canalside.ca</td>
+                    <td><span class="badge">FB</span></td>
+                    <td><span class="badge amber">Aging</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>Maple Ridge Stand</td>
+                    <td>roadside_stand</td>
+                    <td>Welland</td>
+                    <td><span class="badge">no_email</span></td>
+                    <td>—</td>
+                    <td><span class="badge">IG</span></td>
+                    <td><span class="badge red">Stale</span></td>
+                    <td>Overdue</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="card detail">
+              <div class="card-title">Lead detail</div>
+              <div class="detail-header">
+                <div>
+                  <div class="item-title">Niagara Orchard Co.</div>
+                  <div class="muted">Grimsby, ON • Farm</div>
+                </div>
+                <button class="btn ghost">Compose Email</button>
+              </div>
+
+              <div class="detail-section">
+                <div class="label">Contact</div>
+                <div class="value">Elliot B.</div>
+                <div class="value">hello@niagaraorchard.ca</div>
+                <div class="value">(905) 555-8181</div>
+              </div>
+
+              <div class="detail-section">
+                <div class="label">CASL consent</div>
+                <div class="value">website - niagaraorchard.ca - 2026-02-02</div>
+              </div>
+
+              <div class="detail-section">
+                <div class="label">Data freshness</div>
+                <div class="value">Last enriched: Feb 2, 2026</div>
+                <div class="value">Last verified: Feb 2, 2026</div>
+                <div class="value">Sources:</div>
+                <ul class="source-list">
+                  <li>google_places - place_id_9a3 - 2026-02-02</li>
+                  <li>website - niagaraorchard.ca - 2026-02-02</li>
+                </ul>
+              </div>
+
+              <div class="detail-section">
+                <div class="label">Products</div>
+                <div class="chips">
+                  <span class="chip">apples</span>
+                  <span class="chip">cider</span>
+                  <span class="chip">preserves</span>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <div class="label">Activity</div>
+                <div class="timeline">
+                  <div class="timeline-item">
+                    <div class="dot"></div>
+                    <div>
+                      <div>Email sent • Step 1</div>
+                      <div class="muted">Today 9:10 AM</div>
+                    </div>
+                  </div>
+                  <div class="timeline-item">
+                    <div class="dot"></div>
+                    <div>
+                      <div>Lead enriched</div>
+                      <div class="muted">Yesterday 4:22 PM</div>
+                    </div>
+                  </div>
+                  <div class="timeline-item">
+                    <div class="dot"></div>
+                    <div>
+                      <div>Sources added: Google Places, website scrape</div>
+                      <div class="muted">Yesterday 4:22 PM</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <div class="label">Next follow-up</div>
+                <div class="value">Tomorrow at 2:00 PM</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-page="map">
+          <div class="card">
+            <div class="card-title">Map view</div>
+            <div class="map">
+              <div class="map-overlay">
+                <div class="pill">Status: All</div>
+                <div class="pill">Cluster: Niagara</div>
+                <button class="btn ghost">Draw Region</button>
+              </div>
+              <div class="map-placeholder">Leaflet map placeholder</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-page="clusters">
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="card-title">Clusters</div>
+              <div class="list">
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">Niagara-on-the-Lake</div>
+                    <div class="muted">128 leads • 18km radius</div>
+                  </div>
+                  <button class="btn ghost">View</button>
+                </div>
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">Hamilton-Wentworth</div>
+                    <div class="muted">74 leads • 20km radius</div>
+                  </div>
+                  <button class="btn ghost">View</button>
+                </div>
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">Unclustered</div>
+                    <div class="muted">38 leads • needs review</div>
+                  </div>
+                  <button class="btn ghost">Review</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Cluster detail</div>
+              <div class="muted">Niagara-on-the-Lake</div>
+              <div class="map small">Cluster map placeholder</div>
+              <div class="stat-row">
+                <div class="stat">Leads <span>128</span></div>
+                <div class="stat">Replies <span>12</span></div>
+                <div class="stat">Onboarded <span>6</span></div>
+              </div>
+              <button class="btn">Auto-generate clusters</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-page="campaigns">
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="card-title">Campaigns</div>
+              <div class="list">
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">Niagara Farms - Spring 2026</div>
+                    <div class="muted">Active • 312 leads</div>
+                  </div>
+                  <div class="pill success">Active</div>
+                </div>
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">Roadside Stands - Feb 2026</div>
+                    <div class="muted">Paused • 88 leads</div>
+                  </div>
+                  <div class="pill warning">Paused</div>
+                </div>
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">CSA Farms - Feb 2026</div>
+                    <div class="muted">Draft • 74 leads</div>
+                  </div>
+                  <div class="pill">Draft</div>
+                </div>
+              </div>
+              <button class="btn">Create campaign</button>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Sequence preview</div>
+              <div class="sequence">
+                <div class="sequence-step">
+                  <div class="badge blue">Step 1</div>
+                  <div>
+                    <div class="item-title">Cold intro - Farm</div>
+                    <div class="muted">Delay: 0 days • 98 words</div>
+                  </div>
+                </div>
+                <div class="sequence-step">
+                  <div class="badge blue">Step 2</div>
+                  <div>
+                    <div class="item-title">Follow-up - Social proof</div>
+                    <div class="muted">Delay: 3 days • 64 words</div>
+                  </div>
+                </div>
+                <div class="sequence-step">
+                  <div class="badge blue">Step 3</div>
+                  <div>
+                    <div class="item-title">Follow-up - Quick check-in</div>
+                    <div class="muted">Delay: 7 days • 54 words</div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn ghost">Preview AI emails</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-page="settings">
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="card-title">API keys</div>
+              <div class="form">
+                <label>Smartlead API Key</label>
+                <input placeholder="sl_..." />
+                <label>Google Places API Key</label>
+                <input placeholder="AIza..." />
+                <label>Anthropic API Key</label>
+                <input placeholder="sk-ant-..." />
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Sender identity</div>
+              <div class="form">
+                <label>Sender name</label>
+                <input value="Chris Hayes" />
+                <label>Sender email</label>
+                <input value="chris@fruitlandmkt.com" />
+                <label>Mailing address</label>
+                <input value="123 Main St, St. Catharines, ON" />
+                <label>Email signature</label>
+                <textarea rows="4">Chris — Fruitland Market</textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

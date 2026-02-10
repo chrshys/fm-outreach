@@ -1,0 +1,611 @@
+# Ralphy Progress Log
+
+## Current State (2026-02-05)
+
+Foundation work is complete. See `docs/26-02-05-fruitland-market-ui-tasklist.md` for remaining work.
+
+**Done:**
+- Design system (tokens, typography, tailwind config)
+- App shell (header, nav, footer structure)
+- Core UI components
+- Empty state patterns
+
+**Remaining (prioritized):**
+1. 🔴 Site Footer - navigation links, legal, branding
+2. 🔴 Marketing Home Page - hero, how it works, featured listings
+3. 🔴 Listing Detail Page - gallery, seller info, reserve action
+4. 🟡 Badge + Avatar components
+5. 🟡 Page metadata (titles, descriptions, OG tags)
+6. 🟢 Additional marketing pages (about, FAQ, contact)
+
+---
+
+## Session History
+
+### 2026-02-04 (Theme + Tokens)
+- [✓] Created shadcn-ui.css with Voicekit variables
+- [✓] Created theme.utilities.css with container utility
+- [✓] Updated globals.css with theme imports and utilities
+- [✓] Updated tailwind.config.ts with CSS variable mappings
+- [✓] Added theme-toggle.tsx component
+- [✓] Updated app layout with footer bar
+
+### 2026-02-05 (UI Foundation via ralphy --codex)
+- Ran automated task runner, hit credit limit
+- Worktrees created but work was incomplete
+- Deleted worktrees, kept main repo uncommitted changes
+- Audited codebase to verify actual completion status
+- Reorganized task list by priority
+- [✓] 2026-02-05 14:26 - Navigation links (Discover, About, Help)
+- [✓] 2026-02-05 14:30 - Legal links (Terms, Privacy)
+- [✓] 2026-02-05 14:34 - Copyright and branding
+- [✓] 2026-02-05 14:39 - Hero section with value prop and CTA
+- [✓] 2026-02-05 14:45 - "How it works" section (3-step)
+- [✓] 2026-02-05 14:50 - Featured listings preview
+- [✓] 2026-02-05 14:53 - Seller CTA section
+- [✓] 2026-02-05 15:02 - Photo gallery with thumbnails
+- [✓] 2026-02-05 15:05 - Title, price, availability badge
+- [✓] 2026-02-05 15:08 - Seller card with follow button
+- [✓] 2026-02-05 15:16 - Pickup location display
+- [✓] 2026-02-05 15:19 - Reserve action area
+- [✓] 2026-02-05 15:21 - Badge component (status, category pills)
+- [✓] 2026-02-05 15:24 - Avatar component (image + initials, size variants)
+- [✓] 2026-02-05 15:30 - Skeleton loaders (feed, listing, profile)
+- [✓] 2026-02-05 15:42 - Title tags for all routes
+- [✓] 2026-02-05 15:44 - Meta descriptions
+- [✓] 2026-02-05 15:51 - Open Graph tags
+- [✓] 2026-02-05 15:54 - About page
+- [✓] 2026-02-05 15:58 - FAQ page
+- [✓] 2026-02-05 16:01 - Contact page
+- [✓] 2026-02-05 16:25 - Make header sticky with `sticky top-0 z-50`
+- [✓] 2026-02-05 16:28 - Add glassmorphic styling: `bg-white/85 backdrop-blur-md` (light) / `bg-background/85` (dark)
+- [✓] 2026-02-05 16:30 - Add logo icon: 36px green square with "F" initial, rounded-lg
+- [✓] 2026-02-05 16:33 - Add pill-shaped search bar in header (visible on all pages, not just discover)
+- [✓] 2026-02-05 16:37 - Add location button showing current location name or "Set Location"
+- [✓] 2026-02-05 16:39 - Header stays fixed when scrolling
+- [✓] 2026-02-05 16:43 - Content is visible but blurred behind header
+- [✓] 2026-02-05 16:45 - Logo icon + text both visible
+- [✓] 2026-02-05 16:46 - `pnpm typecheck` passes
+- [✓] 2026-02-05 16:46 - `pnpm lint` passes
+- [✓] 2026-02-05 16:49 - Create CategoryNav component with horizontal scrolling pills
+- [✓] 2026-02-05 16:52 - Add category data: All, Produce, Eggs & Dairy, Baked Goods, Plants, Handmade, Preserves, Wellness
+- [✓] 2026-02-05 16:53 - Style pills: `rounded-full px-4 py-2.5 text-sm font-medium`
+- [✓] 2026-02-05 16:54 - Active state: `bg-primary text-primary-foreground`
+- [✓] 2026-02-05 16:56 - Inactive state: `bg-muted text-muted-foreground hover:bg-muted/80`
+- [✓] 2026-02-05 16:58 - Add to layout below header with border-b separator
+- [✓] 2026-02-05 17:03 - Wire to URL query params: `/discover?category=produce` (use `useSearchParams`)
+- [✓] 2026-02-05 17:06 - Read category from URL on page load, sync to component state
+- [✓] 2026-02-05 17:08 - Pills scroll horizontally on mobile
+- [✓] 2026-02-05 17:10 - Active category is visually distinct (green fill)
+- [✓] 2026-02-05 17:12 - Clicking category updates URL query param
+- [✓] 2026-02-05 17:15 - Refreshing page with `?category=X` shows correct active pill
+- [✓] 2026-02-05 17:16 - `pnpm typecheck` passes
+- [✓] 2026-02-05 17:17 - Change discover page to `grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8`
+- [✓] 2026-02-05 17:20 - Create DiscoverSidebar component with sticky positioning (`sticky top-24`)
+- [✓] 2026-02-05 17:23 - Add "Your Community" card with static mock data (847 neighbors, 156 listings)
+- [✓] 2026-02-05 17:25 - Add "Trending Now" card with static items (Fresh Tomatoes, Farm Eggs, Homemade Bread, Raw Honey)
+- [✓] 2026-02-05 17:27 - Add "Nearby Sellers" card with 3 static seller previews + "View All" button
+- [✓] 2026-02-05 17:28 - Hide sidebar on mobile (< lg breakpoint)
+- [✓] 2026-02-05 17:32 - Desktop shows feed + sidebar side by side
+- [✓] 2026-02-05 17:34 - Sidebar sticks when scrolling (respects header height)
+- [✓] 2026-02-05 17:36 - Mobile shows feed only, no sidebar
+- [✓] 2026-02-05 17:41 - Static data renders correctly
+- [✓] 2026-02-05 17:41 - `pnpm typecheck` passes
+- [✓] 2026-02-05 17:47 - Add card header section with seller avatar, name, distance, and time ago
+- [✓] 2026-02-05 17:49 - Add three-dot menu button (kebab) in card header right side
+- [✓] 2026-02-05 17:51 - Move category badge to overlay on image (top-left, semi-transparent white bg)
+- [✓] 2026-02-05 17:52 - Fix card link to go to `/listings/[id]` not `/@username` (current behavior is a bug)
+- [✓] 2026-02-05 17:53 - Add subtle hover elevation on card (`hover:shadow-md transition-shadow`)
+- [✓] 2026-02-05 17:54 - Card header shows avatar (with initials), seller name, "0.5 mi · 2h ago"
+- [✓] 2026-02-05 17:56 - Category badge floats over image with `bg-white/90 backdrop-blur-sm`
+- [✓] 2026-02-05 18:01 - Clicking card navigates to listing detail page (not seller profile)
+- [✓] 2026-02-05 18:01 - `pnpm typecheck` passes
+- [✓] 2026-02-05 18:02 - Add 42px size variant: `md: "h-[42px] w-[42px] text-sm"`
+- [✓] 2026-02-05 18:03 - Change default background from `bg-muted` to `bg-emerald-50`
+- [✓] 2026-02-05 18:05 - Add subtle green ring: `ring-2 ring-primary/20 ring-offset-1`
+- [✓] 2026-02-05 18:05 - Update IMAGE_SIZES to include md: 42
+- [✓] 2026-02-05 18:07 - Avatar has green-tinted background when showing initials
+- [✓] 2026-02-05 18:08 - New `md` size renders at 42px
+- [✓] 2026-02-05 18:10 - Existing avatar usages still work
+- [✓] 2026-02-05 18:11 - Avatar tests pass: `pnpm test avatar`
+- [✓] 2026-02-05 18:13 - Replace FeedToggle with pill-shaped tab group
+- [✓] 2026-02-05 18:18 - Add tabs: Recent, Nearby, Popular (mock style)
+- [✓] 2026-02-05 18:19 - Style tabs with bg-muted container, white active background
+- [✓] 2026-02-05 18:23 - Show listing count to the right ("7 listings")
+- [✓] 2026-02-05 18:24 - Tabs are pill-shaped with rounded container
+- [✓] 2026-02-05 18:25 - Active tab has white bg and darker text
+- [✓] 2026-02-05 18:30 - Tab switches update feed sort order
+- [✓] 2026-02-05 18:30 - `pnpm typecheck` passes
+- [✓] 2026-02-05 18:32 - Add `shadow-sm` to all Card components for subtle depth
+- [✓] 2026-02-05 18:34 - Add `transition-shadow hover:shadow-md` to interactive cards
+- [✓] 2026-02-05 18:40 - Ensure all interactive elements have visible focus states
+- [✓] 2026-02-05 18:46 - Add `transition-colors` to all buttons and links
+- [✓] 2026-02-05 18:55 - Review spacing consistency (use design tokens: gap-2, gap-4, p-4, p-6)
+- [✓] 2026-02-05 18:58 - Cards have subtle shadow
+- [✓] 2026-02-05 19:02 - Hover states are visible on all clickable elements
+- [✓] 2026-02-05 19:06 - Focus rings visible on keyboard navigation
+- [✓] 2026-02-05 19:07 - `pnpm typecheck` passes
+- [✓] 2026-02-05 19:07 - `pnpm lint` passes
+- [✓] 2026-02-05 19:10 - Add navigation links section: Discover, About, Help
+- [✓] 2026-02-05 19:11 - Add proper spacing between nav and legal sections
+- [✓] 2026-02-05 19:13 - Ensure footer matches mock typography (text-sm, muted foreground)
+- [✓] 2026-02-05 19:17 - Add "Fruitland Market" branding text with logo
+- [✓] 2026-02-05 19:18 - Footer has Discover, About, Help links
+- [✓] 2026-02-05 19:21 - Footer has Terms, Privacy, theme toggle
+- [✓] 2026-02-05 19:25 - Footer matches overall site aesthetic
+- [✓] 2026-02-05 19:27 - `pnpm typecheck` passes
+- [✓] 2026-02-05 20:31 - Add `getListingsByCategory` query to `packages/backend/convex/discovery.ts`
+- [✓] 2026-02-05 20:32 - `pnpm typecheck` passes
+- [✓] 2026-02-05 20:35 - Query is exported and accessible via `api.discovery.getListingsByCategory`
+- [✓] 2026-02-05 20:38 - Add `getTopSellers` query to `packages/backend/convex/discovery.ts`
+- [✓] 2026-02-05 20:39 - `pnpm typecheck` passes
+- [✓] 2026-02-05 20:48 - Add `getListingsByCategory` query to `packages/backend/convex/discovery.ts`
+- [✓] 2026-02-05 20:50 - Add `getTopSellers` query to `packages/backend/convex/discovery.ts`
+- [✓] 2026-02-05 20:53 - Export `ListingPreview` and `ListingPreviewSkeleton` from `apps/web/components/featured/FeaturedListings.tsx`
+- [✓] 2026-02-05 20:56 - Create `apps/web/components/ui/horizontal-scroll.tsx`
+- [✓] 2026-02-05 20:59 - Create `apps/web/app/(app)/feed/page.tsx` with metadata and FeedPageContent render
+- [✓] 2026-02-05 21:03 - Create `apps/web/app/(app)/feed/FeedPageContent.tsx` copied from current `discover/DiscoverPageContent.tsx`
+- [✓] 2026-02-05 21:07 - Create `apps/web/components/discover/SearchSection.tsx`
+- [✓] 2026-02-05 21:11 - Create `apps/web/components/discover/CategoryBrowseSection.tsx`
+- [✓] 2026-02-05 21:16 - Create `apps/web/components/discover/FeaturedSection.tsx`
+- [✓] 2026-02-05 21:20 - Create `apps/web/components/discover/TrendingCarousel.tsx`
+- [✓] 2026-02-05 21:26 - Create `apps/web/components/discover/CategoryCarousel.tsx`
+- [✓] 2026-02-05 21:32 - Create `apps/web/components/discover/CategoryCarouselsSection.tsx`
+- [✓] 2026-02-05 21:38 - Create `apps/web/components/discover/SellerHighlightsSection.tsx`
+- [✓] 2026-02-05 21:42 - Create `apps/web/components/discover/CompactMap.tsx`
+- [✓] 2026-02-05 21:50 - Rewrite `apps/web/app/(app)/discover/DiscoverPageContent.tsx` to compose new sections, update `apps/web/app/(app)/discover/page.tsx` metadata (title "Discover", description "Explore local food, sellers, and categories near you"), and simplify `apps/web/app/(app)/discover/layout.tsx` (remove tab nav, just render children) — all three files in one pass
+- [✓] 2026-02-05 21:52 - Delete `apps/web/app/(app)/discover/search/page.tsx`
+- [✓] 2026-02-05 21:54 - Delete `apps/web/app/(app)/discover/search/SearchPageContent.tsx`
+- [✓] 2026-02-05 21:55 - Add redirect from `/discover/search` to `/discover` in `apps/web/next.config.js`
+- [✓] 2026-02-05 21:57 - Update `PRIMARY_NAV_LINKS` in `apps/web/components/layout/app-nav.tsx` — add Feed as first item, keep Discover as second
+- [✓] 2026-02-05 21:59 - Update footer nav in `apps/web/app/(app)/layout.tsx` — add Feed link before Discover
+- [✓] 2026-02-05 22:01 - Update `handleSelectCategory` in `apps/web/components/discovery/CategoryNavWrapper.tsx` to route to `/feed` when not already on feed
+- [✓] 2026-02-05 22:04 - Update `/discover` → `/feed` in `apps/web/components/hero/HeroSection.tsx` ("Browse Local Goods" CTA), `apps/web/components/featured/FeaturedListings.tsx` (3 places: 2 "View all" links + 1 fallback in ListingPreview), and `apps/web/app/(app)/help/page.tsx` ("Browse listings" link)
+- [✓] 2026-02-05 22:08 - Update `/discover` → `/feed` in `apps/web/app/(app)/following/FollowingPageContent.tsx` (2 empty state CTAs), `apps/web/app/(app)/reservations/ReservationsPageContent.tsx` (empty state "browse" link), `apps/web/app/(app)/checkout/success/CheckoutSuccessPageContent.tsx` ("Continue browsing" link), and `apps/web/app/(app)/listings/[id]/ListingDetailContent.tsx` (back button link)
+- [✓] 2026-02-05 22:11 - Rewrite `apps/web/app/(app)/discover/DiscoverPageContent.test.tsx` for new discover hub
+- [✓] 2026-02-05 22:14 - Update `apps/web/app/(app)/layout.test.tsx` footer assertions
+- [✓] 2026-02-05 22:16 - Update `apps/web/components/layout/app-nav.test.tsx` nav link assertions
+- [✓] 2026-02-05 22:19 - Update `apps/web/components/featured/FeaturedListings.test.tsx` link assertions
+- [✓] 2026-02-06 02:03 - Add `paymentType` to reservations (ONLINE, PAY_AT_PICKUP)
+- [✓] 2026-02-06 02:07 - Add `holdExpiresAt` to reservations
+- [✓] 2026-02-06 02:14 - Add statuses `READY` and `EXPIRED`
+- [✓] 2026-02-06 02:18 - Add server mutation to create pay-at-pickup reservation intent
+- [✓] 2026-02-06 02:21 - Add expiration cron to mark overdue holds as EXPIRED
+- [✓] 2026-02-06 02:24 - Update reservation lifecycle logic to allow READY → COMPLETE
+- [✓] 2026-02-06 02:26 - Creating PAY_AT_PICKUP reservation sets `holdExpiresAt`
+- [✓] 2026-02-06 02:29 - Expired holds transition to EXPIRED automatically
+- [✓] 2026-02-06 02:33 - Paid reservations still behave as before
+- [✓] 2026-02-06 02:36 - Add seller action to mark reservation READY
+- [✓] 2026-02-06 02:40 - Add buyer action to mark reservation COMPLETE (pickup done)
+- [✓] 2026-02-06 02:42 - Ensure READY only allowed for paid or pay-at-pickup holds
+- [✓] 2026-02-06 02:47 - Ensure COMPLETE only allowed after READY
+- [✓] 2026-02-06 02:50 - READY action updates status and timestamp
+- [✓] 2026-02-06 02:52 - COMPLETE action updates status and timestamp
+- [✓] 2026-02-06 02:56 - Invalid transitions are rejected
+- [✓] 2026-02-06 02:58 - Add `notifications` table with `recipientId`, `type`, `payload`, `readAt`, `createdAt`
+- [✓] 2026-02-06 03:00 - Add queries: list notifications, list unread count
+- [✓] 2026-02-06 03:02 - Add mutations: mark read, mark all read
+- [✓] 2026-02-06 03:06 - Trigger notifications on reservation created, paid, ready, cancelled, expired
+- [✓] 2026-02-06 03:10 - Add bell icon + unread count in web nav
+- [✓] 2026-02-06 03:16 - Render notifications list page with real data
+- [✓] 2026-02-06 03:20 - Add mark-as-read behavior in UI
+- [✓] 2026-02-06 03:26 - Unread count updates when notifications are read
+- [✓] 2026-02-06 03:28 - Notifications list renders latest-first
+- [✓] 2026-02-06 03:31 - Notification types map to user-readable text
+- [✓] 2026-02-06 03:36 - Fire push notifications for the same events as in-app
+- [✓] 2026-02-06 03:40 - Ensure push failures do not block core mutations
+- [✓] 2026-02-06 03:44 - Include reservationId in payload for deep linking
+- [✓] 2026-02-06 03:47 - Push sends for paid and ready events
+- [✓] 2026-02-06 03:50 - Push failures do not fail reservations
+- [✓] 2026-02-06 04:03 - Add pay-at-pickup option on listing detail if seller allows
+- [✓] 2026-02-06 04:12 - Add hold timer display to buyer reservation detail view
+- [✓] 2026-02-06 04:18 - Show expired state in buyer and seller reservation views
+- [✓] 2026-02-06 04:22 - Add seller UI state for READY and buyer UI for COMPLETE
+- [✓] 2026-02-06 04:27 - Buyer can create pay-at-pickup intent from listing
+- [✓] 2026-02-06 04:31 - Hold countdown renders and expires correctly
+- [✓] 2026-02-06 04:36 - READY and COMPLETE buttons render only when valid
+- [✓] 2026-02-06 04:40 - Add reservation lifecycle tests (paid, ready, complete, cancelled)
+- [✓] 2026-02-06 04:44 - Add expiration job tests
+- [✓] 2026-02-06 04:47 - Add notification creation + unread tests
+- [✓] 2026-02-06 04:48 - `pnpm -C packages/backend test` passes
+- [✓] 2026-02-06 04:54 - Stripe Connect onboarding e2e walkthrough
+- [✓] 2026-02-06 04:59 - Online reservation flow smoke test
+- [✓] 2026-02-06 05:04 - Pay-at-pickup flow smoke test
+- [✓] 2026-02-06 05:09 - Feed ordering smoke test (nearby + recent)
+- [✓] 2026-02-06 05:17 - Push notification delivery check
+- [✓] 2026-02-06 05:19 - Each item logged in a short checklist note
+- [✓] 2026-02-06 05:28 - PostHog analytics (autocapture + explicit events)
+- [✓] 2026-02-06 05:37 - Admin reports/moderation
+- [✓] 2026-02-06 05:46 - Other items in `docs/26-02-05-n03-fruitland-market-roadmap.md`
+- [✓] 2026-02-06 15:39 - Add `isActive: v.optional(v.boolean())` field to the `locations` table in `packages/backend/convex/schema.ts` (line 41-54). Use `v.optional()` to avoid needing a data migration — existing rows without `isActive` are treated as `true` in queries
+- [✓] 2026-02-06 15:40 - Add index `by_user_active: ["userId", "isActive"]` to the locations table for fast active address lookup
+- [✓] 2026-02-06 15:41 - Add index `by_user_placeId: ["userId", "placeId"]` to the locations table for deduplication
+- [✓] 2026-02-06 15:42 - `npx convex dev` deploys schema without errors
+- [✓] 2026-02-06 15:46 - Existing seed data still loads correctly
+- [✓] 2026-02-06 15:47 - `pnpm typecheck` passes
+- [✓] 2026-02-06 15:48 - Create `packages/backend/convex/lib/getActiveLocation.ts` with an exported `getActiveLocationForUser(ctx: QueryCtx, userId: Id<"users">)` function. It should first query the `by_user_active` index for `isActive === true`. If no result, fall back to querying `by_user` index with `.first()` (handles legacy rows without `isActive`). Import `QueryCtx` from `"./_generated/server"` and `Id` from `"./_generated/dataModel"` — note the relative paths since this file is in the `lib/` subdirectory (use `"../_generated/server"` and `"../_generated/dataModel"`)
+- [✓] 2026-02-06 15:51 - `pnpm typecheck` passes
+- [✓] 2026-02-06 15:52 - Function is importable from other Convex files
+- [✓] 2026-02-06 15:54 - Rewrite `packages/backend/convex/locations.ts` with the following exports. Add a module-level `deactivateAll(ctx, userId)` helper that queries all locations for a user and patches any with `isActive: true` to `isActive: false`
+- [✓] 2026-02-06 15:56 - Add `getCurrentUserLocations` query (no args, authenticated) — finds user by Clerk ID, returns all locations via `by_user` index using `.collect()`, sorted by `updatedAt` desc
+- [✓] 2026-02-06 15:58 - Add `addLocation` mutation (args: address, latitude, longitude, placeId optional, setActive optional boolean). Authenticated. Deduplicates by placeId using `by_user_placeId` index — if duplicate found and `setActive` is true, call `deactivateAll` then activate the existing row and return its ID. If no duplicate, check if user has any existing locations (if none, auto-set `isActive: true`). If `setActive` is true and user has existing locations, call `deactivateAll` first. Insert with `isActive`, `createdAt`, `updatedAt`
+- [✓] 2026-02-06 16:00 - Add `setActiveLocation` mutation (args: locationId). Authenticated. Verify ownership (location's userId matches current user). Call `deactivateAll`, then patch the target location with `isActive: true` and updated timestamp
+- [✓] 2026-02-06 16:01 - Add `deleteLocation` mutation (args: locationId). Authenticated. Verify ownership. Delete the row. If deleted location had `isActive === true` or `isActive === undefined`, query remaining locations ordered desc by `updatedAt` and promote the first one to active
+- [✓] 2026-02-06 16:03 - Add `migrateAnonymousLocations` mutation (args: array of `{ address, latitude, longitude, placeId optional, isActive }` objects). Authenticated. For each entry, check for existing location with same placeId via `by_user_placeId` index — skip duplicates. Insert non-duplicates with `createdAt` and `updatedAt` set to `Date.now()`
+- [✓] 2026-02-06 16:05 - Keep `getByUserId` query working — change from `.unique()` to using the `getActiveLocationForUser` helper from `packages/backend/convex/lib/getActiveLocation.ts`
+- [✓] 2026-02-06 16:08 - Keep `createLocation` mutation working as a thin wrapper that calls the same logic as `addLocation` with `setActive: true`. This preserves backward compatibility with `ProfileForm.tsx`
+- [✓] 2026-02-06 16:10 - Keep `updateLocation` mutation working — find user's active location via helper, patch it. If no active location exists, create one instead
+- [✓] 2026-02-06 16:11 - `pnpm typecheck` passes
+- [✓] 2026-02-06 16:12 - `npx convex dev` deploys without errors
+- [✓] 2026-02-06 16:16 - Existing `ProfileForm.tsx` still works (uses `createLocation`)
+- [✓] 2026-02-06 16:18 - In `packages/backend/convex/discovery.ts`, replace the `.query("locations").withIndex("by_user", ...).unique()` pattern at lines 65-67, 184-186, and 381-383 with `getActiveLocationForUser(ctx, listing.sellerId)`. Import the helper from `./lib/getActiveLocation`
+- [✓] 2026-02-06 16:20 - In `packages/backend/convex/listings.ts`, replace `.query("locations").withIndex("by_user", ...).unique()` at line 346-348 with `getActiveLocationForUser(ctx, listing.sellerId)`. Import the helper
+- [✓] 2026-02-06 16:21 - In `packages/backend/convex/sellerProfiles.ts`, replace `.query("locations").withIndex("by_user", ...).unique()` at line 85-87 with `getActiveLocationForUser(ctx, profile.userId)`. Import the helper
+- [✓] 2026-02-06 16:23 - In `packages/backend/convex/follows.ts`, replace `.query("locations").withIndex("by_user", ...).unique()` at line 253-255 with `getActiveLocationForUser(ctx, listing.sellerId)`. Import the helper
+- [✓] 2026-02-06 16:23 - `pnpm typecheck` passes
+- [✓] 2026-02-06 16:25 - `npx convex dev` deploys without errors
+- [✓] 2026-02-06 16:28 - No remaining `.unique()` calls on the locations table (search: `grep -r '.unique()' packages/backend/convex/ | grep locations`)
+- [✓] 2026-02-06 16:32 - Feed page still loads listings with distance data
+- [✓] 2026-02-06 16:33 - Create `apps/web/lib/location-cookie.ts`. Export type `GeoPermissionCookie = "granted" | "denied" | "prompt"`. Export `getGeoPermissionCookie(): GeoPermissionCookie` — reads `document.cookie` for key `fm_geo_permission`, returns value if `"granted"` or `"denied"`, otherwise `"prompt"`. Guard with `typeof document === "undefined"` for SSR. Export `setGeoPermissionCookie(state: GeoPermissionCookie): void` — sets cookie with `max-age=31536000` (1 year), `path=/`, `SameSite=Lax`. Export `clearGeoPermissionCookie(): void` — sets cookie with `max-age=0`
+- [✓] 2026-02-06 16:33 - `pnpm typecheck` passes
+- [✓] 2026-02-06 16:37 - File exports are importable from other web app files
+- [✓] 2026-02-06 16:42 - Create `apps/web/lib/location-storage.ts`. Export interface `StoredAddress { address: string; latitude: number; longitude: number; placeId?: string; isActive: boolean; savedAt: number }`. Use localStorage key `fm_anon_locations`. All functions guard with `typeof window === "undefined"` for SSR
+- [✓] 2026-02-06 16:43 - Export `getStoredAddresses(): StoredAddress[]` — reads and parses from localStorage, returns `[]` on error or missing
+- [✓] 2026-02-06 16:45 - Export `saveAddress(address: Omit<StoredAddress, "savedAt" | "isActive">, setActive?: boolean): void` — deduplicates by placeId (if match found and setActive, just activate it). If new, push to array. If setActive (default true) or first address, set isActive true and others false. Write back to localStorage
+- [✓] 2026-02-06 16:47 - Export `setActiveStoredAddress(placeId: string): void` — sets matching address active, all others inactive
+- [✓] 2026-02-06 16:48 - Export `deleteStoredAddress(placeId: string): void` — removes address. If deleted was active and others remain, promote most recent by `savedAt`
+- [✓] 2026-02-06 16:50 - Export `getActiveStoredAddress(): StoredAddress | null` — returns address with `isActive === true`, or first address, or null
+- [✓] 2026-02-06 16:50 - Export `clearStoredAddresses(): void` — removes the localStorage key entirely
+- [✓] 2026-02-06 16:51 - `pnpm typecheck` passes
+- [✓] 2026-02-06 16:54 - Modify `apps/web/hooks/useGeolocation.ts`. Import `getGeoPermissionCookie` and `setGeoPermissionCookie` from `@/lib/location-cookie`
+- [✓] 2026-02-06 16:57 - In the mount `useEffect`, read cookie state first. If cookie is `"denied"`, set `permissionState: "denied"` and return early (skip browser permissions API). If cookie is `"granted"`, set `permissionState: "granted"` and `isLoading: true`, then call `navigator.geolocation.getCurrentPosition` to re-fetch coords for this session. On success, set coords and stop loading. On failure, clear cookie to `"prompt"` (browser permission may have been revoked) and stop loading. If cookie is `"prompt"`, fall through to existing `navigator.permissions.query` logic
+- [✓] 2026-02-06 16:59 - In the `requestLocation` success callback, call `setGeoPermissionCookie("granted")` after setting state
+- [✓] 2026-02-06 17:00 - In the `requestLocation` error callback, if `error.code === 1` (permission denied), call `setGeoPermissionCookie("denied")`
+- [✓] 2026-02-06 17:00 - `pnpm typecheck` passes
+- [✓] 2026-02-06 17:01 - Granting location sets `fm_geo_permission=granted` cookie (check in browser DevTools > Application > Cookies)
+- [✓] 2026-02-06 17:04 - Denying location sets `fm_geo_permission=denied` cookie
+- [✓] 2026-02-06 17:07 - Page reload with `granted` cookie re-fetches coords without showing browser permission prompt
+- [✓] 2026-02-06 17:12 - Create `apps/web/hooks/useResolvedLocation.ts` with `"use client"` directive. Import `useAuth` from `@clerk/nextjs`, `useQuery`/`useMutation` from `convex/react`, the `api` from `@fruitland-market/backend`, `useGeolocation` from `./useGeolocation`, cookie utils from `@/lib/location-cookie`, and localStorage utils from `@/lib/location-storage`
+- [✓] 2026-02-06 17:14 - Export interface `ResolvedLocation { latitude: number; longitude: number; displayName: string; source: "geolocation" | "saved_address" }`
+- [✓] 2026-02-06 17:17 - Inside the hook, call `useAuth()` for `isSignedIn` and `isLoaded`. Call `useGeolocation()`. Call `useQuery(api.locations.getCurrentUserLocations)` only when signed in (pass `"skip"` otherwise). Set up mutations: `addLocation`, `setActiveLocation`, `deleteLocation`, `migrateAnonymousLocations`
+- [✓] 2026-02-06 17:20 - Add anonymous-to-auth migration `useEffect`: when `isLoaded && isSignedIn`, read `getStoredAddresses()`. If non-empty, call `migrateAnonymousLocations` mutation with the array, then `clearStoredAddresses()` on success. Dependencies: `[isLoaded, isSignedIn, migrateAnon]` (where `migrateAnon` is the mutation reference)
+- [✓] 2026-02-06 17:22 - Add `useMemo` for `resolved: ResolvedLocation | null` implementing the priority chain. Priority 1: if `getGeoPermissionCookie() === "granted"` AND `geo.coords` is not null, return `{ latitude, longitude, displayName: "Current Location", source: "geolocation" }`. Priority 2: if signed in and dbLocations available, find location with `isActive === true` (or `isActive === undefined`), fallback to most recent by `updatedAt`. Priority 3: if not signed in, use `getActiveStoredAddress()`. Priority 4: return null
+- [✓] 2026-02-06 17:24 - Add `useMemo` for `savedAddresses` — if signed in, map DB locations to `{ id, address, latitude, longitude, placeId, isActive }`. If not signed in, map localStorage addresses using placeId as id
+- [✓] 2026-02-06 17:26 - Export `addAddress` callback — if signed in, calls `addLocation` mutation with `{ ...addr, setActive }`. If not signed in, calls `saveAddress` from localStorage utils
+- [✓] 2026-02-06 17:28 - Export `setActiveAddress` callback — if signed in, calls `setActiveLocation` mutation. If not signed in, calls `setActiveStoredAddress`
+- [✓] 2026-02-06 17:31 - Export `removeAddress` callback — if signed in, calls `deleteLocation` mutation. If not signed in, calls `deleteStoredAddress`
+- [✓] 2026-02-06 17:32 - Return object: `{ location: resolved, hasLocation: resolved !== null, isLoading: geo.isLoading, geoPermission: geo.permissionState, savedAddresses, requestGeolocation: geo.requestLocation, addAddress, setActiveAddress, removeAddress }`
+- [✓] 2026-02-06 17:33 - `pnpm typecheck` passes
+- [✓] 2026-02-06 17:35 - Hook is importable from web app components
+- [✓] 2026-02-06 17:39 - Run `npx shadcn@latest add command` from the `apps/web/` directory. This installs `apps/web/components/ui/command.tsx`, adds the `cmdk` dependency, and may also install `popover.tsx` as a dependency
+- [✓] 2026-02-06 17:40 - `apps/web/components/ui/command.tsx` exists
+- [✓] 2026-02-06 17:40 - `pnpm typecheck` passes
+- [✓] 2026-02-06 17:41 - `cmdk` is in `apps/web/package.json` dependencies
+- [✓] 2026-02-06 17:45 - Create `apps/web/components/location/LocationCommandDialog.tsx` with `"use client"` directive. Accept props `{ open: boolean; onOpenChange: (open: boolean) => void }`. Import `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogDescription` from `@/components/ui/dialog`. Import `Command`, `CommandList`, `CommandGroup`, `CommandItem`, `CommandSeparator` from `@/components/ui/command`. Import `Button` from `@/components/ui/button`. Import `AddressAutocomplete` and `AddressResult` from `@/components/profile/AddressAutocomplete`. Import `useResolvedLocation` from `@/hooks/useResolvedLocation`. Import icons: `MapPin`, `Navigation`, `Trash2`, `Check`, `Loader2` from `lucide-react`
+- [✓] 2026-02-06 17:47 - Add local state `showAutocomplete: boolean` (default false). Get `geoPermission`, `isLoading`, `requestGeolocation`, `savedAddresses`, `addAddress`, `setActiveAddress`, `removeAddress`, `isUsingGeolocation` (derive from `geoPermission === "granted"` and `location?.source === "geolocation"`) from `useResolvedLocation()`
+- [✓] 2026-02-06 17:49 - Render Dialog wrapping a Command component. First CommandGroup heading "Detect" with a single CommandItem "Use my current location" — on select, call `requestGeolocation()` then `onOpenChange(false)`. Show `Loader2` spinner when loading, `Navigation` icon otherwise. Show green `Check` icon on the right if geolocation is currently active
+- [✓] 2026-02-06 17:51 - Add CommandSeparator, then CommandGroup heading "Search". If `showAutocomplete` is false, show a CommandItem "Search for an address" with `MapPin` icon — on select, set `showAutocomplete(true)`. If `showAutocomplete` is true, render `AddressAutocomplete` component inline (inside a `div` with `px-2 py-2` padding) with `onSelect` that calls `addAddress({ address, latitude, longitude, placeId }, true)` then `onOpenChange(false)` and resets `showAutocomplete(false)`. Set placeholder to "Search for an address..."
+- [✓] 2026-02-06 17:53 - If `savedAddresses.length > 0`, add CommandSeparator and CommandGroup heading "Saved Addresses". Map each address to a CommandItem showing a truncated address string with `MapPin` icon. On select, call `setActiveAddress(addr.id)` then `onOpenChange(false)`. Show green `Check` icon if `addr.isActive`. Add a ghost `Button` with `Trash2` icon on the right — on click (with `e.stopPropagation()`), call `removeAddress(addr.id)`
+- [✓] 2026-02-06 17:55 - Reset `showAutocomplete` to false when dialog closes (in `onOpenChange` or via useEffect on `open`)
+- [✓] 2026-02-06 17:55 - `pnpm typecheck` passes
+- [✓] 2026-02-06 18:00 - Component renders without errors when opened
+- [✓] 2026-02-06 18:02 - Rewrite `apps/web/components/layout/location-button.tsx`. Replace `useGeolocation()` import and usage with `useResolvedLocation()` from `@/hooks/useResolvedLocation`. Import `LocationCommandDialog` from `@/components/location/LocationCommandDialog`. Add `useState` for `dialogOpen: boolean` (default false)
+- [✓] 2026-02-06 18:05 - Keep the existing reverse geocode `useEffect` for when `location?.source === "geolocation"` — use the same Nominatim fetch to get a city name. When `location?.source === "saved_address"`, extract a short display name from `location.displayName` (split on comma, take first part). When `location` is null, set display name to null
+- [✓] 2026-02-06 18:07 - Change button `onClick` to always set `dialogOpen(true)` — remove the old conditional that returned early when granted. Remove `disabled` on the button (always clickable). Keep the existing visual structure: `MapPin`/`Loader2` icon + truncated text showing loading state, location name, or "Set Location"
+- [✓] 2026-02-06 18:08 - Render `<LocationCommandDialog open={dialogOpen} onOpenChange={setDialogOpen} />` after the button
+- [✓] 2026-02-06 18:08 - `pnpm typecheck` passes
+- [✓] 2026-02-06 18:10 - Clicking "Set Location" opens the command dialog
+- [✓] 2026-02-06 18:12 - Button shows resolved location name (city for geolocation, address for saved)
+- [✓] 2026-02-06 18:14 - Button is always clickable, even when location is already set
+- [✓] 2026-02-06 18:16 - In `apps/web/app/(app)/feed/FeedPageContent.tsx`, replace the `useGeolocation` import and hook call (lines 8, 28-33) with `useResolvedLocation` from `@/hooks/useResolvedLocation`. Destructure `{ location, hasLocation, isLoading: isLoadingLocation, geoPermission }`. Import `LocationCommandDialog` from `@/components/location/LocationCommandDialog`. Add `useState` for `locationDialogOpen: boolean` (default false)
+- [✓] 2026-02-06 18:20 - Replace `const hasLocation = permissionState === "granted" && coords !== null` (line 41) — `hasLocation` now comes from the hook directly
+- [✓] 2026-02-06 18:22 - Change the location prompt banner (lines 76-100): remove the `feedType === "nearby" &&` guard. Change condition to `!hasLocation && !isLoadingLocation`. Change the button text to "Set Location" and its `onClick` to `() => setLocationDialogOpen(true)`. Remove the inline loading state from the button (the dialog handles that). Update the prompt text to "Set your location to see nearby listings and distances"
+- [✓] 2026-02-06 18:24 - Change the denied location notice (lines 103-109): remove `feedType === "nearby" &&` guard. Change condition to `!hasLocation && !isLoadingLocation && geoPermission === "denied"`. Change the message to suggest using the Set Location button: "Location access was denied. Use Set Location to search for your address instead." — or just remove this notice entirely since the prompt banner above already covers the no-location case with a CTA. Removing is cleaner since the banner already shows
+- [✓] 2026-02-06 18:25 - Update the `ListingFeed` props (lines 112-119): change `userLocation` from `feedType === "nearby" && hasLocation ? coords : null` to `feedType === "nearby" && hasLocation ? { latitude: location!.latitude, longitude: location!.longitude } : null`
+- [✓] 2026-02-06 18:27 - Render `<LocationCommandDialog open={locationDialogOpen} onOpenChange={setLocationDialogOpen} />` inside the component
+- [✓] 2026-02-06 18:27 - `pnpm typecheck` passes
+- [✓] 2026-02-06 18:28 - Location prompt banner appears on Recent, Nearby, and Popular tabs when no location is set
+- [✓] 2026-02-06 18:33 - Clicking "Set Location" in the banner opens the command dialog
+- [✓] 2026-02-06 18:37 - After setting location, banner disappears on all tabs
+- [✓] 2026-02-06 18:39 - Nearby tab still shows radius filter when location is available
+- [✓] 2026-02-06 18:44 - Feed still shows distance data on listings when location is set
+- [✓] 2026-02-06 18:46 - In `apps/web/components/profile/ProfileForm.tsx`, change the import on line 74 from `api.locations.createLocation` to `api.locations.addLocation`. Update the mutation call on lines 207-212 to pass `setActive: true` in addition to the existing address, latitude, longitude, and placeId fields
+- [✓] 2026-02-06 18:46 - `pnpm typecheck` passes
+- [✓] 2026-02-06 18:50 - Creating a new seller profile still saves location successfully
+- [✓] 2026-02-06 18:53 - The saved location appears as active in the location command dialog
+- [✓] 2026-02-06 18:54 - `pnpm typecheck` passes across the entire monorepo
+- [✓] 2026-02-06 18:54 - `pnpm lint` passes
+- [✓] 2026-02-06 18:55 - `npx convex dev` deploys without errors
+- [✓] 2026-02-06 18:58 - Fresh visit with no cookies/storage shows location prompt on all feed tabs
+- [✓] 2026-02-06 19:04 - Granting browser geolocation sets cookie, shows location in header, feed shows distances
+- [✓] 2026-02-06 19:11 - Denying browser geolocation sets cookie, dialog stays open with search option
+- [✓] 2026-02-06 19:16 - Searching and selecting a Google autocomplete address (signed in) saves to DB, appears in Saved Addresses, feed uses it
+- [✓] 2026-02-06 19:23 - Searching and selecting a Google autocomplete address (signed out) saves to localStorage, feed uses it
+- [✓] 2026-02-06 19:29 - Signing in after saving anonymous address migrates it to DB and clears localStorage
+- [✓] 2026-02-06 19:33 - Multiple saved addresses: can add, switch active, delete
+- [✓] 2026-02-06 19:37 - Page reload with granted cookie silently re-fetches geolocation without re-prompting
+- [✓] 2026-02-07 20:49 - Add `getSellersForMap` query to `packages/backend/convex/discovery.ts` that fetches all available listings, groups them by `sellerId` using a Map, and for each unique seller resolves: active location (via `getActiveLocationForUser`), seller profile (via `by_user` index), and photo URL (via `ctx.storage.getUrl` on `photoStorageId`). Skip sellers with no location or no profile. Return shape: `{ seller: { userId, username, displayName, photoUrl }, location: { latitude, longitude, address }, listingCount: number, listings: Array<{ _id, title, price, priceUnit?, category }> }`. Cap `listings` array at 3 items; `listingCount` is the real total.
+- [✓] 2026-02-07 20:50 - `pnpm typecheck` passes
+- [✓] 2026-02-07 20:52 - Query returns grouped seller data when called from Convex dashboard or test
+- [✓] 2026-02-07 20:54 - Add `createSellerIcon(photoUrl: string | null, displayName: string, listingCount: number)` function to `apps/web/lib/map-icons.ts`. The icon is a 40x40px circle with 3px solid #2e6f46 border, white background, and drop shadow. If `photoUrl` exists, render an `<img>` element with `object-fit: cover; border-radius: 50%` and an `onerror` handler that hides the image and shows initials fallback. If no `photoUrl`, show initials (first letter of each word in displayName, uppercase, max 2 chars, green text). If `listingCount > 1`, add a badge in the top-right corner (-4px/-4px offset), 18px diameter, green background (#2e6f46), white text, white 2px border, showing the count number. Keep existing `createListingIcon` and `createClusterIcon` functions unchanged.
+- [✓] 2026-02-07 20:55 - Add tests in `apps/web/lib/map-icons.test.ts`: createSellerIcon returns L.DivIcon with correct iconSize/iconAnchor, HTML contains `<img>` when photoUrl provided, HTML contains initials when photoUrl is null, badge appears when listingCount > 1, badge does not appear when listingCount === 1
+- [✓] 2026-02-07 20:55 - `pnpm typecheck` passes
+- [✓] 2026-02-07 20:56 - `pnpm test apps/web/lib/map-icons.test.ts` passes
+- [✓] 2026-02-07 20:58 - In `apps/web/components/discovery/MapAutoZoom.tsx`, generalize the `listings: MapListing[]` prop to `points: Array<{ location: { latitude: number; longitude: number } }>`. Rename internal references from `listings` to `points`. Remove the `MapListing` import. The access pattern (`p.location.latitude`, `p.location.longitude`) stays identical.
+- [✓] 2026-02-07 20:59 - Update `apps/web/components/discovery/MapAutoZoom.test.tsx` — rename the `makeListing` helper to `makePoint` and adjust the type to the generic point shape. All test logic stays identical since only `.location` fields are used.
+- [✓] 2026-02-07 20:59 - `pnpm typecheck` passes
+- [✓] 2026-02-07 21:02 - `pnpm test apps/web/components/discovery/MapAutoZoom.test.tsx` passes
+- [✓] 2026-02-07 21:05 - In `apps/web/components/discovery/DiscoveryMapInner.tsx`, replace the `MapListing` interface with `MapSeller` interface: `{ seller: { userId: string; username: string; displayName: string; photoUrl: string | null }; location: { latitude: number; longitude: number; address: string }; listingCount: number; listings: Array<{ _id: string; title: string; price: number; priceUnit?: string; category: string }> }`. Update props to `sellers: MapSeller[]` and `onSellerClick?: (seller: MapSeller) => void`. Replace the single `listingIcon` useMemo with a per-seller icon map keyed by `seller.userId` using `createSellerIcon`. Update the import from `createListingIcon` to `createSellerIcon`. Remove `formatPrice` helper.
+- [✓] 2026-02-07 21:07 - Replace `<Popup>` with `<Tooltip>` from react-leaflet on each Marker. Tooltip shows on hover with seller displayName, @username, and "N listings" count. This avoids Leaflet's Popup-on-click conflicting with the click handler.
+- [✓] 2026-02-07 21:14 - Update each `<Marker>` to use `key={item.seller.userId}`, `icon={sellerIcons.get(item.seller.userId)}`, and `eventHandlers={{ click: () => onSellerClick?.(item) }}`. Pass `points={sellers}` to `<MapAutoZoom>`.
+- [✓] 2026-02-07 21:15 - Update `apps/web/components/discovery/DiscoveryMapInner.test.tsx` — update mock data to `MapSeller` shape, update icon mock to `createSellerIcon`, verify unique icon per seller, update content assertions from listing title/price to seller name/username, update marker key assertions to use `seller.userId`.
+- [✓] 2026-02-07 21:16 - `pnpm typecheck` passes
+- [✓] 2026-02-07 21:17 - `pnpm test apps/web/components/discovery/DiscoveryMapInner.test.tsx` passes
+- [✓] 2026-02-07 21:18 - In `apps/web/components/discovery/DiscoveryMap.tsx`, update the interface props from `listings: MapListing[]` and `onListingClick` to `sellers: MapSeller[]` and `onSellerClick`. Import and re-export `MapSeller` instead of `MapListing`. Pass updated props through to `DiscoveryMapInner`.
+- [✓] 2026-02-07 21:18 - `pnpm typecheck` passes
+- [✓] 2026-02-07 21:21 - Rename `apps/web/components/discovery/MapListingPanel.tsx` to `MapSellerPanel.tsx`. Rewrite the component with props `{ seller: MapSeller; onClose: () => void }`. Display: seller photo/avatar at top (use the existing Avatar component from `@/components/ui/avatar`), seller displayName + @username, location address, listing count. Below that, show up to 3 listing preview cards from `seller.listings` (each showing title and formatted price). At the bottom, a primary CTA link "View all listings" pointing to `/@${seller.seller.username}`. Keep the same panel positioning (absolute, right side, z-[1000]) and close button pattern as the current MapListingPanel.
+- [✓] 2026-02-07 21:22 - `pnpm typecheck` passes
+- [✓] 2026-02-07 21:25 - In `apps/web/app/(app)/discover/map/MapPageContent.tsx`, swap query to `api.discovery.getSellersForMap`. Replace `selectedListing: MapListing` state with `selectedSeller: MapSeller`. Replace `MapListingPanel` import with `MapSellerPanel`. Update the `onSellerClick` handler to set `selectedSeller`. Render `<MapSellerPanel seller={selectedSeller} onClose={() => setSelectedSeller(null)} />` when a seller is selected. Pass `sellers` and `onSellerClick` props to `<DiscoveryMap>`.
+- [✓] 2026-02-07 21:29 - Update `apps/web/app/(app)/discover/map/MapPageContent.test.tsx` — update mock data to MapSeller shape, replace MapListingPanel mock with MapSellerPanel mock, update DiscoveryMap prop assertions to `sellers`/`onSellerClick`.
+- [✓] 2026-02-07 21:29 - `pnpm typecheck` passes
+- [✓] 2026-02-07 21:29 - `pnpm test apps/web/app/(app)/discover/map/MapPageContent.test.tsx` passes
+- [✓] 2026-02-07 21:32 - In `apps/web/components/discover/CompactMap.tsx`, swap query to `api.discovery.getSellersForMap`. Update type import from `MapListing` to `MapSeller` (from `DiscoveryMapInner`). Rename `mapListings` to `mapSellers` and cast as `MapSeller[]`. Pass `sellers={mapSellers}` to `DiscoveryMapInner`. Add `useRouter` from next/navigation and an `onSellerClick` handler that calls `router.push(\`/@${seller.seller.username}\`)`. Change section heading from "Nearby Listings" to "Nearby Sellers".
+- [✓] 2026-02-07 21:34 - Update `apps/web/components/discover/CompactMap.test.tsx` — update mock data shape to MapSeller, update DiscoveryMapInner prop assertions.
+- [✓] 2026-02-07 21:35 - `pnpm typecheck` passes
+- [✓] 2026-02-07 21:35 - `pnpm test apps/web/components/discover/CompactMap.test.tsx` passes
+- [✓] 2026-02-07 21:35 - Run `pnpm typecheck` across the entire project
+- [✓] 2026-02-07 21:37 - Run `pnpm test` across the entire project and fix any remaining failures
+- [✓] 2026-02-07 21:38 - Delete any leftover references to `MapListingPanel` or `MapListing` type if they exist
+- [✓] 2026-02-07 21:38 - `pnpm typecheck` passes with zero errors
+- [✓] 2026-02-07 21:39 - `pnpm test` passes with zero failures
+- [✓] 2026-02-07 21:40 - No references to `MapListingPanel` or the old `MapListing` type remain in `apps/web/`
+- [✓] 2026-02-08 19:18 - Create `apps/web/components/layout/account-sidebar.tsx` as a client component
+- [✓] 2026-02-08 19:21 - Add nav items with Lucide icons: New Listing (PlusCircle), Following (Heart), Reservations (ShoppingBag), Likes (ThumbsUp), My Listings (Store), Seller Orders (Package), Profile (User), Log out (LogOut)
+- [✓] 2026-02-08 19:22 - Add separator dividers between groups: [New Listing] / [Following, Reservations, Likes, My Listings, Seller Orders] / [Admin Reports (conditional), Profile, Log out]
+- [✓] 2026-02-08 19:23 - Use `usePathname()` to highlight the active nav item with `bg-accent text-accent-foreground`
+- [✓] 2026-02-08 19:24 - Use `useQuery(api.sellerProfiles.getCurrentUserProfile)` to resolve My Listings href to `/@{username}` (fall back to `/profile/setup` if no profile)
+- [✓] 2026-02-08 19:26 - Add conditional Admin Reports link using `useQuery(api.reports.isAdmin)` — same pattern as `AdminNavItem` in `app-nav.tsx`
+- [✓] 2026-02-08 19:27 - Wire Log out to `useClerk().signOut({ redirectUrl: "/" })`
+- [✓] 2026-02-08 19:28 - Style sidebar as `w-56` with sticky positioning `sticky top-[calc(var(--header-height)+1.5rem)]` and solid `bg-background`
+- [✓] 2026-02-08 19:30 - Nav items use `text-sm font-medium` with hover state transitions
+- [✓] 2026-02-08 19:31 - Component renders without errors when imported
+- [✓] 2026-02-08 19:33 - Nav items match the same items in the header dropdown menu in `app-nav.tsx`
+- [✓] 2026-02-08 19:34 - `pnpm typecheck` passes
+- [✓] 2026-02-08 19:34 - `pnpm lint` passes
+- [✓] 2026-02-08 19:36 - Create `apps/web/components/layout/account-layout.tsx` as a client component
+- [✓] 2026-02-08 19:37 - Accept `children` prop
+- [✓] 2026-02-08 19:39 - Render a flex row on desktop: `<AccountSidebar>` on left (`hidden lg:block`), content on right (`flex-1`)
+- [✓] 2026-02-08 19:41 - Use `w-full` on the outer container — the parent `layout-container` in AppLayout constrains width (same as feed/discover)
+- [✓] 2026-02-08 19:42 - Add `gap-8` between sidebar and content
+- [✓] 2026-02-08 19:44 - On mobile (below `lg`), render only children — sidebar is completely hidden
+- [✓] 2026-02-08 19:45 - Component renders without errors when imported
+- [✓] 2026-02-08 19:46 - On desktop (`lg+`), sidebar and content display side by side
+- [✓] 2026-02-08 19:51 - On mobile, only children render — no sidebar visible
+- [✓] 2026-02-08 19:51 - `pnpm typecheck` passes
+- [✓] 2026-02-08 19:51 - `pnpm lint` passes
+- [✓] 2026-02-08 19:53 - Edit `apps/web/app/(app)/following/FollowingPageContent.tsx`
+- [✓] 2026-02-08 19:54 - Import `AccountLayout` from `@/components/layout/account-layout`
+- [✓] 2026-02-08 19:59 - Wrap every return statement's content in `<AccountLayout>...</AccountLayout>` (loading, empty, error, and main content states)
+- [✓] 2026-02-08 20:02 - Keep the existing `w-full max-w-2xl` div inside — it constrains content width within the flex-1 content area
+- [✓] 2026-02-08 20:04 - Following page renders with sidebar on desktop
+- [✓] 2026-02-08 20:09 - Content width unchanged from before on mobile
+- [✓] 2026-02-08 20:09 - `pnpm typecheck` passes
+- [✓] 2026-02-08 20:12 - Edit `apps/web/app/(app)/reservations/ReservationsPageContent.tsx`
+- [✓] 2026-02-08 20:14 - Import `AccountLayout` from `@/components/layout/account-layout`
+- [✓] 2026-02-08 20:19 - Wrap every return statement's content in `<AccountLayout>...</AccountLayout>`
+- [✓] 2026-02-08 20:21 - Keep the existing `w-full max-w-2xl` div inside
+- [✓] 2026-02-08 20:23 - Reservations page renders with sidebar on desktop
+- [✓] 2026-02-08 20:23 - `pnpm typecheck` passes
+- [✓] 2026-02-08 20:26 - Edit `apps/web/app/(app)/likes/LikesPageContent.tsx`
+- [✓] 2026-02-08 20:27 - Import `AccountLayout` from `@/components/layout/account-layout`
+- [✓] 2026-02-08 20:30 - Wrap every return statement's content in `<AccountLayout>...</AccountLayout>`
+- [✓] 2026-02-08 20:32 - Keep the existing `w-full max-w-2xl` div inside
+- [✓] 2026-02-08 20:34 - Likes page renders with sidebar on desktop
+- [✓] 2026-02-08 20:34 - `pnpm typecheck` passes
+- [✓] 2026-02-08 20:37 - Edit `apps/web/app/(app)/seller/orders/SellerOrdersPageContent.tsx`
+- [✓] 2026-02-08 20:39 - Import `AccountLayout` from `@/components/layout/account-layout`
+- [✓] 2026-02-08 20:41 - Wrap every return statement's content in `<AccountLayout>...</AccountLayout>`
+- [✓] 2026-02-08 20:43 - Keep the existing `w-full max-w-2xl` div inside
+- [✓] 2026-02-08 20:45 - Seller Orders page renders with sidebar on desktop
+- [✓] 2026-02-08 20:45 - `pnpm typecheck` passes
+- [✓] 2026-02-08 20:47 - Edit `apps/web/app/(app)/profile/setup/ProfileSetupPageContent.tsx`
+- [✓] 2026-02-08 20:49 - Import `AccountLayout` from `@/components/layout/account-layout`
+- [✓] 2026-02-08 20:50 - Wrap every return statement's content in `<AccountLayout>...</AccountLayout>`
+- [✓] 2026-02-08 20:51 - Keep the existing `w-full max-w-xl` div inside
+- [✓] 2026-02-08 20:53 - Profile Setup page renders with sidebar on desktop
+- [✓] 2026-02-08 20:53 - `pnpm typecheck` passes
+- [✓] 2026-02-08 20:54 - Edit `apps/web/app/(app)/listings/new/NewListingPageContent.tsx`
+- [✓] 2026-02-08 20:56 - Import `AccountLayout` from `@/components/layout/account-layout`
+- [✓] 2026-02-08 20:58 - Wrap every return statement's content in `<AccountLayout>...</AccountLayout>`
+- [✓] 2026-02-08 20:59 - Keep the existing `w-full max-w-xl` div inside
+- [✓] 2026-02-08 21:01 - New Listing page renders with sidebar on desktop
+- [✓] 2026-02-08 21:01 - `pnpm typecheck` passes
+- [✓] 2026-02-08 21:01 - `pnpm typecheck` passes with zero errors
+- [✓] 2026-02-08 21:02 - `pnpm lint` passes with zero errors
+- [✓] 2026-02-08 21:05 - All 6 account pages show sidebar + content side by side on desktop (`lg+`)
+- [✓] 2026-02-08 21:08 - Sidebar highlights the correct active page on each page
+- [✓] 2026-02-08 21:11 - Clicking sidebar items navigates between pages
+- [✓] 2026-02-08 21:14 - Sidebar is completely hidden on mobile (below `lg`)
+- [✓] 2026-02-08 21:17 - Header dropdown menu in `app-nav.tsx` is completely unchanged
+- [✓] 2026-02-08 21:18 - Log out in sidebar signs the user out and redirects to `/`
+- [✓] 2026-02-08 21:22 - Overall page width matches feed/discover (uses same `layout-container`)
+- [✓] 2026-02-08 22:47 - `git mv apps/web/app/(app)/my-listings/page.tsx apps/web/app/(app)/listings/page.tsx`
+- [✓] 2026-02-08 22:49 - `git mv apps/web/app/(app)/my-listings/MyListingsPageContent.tsx apps/web/app/(app)/listings/MyListingsPageContent.tsx`
+- [✓] 2026-02-08 22:49 - Delete empty `apps/web/app/(app)/my-listings/` directory if it remains
+- [✓] 2026-02-08 22:50 - `apps/web/app/(app)/listings/page.tsx` exists and imports `./MyListingsPageContent`
+- [✓] 2026-02-08 22:51 - `apps/web/app/(app)/my-listings/` directory no longer exists
+- [✓] 2026-02-08 22:51 - `pnpm typecheck` passes
+- [✓] 2026-02-08 22:55 - Create `apps/web/app/(app)/listings/orders/` directory
+- [✓] 2026-02-08 22:56 - `git mv apps/web/app/(app)/seller/orders/page.tsx apps/web/app/(app)/listings/orders/page.tsx`
+- [✓] 2026-02-08 22:58 - `git mv apps/web/app/(app)/seller/orders/SellerOrdersPageContent.tsx apps/web/app/(app)/listings/orders/SellerOrdersPageContent.tsx`
+- [✓] 2026-02-08 22:59 - `git mv apps/web/app/(app)/seller/orders/SellerOrdersPageContent.test.tsx apps/web/app/(app)/listings/orders/SellerOrdersPageContent.test.tsx`
+- [✓] 2026-02-08 23:00 - `apps/web/app/(app)/listings/orders/page.tsx` exists
+- [✓] 2026-02-08 23:01 - `apps/web/app/(app)/seller/orders/` directory no longer exists
+- [✓] 2026-02-08 23:04 - `apps/web/app/(app)/seller/connect/` still exists and is untouched
+- [✓] 2026-02-08 23:05 - `pnpm typecheck` passes
+- [✓] 2026-02-08 23:08 - `git mv apps/web/app/(app)/profile/setup/page.tsx apps/web/app/(app)/profile/page.tsx`
+- [✓] 2026-02-08 23:10 - `git mv apps/web/app/(app)/profile/setup/ProfileSetupPageContent.tsx apps/web/app/(app)/profile/ProfileSetupPageContent.tsx`
+- [✓] 2026-02-08 23:11 - `git mv apps/web/app/(app)/profile/setup/ProfileSetupPageContent.test.tsx apps/web/app/(app)/profile/ProfileSetupPageContent.test.tsx`
+- [✓] 2026-02-08 23:11 - Delete empty `apps/web/app/(app)/profile/setup/` directory if it remains
+- [✓] 2026-02-08 23:12 - `apps/web/app/(app)/profile/page.tsx` exists and imports `./ProfileSetupPageContent`
+- [✓] 2026-02-08 23:14 - `apps/web/app/(app)/profile/setup/` directory no longer exists
+- [✓] 2026-02-08 23:14 - `pnpm typecheck` passes
+- [✓] 2026-02-08 23:16 - In `apps/web/components/layout/account-sidebar.tsx`, change My Listings href from `/my-listings` to `/listings`
+- [✓] 2026-02-08 23:17 - Update My Listings active state to: `pathname === "/listings" || (pathname.startsWith("/listings/") && pathname !== "/listings/new" && !pathname.startsWith("/listings/orders"))`
+- [✓] 2026-02-08 23:18 - Change Seller Orders href from `/seller/orders` to `/listings/orders`
+- [✓] 2026-02-08 23:19 - Update Seller Orders active state from `pathname.startsWith("/seller/")` to `pathname.startsWith("/listings/orders")`
+- [✓] 2026-02-08 23:20 - Change Profile href from `/profile/setup` to `/profile`
+- [✓] 2026-02-08 23:21 - Update Profile active state from `pathname === "/profile/setup"` to `pathname === "/profile"`
+- [✓] 2026-02-08 23:23 - Sidebar links point to `/listings`, `/listings/orders`, and `/profile`
+- [✓] 2026-02-08 23:24 - Active state truth table above is satisfied
+- [✓] 2026-02-08 23:24 - `pnpm typecheck` passes
+- [✓] 2026-02-08 23:25 - `pnpm lint` passes
+- [✓] 2026-02-08 23:25 - In `apps/web/components/layout/app-nav.tsx`, change My Listings `<Link href>` from `/my-listings` to `/listings`
+- [✓] 2026-02-08 23:26 - Change Seller Orders `<Link href>` from `/seller/orders` to `/listings/orders`
+- [✓] 2026-02-08 23:27 - Change Profile `<Link href>` from `/profile/setup` to `/profile`
+- [✓] 2026-02-08 23:30 - Dropdown menu links point to `/listings`, `/listings/orders`, and `/profile`
+- [✓] 2026-02-08 23:30 - `pnpm typecheck` passes
+- [✓] 2026-02-08 23:31 - `pnpm lint` passes
+- [✓] 2026-02-08 23:32 - In `apps/web/components/layout/account-sidebar.test.tsx`, update href assertion for My Listings from `/my-listings` to `/listings`
+- [✓] 2026-02-08 23:32 - Update href assertion for Seller Orders from `/seller/orders` to `/listings/orders`
+- [✓] 2026-02-08 23:33 - Update href assertion for Profile from `/profile/setup` to `/profile`
+- [✓] 2026-02-08 23:34 - Update test "always links My Listings to /my-listings" — rename and change assertion to `/listings`
+- [✓] 2026-02-08 23:35 - Remove test "highlights Seller Orders when on the seller connect page" — `/seller/connect` no longer highlights Seller Orders after the active state change
+- [✓] 2026-02-08 23:36 - Update test "highlights Seller Orders when on the seller orders page" — change `mockPathname` from `/seller/orders` to `/listings/orders`
+- [✓] 2026-02-08 23:37 - Update test "highlights Profile when on the profile setup page" — change `mockPathname` from `/profile/setup` to `/profile` and rename test
+- [✓] 2026-02-08 23:38 - Update click test "clicking My Listings navigates to /my-listings" — rename and change href assertion to `/listings`
+- [✓] 2026-02-08 23:39 - Update click test "clicking Seller Orders navigates to /seller/orders" — rename and change href assertion to `/listings/orders`
+- [✓] 2026-02-08 23:40 - Update click test "clicking Profile navigates to /profile/setup" — rename and change href assertion to `/profile`
+- [✓] 2026-02-08 23:41 - Add new test: verify `/listings/orders` does NOT highlight My Listings (set `mockPathname = "/listings/orders"`, assert My Listings does not have `bg-accent`, assert Seller Orders does have `bg-accent`)
+- [✓] 2026-02-08 23:42 - Run `cd apps/web && pnpm vitest run components/layout/account-sidebar.test.tsx` — all tests pass
+- [✓] 2026-02-08 23:45 - No test references `/my-listings`, `/seller/orders`, or `/profile/setup`
+- [✓] 2026-02-08 23:45 - In `apps/web/components/layout/app-nav.test.tsx`, update href assertion for My Listings from `/my-listings` to `/listings`
+- [✓] 2026-02-08 23:46 - Update href assertion for Seller Orders from `/seller/orders` to `/listings/orders`
+- [✓] 2026-02-08 23:47 - Update href assertion for Profile from `/profile/setup` to `/profile`
+- [✓] 2026-02-08 23:48 - Update test "dropdown menu always links My Listings to /my-listings" — rename and change assertion to `/listings`
+- [✓] 2026-02-08 23:49 - Run `cd apps/web && pnpm vitest run components/layout/app-nav.test.tsx` — all tests pass
+- [✓] 2026-02-08 23:51 - No test references `/my-listings`, `/seller/orders`, or `/profile/setup`
+- [✓] 2026-02-08 23:52 - In `apps/web/app/metadata.test.ts`, update the Seller Orders import path from `./(app)/seller/orders/page` to `./(app)/listings/orders/page`
+- [✓] 2026-02-08 23:54 - Update the Profile Setup import path from `./(app)/profile/setup/page` to `./(app)/profile/page`
+- [✓] 2026-02-08 23:56 - Update any test names or describe block labels that reference the old paths
+- [✓] 2026-02-08 23:57 - Run `cd apps/web && pnpm vitest run app/metadata.test.ts` — all tests pass
+- [✓] 2026-02-08 23:57 - `pnpm typecheck` passes with zero errors
+- [✓] 2026-02-08 23:58 - `pnpm lint` passes with zero errors
+- [✓] 2026-02-08 23:58 - Run `cd apps/web && pnpm vitest run components/layout/account-sidebar.test.tsx` — all pass
+- [✓] 2026-02-08 23:59 - Run `cd apps/web && pnpm vitest run components/layout/app-nav.test.tsx` — all pass
+- [✓] 2026-02-08 23:59 - Run `cd apps/web && pnpm vitest run app/metadata.test.ts` — all pass
+- [✓] 2026-02-09 00:00 - Run `cd apps/web && pnpm vitest run "app/(app)/listings/orders/SellerOrdersPageContent.test.tsx"` — all pass
+- [✓] 2026-02-09 00:02 - `apps/web/app/(app)/my-listings/` directory does not exist
+- [✓] 2026-02-09 00:04 - `apps/web/app/(app)/seller/orders/` directory does not exist
+- [✓] 2026-02-09 00:05 - `apps/web/app/(app)/profile/setup/` directory does not exist
+- [✓] 2026-02-09 00:06 - `apps/web/app/(app)/seller/connect/` still exists and is untouched
+- [✓] 2026-02-08 21:49 - Add `interstitials` and `emptyStateComponent` to the `ListingFeedProps` interface
+- [✓] 2026-02-08 21:50 - Modify the `displayResults.map()` render loop (line 117) to interleave interstitial cards after every `interval` listings. Each interstitial wraps in a `div` with `col-span-full` and is keyed `interstitial-{index}`. Only insert if `interstitialIndex < interstitials.cards.length`
+- [✓] 2026-02-08 21:51 - Modify the empty state block (lines 103-112) to render `emptyStateComponent` when provided, falling back to the existing default text
+- [✓] 2026-02-08 21:52 - Existing `/feed` page renders identically (no props passed = no behavior change)
+- [✓] 2026-02-08 21:53 - `pnpm typecheck` passes
+- [✓] 2026-02-08 21:54 - `pnpm lint` passes
+- [✓] 2026-02-08 21:57 - Add `FeedPageContentProps` interface with the four optional props. Update the component signature to accept and destructure them
+- [✓] 2026-02-08 21:59 - Render `{banner}` above the existing `grid` div (before the `<div className="grid grid-cols-1 lg:grid-cols-[1fr_320px]...">`)
+- [✓] 2026-02-08 22:02 - Pass `interstitials` and `emptyStateComponent` props through to the `<ListingFeed>` component
+- [✓] 2026-02-08 22:13 - Render `{sidebarExtra}` as the first child inside `<DiscoverSidebar>`, above the existing `<div className="space-y-4">` (or inside it, above `<SeasonalCard />`)
+- [✓] 2026-02-08 22:15 - Existing `/feed` page renders identically (no props passed = no behavior change)
+- [✓] 2026-02-08 22:16 - `pnpm typecheck` passes
+- [✓] 2026-02-08 22:16 - `pnpm lint` passes
+- [✓] 2026-02-08 22:18 - Create `PromoBannerContent.ts` with a typed config object for the `"welcome"` variant containing: headline (`PRODUCT_TAGLINE_SHORT`), description (from `PRODUCT_TAGLINE_LONG`), primaryCTA (`{ label: "Browse Local Goods", href: "#feed" }`), secondaryCTA (`{ label: "Start Selling", href: "/sign-up" }`). Add typed stubs for `"seasonal"` and `"announcement"` variants (types defined, content empty)
+- [✓] 2026-02-08 22:21 - Create `PromoBanner.tsx` with a `variant` prop (`"welcome" | "seasonal" | "announcement"`). The welcome variant renders: `bg-accent` background, `text-accent-foreground` text, headline in `text-2xl font-bold tracking-tight`, description in `text-sm text-accent-foreground/80`, two Button CTAs side by side on desktop (`sm:flex-row`), stacked on mobile. Compact: `py-8 px-4` padding. Not dismissible
+- [✓] 2026-02-08 22:26 - Add dismissal support infrastructure: a `dismissible` boolean (false for welcome, true for seasonal/announcement) with localStorage persistence keyed by `promo-banner-dismissed-{variantId}`. Seasonal/announcement variants return `null` for now (stub)
+- [✓] 2026-02-08 22:27 - `<PromoBanner variant="welcome" />` renders a compact accent-colored banner with tagline and two CTAs
+- [✓] 2026-02-08 22:28 - Banner is responsive: CTAs stack vertically on mobile, horizontal on `sm:`
+- [✓] 2026-02-08 22:30 - `<PromoBanner variant="seasonal" />` renders nothing (stubbed)
+- [✓] 2026-02-08 22:30 - `pnpm typecheck` passes
+- [✓] 2026-02-08 22:30 - `pnpm lint` passes
+- [✓] 2026-02-08 22:32 - Create `CategoryStrip.tsx` that imports `LISTING_CATEGORIES` from `@fruitland-market/backend/convex/constants`. Render a horizontal flex row with `overflow-x-auto` and the `scrollbar-hidden` class. Use `-mx-4 px-4` for edge-bleed scroll on mobile. Each category is a Next.js `Link` to `/feed?category={value}` styled as a pill: `rounded-full bg-muted px-3 py-1.5 text-sm font-medium whitespace-nowrap hover:bg-muted/80 transition-colors`. Display emoji + label for each item. Add `gap-2` between pills
+- [✓] 2026-02-08 22:34 - Component renders all 7 categories (Produce, Eggs & Dairy, Baked Goods, Plants, Handmade, Preserves, Wellness) with emojis
+- [✓] 2026-02-08 22:37 - Each pill links to `/feed?category={categoryValue}`
+- [✓] 2026-02-08 22:39 - Horizontal scroll works on mobile without visible scrollbar
+- [✓] 2026-02-08 22:41 - `pnpm typecheck` passes
+- [✓] 2026-02-08 22:41 - `pnpm lint` passes
+- [✓] 2026-02-08 22:43 - Create `HowItWorksInterstitial.tsx` — compact 3-step explanation: Browse, Reserve, Pick Up. Use icons from lucide-react (Search, Calendar, PackageCheck — same as existing `HowItWorks` component). Render as a horizontal row on desktop (`sm:grid-cols-3`), vertical stack on mobile. Each step: icon in `h-10 w-10 rounded-full bg-accent/10 text-accent` + title + short description
+- [✓] 2026-02-08 22:45 - Create `TrustSafetyInterstitial.tsx` — "Safe Local Meetups" heading with 3 safety highlights: "Meet in public places", "Community-backed marketplace", "Easy reporting tools". Use Shield icon from lucide-react. Include a `text-primary hover:underline` link "Read Safety Tips" pointing to `/safety`
+- [✓] 2026-02-08 22:47 - Create `SellerCTAInterstitial.tsx` — "Have something to sell?" heading, one-sentence pitch ("No listing fees, flexible schedule, keep more of what you earn"), single Button CTA "Start Selling" linking to `/sign-up`
+- [✓] 2026-02-08 22:48 - Create `index.ts` barrel export re-exporting all three interstitial components
+- [✓] 2026-02-08 22:50 - All three interstitial cards render inside a `Card` with `border-l-4 border-accent`
+- [✓] 2026-02-08 22:52 - `HowItWorksInterstitial` is horizontal on desktop, stacked on mobile
+- [✓] 2026-02-08 22:53 - `SellerCTAInterstitial` CTA links to `/sign-up`
+- [✓] 2026-02-08 22:56 - `TrustSafetyInterstitial` links to `/safety`
+- [✓] 2026-02-08 22:56 - `pnpm typecheck` passes
+- [✓] 2026-02-08 22:57 - `pnpm lint` passes
+- [✓] 2026-02-08 22:58 - Create `apps/web/components/marketing/WelcomeSidebarCard.tsx` — a `Card` with `CardHeader` ("New to Fruitland?") and `CardContent` containing 3 compact feature bullets: Seasonal Goods (ShoppingBasket icon), Neighborly Pickup (MapPin icon), Community First (Users icon). Each: icon + bold title + one-line description. Include "Learn More →" link to `/how-it-works` at bottom
+- [✓] 2026-02-08 23:00 - Create `apps/web/components/marketing/EmptyFeedFallback.tsx` — renders when feed has 0 listings. Include the existing `HowItWorks` component, a heading "Be the first seller in your area", and a Button CTA "Start Selling" linking to `/sign-up`. Import HowItWorks from `@/components/how-it-works/HowItWorks`
+- [✓] 2026-02-08 23:00 - `WelcomeSidebarCard` renders a card with 3 feature bullets and a learn-more link
+- [✓] 2026-02-08 23:02 - `EmptyFeedFallback` renders HowItWorks content and a seller CTA
+- [✓] 2026-02-08 23:02 - `pnpm typecheck` passes
+- [✓] 2026-02-08 23:02 - `pnpm lint` passes
+- [✓] 2026-02-08 23:04 - Create `HomepageContent.tsx` as a `"use client"` component. Import `FeedPageContent` from `./feed/FeedPageContent`. Import `PromoBanner`, `CategoryStrip`, `WelcomeSidebarCard`, `EmptyFeedFallback`, and all three interstitial components. Render `<FeedPageContent>` passing: `banner` prop as a fragment containing `<PromoBanner variant="welcome" />` then `<CategoryStrip />`, `interstitials` prop with the three interstitial components and `interval: 6`, `sidebarExtra` as `<WelcomeSidebarCard />`, `emptyStateComponent` as `<EmptyFeedFallback />`
+- [✓] 2026-02-08 23:06 - Create `apps/web/app/(app)/page.tsx` as an async server component. Import `auth` from `@clerk/nextjs/server` and `redirect` from `next/navigation`. Call `const { userId } = await auth()`. If `userId` exists, call `redirect("/feed")`. Otherwise render `<Suspense><HomepageContent /></Suspense>`. Export metadata with `title: PRODUCT_NAME` and `description: PRODUCT_TAGLINE_LONG`
+- [✓] 2026-02-08 23:07 - Delete `apps/web/app/page.tsx` (the old standalone marketing splash with HeroSection, FeaturedListings, HowItWorks, SellerCTA)
+- [✓] 2026-02-08 23:15 - Unauthenticated visit to `/` shows: header, welcome banner, category strip, live feed with interstitials every 6 cards, sidebar with WelcomeSidebarCard + SeasonalCard + NearbySellersCard + TrendingNowCard, footer
+- [✓] 2026-02-08 23:18 - Authenticated visit to `/` redirects to `/feed` (server-side, no flash)
+- [✓] 2026-02-08 23:20 - `/feed` renders identically to before (no banner, no interstitials, no category strip)
+- [✓] 2026-02-08 23:25 - Header logo link (pointing to `/`) works correctly for both auth states
+- [✓] 2026-02-08 23:30 - Mobile: banner CTAs stack vertically, categories scroll horizontally, no sidebar visible, interstitials carry educational content
+- [✓] 2026-02-08 23:30 - `pnpm typecheck` passes
+- [✓] 2026-02-08 23:30 - `pnpm lint` passes
+- [✓] 2026-02-09 22:05 - Define Convex schema in `convex/schema.ts` — all 6 tables (`leads`, `clusters`, `emails`, `activities`, `emailTemplates`, `campaigns`) with all fields from SPEC.md data model. Use Convex `v` validators. Add indexes: `leads` by status, by clusterId, by city, by name; `activities` by leadId; `emails` by leadId, by smartleadCampaignId; `campaigns` by status.
+- [✓] 2026-02-09 22:07 - Create the app layout component at `src/components/layout/app-layout.tsx` — sidebar with nav links (Dashboard `/`, Leads `/leads`, Map `/map`, Clusters `/clusters`, Campaigns `/campaigns`, Settings `/settings`), top bar with page title, and main content area. Match the mockup sidebar structure (FM logo, brand title "FM Outreach", subtitle "Seller CRM", footer with "Internal tool" pill). Use shadcn Button for nav items. Sidebar should highlight the active route.
+- [✓] 2026-02-09 22:09 - Create the root layout at `src/app/layout.tsx` — wrap with ConvexProvider, import globals.css, set metadata title "FM Outreach". Create `src/app/providers.tsx` with ConvexClientProvider.
+- [✓] 2026-02-09 22:10 - Create placeholder page at `src/app/page.tsx` (Dashboard) — render AppLayout with a heading "Dashboard" and a paragraph "Coming in Phase 10"
+- [✓] 2026-02-09 22:11 - Create placeholder page at `src/app/leads/page.tsx` — render AppLayout with heading "Leads" and paragraph "Coming in Phase 3"
+- [✓] 2026-02-09 22:11 - Create placeholder page at `src/app/leads/[id]/page.tsx` — render AppLayout with heading "Lead Detail" and paragraph "Coming in Phase 3"
+- [✓] 2026-02-09 22:12 - Create placeholder page at `src/app/map/page.tsx` — render AppLayout with heading "Map" and paragraph "Coming in Phase 4"
+- [✓] 2026-02-09 22:13 - Create placeholder page at `src/app/clusters/page.tsx` — render AppLayout with heading "Clusters" and paragraph "Coming in Phase 4"
+- [✓] 2026-02-09 22:14 - Create placeholder page at `src/app/campaigns/page.tsx` — render AppLayout with heading "Campaigns" and paragraph "Coming in Phase 8"
+- [✓] 2026-02-09 22:15 - Create placeholder page at `src/app/settings/page.tsx` — render AppLayout with heading "Settings" and paragraph "Coming in Phase 5"
+- [✓] 2026-02-09 22:17 - Create seed data helper functions in `convex/seedHelpers.ts` — `createTestLead(ctx, overrides)` and `createTestActivity(ctx, overrides)` that insert records with sensible defaults. These are for development testing only.
+- [✓] 2026-02-09 22:19 - `pnpm dev` runs without errors
+- [✓] 2026-02-09 22:24 - `npx convex dev` syncs schema without errors
+- [✓] 2026-02-09 22:25 - Navigating between all 7 routes works (Dashboard, Leads, Lead Detail, Map, Clusters, Campaigns, Settings)
+- [✓] 2026-02-09 22:26 - Sidebar highlights the active page
+- [✓] 2026-02-09 22:28 - `pnpm typecheck` passes (add `"typecheck": "tsc --noEmit"` to package.json scripts if missing)
+- [✓] 2026-02-09 22:28 - `pnpm lint` passes
+- [✓] 2026-02-09 22:55 - Create a CSV parsing utility in `convex/lib/csvParser.ts` — parse CSV text into rows of key-value pairs. Handle quoted fields (some addresses contain commas). No external dependency needed — use a simple RFC 4180 parser.
+- [✓] 2026-02-09 22:58 - Create the seed mutation in `convex/seeds/importLeads.ts` — Convex action that takes `{ csvContent: string, filename: string }`. Hardcoded column mapping: `Name` → `name`, `Email address` → `contactEmail`, `URL` → `website`, `Instagram` → `socialLinks.instagram`, `Phone` → `contactPhone`, `Address` → `address`, `Town / City` → `city`, `Hours` → `notes`, `Categories` → used to derive `type`. Derive type: if Categories contains "Farmer's Market" → `farmers_market`, else → `farm`. Set `source: "spreadsheet_import"`, `status: "new_lead"`, `province: "ON"`, `consentSource: "spreadsheet_import - [filename] - [date]"`, `createdAt` and `updatedAt` to `Date.now()`, `followUpCount: 0`.
+- [✓] 2026-02-09 22:59 - Add deduplication to the seed mutation — before inserting, query for existing lead with matching name+city (case-insensitive, trimmed). If found, skip the row. Track counts: inserted, skipped (duplicate), errored.
+- [✓] 2026-02-09 23:00 - Create a seed runner action in `convex/seeds/runSeed.ts` — Convex action that reads both CSV files (store CSV content as string arguments or use Convex file storage), calls the import mutation for each, and returns combined results `{ farms: { inserted, skipped, errors }, markets: { inserted, skipped, errors } }`.
+- [✓] 2026-02-09 23:02 - Create a batch geocoding action in `convex/seeds/geocodeLeads.ts` — Convex action that queries all leads where `latitude` is undefined, calls Google Geocoding API (`https://maps.googleapis.com/maps/api/geocode/json?address={encoded_address}&key={KEY}`) for each, and patches the lead with `latitude` and `longitude`. Process in batches of 10 with 200ms delay between batches to respect rate limits. Log results: geocoded count, failed count, already-had-coords count.
+- [✓] 2026-02-09 23:03 - Create a Node.js seed script at `scripts/seed.ts` — reads `data/farms.csv` and `data/farmers-markets.csv` from disk, calls the Convex seed action via the Convex client. Include instructions in a comment at the top for how to run it: `npx tsx scripts/seed.ts`. After seeding, trigger the geocoding action.
+- [✓] 2026-02-09 23:07 - Running the seed script imports ~446 leads (278 farms + 167 markets, minus any cross-file duplicates)
+- [✓] 2026-02-09 23:09 - Running the seed script a second time inserts 0 new records (all skipped as duplicates)
+- [✓] 2026-02-09 23:12 - Leads visible in Convex dashboard with correct field mapping
+- [✓] 2026-02-09 23:14 - Leads with type `farmers_market` have Categories containing "Farmer's Market"
+- [✓] 2026-02-09 23:16 - After geocoding, most leads have latitude/longitude populated (some addresses may fail)
+- [✓] 2026-02-09 23:17 - `pnpm typecheck` passes
+- [✓] 2026-02-09 23:26 - Create Convex query `convex/leads.ts:list` — paginated leads query with optional filters: `status`, `type`, `clusterId`, `hasEmail` (boolean), `hasSocial` (boolean), `source`, `needsFollowUp` (where `nextFollowUpAt` <= now). Support sorting by `name`, `city`, `status`, `updatedAt`. Default sort: `name` ascending. Return first 50 results with cursor for pagination.
+- [✓] 2026-02-09 23:28 - Create Convex query `convex/leads.ts:search` — text search by name or city (case-insensitive prefix match). Return matching leads up to 50.
+- [✓] 2026-02-09 23:30 - Create the leads table page at `src/app/leads/page.tsx` — replace placeholder. Render a data table with columns: checkbox (for multi-select), Name, Type, City, Status (as colored Badge), Contact Email, Social (FB/IG indicator badges), Last Activity date, Follow-up Due (date or "Overdue" in red). Clicking a row navigates to `/leads/[id]`.
+- [✓] 2026-02-09 23:33 - Create filter bar component at `src/components/leads/lead-filters.tsx` — filter controls above the table: Status dropdown (all pipeline stages), Type dropdown (farm, farmers_market, etc.), Has Email toggle, Has Social toggle, Source dropdown, Needs Follow-up toggle. Active filters shown as dismissible pills. Use shadcn Select and Badge components.
+- [✓] 2026-02-09 23:35 - Create search input at `src/components/leads/lead-search.tsx` — text input above filters with search icon. Debounce 300ms. Searches name and city fields.
+- [✓] 2026-02-09 23:39 - Create bulk action bar at `src/components/leads/bulk-actions.tsx` — appears when 1+ rows are selected via checkbox. Shows selected count and action buttons: "Change Status" (dropdown), "Assign to Cluster" (dropdown). Selecting an action creates a Convex mutation to update all selected leads.
+- [✓] 2026-02-09 23:40 - Create Convex mutations `convex/leads.ts:bulkUpdateStatus` and `convex/leads.ts:bulkAssignCluster` — take array of lead IDs and new value, update all, log activity on each.
+- [✓] 2026-02-09 23:41 - Create Convex query `convex/leads.ts:get` — get a single lead by ID with all fields.
+- [✓] 2026-02-09 23:43 - Create lead detail page at `src/app/leads/[id]/page.tsx` — replace placeholder. Full profile layout: header with name, city, type, status badge. Two-column layout below: left column has contact info, business details, CASL consent source; right column has activity timeline.
+- [✓] 2026-02-09 23:47 - Create inline editing for lead detail fields — clicking a field value turns it into an input/textarea. Save on blur or Enter. Create Convex mutation `convex/leads.ts:update` that patches any subset of lead fields and sets `updatedAt`.
+- [✓] 2026-02-09 23:50 - Create status selector component at `src/components/leads/status-selector.tsx` — dropdown showing all pipeline stages with color indicators. Changing status calls `convex/leads.ts:updateStatus` mutation which updates the status AND logs a `status_changed` activity with `{ oldStatus, newStatus }` in metadata.
+- [✓] 2026-02-09 23:51 - Create Convex query `convex/activities.ts:listByLead` — get all activities for a lead, sorted by `createdAt` descending. Paginate at 20.
+- [✓] 2026-02-09 23:53 - Create activity timeline component at `src/components/leads/activity-timeline.tsx` — vertical timeline with dot indicators. Each item shows: activity type icon, description, relative timestamp (e.g., "2 hours ago"), channel badge if applicable. Different icon/color per activity type.
+- [✓] 2026-02-09 23:57 - Create manual activity logging buttons at `src/components/leads/log-activity.tsx` — three buttons below the timeline: "Add Note", "Log Call", "Log Social DM". Each opens a Dialog with a textarea for description and (for Social DM) a channel selector (Facebook/Instagram). Submitting creates an activity record via `convex/activities.ts:create` mutation.
+- [✓] 2026-02-09 23:57 - Create Convex mutation `convex/activities.ts:create` — insert activity record with `leadId`, `type`, `channel`, `description`, `metadata`, `createdAt`. Also update the lead's `updatedAt`.
+- [✓] 2026-02-10 00:00 - Create follow-up reminder component at `src/components/leads/follow-up-reminder.tsx` — on lead detail, show current next follow-up date (or "None set"). "Set Reminder" button opens a date picker. Selecting a date calls `convex/leads.ts:setFollowUp` mutation which sets `nextFollowUpAt` and logs activity.
+- [✓] 2026-02-10 00:01 - Add overdue/due-today indicator to lead detail header — if `nextFollowUpAt` is past, show red "Overdue" badge. If today, show amber "Due Today" badge.
+- [✓] 2026-02-10 00:06 - Leads table loads and displays all ~446 seeded leads
+- [✓] 2026-02-10 00:08 - Sorting by Name, City, Status works correctly
+- [✓] 2026-02-10 00:09 - Filtering by status, type, has-email narrows results
+- [✓] 2026-02-10 00:10 - Searching "Niagara" returns leads with Niagara in name or city
+- [✓] 2026-02-10 00:12 - Clicking a lead row navigates to `/leads/[id]` with full detail
+- [✓] 2026-02-10 00:13 - Editing a lead field inline saves to Convex and reflects immediately
+- [✓] 2026-02-10 00:15 - Changing status logs an activity that appears in the timeline
+- [✓] 2026-02-10 00:17 - "Add Note" creates a note activity visible in the timeline
+- [✓] 2026-02-10 00:18 - Setting a follow-up date shows the due indicator
+- [✓] 2026-02-10 00:20 - Bulk selecting 3 leads and changing status updates all 3
+- [✓] 2026-02-10 00:21 - `pnpm typecheck` passes
