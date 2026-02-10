@@ -48,6 +48,7 @@ import type * as smartlead_client from "../smartlead/client.js";
 import type * as smartlead_rateLimiter from "../smartlead/rateLimiter.js";
 import type * as smartlead_unsubscribe from "../smartlead/unsubscribe.js";
 import type * as smartlead_webhookHandlers from "../smartlead/webhookHandlers.js";
+import type * as social_generateDM from "../social/generateDM.js";
 
 import type {
   ApiFromModules,
@@ -96,6 +97,7 @@ declare const fullApi: ApiFromModules<{
   "smartlead/rateLimiter": typeof smartlead_rateLimiter;
   "smartlead/unsubscribe": typeof smartlead_unsubscribe;
   "smartlead/webhookHandlers": typeof smartlead_webhookHandlers;
+  "social/generateDM": typeof social_generateDM;
 }>;
 
 /**
