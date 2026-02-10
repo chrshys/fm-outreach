@@ -2,10 +2,18 @@
 
 import "leaflet/dist/leaflet.css"
 
-import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet"
+import {
+  MapContainer,
+  TileLayer,
+  CircleMarker,
+  Circle,
+  Popup,
+  Tooltip,
+} from "react-leaflet"
 
 import { MarkerPopup } from "./marker-popup"
 import { getStatusColor } from "./status-colors"
+import { getClusterColor } from "./cluster-colors"
 
 const NIAGARA_CENTER: [number, number] = [43.08, -79.08]
 const DEFAULT_ZOOM = 8
@@ -22,11 +30,20 @@ type LeadMarker = {
   clusterId?: string
 }
 
-type MapContentProps = {
-  leads: LeadMarker[]
+export type ClusterBoundary = {
+  _id: string
+  name: string
+  centerLat: number
+  centerLng: number
+  radiusKm: number
 }
 
-export default function MapContent({ leads }: MapContentProps) {
+type MapContentProps = {
+  leads: LeadMarker[]
+  clusters?: ClusterBoundary[]
+}
+
+export default function MapContent({ leads, clusters = [] }: MapContentProps) {
   return (
     <MapContainer
       center={NIAGARA_CENTER}
@@ -37,6 +54,27 @@ export default function MapContent({ leads }: MapContentProps) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      {clusters.map((cluster, index) => {
+        const color = getClusterColor(index)
+        return (
+          <Circle
+            key={cluster._id}
+            center={[cluster.centerLat, cluster.centerLng]}
+            radius={cluster.radiusKm * 1000}
+            pathOptions={{
+              fillColor: color,
+              color: color,
+              weight: 2,
+              opacity: 0.6,
+              fillOpacity: 0.15,
+            }}
+          >
+            <Tooltip direction="center" permanent={false}>
+              {cluster.name}
+            </Tooltip>
+          </Circle>
+        )
+      })}
       {leads.map((lead) => {
         const color = getStatusColor(lead.status)
         return (

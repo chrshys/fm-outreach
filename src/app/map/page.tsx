@@ -40,7 +40,16 @@ export default function MapPage() {
   return (
     <AppLayout>
       <div className="relative h-[calc(100vh-73px)] -m-6">
-        <MapContent leads={filteredLeads} />
+        <MapContent
+          leads={filteredLeads}
+          clusters={(clusters ?? []).map((c) => ({
+            _id: c._id,
+            name: c.name,
+            centerLat: c.centerLat,
+            centerLng: c.centerLng,
+            radiusKm: c.radiusKm,
+          }))}
+        />
         <MapFilters
           value={filters}
           onChange={setFilters}

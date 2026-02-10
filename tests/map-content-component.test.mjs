@@ -9,19 +9,19 @@ test("imports leaflet CSS", () => {
 })
 
 test("uses MapContainer from react-leaflet", () => {
-  assert.match(source, /import\s+\{.*MapContainer.*\}\s+from\s+"react-leaflet"/)
+  assert.match(source, /import\s+\{[\s\S]*MapContainer[\s\S]*\}\s+from\s+"react-leaflet"/)
   assert.match(source, /<MapContainer/)
 })
 
 test("uses TileLayer with OpenStreetMap tiles", () => {
-  assert.match(source, /import\s+\{.*TileLayer.*\}\s+from\s+"react-leaflet"/)
+  assert.match(source, /import\s+\{[\s\S]*TileLayer[\s\S]*\}\s+from\s+"react-leaflet"/)
   assert.match(source, /<TileLayer/)
   assert.match(source, /tile\.openstreetmap\.org/)
 })
 
 test("uses CircleMarker and Popup from react-leaflet", () => {
-  assert.match(source, /import\s+\{.*CircleMarker.*\}\s+from\s+"react-leaflet"/)
-  assert.match(source, /import\s+\{.*Popup.*\}\s+from\s+"react-leaflet"/)
+  assert.match(source, /import\s+\{[\s\S]*CircleMarker[\s\S]*\}\s+from\s+"react-leaflet"/)
+  assert.match(source, /import\s+\{[\s\S]*Popup[\s\S]*\}\s+from\s+"react-leaflet"/)
   assert.match(source, /<CircleMarker/)
   assert.match(source, /<Popup/)
 })
