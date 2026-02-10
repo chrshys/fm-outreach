@@ -44,6 +44,19 @@ test("create sets updatedAt timestamp", () => {
   assert.match(source, /updatedAt:\s*now/)
 })
 
+test("create accepts optional targetLeadIds argument", () => {
+  assert.match(source, /targetLeadIds:\s*v\.optional\(v\.array\(v\.id\("leads"\)\)\)/)
+})
+
 test("create returns the inserted campaign id", () => {
   assert.match(source, /return\s+ctx\.db\.insert\(/)
+})
+
+test("create handler does not interact with Smartlead", () => {
+  const handlerMatch = source.match(
+    /export const create = mutation\(\{[\s\S]*?handler:\s*async\s*\(ctx,\s*args\)\s*=>\s*\{([\s\S]*?)\n\s*\},?\n\}\)/,
+  )
+  assert.ok(handlerMatch, "should find create handler body")
+  const handlerBody = handlerMatch[1]
+  assert.ok(!handlerBody.toLowerCase().includes("smartlead"), "create handler should not reference smartlead")
 })
