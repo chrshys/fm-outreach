@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useMutation, useQuery } from "convex/react"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Circle, Eye, EyeOff, Loader2 } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
 
 import { AppLayout } from "@/components/layout/app-layout"
@@ -24,6 +24,29 @@ const API_KEY_FIELDS = [
   { key: "google_places_api_key", label: "Google Places API Key" },
   { key: "hunter_api_key", label: "Hunter.io API Key" },
   { key: "anthropic_api_key", label: "Anthropic API Key" },
+] as const
+
+const DOMAIN_CHECKLIST = [
+  {
+    id: "spf",
+    label: "SPF record configured",
+    description: "Add a TXT record to authorize your sending server.",
+  },
+  {
+    id: "dkim",
+    label: "DKIM configured",
+    description: "Publish your DKIM public key as a DNS TXT record.",
+  },
+  {
+    id: "dmarc",
+    label: "DMARC configured",
+    description: "Add a DMARC policy to instruct receivers on failed checks.",
+  },
+  {
+    id: "warmup",
+    label: "Warmup period complete",
+    description: "Gradually increase sending volume over 2\u20134 weeks.",
+  },
 ] as const
 
 type ApiKeyField = (typeof API_KEY_FIELDS)[number]["key"]
@@ -280,6 +303,29 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Domain Configuration Card */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Domain Configuration</CardTitle>
+          <CardDescription>
+            Complete these steps before sending outreach emails.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-3">
+            {DOMAIN_CHECKLIST.map((item) => (
+              <li key={item.id} className="flex items-start gap-3">
+                <Circle className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{item.label}</p>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
     </AppLayout>
   )
 }
