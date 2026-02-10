@@ -11,6 +11,7 @@
 import type * as activities from "../activities.js";
 import type * as clusters from "../clusters.js";
 import type * as enrichment_googlePlaces from "../enrichment/googlePlaces.js";
+import type * as enrichment_hunter from "../enrichment/hunter.js";
 import type * as enrichment_websiteScraper from "../enrichment/websiteScraper.js";
 import type * as leads from "../leads.js";
 import type * as lib_activitiesList from "../lib/activitiesList.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   activities: typeof activities;
   clusters: typeof clusters;
   "enrichment/googlePlaces": typeof enrichment_googlePlaces;
+  "enrichment/hunter": typeof enrichment_hunter;
   "enrichment/websiteScraper": typeof enrichment_websiteScraper;
   leads: typeof leads;
   "lib/activitiesList": typeof lib_activitiesList;
