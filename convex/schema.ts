@@ -177,6 +177,7 @@ export default defineSchema({
         v.literal("generated"),
         v.literal("edited"),
         v.literal("approved"),
+        v.literal("rejected"),
       ),
     ),
     generatedAt: v.number(),

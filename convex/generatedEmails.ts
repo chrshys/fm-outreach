@@ -63,12 +63,53 @@ export const updateStatus = mutation({
       v.literal("generated"),
       v.literal("edited"),
       v.literal("approved"),
+      v.literal("rejected"),
     ),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.emailId, {
       status: args.status,
     })
+  },
+})
+
+export const bulkUpdateStatus = mutation({
+  args: {
+    campaignId: v.id("campaigns"),
+    status: v.union(
+      v.literal("approved"),
+      v.literal("rejected"),
+    ),
+    excludeRejected: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const emails = await ctx.db
+      .query("generatedEmails")
+      .withIndex("by_campaignId", (q) => q.eq("campaignId", args.campaignId))
+      .collect()
+
+    let updated = 0
+    for (const email of emails) {
+      const currentStatus = email.status ?? "generated"
+      if (args.excludeRejected && currentStatus === "rejected") continue
+      if (currentStatus === args.status) continue
+      await ctx.db.patch(email._id, { status: args.status })
+      updated++
+    }
+
+    return { updated }
+  },
+})
+
+export const listApprovedByCampaign = query({
+  args: { campaignId: v.id("campaigns") },
+  handler: async (ctx, args) => {
+    const emails = await ctx.db
+      .query("generatedEmails")
+      .withIndex("by_campaignId", (q) => q.eq("campaignId", args.campaignId))
+      .collect()
+
+    return emails.filter((e) => e.status === "approved")
   },
 })
 

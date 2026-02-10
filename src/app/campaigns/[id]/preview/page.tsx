@@ -6,6 +6,7 @@ import { useAction, useMutation, useQuery } from "convex/react"
 import {
   ArrowLeft,
   Check,
+  CheckCheck,
   ChevronRight,
   Edit2,
   Loader2,
@@ -13,6 +14,7 @@ import {
   RefreshCw,
   Save,
   X,
+  XCircle,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -42,7 +44,7 @@ type GeneratedEmailItem = {
   templateId: Id<"emailTemplates">
   subject: string
   body: string
-  status: "generated" | "edited" | "approved"
+  status: "generated" | "edited" | "approved" | "rejected"
   generatedAt: number
   leadName: string
   leadEmail?: string
@@ -55,6 +57,7 @@ const statusConfig: Record<
   generated: { label: "Generated", className: "bg-blue-100 text-blue-800" },
   edited: { label: "Edited", className: "bg-amber-100 text-amber-800" },
   approved: { label: "Approved", className: "bg-emerald-100 text-emerald-800" },
+  rejected: { label: "Rejected", className: "bg-red-100 text-red-800" },
 }
 
 function countWords(text: string): number {
@@ -147,6 +150,15 @@ function EmailDetail({
     }
   }
 
+  async function handleReject() {
+    try {
+      await updateStatus({ emailId: email._id, status: "rejected" })
+      toast.success("Email rejected")
+    } catch {
+      toast.error("Failed to reject")
+    }
+  }
+
   const statusInfo = statusConfig[email.status]
 
   return (
@@ -200,6 +212,16 @@ function EmailDetail({
           >
             <Check className="mr-1.5 size-3.5" />
             Approve
+          </Button>
+        ) : null}
+        {email.status !== "rejected" && !isEditing ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void handleReject()}
+          >
+            <XCircle className="mr-1.5 size-3.5" />
+            Reject
           </Button>
         ) : null}
       </div>
@@ -281,12 +303,27 @@ export default function CampaignPreviewPage({ params }: PageParams) {
     campaignId,
   }) as GeneratedEmailItem[] | undefined
 
+  const bulkUpdate = useMutation(api.generatedEmails.bulkUpdateStatus)
+
   const [selectedEmailId, setSelectedEmailId] = useState<
     Id<"generatedEmails"> | null
   >(null)
 
   const selectedEmail =
     emails?.find((e) => e._id === selectedEmailId) ?? emails?.[0] ?? null
+
+  async function handleApproveAll() {
+    try {
+      const result = await bulkUpdate({
+        campaignId,
+        status: "approved",
+        excludeRejected: true,
+      })
+      toast.success(`${result.updated} email${result.updated === 1 ? "" : "s"} approved`)
+    } catch {
+      toast.error("Failed to approve emails")
+    }
+  }
 
   if (campaign === undefined || emails === undefined) {
     return (
@@ -309,6 +346,8 @@ export default function CampaignPreviewPage({ params }: PageParams) {
   }
 
   const approvedCount = emails.filter((e) => e.status === "approved").length
+  const rejectedCount = emails.filter((e) => e.status === "rejected").length
+  const pendingCount = emails.length - approvedCount - rejectedCount
 
   return (
     <AppLayout title="Campaigns">
@@ -332,15 +371,28 @@ export default function CampaignPreviewPage({ params }: PageParams) {
               Email Preview
             </h2>
             <p className="text-muted-foreground text-sm">
-              {emails.length} emails generated &middot; {approvedCount} approved
+              {emails.length} emails &middot; {approvedCount} approved
+              {rejectedCount > 0 ? ` · ${rejectedCount} rejected` : ""}
+              {pendingCount > 0 ? ` · ${pendingCount} pending` : ""}
             </p>
           </div>
-          <Button variant="outline" asChild>
-            <Link href="/campaigns">
-              <ArrowLeft className="size-4" />
-              Back
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            {emails.length > 0 && pendingCount > 0 ? (
+              <Button
+                size="sm"
+                onClick={() => void handleApproveAll()}
+              >
+                <CheckCheck className="mr-1.5 size-4" />
+                Approve All
+              </Button>
+            ) : null}
+            <Button variant="outline" asChild>
+              <Link href="/campaigns">
+                <ArrowLeft className="size-4" />
+                Back
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {emails.length === 0 ? (
