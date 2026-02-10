@@ -30,6 +30,7 @@ import type * as enrichment_websiteScraper from "../enrichment/websiteScraper.js
 import type * as generatedEmails from "../generatedEmails.js";
 import type * as http from "../http.js";
 import type * as leads from "../leads.js";
+import type * as lib_activeCampaigns from "../lib/activeCampaigns.js";
 import type * as lib_activitiesList from "../lib/activitiesList.js";
 import type * as lib_clusterBreakdown from "../lib/clusterBreakdown.js";
 import type * as lib_csvParser from "../lib/csvParser.js";
@@ -85,6 +86,7 @@ declare const fullApi: ApiFromModules<{
   generatedEmails: typeof generatedEmails;
   http: typeof http;
   leads: typeof leads;
+  "lib/activeCampaigns": typeof lib_activeCampaigns;
   "lib/activitiesList": typeof lib_activitiesList;
   "lib/clusterBreakdown": typeof lib_clusterBreakdown;
   "lib/csvParser": typeof lib_csvParser;

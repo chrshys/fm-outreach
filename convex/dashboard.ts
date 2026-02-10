@@ -1,4 +1,5 @@
 import { query } from "./_generated/server";
+import { buildActiveCampaigns } from "./lib/activeCampaigns";
 import { buildClusterBreakdown } from "./lib/clusterBreakdown";
 import { aggregateEmailStats } from "./lib/emailStats";
 import { getFollowUpsDue } from "./lib/followUpsDue";
@@ -43,5 +44,13 @@ export const followUpsDue = query({
   handler: async (ctx) => {
     const leads = await ctx.db.query("leads").collect();
     return getFollowUpsDue(leads, Date.now());
+  },
+});
+
+export const activeCampaigns = query({
+  args: {},
+  handler: async (ctx) => {
+    const campaigns = await ctx.db.query("campaigns").collect();
+    return buildActiveCampaigns(campaigns);
   },
 });
