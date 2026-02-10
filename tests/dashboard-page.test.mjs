@@ -72,11 +72,11 @@ test("social touches card shows DMs, replies, follows for last 7 days", () => {
   assert.match(source, /socialStats\?\.last7Days\.follows/)
 })
 
-test("clusters card shows top 3 clusters and unclustered count", () => {
-  assert.match(source, /Clusters/)
-  assert.match(source, /topClusters/)
-  assert.match(source, /Unclustered/)
-  assert.match(source, /\.slice\(0, 3\)/)
+test("clusters card uses ClustersCard component with cluster breakdown data", () => {
+  assert.match(source, /import\s+\{\s*ClustersCard\s*\}\s+from\s+"@\/components\/dashboard\/clusters-card"/)
+  assert.match(source, /<ClustersCard/)
+  assert.match(source, /clusterBreakdown\?\.clusters/)
+  assert.match(source, /clusterBreakdown\?\.unclustered/)
 })
 
 test("follow-up section lists leads with links to /leads/[id]", () => {

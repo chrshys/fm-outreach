@@ -11,6 +11,7 @@ import { EmailActivity } from "@/components/dashboard/email-activity"
 import { MetricCards } from "@/components/dashboard/metric-cards"
 import { PipelineFunnel } from "@/components/dashboard/pipeline-funnel"
 import { SocialTouches } from "@/components/dashboard/social-touches"
+import { ClustersCard } from "@/components/dashboard/clusters-card"
 import {
   Card,
   CardContent,
@@ -88,10 +89,6 @@ export default function HomePage() {
     : 0
   const overdueCount = followUps?.overdue.length ?? 0
 
-  const topClusters = clusterBreakdown
-    ? [...clusterBreakdown.clusters].sort((a, b) => b.count - a.count).slice(0, 3)
-    : []
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const now = useMemo(() => Date.now(), [followUps])
   const isLoading = pipeline === undefined
@@ -145,29 +142,12 @@ export default function HomePage() {
               />
 
               {/* Clusters */}
-              <Card>
-                <CardHeader className="p-4">
-                  <CardTitle>Clusters</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  {topClusters.length > 0 ? (
-                    <div className="space-y-2">
-                      {topClusters.map((cluster) => (
-                        <div key={cluster.name} className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">{cluster.name}</span>
-                          <span className="font-medium">{cluster.count}</span>
-                        </div>
-                      ))}
-                      <div className="flex items-center justify-between text-sm border-t pt-2">
-                        <span className="text-muted-foreground">Unclustered</span>
-                        <span className="font-medium">{clusterBreakdown?.unclustered ?? 0}</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No clusters yet</p>
-                  )}
-                </CardContent>
-              </Card>
+              <ClustersCard
+                stats={{
+                  clusters: clusterBreakdown?.clusters ?? [],
+                  unclustered: clusterBreakdown?.unclustered ?? 0,
+                }}
+              />
             </div>
 
             {/* Follow-up Section */}
