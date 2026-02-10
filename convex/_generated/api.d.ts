@@ -14,6 +14,7 @@ import type * as leads from "../leads.js";
 import type * as lib_activitiesList from "../lib/activitiesList.js";
 import type * as lib_csvParser from "../lib/csvParser.js";
 import type * as lib_dbscan from "../lib/dbscan.js";
+import type * as lib_getSettings from "../lib/getSettings.js";
 import type * as lib_leadsList from "../lib/leadsList.js";
 import type * as lib_searchLeads from "../lib/searchLeads.js";
 import type * as seedHelpers from "../seedHelpers.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   "lib/activitiesList": typeof lib_activitiesList;
   "lib/csvParser": typeof lib_csvParser;
   "lib/dbscan": typeof lib_dbscan;
+  "lib/getSettings": typeof lib_getSettings;
   "lib/leadsList": typeof lib_leadsList;
   "lib/searchLeads": typeof lib_searchLeads;
   seedHelpers: typeof seedHelpers;
