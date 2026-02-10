@@ -286,7 +286,7 @@ export function EmailComposer({ leadId, leadName }: EmailComposerProps) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="email-body">Body</Label>
-                <span className="text-xs text-muted-foreground">{wordCount} words</span>
+                <span className={`text-xs ${wordCount > 0 && (wordCount < 50 || wordCount > 125) ? "text-destructive" : "text-muted-foreground"}`}>{wordCount} words</span>
               </div>
               <Textarea
                 id="email-body"

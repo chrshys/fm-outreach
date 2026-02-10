@@ -137,6 +137,15 @@ function parseGeneratedEmail(text: string): GeneratedEmail {
   };
 }
 
+const EMAIL_MIN_WORDS = 50;
+const EMAIL_MAX_WORDS = 125;
+
+export function countBodyWords(body: string): number {
+  const footerIndex = body.indexOf("\n---\n");
+  const textBeforeFooter = footerIndex !== -1 ? body.slice(0, footerIndex) : body;
+  return textBeforeFooter.trim().split(/\s+/).filter(Boolean).length;
+}
+
 function buildCaslFooter(opts: {
   senderName: string;
   businessName: string;
@@ -311,6 +320,13 @@ Respond ONLY with valid JSON: {"subject": "...", "body": "..."}. The body must i
 
     if (!result.subject || !result.body) {
       throw new Error("Generated email is missing subject or body");
+    }
+
+    const wordCount = countBodyWords(result.body);
+    if (wordCount < EMAIL_MIN_WORDS || wordCount > EMAIL_MAX_WORDS) {
+      throw new Error(
+        `Generated email body is ${wordCount} words (must be ${EMAIL_MIN_WORDS}-${EMAIL_MAX_WORDS})`,
+      );
     }
 
     return result;
