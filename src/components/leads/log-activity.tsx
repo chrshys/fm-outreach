@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import { FollowUpPrompt } from "./follow-up-prompt"
 
 type ManualActivityType = "note_added" | "phone_call" | "social_dm_sent"
 type SocialChannel = "facebook" | "instagram"
@@ -72,11 +73,13 @@ function getChannelForType(type: ManualActivityType, socialChannel: SocialChanne
 }
 
 export function LogActivity({ leadId, className }: LogActivityProps) {
+  // @ts-expect-error — deep type instantiation in generated Convex API types
   const createActivity = useMutation(api.activities.create)
   const [openDialogType, setOpenDialogType] = useState<ManualActivityType | null>(null)
   const [description, setDescription] = useState("")
   const [socialChannel, setSocialChannel] = useState<SocialChannel>("facebook")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showFollowUpPrompt, setShowFollowUpPrompt] = useState(false)
 
   function openDialog(type: ManualActivityType) {
     setDescription("")
@@ -123,9 +126,13 @@ export function LogActivity({ leadId, className }: LogActivityProps) {
       }
 
       await createActivity(payload)
+      const wasDmSent = openDialogType === "social_dm_sent"
       setOpenDialogType(null)
       setDescription("")
       setSocialChannel("facebook")
+      if (wasDmSent) {
+        setShowFollowUpPrompt(true)
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -201,6 +208,12 @@ export function LogActivity({ leadId, className }: LogActivityProps) {
           </form>
         </DialogContent>
       </Dialog>
+
+      <FollowUpPrompt
+        leadId={leadId}
+        open={showFollowUpPrompt}
+        onOpenChange={setShowFollowUpPrompt}
+      />
     </div>
   )
 }
