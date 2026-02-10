@@ -178,6 +178,7 @@ export default defineSchema({
     templateIds: v.array(v.id("emailTemplates")),
     targetClusterId: v.optional(v.id("clusters")),
     targetFilter: v.optional(v.any()),
+    targetLeadIds: v.optional(v.array(v.id("leads"))),
     leadCount: v.number(),
     stats: v.optional(
       v.object({

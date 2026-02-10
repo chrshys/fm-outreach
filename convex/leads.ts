@@ -323,6 +323,25 @@ export const listByCluster = query({
   },
 });
 
+export const listAllSummary = query({
+  args: {},
+  handler: async (ctx) => {
+    const allLeads = await ctx.db.query("leads").collect();
+    return allLeads
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((lead) => ({
+        _id: lead._id,
+        name: lead.name,
+        type: lead.type,
+        city: lead.city,
+        region: lead.region,
+        status: lead.status,
+        contactEmail: lead.contactEmail,
+        clusterId: lead.clusterId,
+      }));
+  },
+});
+
 export const bulkAssignCluster = mutation({
   args: {
     leadIds: v.array(v.id("leads")),

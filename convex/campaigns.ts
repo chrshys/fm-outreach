@@ -8,6 +8,7 @@ export const create = mutation({
     templateIds: v.array(v.id("emailTemplates")),
     targetClusterId: v.optional(v.id("clusters")),
     targetFilter: v.optional(v.any()),
+    targetLeadIds: v.optional(v.array(v.id("leads"))),
     leadCount: v.number(),
   },
   handler: async (ctx, args) => {
@@ -18,6 +19,7 @@ export const create = mutation({
       templateIds: args.templateIds,
       targetClusterId: args.targetClusterId,
       targetFilter: args.targetFilter,
+      targetLeadIds: args.targetLeadIds,
       leadCount: args.leadCount,
       createdAt: now,
       updatedAt: now,

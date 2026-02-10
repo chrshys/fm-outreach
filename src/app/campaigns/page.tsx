@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useQuery } from "convex/react"
 import { Mail, MessageSquare, Plus, Send, Users } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
@@ -60,9 +61,11 @@ export default function CampaignsPage() {
               Manage outreach campaigns and track performance.
             </p>
           </div>
-          <Button>
-            <Plus className="size-4" />
-            Create Campaign
+          <Button asChild>
+            <Link href="/campaigns/new">
+              <Plus className="size-4" />
+              Create Campaign
+            </Link>
           </Button>
         </div>
 
