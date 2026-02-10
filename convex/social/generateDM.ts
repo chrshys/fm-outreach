@@ -34,17 +34,35 @@ type LeadData = {
   name: string;
   contactName?: string;
   city: string;
+  region: string;
+  type: string;
   products?: string[];
+  salesChannels?: string[];
   farmDescription?: string;
   enrichmentData?: EnrichmentData;
 };
 
+function formatLeadType(type: string): string {
+  const labels: Record<string, string> = {
+    farm: "Farm",
+    farmers_market: "Farmers Market",
+    retail_store: "Retail Store",
+    roadside_stand: "Roadside Stand",
+    other: "Food Producer",
+  };
+  return labels[type] ?? "Food Producer";
+}
+
 function buildLeadContext(lead: LeadData): string {
   const lines: string[] = [];
   lines.push(`Farm name: ${lead.name}`);
+  lines.push(`Type: ${formatLeadType(lead.type)}`);
   lines.push(`Contact name: ${lead.contactName ?? "Unknown"}`);
-  lines.push(`City: ${lead.city}`);
+  lines.push(`Location: ${lead.city}, ${lead.region}`);
   lines.push(`Products: ${lead.products?.join(", ") || "Unknown"}`);
+  if (lead.salesChannels?.length) {
+    lines.push(`Sales channels: ${lead.salesChannels.join(", ")}`);
+  }
   lines.push(`Farm description: ${lead.farmDescription ?? "No description available"}`);
 
   const enrichment = lead.enrichmentData;
@@ -55,6 +73,9 @@ function buildLeadContext(lead: LeadData): string {
     }
     if (desc.specialties?.length) {
       lines.push(`Specialties: ${desc.specialties.join(", ")}`);
+    }
+    if (desc.certifications?.length) {
+      lines.push(`Certifications: ${desc.certifications.join(", ")}`);
     }
   }
 
@@ -85,8 +106,10 @@ function buildSystemPrompt(channel: "facebook" | "instagram"): string {
 Constraints:
 - Message must be 30-60 words
 - ${toneGuidance}
-- Reference specific details about the farm (products, location, practices) to show genuine interest
-- Use ONLY verified data — never invent facts
+- You MUST mention at least one specific product or product category the farm offers (e.g. "your organic tomatoes", "your honey", "your raw milk cheeses")
+- You MUST reference the farm's location (city or region) to show local connection
+- If specialties or certifications are available, weave them in naturally (e.g. "certified organic", "heritage breeds")
+- Use ONLY verified data from the lead context — never invent facts
 - If contact name is available, address them by first name
 - Keep it natural — this should read like a real person reaching out, not a template
 - Do NOT include greetings like "Dear" or sign-offs like "Best regards"
