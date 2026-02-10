@@ -11,6 +11,7 @@
 import type * as activities from "../activities.js";
 import type * as clusters from "../clusters.js";
 import type * as crons from "../crons.js";
+import type * as email_generateEmail from "../email/generateEmail.js";
 import type * as emailTemplates from "../emailTemplates.js";
 import type * as enrichment_batchEnrich from "../enrichment/batchEnrich.js";
 import type * as enrichment_batchEnrichPublic from "../enrichment/batchEnrichPublic.js";
@@ -52,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   activities: typeof activities;
   clusters: typeof clusters;
   crons: typeof crons;
+  "email/generateEmail": typeof email_generateEmail;
   emailTemplates: typeof emailTemplates;
   "enrichment/batchEnrich": typeof enrichment_batchEnrich;
   "enrichment/batchEnrichPublic": typeof enrichment_batchEnrichPublic;

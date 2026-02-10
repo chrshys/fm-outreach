@@ -11,6 +11,13 @@ const sequenceTypeValidator = v.union(
   v.literal("follow_up_3"),
 )
 
+export const get = query({
+  args: { id: v.id("emailTemplates") },
+  handler: async (ctx, args) => {
+    return ctx.db.get(args.id)
+  },
+})
+
 export const list = query({
   args: {},
   handler: async (ctx) => {
