@@ -9,7 +9,17 @@ import type { GeoPoint } from "./lib/dbscan"
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("clusters").collect()
+    const clusters = await ctx.db.query("clusters").collect()
+    const clustersWithCounts = await Promise.all(
+      clusters.map(async (cluster) => {
+        const leads = await ctx.db
+          .query("leads")
+          .withIndex("by_clusterId", (q) => q.eq("clusterId", cluster._id))
+          .collect()
+        return { ...cluster, leadCount: leads.length }
+      })
+    )
+    return clustersWithCounts
   },
 })
 

@@ -15,3 +15,9 @@ test("list query collects all clusters", () => {
 test("list query takes no arguments", () => {
   assert.match(source, /args:\s*\{\}/)
 })
+
+test("list query computes live lead counts from leads table", () => {
+  assert.match(source, /\.query\("leads"\)/)
+  assert.match(source, /\.withIndex\("by_clusterId"/)
+  assert.match(source, /leadCount:\s*leads\.length/)
+})
