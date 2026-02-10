@@ -50,7 +50,6 @@ export const batchGenerate = action({
   },
   handler: async (ctx, args): Promise<BatchGenerateResult> => {
     // Fetch campaign
-    // @ts-expect-error — deep type instantiation in generated Convex API types
     const campaign = await ctx.runQuery(api.campaigns.get, {
       campaignId: args.campaignId,
     });
@@ -122,7 +121,6 @@ export const batchGenerate = action({
           );
 
           await ctx.runMutation(
-            // @ts-expect-error — deep type instantiation in generated Convex API types
             internal.email.batchGenerate.saveGeneratedEmail,
             {
               campaignId: args.campaignId,
