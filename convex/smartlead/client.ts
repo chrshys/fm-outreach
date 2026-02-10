@@ -1,3 +1,5 @@
+import { rateLimitedFetch } from "./rateLimiter";
+
 const BASE_URL = "https://server.smartlead.ai/api/v1";
 
 function getApiKey(): string {
@@ -21,17 +23,13 @@ async function smartleadFetch<T>(
   const separator = path.includes("?") ? "&" : "?";
   const url = `${BASE_URL}${path}${separator}api_key=${apiKey}`;
 
-  const response = await fetch(url, {
+  const response = await rateLimitedFetch(url, {
     ...options,
     headers: {
       "Content-Type": "application/json",
       ...options.headers,
     },
   });
-
-  if (response.status === 429) {
-    throw new Error("Smartlead rate limit exceeded");
-  }
 
   if (!response.ok) {
     let detail = "";

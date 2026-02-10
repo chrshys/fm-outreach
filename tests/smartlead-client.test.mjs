@@ -28,9 +28,9 @@ test("smartleadFetch sets Content-Type to application/json", () => {
   assert.match(source, /"Content-Type":\s*"application\/json"/);
 });
 
-test("handles rate limits (HTTP 429) with descriptive error", () => {
-  assert.match(source, /response\.status\s*===\s*429/);
-  assert.match(source, /rate\s+limit\s+exceeded/i);
+test("delegates rate limiting to rateLimiter via rateLimitedFetch", () => {
+  assert.match(source, /import\s*\{\s*rateLimitedFetch\s*\}\s*from\s*["']\.\/rateLimiter["']/);
+  assert.match(source, /rateLimitedFetch\(url,/);
 });
 
 test("handles non-OK API responses by throwing with status code", () => {
