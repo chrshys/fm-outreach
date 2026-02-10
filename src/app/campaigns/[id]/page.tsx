@@ -12,6 +12,7 @@ import {
   MousePointerClick,
   Play,
   Reply,
+  Rocket,
   Send,
   TriangleAlert,
   Users,
@@ -88,12 +89,34 @@ export default function CampaignDetailPage({ params }: PageParams) {
 
   const campaign = useQuery(api.campaigns.get, { campaignId })
   const leads = useQuery(api.campaigns.listLeads, { campaignId })
+  const emails = useQuery(api.generatedEmails.listByCampaign, { campaignId })
+  const pushToSmartlead = useAction(
+    api.campaigns.pushToSmartlead.pushToSmartlead,
+  )
   const launchCampaignAction = useAction(
     api.campaigns.launchCampaign.launchCampaign,
   )
 
+  const [showPushDialog, setShowPushDialog] = useState(false)
+  const [isPushing, setIsPushing] = useState(false)
   const [showLaunchDialog, setShowLaunchDialog] = useState(false)
   const [isLaunching, setIsLaunching] = useState(false)
+
+  async function handlePushToSmartlead() {
+    setIsPushing(true)
+    try {
+      const result = await pushToSmartlead({ campaignId })
+      setShowPushDialog(false)
+      toast.success(
+        `Campaign pushed to Smartlead — ${result.sequenceSteps} sequence step${result.sequenceSteps === 1 ? "" : "s"}, ${result.leadsAdded} lead${result.leadsAdded === 1 ? "" : "s"} added`,
+      )
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Push failed"
+      toast.error(message)
+    } finally {
+      setIsPushing(false)
+    }
+  }
 
   async function handleLaunchCampaign() {
     setIsLaunching(true)
@@ -109,7 +132,7 @@ export default function CampaignDetailPage({ params }: PageParams) {
     }
   }
 
-  if (campaign === undefined || leads === undefined) {
+  if (campaign === undefined || leads === undefined || emails === undefined) {
     return (
       <AppLayout title="Campaigns">
         <div className="flex items-center justify-center py-12">
@@ -128,6 +151,12 @@ export default function CampaignDetailPage({ params }: PageParams) {
       </AppLayout>
     )
   }
+
+  const approvedCount = emails.filter((e) => e.status === "approved").length
+  const rejectedCount = emails.filter((e) => e.status === "rejected").length
+  const allApproved =
+    emails.length > 0 && approvedCount + rejectedCount === emails.length && approvedCount > 0
+  const canPush = campaign.status === "draft" && !campaign.smartleadCampaignId && allApproved
 
   const stats = campaign.stats
   const sent = stats?.sent ?? 0
@@ -170,6 +199,16 @@ export default function CampaignDetailPage({ params }: PageParams) {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {campaign.status === "draft" && !campaign.smartleadCampaignId ? (
+              <Button
+                size="sm"
+                disabled={!canPush}
+                onClick={() => setShowPushDialog(true)}
+              >
+                <Rocket className="mr-1.5 size-4" />
+                Push to Smartlead
+              </Button>
+            ) : null}
             {campaign.status === "pushed" ? (
               <Button
                 size="sm"
@@ -321,6 +360,39 @@ export default function CampaignDetailPage({ params }: PageParams) {
             </Card>
           )}
         </div>
+        <Dialog open={showPushDialog} onOpenChange={setShowPushDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Push to Smartlead</DialogTitle>
+              <DialogDescription>
+                This will create the campaign in Smartlead and add{" "}
+                {approvedCount} lead{approvedCount === 1 ? "" : "s"}. You&apos;ll
+                need to launch it from Smartlead or click Launch below.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowPushDialog(false)}
+                disabled={isPushing}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => void handlePushToSmartlead()}
+                disabled={isPushing}
+              >
+                {isPushing ? (
+                  <Loader2 className="mr-1.5 size-4 animate-spin" />
+                ) : (
+                  <Rocket className="mr-1.5 size-4" />
+                )}
+                {isPushing ? "Pushing…" : "Confirm Push"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         <Dialog open={showLaunchDialog} onOpenChange={setShowLaunchDialog}>
           <DialogContent>
             <DialogHeader>
