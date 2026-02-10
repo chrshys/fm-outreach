@@ -6,6 +6,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
 
 import { AppLayout } from "@/components/layout/app-layout"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -47,6 +48,7 @@ export default function SettingsPage() {
   const [senderAddress, setSenderAddress] = useState("")
   const [emailSignature, setEmailSignature] = useState("")
   const [savingSender, setSavingSender] = useState(false)
+  const [senderErrors, setSenderErrors] = useState<Record<string, string>>({})
 
   // Load existing values when settings arrive
   useEffect(() => {
@@ -83,6 +85,15 @@ export default function SettingsPage() {
 
   async function handleSaveSender(e: React.FormEvent) {
     e.preventDefault()
+    const errors: Record<string, string> = {}
+    if (!senderName.trim()) errors.sender_name = "Sender name is required"
+    if (!senderEmail.trim()) errors.sender_email = "Sender email is required"
+    if (!senderAddress.trim()) errors.sender_address = "Mailing address is required"
+    if (Object.keys(errors).length > 0) {
+      setSenderErrors(errors)
+      return
+    }
+    setSenderErrors({})
     setSavingSender(true)
     try {
       await setBatch({
@@ -123,7 +134,14 @@ export default function SettingsPage() {
             <form onSubmit={(e) => void handleSaveApiKeys(e)} className="space-y-4">
               {API_KEY_FIELDS.map((field) => (
                 <div key={field.key} className="space-y-2">
-                  <Label htmlFor={field.key}>{field.label}</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor={field.key}>{field.label}</Label>
+                    {!apiKeys[field.key] && (
+                      <Badge variant="outline" className="text-muted-foreground">
+                        Not configured
+                      </Badge>
+                    )}
+                  </div>
                   <div className="relative">
                     <Input
                       id={field.key}
@@ -181,9 +199,20 @@ export default function SettingsPage() {
                 <Input
                   id="sender_name"
                   value={senderName}
-                  onChange={(e) => setSenderName(e.target.value)}
+                  onChange={(e) => {
+                    setSenderName(e.target.value)
+                    setSenderErrors((prev) => {
+                      const next = { ...prev }
+                      delete next.sender_name
+                      return next
+                    })
+                  }}
                   placeholder="Your name or business name"
+                  aria-invalid={!!senderErrors.sender_name}
                 />
+                {senderErrors.sender_name && (
+                  <p className="text-sm text-destructive">{senderErrors.sender_name}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="sender_email">Sender Email</Label>
@@ -191,9 +220,20 @@ export default function SettingsPage() {
                   id="sender_email"
                   type="email"
                   value={senderEmail}
-                  onChange={(e) => setSenderEmail(e.target.value)}
+                  onChange={(e) => {
+                    setSenderEmail(e.target.value)
+                    setSenderErrors((prev) => {
+                      const next = { ...prev }
+                      delete next.sender_email
+                      return next
+                    })
+                  }}
                   placeholder="you@example.com"
+                  aria-invalid={!!senderErrors.sender_email}
                 />
+                {senderErrors.sender_email && (
+                  <p className="text-sm text-destructive">{senderErrors.sender_email}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="sender_address">
@@ -205,10 +245,20 @@ export default function SettingsPage() {
                 <Input
                   id="sender_address"
                   value={senderAddress}
-                  onChange={(e) => setSenderAddress(e.target.value)}
+                  onChange={(e) => {
+                    setSenderAddress(e.target.value)
+                    setSenderErrors((prev) => {
+                      const next = { ...prev }
+                      delete next.sender_address
+                      return next
+                    })
+                  }}
                   placeholder="123 Main St, City, Province, Postal Code"
-                  required
+                  aria-invalid={!!senderErrors.sender_address}
                 />
+                {senderErrors.sender_address && (
+                  <p className="text-sm text-destructive">{senderErrors.sender_address}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email_signature">Email Signature</Label>
