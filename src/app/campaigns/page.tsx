@@ -75,7 +75,7 @@ export default function CampaignsPage() {
           </div>
         ) : campaigns.length === 0 ? (
           <Card>
-            <CardContent className="p-4 pt-0">
+            <CardContent className="p-4">
               <p className="text-muted-foreground text-sm py-8 text-center">
                 No campaigns yet. Create your first campaign to start outreach.
               </p>
