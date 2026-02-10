@@ -349,9 +349,9 @@ export default function LeadDetailPage() {
                         value={lead.socialLinks?.facebook}
                         onSave={(value) => updateSocialLink("facebook", value)}
                       />
-                      {lead.socialLinks?.facebook ? (
+                      {lead.socialLinks?.facebook?.trim() ? (
                         <a
-                          href={lead.socialLinks.facebook}
+                          href={lead.socialLinks.facebook.trim().startsWith("http") ? lead.socialLinks.facebook.trim() : `https://${lead.socialLinks.facebook.trim()}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -369,9 +369,9 @@ export default function LeadDetailPage() {
                         value={lead.socialLinks?.instagram}
                         onSave={(value) => updateSocialLink("instagram", value)}
                       />
-                      {lead.socialLinks?.instagram ? (
+                      {lead.socialLinks?.instagram?.trim() ? (
                         <a
-                          href={lead.socialLinks.instagram}
+                          href={lead.socialLinks.instagram.trim().startsWith("http") ? lead.socialLinks.instagram.trim() : `https://${lead.socialLinks.instagram.trim()}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
