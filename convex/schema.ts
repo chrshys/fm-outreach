@@ -190,6 +190,7 @@ export default defineSchema({
     smartleadCampaignId: v.optional(v.string()),
     status: v.union(
       v.literal("draft"),
+      v.literal("pushed"),
       v.literal("active"),
       v.literal("paused"),
       v.literal("completed"),

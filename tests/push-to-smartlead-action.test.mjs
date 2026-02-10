@@ -41,15 +41,15 @@ test("setCampaignSmartleadId patches smartleadCampaignId on campaign", () => {
   assert.match(source, /smartleadCampaignId:\s*args\.smartleadCampaignId/);
 });
 
-test("setCampaignActive is exported as an internalMutation", () => {
+test("setCampaignPushed is exported as an internalMutation", () => {
   assert.match(
     source,
-    /export\s+const\s+setCampaignActive\s*=\s*internalMutation\(/,
+    /export\s+const\s+setCampaignPushed\s*=\s*internalMutation\(/,
   );
 });
 
-test("setCampaignActive patches campaign status to active", () => {
-  assert.match(source, /status:\s*"active"/);
+test("setCampaignPushed patches campaign status to pushed", () => {
+  assert.match(source, /status:\s*"pushed"/);
 });
 
 test("setLeadSmartleadCampaignId is exported as an internalMutation", () => {
@@ -156,8 +156,8 @@ test("throws when no leads with email addresses are available", () => {
 
 // --- Step 4: Update campaign status ---
 
-test("sets campaign status to active via setCampaignActive mutation", () => {
-  assert.match(source, /setCampaignActive/);
+test("sets campaign status to pushed via setCampaignPushed mutation", () => {
+  assert.match(source, /setCampaignPushed/);
   assert.match(source, /campaignId:\s*args\.campaignId/);
 });
 

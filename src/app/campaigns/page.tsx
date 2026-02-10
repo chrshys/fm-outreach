@@ -26,7 +26,7 @@ type CampaignStats = {
 type Campaign = {
   _id: string
   name: string
-  status: "draft" | "active" | "paused" | "completed"
+  status: "draft" | "pushed" | "active" | "paused" | "completed"
   leadCount: number
   stats?: CampaignStats
   smartleadCampaignId?: string
@@ -34,6 +34,7 @@ type Campaign = {
 
 const statusStyles: Record<Campaign["status"], string> = {
   draft: "bg-zinc-100 text-zinc-700",
+  pushed: "bg-violet-100 text-violet-800",
   active: "bg-emerald-100 text-emerald-800",
   paused: "bg-amber-100 text-amber-800",
   completed: "bg-blue-100 text-blue-800",

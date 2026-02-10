@@ -11,6 +11,7 @@ import {
   Edit2,
   Loader2,
   Mail,
+  Play,
   RefreshCw,
   Rocket,
   Save,
@@ -316,12 +317,17 @@ export default function CampaignPreviewPage({ params }: PageParams) {
   const pushToSmartlead = useAction(
     api.campaigns.pushToSmartlead.pushToSmartlead,
   )
+  const launchCampaignAction = useAction(
+    api.campaigns.launchCampaign.launchCampaign,
+  )
 
   const [selectedEmailId, setSelectedEmailId] = useState<
     Id<"generatedEmails"> | null
   >(null)
   const [showPushDialog, setShowPushDialog] = useState(false)
   const [isPushing, setIsPushing] = useState(false)
+  const [showLaunchDialog, setShowLaunchDialog] = useState(false)
+  const [isLaunching, setIsLaunching] = useState(false)
 
   const selectedEmail =
     emails?.find((e) => e._id === selectedEmailId) ?? emails?.[0] ?? null
@@ -352,6 +358,20 @@ export default function CampaignPreviewPage({ params }: PageParams) {
       toast.error(message)
     } finally {
       setIsPushing(false)
+    }
+  }
+
+  async function handleLaunchCampaign() {
+    setIsLaunching(true)
+    try {
+      await launchCampaignAction({ campaignId })
+      setShowLaunchDialog(false)
+      toast.success("Campaign launched — emails will start sending shortly")
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Launch failed"
+      toast.error(message)
+    } finally {
+      setIsLaunching(false)
     }
   }
 
@@ -427,6 +447,15 @@ export default function CampaignPreviewPage({ params }: PageParams) {
               >
                 <Rocket className="mr-1.5 size-4" />
                 Push to Smartlead
+              </Button>
+            ) : null}
+            {campaign.status === "pushed" ? (
+              <Button
+                size="sm"
+                onClick={() => setShowLaunchDialog(true)}
+              >
+                <Play className="mr-1.5 size-4" />
+                Launch Campaign
               </Button>
             ) : null}
             <Button variant="outline" asChild>
@@ -540,6 +569,38 @@ export default function CampaignPreviewPage({ params }: PageParams) {
                   <Rocket className="mr-1.5 size-4" />
                 )}
                 {isPushing ? "Pushing…" : "Confirm Push"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showLaunchDialog} onOpenChange={setShowLaunchDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Launch Campaign</DialogTitle>
+              <DialogDescription>
+                This will start sending emails to all leads in this campaign.
+                Are you sure you want to launch?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowLaunchDialog(false)}
+                disabled={isLaunching}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => void handleLaunchCampaign()}
+                disabled={isLaunching}
+              >
+                {isLaunching ? (
+                  <Loader2 className="mr-1.5 size-4 animate-spin" />
+                ) : (
+                  <Play className="mr-1.5 size-4" />
+                )}
+                {isLaunching ? "Launching…" : "Confirm Launch"}
               </Button>
             </DialogFooter>
           </DialogContent>

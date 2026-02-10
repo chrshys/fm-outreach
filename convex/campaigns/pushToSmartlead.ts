@@ -34,13 +34,13 @@ export const setCampaignSmartleadId = internalMutation({
   },
 });
 
-export const setCampaignActive = internalMutation({
+export const setCampaignPushed = internalMutation({
   args: {
     campaignId: v.id("campaigns"),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.campaignId, {
-      status: "active",
+      status: "pushed",
       updatedAt: Date.now(),
     });
   },
@@ -259,9 +259,9 @@ export const pushToSmartlead = action({
 
     console.log(`[pushToSmartlead] Added ${totalAdded} leads total`);
 
-    // --- Step 4: Update campaign status to active ---
+    // --- Step 4: Update campaign status to pushed ---
     await ctx.runMutation(
-      internal.campaigns.pushToSmartlead.setCampaignActive,
+      internal.campaigns.pushToSmartlead.setCampaignPushed,
       { campaignId: args.campaignId },
     );
 
