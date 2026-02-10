@@ -1,5 +1,6 @@
 "use client"
 
+import { Facebook, Instagram } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useMutation, useQuery } from "convex/react"
@@ -340,17 +341,43 @@ export default function LeadDetailPage() {
                   </p>
                   <p>
                     <span className="font-medium">Facebook:</span>{" "}
-                    <InlineEditableValue
-                      value={lead.socialLinks?.facebook}
-                      onSave={(value) => updateSocialLink("facebook", value)}
-                    />
+                    <span className="inline-flex items-center gap-1">
+                      <InlineEditableValue
+                        value={lead.socialLinks?.facebook}
+                        onSave={(value) => updateSocialLink("facebook", value)}
+                      />
+                      {lead.socialLinks?.facebook ? (
+                        <a
+                          href={lead.socialLinks.facebook}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                          aria-label="Open Facebook profile"
+                        >
+                          <Facebook className="h-4 w-4" />
+                        </a>
+                      ) : null}
+                    </span>
                   </p>
                   <p>
                     <span className="font-medium">Instagram:</span>{" "}
-                    <InlineEditableValue
-                      value={lead.socialLinks?.instagram}
-                      onSave={(value) => updateSocialLink("instagram", value)}
-                    />
+                    <span className="inline-flex items-center gap-1">
+                      <InlineEditableValue
+                        value={lead.socialLinks?.instagram}
+                        onSave={(value) => updateSocialLink("instagram", value)}
+                      />
+                      {lead.socialLinks?.instagram ? (
+                        <a
+                          href={lead.socialLinks.instagram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                          aria-label="Open Instagram profile"
+                        >
+                          <Instagram className="h-4 w-4" />
+                        </a>
+                      ) : null}
+                    </span>
                   </p>
                 </CardContent>
               </Card>
