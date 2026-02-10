@@ -1,4 +1,5 @@
 import { query } from "./_generated/server";
+import { buildClusterBreakdown } from "./lib/clusterBreakdown";
 import { aggregateEmailStats } from "./lib/emailStats";
 import { countByStatus } from "./lib/pipelineStats";
 import { aggregateSocialStats } from "./lib/socialStats";
@@ -24,5 +25,14 @@ export const socialStats = query({
   handler: async (ctx) => {
     const activities = await ctx.db.query("activities").collect();
     return aggregateSocialStats(activities, Date.now());
+  },
+});
+
+export const clusterBreakdown = query({
+  args: {},
+  handler: async (ctx) => {
+    const clusters = await ctx.db.query("clusters").collect();
+    const leads = await ctx.db.query("leads").collect();
+    return buildClusterBreakdown(clusters, leads);
   },
 });

@@ -31,6 +31,7 @@ import type * as generatedEmails from "../generatedEmails.js";
 import type * as http from "../http.js";
 import type * as leads from "../leads.js";
 import type * as lib_activitiesList from "../lib/activitiesList.js";
+import type * as lib_clusterBreakdown from "../lib/clusterBreakdown.js";
 import type * as lib_csvParser from "../lib/csvParser.js";
 import type * as lib_dbscan from "../lib/dbscan.js";
 import type * as lib_emailStats from "../lib/emailStats.js";
@@ -84,6 +85,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   leads: typeof leads;
   "lib/activitiesList": typeof lib_activitiesList;
+  "lib/clusterBreakdown": typeof lib_clusterBreakdown;
   "lib/csvParser": typeof lib_csvParser;
   "lib/dbscan": typeof lib_dbscan;
   "lib/emailStats": typeof lib_emailStats;
