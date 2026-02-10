@@ -33,6 +33,7 @@ export const enrichLead = internalAction({
   args: {
     leadId: v.id("leads"),
     force: v.optional(v.boolean()),
+    overwrite: v.optional(v.boolean()),
   },
   handler: async (ctx, args): Promise<EnrichmentSummary> => {
     const lead = await ctx.runQuery(api.leads.get, { leadId: args.leadId });
@@ -41,6 +42,7 @@ export const enrichLead = internalAction({
     }
 
     const force = args.force ?? false;
+    const overwrite = args.overwrite ?? force;
 
     // Step 1: Check cooldown
     if (
@@ -88,7 +90,7 @@ export const enrichLead = internalAction({
       } catch {
         // Google Places failed — continue pipeline
       }
-    } else if (!lead.contactPhone || !lead.website || force) {
+    } else if (!lead.contactPhone || !lead.website || overwrite) {
       // Lead already has placeId but missing phone or website — fetch details
       try {
         placesResult = await ctx.runAction(
@@ -201,11 +203,11 @@ export const enrichLead = internalAction({
         patch.placeId = placesResult.placeId;
         fieldsUpdated.push("placeId");
       }
-      if ((!lead.contactPhone || force) && placesResult.phone) {
+      if ((!lead.contactPhone || overwrite) && placesResult.phone) {
         patch.contactPhone = placesResult.phone;
         fieldsUpdated.push("contactPhone");
       }
-      if ((!lead.website || force) && placesResult.website) {
+      if ((!lead.website || overwrite) && placesResult.website) {
         patch.website = placesResult.website;
         fieldsUpdated.push("website");
       }
@@ -229,7 +231,7 @@ export const enrichLead = internalAction({
       emailSource = `hunter - ${domain} - ${new Date().toISOString().slice(0, 10)}`;
 
       // Also grab contact name from Hunter if available
-      if ((!lead.contactName || force) && sorted[0].firstName) {
+      if ((!lead.contactName || overwrite) && sorted[0].firstName) {
         const name = [sorted[0].firstName, sorted[0].lastName]
           .filter(Boolean)
           .join(" ");
@@ -240,7 +242,7 @@ export const enrichLead = internalAction({
       }
     }
 
-    if (bestEmail && (!lead.contactEmail || force)) {
+    if (bestEmail && (!lead.contactEmail || overwrite)) {
       patch.contactEmail = bestEmail;
       fieldsUpdated.push("contactEmail");
     }
@@ -248,28 +250,28 @@ export const enrichLead = internalAction({
     // From Claude analysis
     if (claudeResult) {
       if (
-        (!lead.products || lead.products.length === 0 || force) &&
+        (!lead.products || lead.products.length === 0 || overwrite) &&
         claudeResult.products.length > 0
       ) {
         patch.products = claudeResult.products;
         fieldsUpdated.push("products");
       }
       if (
-        (!lead.salesChannels || lead.salesChannels.length === 0 || force) &&
+        (!lead.salesChannels || lead.salesChannels.length === 0 || overwrite) &&
         claudeResult.salesChannels.length > 0
       ) {
         patch.salesChannels = claudeResult.salesChannels;
         fieldsUpdated.push("salesChannels");
       }
-      if ((lead.sellsOnline === undefined || force) && claudeResult.sellsOnline !== undefined) {
+      if ((lead.sellsOnline === undefined || overwrite) && claudeResult.sellsOnline !== undefined) {
         patch.sellsOnline = claudeResult.sellsOnline;
         fieldsUpdated.push("sellsOnline");
       }
-      if ((!lead.farmDescription || force) && claudeResult.businessDescription) {
+      if ((!lead.farmDescription || overwrite) && claudeResult.businessDescription) {
         patch.farmDescription = claudeResult.businessDescription;
         fieldsUpdated.push("farmDescription");
       }
-      if ((!lead.contactName || force) && claudeResult.contactName) {
+      if ((!lead.contactName || overwrite) && claudeResult.contactName) {
         // Only set if not already set by Hunter
         if (!patch.contactName) {
           patch.contactName = claudeResult.contactName;
@@ -283,11 +285,11 @@ export const enrichLead = internalAction({
     const newSocial: { instagram?: string; facebook?: string } = {};
     let socialUpdated = false;
 
-    if (socialResult.facebook && (!existingSocial.facebook || force)) {
+    if (socialResult.facebook && (!existingSocial.facebook || overwrite)) {
       newSocial.facebook = socialResult.facebook;
       socialUpdated = true;
     }
-    if (socialResult.instagram && (!existingSocial.instagram || force)) {
+    if (socialResult.instagram && (!existingSocial.instagram || overwrite)) {
       newSocial.instagram = socialResult.instagram;
       socialUpdated = true;
     }
@@ -331,7 +333,7 @@ export const enrichLead = internalAction({
     }
 
     // From website scraper — platform detection
-    if (scraperResult?.platform && (!lead.enrichmentData?.platform || force)) {
+    if (scraperResult?.platform && (!lead.enrichmentData?.platform || overwrite)) {
       patch.enrichmentData = {
         ...(lead.enrichmentData as Record<string, unknown> | undefined),
         ...(patch.enrichmentData as Record<string, unknown> | undefined),
@@ -354,12 +356,12 @@ export const enrichLead = internalAction({
     const newStatus = emailFound ? "enriched" : "no_email";
     // Only update status if it's new_lead or no_email (don't regress further-along statuses)
     const progressableStatuses = new Set(["new_lead", "no_email"]);
-    if (progressableStatuses.has(lead.status) || force) {
+    if (progressableStatuses.has(lead.status) || overwrite) {
       patch.status = newStatus;
     }
 
     // Step 11: Set consentSource
-    if (emailSource && (!lead.consentSource || force)) {
+    if (emailSource && (!lead.consentSource || overwrite)) {
       patch.consentSource = emailSource;
       fieldsUpdated.push("consentSource");
     }

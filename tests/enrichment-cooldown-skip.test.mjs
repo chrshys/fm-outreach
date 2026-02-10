@@ -174,13 +174,21 @@ test("bulk enrich action does not pass force: true by default", () => {
   assert.doesNotMatch(fnBody, /force:\s*true/);
 });
 
-// --- UI: Single lead re-enrich uses force to bypass cooldown ---
+// --- UI: Single lead re-enrich passes overwrite (NOT force) so cooldown is respected ---
 
-test("single lead re-enrich button passes force: true for already-enriched leads", () => {
+test("single lead re-enrich button passes overwrite: true (not force) for already-enriched leads", () => {
   assert.match(
     dataFreshnessSource,
-    /force:\s*hasBeenEnriched\s*\?\s*true\s*:\s*undefined/,
+    /overwrite:\s*hasBeenEnriched\s*\?\s*true\s*:\s*undefined/,
   );
+});
+
+test("single lead re-enrich button does NOT pass force: true", () => {
+  // Extract the handleEnrich function body
+  const fnStart = dataFreshnessSource.indexOf("async function handleEnrich");
+  const fnBody = dataFreshnessSource.slice(fnStart, fnStart + 500);
+  assert.doesNotMatch(fnBody, /force:\s*true/);
+  assert.doesNotMatch(fnBody, /force:\s*hasBeenEnriched/);
 });
 
 // --- UI: Data freshness shows staleness levels aligned with cooldown ---

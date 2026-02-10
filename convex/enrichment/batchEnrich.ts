@@ -26,10 +26,12 @@ export const batchEnrichLeads = internalAction({
   args: {
     leadIds: v.array(v.id("leads")),
     force: v.optional(v.boolean()),
+    overwrite: v.optional(v.boolean()),
   },
   handler: async (ctx, args): Promise<BatchEnrichmentResult> => {
     const leadIds = args.leadIds.slice(0, MAX_BATCH_SIZE);
     const force = args.force ?? false;
+    const overwrite = args.overwrite;
 
     const results: BatchEnrichmentResult["results"] = [];
     let succeeded = 0;
@@ -42,7 +44,7 @@ export const batchEnrichLeads = internalAction({
       try {
         const summary: EnrichmentSummary = await ctx.runAction(
           internal.enrichment.orchestrator.enrichLead,
-          { leadId, force },
+          { leadId, force, overwrite },
         );
 
         results.push({ leadId, status: "success", summary });

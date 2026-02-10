@@ -102,8 +102,8 @@ test("shows 'Enrich' for never-enriched leads and 'Re-enrich' for previously enr
   assert.match(source, /"Enrich"/);
 });
 
-test("only passes force true when re-enriching previously enriched leads", () => {
-  assert.match(source, /force:\s*hasBeenEnriched\s*\?\s*true\s*:\s*undefined/);
+test("passes overwrite (not force) when re-enriching previously enriched leads", () => {
+  assert.match(source, /overwrite:\s*hasBeenEnriched\s*\?\s*true\s*:\s*undefined/);
 });
 
 test("uses batchEnrichPublic action", () => {

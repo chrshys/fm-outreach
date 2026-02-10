@@ -66,7 +66,7 @@ export function DataFreshness({ leadId, enrichedAt, enrichmentSources }: DataFre
     try {
       const result = await batchEnrich({
         leadIds: [leadId],
-        force: hasBeenEnriched ? true : undefined,
+        overwrite: hasBeenEnriched ? true : undefined,
       })
       const { succeeded, failed } = result as {
         succeeded: number

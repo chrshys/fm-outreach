@@ -8,11 +8,13 @@ export const batchEnrich = action({
   args: {
     leadIds: v.array(v.id("leads")),
     force: v.optional(v.boolean()),
+    overwrite: v.optional(v.boolean()),
   },
   handler: async (ctx, args): Promise<BatchEnrichmentResult> => {
     return await ctx.runAction(internal.enrichment.batchEnrich.batchEnrichLeads, {
       leadIds: args.leadIds,
       force: args.force,
+      overwrite: args.overwrite,
     });
   },
 });

@@ -70,15 +70,15 @@ test("does not regress status for leads beyond new_lead/no_email", () => {
   // Status is only set in patch when lead is in a progressable status
   assert.match(
     orchestratorSource,
-    /if\s*\(progressableStatuses\.has\(lead\.status\)\s*\|\|\s*force\)/,
+    /if\s*\(progressableStatuses\.has\(lead\.status\)\s*\|\|\s*overwrite\)/,
   );
   assert.match(orchestratorSource, /patch\.status\s*=\s*newStatus/);
 });
 
-test("force flag bypasses status progression guard", () => {
+test("overwrite flag bypasses status progression guard", () => {
   assert.match(
     orchestratorSource,
-    /progressableStatuses\.has\(lead\.status\)\s*\|\|\s*force/,
+    /progressableStatuses\.has\(lead\.status\)\s*\|\|\s*overwrite/,
   );
 });
 
