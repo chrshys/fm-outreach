@@ -311,6 +311,18 @@ export const listWithCoords = query({
   },
 });
 
+export const listByCluster = query({
+  args: {
+    clusterId: v.id("clusters"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("leads")
+      .withIndex("by_clusterId", (q) => q.eq("clusterId", args.clusterId))
+      .collect();
+  },
+});
+
 export const bulkAssignCluster = mutation({
   args: {
     leadIds: v.array(v.id("leads")),
