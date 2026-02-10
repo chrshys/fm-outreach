@@ -1,4 +1,29 @@
-import { query } from "./_generated/server"
+import { v } from "convex/values"
+
+import { mutation, query } from "./_generated/server"
+
+export const create = mutation({
+  args: {
+    name: v.string(),
+    templateIds: v.array(v.id("emailTemplates")),
+    targetClusterId: v.optional(v.id("clusters")),
+    targetFilter: v.optional(v.any()),
+    leadCount: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now()
+    return ctx.db.insert("campaigns", {
+      name: args.name,
+      status: "draft",
+      templateIds: args.templateIds,
+      targetClusterId: args.targetClusterId,
+      targetFilter: args.targetFilter,
+      leadCount: args.leadCount,
+      createdAt: now,
+      updatedAt: now,
+    })
+  },
+})
 
 export const list = query({
   args: {},
