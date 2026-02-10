@@ -28,7 +28,6 @@ type LogSocialResponseProps = {
 }
 
 export function LogSocialResponse({ leadId, className }: LogSocialResponseProps) {
-  // @ts-expect-error — deep type instantiation in generated Convex API types
   const createActivity = useMutation(api.activities.create)
   const [open, setOpen] = useState(false)
   const [channel, setChannel] = useState<SocialChannel>("facebook")

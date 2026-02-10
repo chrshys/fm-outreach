@@ -38,7 +38,6 @@ function countWords(text: string): number {
 }
 
 export function SocialDmComposer({ leadId, leadName }: SocialDmComposerProps) {
-  // @ts-expect-error — deep type instantiation in generated Convex API types
   const generateDM = useAction(api.social.generateDM.generateDM)
   const createActivity = useMutation(api.activities.create)
 

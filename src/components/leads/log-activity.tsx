@@ -73,7 +73,6 @@ function getChannelForType(type: ManualActivityType, socialChannel: SocialChanne
 }
 
 export function LogActivity({ leadId, className }: LogActivityProps) {
-  // @ts-expect-error — deep type instantiation in generated Convex API types
   const createActivity = useMutation(api.activities.create)
   const [openDialogType, setOpenDialogType] = useState<ManualActivityType | null>(null)
   const [description, setDescription] = useState("")

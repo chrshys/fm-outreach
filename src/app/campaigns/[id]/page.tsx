@@ -89,7 +89,6 @@ export default function CampaignDetailPage({ params }: PageParams) {
   const campaignId = id as Id<"campaigns">
 
   const campaign = useQuery(
-    // @ts-expect-error — TS2589: api type tree too deep for this component
     api.campaigns.get,
     { campaignId },
   )

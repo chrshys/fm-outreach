@@ -153,7 +153,6 @@ const statusStyles: Record<LeadStatus, string> = {
 export default function NewCampaignPage() {
   const router = useRouter()
   const createCampaign = useMutation(
-    // @ts-expect-error — TS2589: api type tree too deep for this component
     api.campaigns.create,
   )
   const leads = useQuery(api.leads.listAllSummary) as LeadSummary[] | undefined

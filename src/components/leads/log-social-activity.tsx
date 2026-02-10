@@ -61,7 +61,6 @@ type LogSocialActivityProps = {
 }
 
 export function LogSocialActivity({ leadId, className }: LogSocialActivityProps) {
-  // @ts-expect-error — deep type instantiation in generated Convex API types
   const createActivity = useMutation(api.activities.create)
   const [activeAction, setActiveAction] = useState<SocialAction | null>(null)
   const [notes, setNotes] = useState("")

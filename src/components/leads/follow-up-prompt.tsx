@@ -40,7 +40,6 @@ type FollowUpPromptProps = {
 }
 
 export function FollowUpPrompt({ leadId, open, onOpenChange }: FollowUpPromptProps) {
-  // @ts-expect-error — deep type instantiation in generated Convex API types
   const setFollowUp = useMutation(api.leads.setFollowUp)
   const [dateInput, setDateInput] = useState(getDefaultFollowUpDate)
   const [isSubmitting, setIsSubmitting] = useState(false)
