@@ -87,7 +87,7 @@ export function LogSocialResponse({ leadId, className }: LogSocialResponseProps)
           <DialogHeader>
             <DialogTitle>Log {channelLabel} Response</DialogTitle>
             <DialogDescription>
-              Record a response received via {channelLabel}. If the lead is in outreach or no-email status, it will automatically advance to replied.
+              Record a response received via {channelLabel}. The lead status will automatically advance to replied.
             </DialogDescription>
           </DialogHeader>
 

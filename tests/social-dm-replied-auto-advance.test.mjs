@@ -8,10 +8,18 @@ test("create mutation accepts social_dm_replied type", () => {
   assert.match(source, /v\.literal\("social_dm_replied"\)/)
 })
 
-test("auto-advances lead status to replied when type is social_dm_replied and status is outreach_started or no_email", () => {
+test("advanceToReplied set includes outreach_started, no_response, bounced, and no_email", () => {
+  assert.match(source, /"outreach_started"/)
+  assert.match(source, /"no_response"/)
+  assert.match(source, /"bounced"/)
+  assert.match(source, /"no_email"/)
+  assert.match(source, /const advanceToReplied = new Set\(/)
+})
+
+test("auto-advances lead status to replied when type is social_dm_replied and status is in advanceToReplied set", () => {
   assert.match(
     source,
-    /args\.type === "social_dm_replied" &&\s*\(lead\.status === "outreach_started" \|\| lead\.status === "no_email"\)/s
+    /args\.type === "social_dm_replied" && advanceToReplied\.has\(lead\.status\)/,
   )
   assert.match(source, /await ctx\.db\.patch\(args\.leadId, \{ status: "replied", updatedAt: now \}\)/)
 })

@@ -84,10 +84,13 @@ export const create = mutation({
     const now = Date.now();
 
     // Auto-advance lead status to "replied" when logging a social DM reply
-    if (
-      args.type === "social_dm_replied" &&
-      (lead.status === "outreach_started" || lead.status === "no_email")
-    ) {
+    const advanceToReplied = new Set([
+      "outreach_started",
+      "no_response",
+      "bounced",
+      "no_email",
+    ]);
+    if (args.type === "social_dm_replied" && advanceToReplied.has(lead.status)) {
       await ctx.db.patch(args.leadId, { status: "replied", updatedAt: now });
       await ctx.db.insert("activities", {
         leadId: args.leadId,
