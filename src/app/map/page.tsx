@@ -37,18 +37,27 @@ export default function MapPage() {
     [leads, filters],
   )
 
+  const filteredClusters = useMemo(() => {
+    const all = clusters ?? []
+    const selected =
+      filters.clusterId !== "all"
+        ? all.filter((c) => c._id === filters.clusterId)
+        : all
+    return selected.map((c) => ({
+      _id: c._id,
+      name: c.name,
+      centerLat: c.centerLat,
+      centerLng: c.centerLng,
+      radiusKm: c.radiusKm,
+    }))
+  }, [clusters, filters.clusterId])
+
   return (
     <AppLayout>
       <div className="relative h-[calc(100vh-73px)] -m-6">
         <MapContent
           leads={filteredLeads}
-          clusters={(clusters ?? []).map((c) => ({
-            _id: c._id,
-            name: c.name,
-            centerLat: c.centerLat,
-            centerLng: c.centerLng,
-            radiusKm: c.radiusKm,
-          }))}
+          clusters={filteredClusters}
         />
         <MapFilters
           value={filters}
