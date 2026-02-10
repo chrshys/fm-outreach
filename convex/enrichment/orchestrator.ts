@@ -217,7 +217,7 @@ export const enrichLead = internalAction({
 
     if (scraperResult && scraperResult.emails.length > 0) {
       bestEmail = scraperResult.emails[0];
-      emailSource = `website_scraper:${websiteUrl}`;
+      emailSource = `website - ${websiteUrl} - ${new Date().toISOString().slice(0, 10)}`;
     }
 
     // From Hunter.io — use highest confidence email if no scraper email
@@ -226,7 +226,7 @@ export const enrichLead = internalAction({
         (a, b) => b.confidence - a.confidence,
       );
       bestEmail = sorted[0].email;
-      emailSource = `hunter:${domain}`;
+      emailSource = `hunter - ${domain} - ${new Date().toISOString().slice(0, 10)}`;
 
       // Also grab contact name from Hunter if available
       if ((!lead.contactName || force) && sorted[0].firstName) {

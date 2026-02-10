@@ -213,8 +213,21 @@ test("only updates status for progressable statuses unless forced", () => {
 test("sets consentSource documenting where email was found", () => {
   assert.match(source, /consentSource/);
   assert.match(source, /emailSource/);
-  assert.match(source, /website_scraper:/);
-  assert.match(source, /hunter:/);
+  // consentSource format: "source - detail - YYYY-MM-DD" (matches CASL spec)
+  assert.match(source, /website - /);
+  assert.match(source, /hunter - /);
+  assert.match(source, /toISOString\(\)\.slice\(0,\s*10\)/);
+});
+
+test("only sets consentSource when email is found (emailSource is non-null)", () => {
+  // emailSource is only assigned when an email is actually found
+  assert.match(source, /let emailSource:\s*string\s*\|\s*null\s*=\s*null/);
+  // consentSource is only set when emailSource is truthy
+  assert.match(source, /if\s*\(emailSource\s*&&/);
+});
+
+test("does not overwrite existing consentSource unless forced", () => {
+  assert.match(source, /!lead\.consentSource\s*\|\|\s*force/);
 });
 
 // --- Step 12: Log finished ---

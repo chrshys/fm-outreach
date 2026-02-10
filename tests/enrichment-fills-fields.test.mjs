@@ -124,7 +124,7 @@ test("orchestrator fills contactName from Claude as fallback", () => {
 
 test("orchestrator fills contactEmail from website scraper first", () => {
   assert.match(orchestratorSource, /scraperResult\.emails\[0\]/);
-  assert.match(orchestratorSource, /website_scraper:/);
+  assert.match(orchestratorSource, /website - /);
 });
 
 test("orchestrator falls back to Hunter email if scraper found none", () => {
