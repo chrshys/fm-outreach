@@ -2,22 +2,12 @@
 
 import "leaflet/dist/leaflet.css"
 
-import L from "leaflet"
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet"
+
+import { getStatusColor } from "./status-colors"
 
 const NIAGARA_CENTER: [number, number] = [43.08, -79.08]
 const DEFAULT_ZOOM = 8
-
-const defaultIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-})
 
 type LeadMarker = {
   _id: string
@@ -49,22 +39,32 @@ export default function MapContent({ leads }: MapContentProps) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {leads.map((lead) => (
-        <Marker
-          key={lead._id}
-          position={[lead.latitude, lead.longitude]}
-          icon={defaultIcon}
-        >
-          <Popup>
-            <div className="text-sm">
-              <p className="font-semibold">{lead.name}</p>
-              <p className="text-muted-foreground">
-                {formatType(lead.type)} · {lead.city}
-              </p>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+      {leads.map((lead) => {
+        const color = getStatusColor(lead.status)
+        return (
+          <CircleMarker
+            key={lead._id}
+            center={[lead.latitude, lead.longitude]}
+            radius={8}
+            pathOptions={{
+              fillColor: color,
+              color: color,
+              weight: 2,
+              opacity: 0.9,
+              fillOpacity: 0.7,
+            }}
+          >
+            <Popup>
+              <div className="text-sm">
+                <p className="font-semibold">{lead.name}</p>
+                <p className="text-muted-foreground">
+                  {formatType(lead.type)} · {lead.city}
+                </p>
+              </div>
+            </Popup>
+          </CircleMarker>
+        )
+      })}
     </MapContainer>
   )
 }
