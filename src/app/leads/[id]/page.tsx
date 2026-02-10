@@ -10,6 +10,7 @@ import { api } from "../../../../convex/_generated/api"
 import type { Doc, Id } from "../../../../convex/_generated/dataModel"
 import { AppLayout } from "@/components/layout/app-layout"
 import { ActivityTimeline } from "@/components/leads/activity-timeline"
+import { DataFreshness } from "@/components/leads/data-freshness"
 import { FollowUpReminder } from "@/components/leads/follow-up-reminder"
 import { LogActivity } from "@/components/leads/log-activity"
 import { StatusSelector } from "@/components/leads/status-selector"
@@ -348,6 +349,20 @@ export default function LeadDetailPage() {
             </div>
 
             <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Data Freshness</CardTitle>
+                  <CardDescription>Enrichment status and data age.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <DataFreshness
+                    leadId={leadId}
+                    enrichedAt={lead.enrichedAt}
+                    enrichmentSources={lead.enrichmentSources}
+                  />
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle>Follow-up Reminder</CardTitle>
