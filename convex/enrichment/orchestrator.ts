@@ -156,36 +156,10 @@ export const enrichLead = internalAction({
       }
     }
 
-    // Step 6: Claude analysis — run if website content was scraped
-    // Scraper returns structured data only, so fetch raw HTML for Claude + social discovery
+    // Step 6: Claude analysis — reuse raw HTML from scraper result
     let claudeResult: ClaudeAnalysisResult | null = null;
     if (scraperResult) {
-      if (websiteUrl) {
-        try {
-          const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 5000);
-          try {
-            const response = await fetch(websiteUrl, {
-              signal: controller.signal,
-              headers: {
-                "User-Agent": "Mozilla/5.0 (compatible; FruitlandBot/1.0)",
-                Accept: "text/html",
-              },
-            });
-            const contentType = response.headers.get("content-type") ?? "";
-            if (
-              contentType.includes("text/html") ||
-              contentType.includes("text/plain")
-            ) {
-              websiteHtml = await response.text();
-            }
-          } finally {
-            clearTimeout(timeout);
-          }
-        } catch {
-          // Fetch failed — continue without Claude analysis
-        }
-      }
+      websiteHtml = scraperResult.rawHtml;
 
       if (websiteHtml) {
         try {

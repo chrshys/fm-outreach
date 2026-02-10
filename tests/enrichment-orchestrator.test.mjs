@@ -125,11 +125,9 @@ test("runs Claude analysis if website content was scraped", () => {
   assert.match(source, /content:\s*websiteHtml/);
 });
 
-test("fetches website HTML for Claude analysis and social discovery", () => {
-  assert.match(source, /fetch\(websiteUrl/);
-  assert.match(source, /FruitlandBot/);
-  assert.match(source, /text\/html/);
-  assert.match(source, /websiteHtml\s*=\s*await\s+response\.text\(\)/);
+test("reuses raw HTML from scraper result for Claude analysis and social discovery", () => {
+  assert.match(source, /scraperResult\.rawHtml/);
+  assert.match(source, /websiteHtml\s*=\s*scraperResult\.rawHtml/);
 });
 
 test("adds claude_analysis to sources when successful", () => {
