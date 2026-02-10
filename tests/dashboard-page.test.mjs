@@ -57,7 +57,8 @@ test("renders bottom row with 3 cards in a 3-column grid", () => {
 })
 
 test("email activity card shows sent, opened, clicked for last 7 days", () => {
-  assert.match(source, /Email Activity \(7d\)/)
+  assert.match(source, /import\s+\{\s*EmailActivity\s*\}\s+from\s+"@\/components\/dashboard\/email-activity"/)
+  assert.match(source, /<EmailActivity/)
   assert.match(source, /emailStats\?\.last7Days\.sent/)
   assert.match(source, /emailStats\?\.last7Days\.opened/)
   assert.match(source, /emailStats\?\.last7Days\.clicked/)

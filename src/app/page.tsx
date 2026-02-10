@@ -7,6 +7,7 @@ import { api } from "../../convex/_generated/api"
 
 import { AppLayout } from "@/components/layout/app-layout"
 import { ActiveCampaigns } from "@/components/dashboard/active-campaigns"
+import { EmailActivity } from "@/components/dashboard/email-activity"
 import { MetricCards } from "@/components/dashboard/metric-cards"
 import { PipelineFunnel } from "@/components/dashboard/pipeline-funnel"
 import {
@@ -125,27 +126,13 @@ export default function HomePage() {
             {/* Bottom row: 3 cards */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" data-testid="bottom-row">
               {/* Email Activity */}
-              <Card>
-                <CardHeader className="p-4">
-                  <CardTitle>Email Activity (7d)</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Sent</span>
-                      <span className="font-medium">{emailStats?.last7Days.sent ?? 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Opened</span>
-                      <span className="font-medium">{emailStats?.last7Days.opened ?? 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Clicked</span>
-                      <span className="font-medium">{emailStats?.last7Days.clicked ?? 0}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <EmailActivity
+                stats={{
+                  sent: emailStats?.last7Days.sent ?? 0,
+                  opened: emailStats?.last7Days.opened ?? 0,
+                  clicked: emailStats?.last7Days.clicked ?? 0,
+                }}
+              />
 
               {/* Social Touches */}
               <Card>
