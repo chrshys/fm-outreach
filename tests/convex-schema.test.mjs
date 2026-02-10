@@ -11,6 +11,7 @@ test("defines all required tables", () => {
     "emails",
     "activities",
     "emailTemplates",
+    "settings",
     "campaigns",
   ]) {
     assert.match(schemaSource, new RegExp(`\\b${tableName}:\\s*defineTable\\(`));
@@ -34,6 +35,10 @@ test("defines required emails indexes", () => {
     schemaSource,
     /emails:[\s\S]*?\.index\("by_smartleadCampaignId",\s*\["smartleadCampaignId"\]\)/,
   );
+});
+
+test("defines required settings indexes", () => {
+  assert.match(schemaSource, /settings:[\s\S]*?\.index\("by_key",\s*\["key"\]\)/);
 });
 
 test("defines required campaigns indexes", () => {

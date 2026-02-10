@@ -40,6 +40,7 @@ test("convex schema exports to JSON with all required tables", () => {
       "emailTemplates",
       "emails",
       "leads",
+      "settings",
     ]);
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });

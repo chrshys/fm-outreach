@@ -155,6 +155,11 @@ export default defineSchema({
     isDefault: v.boolean(),
   }),
 
+  settings: defineTable({
+    key: v.string(),
+    value: v.string(),
+  }).index("by_key", ["key"]),
+
   campaigns: defineTable({
     name: v.string(),
     smartleadCampaignId: v.optional(v.string()),
