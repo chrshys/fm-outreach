@@ -72,3 +72,7 @@ test("renders empty state when no campaigns exist", () => {
 test("pct helper handles zero denominator", () => {
   assert.match(source, /if \(denominator === 0\) return "0%"/)
 })
+
+test("links each campaign card to its detail page", () => {
+  assert.match(source, /href=\{`\/campaigns\/\$\{campaign\._id\}`\}/)
+})

@@ -91,7 +91,8 @@ export default function CampaignsPage() {
               const repliedPct = pct(stats?.replied ?? 0, sent)
 
               return (
-                <Card key={campaign._id}>
+                <Link key={campaign._id} href={`/campaigns/${campaign._id}`}>
+                <Card className="transition-colors hover:border-primary/30">
                   <CardHeader className="p-4">
                     <div className="flex items-start justify-between">
                       <CardTitle>{campaign.name}</CardTitle>
@@ -124,6 +125,7 @@ export default function CampaignsPage() {
                     </div>
                   </CardContent>
                 </Card>
+                </Link>
               )
             })}
           </div>
