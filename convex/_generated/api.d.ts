@@ -38,6 +38,7 @@ import type * as lib_getSettings from "../lib/getSettings.js";
 import type * as lib_leadsList from "../lib/leadsList.js";
 import type * as lib_pipelineStats from "../lib/pipelineStats.js";
 import type * as lib_searchLeads from "../lib/searchLeads.js";
+import type * as lib_socialStats from "../lib/socialStats.js";
 import type * as seedHelpers from "../seedHelpers.js";
 import type * as seeds_geocodeLeads from "../seeds/geocodeLeads.js";
 import type * as seeds_importLeads from "../seeds/importLeads.js";
@@ -90,6 +91,7 @@ declare const fullApi: ApiFromModules<{
   "lib/leadsList": typeof lib_leadsList;
   "lib/pipelineStats": typeof lib_pipelineStats;
   "lib/searchLeads": typeof lib_searchLeads;
+  "lib/socialStats": typeof lib_socialStats;
   seedHelpers: typeof seedHelpers;
   "seeds/geocodeLeads": typeof seeds_geocodeLeads;
   "seeds/importLeads": typeof seeds_importLeads;
