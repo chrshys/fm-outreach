@@ -34,6 +34,7 @@ import type * as seeds_geocodeLeads from "../seeds/geocodeLeads.js";
 import type * as seeds_importLeads from "../seeds/importLeads.js";
 import type * as seeds_importLeadsMapper from "../seeds/importLeadsMapper.js";
 import type * as seeds_runSeed from "../seeds/runSeed.js";
+import type * as seeds_seedTemplates from "../seeds/seedTemplates.js";
 import type * as settings from "../settings.js";
 import type * as smartlead_analyticsCron from "../smartlead/analyticsCron.js";
 import type * as smartlead_client from "../smartlead/client.js";
@@ -74,6 +75,7 @@ declare const fullApi: ApiFromModules<{
   "seeds/importLeads": typeof seeds_importLeads;
   "seeds/importLeadsMapper": typeof seeds_importLeadsMapper;
   "seeds/runSeed": typeof seeds_runSeed;
+  "seeds/seedTemplates": typeof seeds_seedTemplates;
   settings: typeof settings;
   "smartlead/analyticsCron": typeof smartlead_analyticsCron;
   "smartlead/client": typeof smartlead_client;
