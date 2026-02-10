@@ -372,8 +372,8 @@ export const listSocialOutreach = query({
 
     const socialLeads = allLeads.filter(
       (lead) =>
-        lead.status === "no_email" ||
-        (hasSocialLinks(lead) && outreachNoReplyStatuses.has(lead.status)),
+        hasSocialLinks(lead) &&
+        (lead.status === "no_email" || outreachNoReplyStatuses.has(lead.status)),
     );
 
     const results = await Promise.all(
