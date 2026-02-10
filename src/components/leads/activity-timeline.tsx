@@ -1,11 +1,13 @@
 import { formatDistanceToNow } from "date-fns"
 import {
   CalendarCheck2,
+  CheckCircle2,
   Flag,
   Mail,
   MailOpen,
   MessageCircle,
   Phone,
+  Sparkles,
   StickyNote,
   type LucideIcon,
 } from "lucide-react"
@@ -24,6 +26,8 @@ export type LeadActivityType =
   | "status_changed"
   | "social_message_sent"
   | "social_dm_sent"
+  | "enrichment_started"
+  | "enrichment_finished"
   | string
 
 export type LeadActivityChannel = "email" | "phone" | "sms" | "facebook" | "instagram" | "in_person" | string
@@ -97,6 +101,16 @@ const activityMetaByType: Record<string, ActivityMeta> = {
     icon: MessageCircle,
     iconClassName: "text-indigo-600",
     dotClassName: "bg-indigo-500",
+  },
+  enrichment_started: {
+    icon: Sparkles,
+    iconClassName: "text-teal-600",
+    dotClassName: "bg-teal-500",
+  },
+  enrichment_finished: {
+    icon: CheckCircle2,
+    iconClassName: "text-teal-600",
+    dotClassName: "bg-teal-500",
   },
 }
 
