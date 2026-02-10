@@ -131,6 +131,7 @@ export const listLeads = query({
         sequenceStep: number
         status: "sent" | "opened" | "replied" | "bounced"
         lastActivityAt: number
+        repliedAt: number | undefined
       }
     >()
 
@@ -158,11 +159,18 @@ export const listLeads = query({
             status = "opened"
             lastActivityAt = Math.max(lastActivityAt, email.openedAt)
           }
+          // Preserve repliedAt from any earlier email if this one has none
+          const repliedAt = email.repliedAt ?? existing?.repliedAt
           emailsByLead.set(email.leadId, {
             sequenceStep: email.sequenceStep,
-            status,
+            status: repliedAt ? "replied" : status,
             lastActivityAt,
+            repliedAt,
           })
+        } else if (email.repliedAt && !existing.repliedAt) {
+          // An earlier sequence step has a reply — carry it forward
+          existing.repliedAt = email.repliedAt
+          existing.status = "replied"
         }
       }
     }
@@ -179,6 +187,7 @@ export const listLeads = query({
         sequenceStep: emailData?.sequenceStep ?? 0,
         status: emailData?.status ?? ("pending" as const),
         lastActivityAt: emailData?.lastActivityAt,
+        repliedAt: emailData?.repliedAt,
       })
     }
 

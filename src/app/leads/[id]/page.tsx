@@ -470,7 +470,7 @@ export default function LeadDetailPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card id="activity">
                 <CardHeader>
                   <CardTitle>Activity Timeline</CardTitle>
                   <CardDescription>Recent lead interactions and follow-up notes.</CardDescription>

@@ -7,6 +7,7 @@ import {
   MailOpen,
   MessageCircle,
   Phone,
+  Reply,
   Sparkles,
   StickyNote,
   type LucideIcon,
@@ -61,6 +62,11 @@ const activityMetaByType: Record<string, ActivityMeta> = {
     icon: MailOpen,
     iconClassName: "text-cyan-600",
     dotClassName: "bg-cyan-500",
+  },
+  email_replied: {
+    icon: Reply,
+    iconClassName: "text-emerald-600",
+    dotClassName: "bg-emerald-500",
   },
   call_logged: {
     icon: Phone,

@@ -21,6 +21,7 @@ import type { Id } from "../../../../convex/_generated/dataModel"
 import { AppLayout } from "@/components/layout/app-layout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import {
   Card,
   CardContent,
@@ -230,7 +231,12 @@ export default function CampaignDetailPage({ params }: PageParams) {
                   </TableHeader>
                   <TableBody>
                     {leads.map((lead) => (
-                      <TableRow key={lead._id}>
+                      <TableRow
+                        key={lead._id}
+                        className={cn(
+                          lead.status === "replied" && "bg-emerald-50 dark:bg-emerald-950/20"
+                        )}
+                      >
                         <TableCell>
                           <Link
                             href={`/leads/${lead._id}`}
@@ -249,9 +255,22 @@ export default function CampaignDetailPage({ params }: PageParams) {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
-                          {lead.lastActivityAt
-                            ? formatDate(lead.lastActivityAt)
-                            : "—"}
+                          <div className="flex items-center gap-2">
+                            <span>
+                              {lead.lastActivityAt
+                                ? formatDate(lead.lastActivityAt)
+                                : "—"}
+                            </span>
+                            {lead.repliedAt ? (
+                              <Link
+                                href={`/leads/${lead._id}#activity`}
+                                className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                              >
+                                <Reply className="size-3" />
+                                View Reply
+                              </Link>
+                            ) : null}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
