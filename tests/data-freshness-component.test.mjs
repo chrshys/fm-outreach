@@ -7,6 +7,8 @@ const source = fs.readFileSync(
   "utf8",
 );
 
+const libSource = fs.readFileSync("src/lib/enrichment.ts", "utf8");
+
 // --- Component structure ---
 
 test("data freshness component is exported", () => {
@@ -33,23 +35,23 @@ test("shows 'Never enriched' when no enrichedAt", () => {
 // --- Staleness indicator ---
 
 test("defines fresh threshold at 30 days", () => {
-  assert.match(source, /daysSince\s*<\s*30/);
-  assert.match(source, /return\s+["']fresh["']/);
+  assert.match(libSource, /daysSince\s*<\s*30/);
+  assert.match(libSource, /return\s+["']fresh["']/);
 });
 
 test("defines aging threshold at 30-90 days", () => {
-  assert.match(source, /daysSince\s*<=\s*90/);
-  assert.match(source, /return\s+["']aging["']/);
+  assert.match(libSource, /daysSince\s*<=\s*90/);
+  assert.match(libSource, /return\s+["']aging["']/);
 });
 
 test("defines stale threshold over 90 days", () => {
-  assert.match(source, /return\s+["']stale["']/);
+  assert.match(libSource, /return\s+["']stale["']/);
 });
 
 test("uses colored badges for staleness levels", () => {
-  assert.match(source, /bg-green-100.*text-green-800/);
-  assert.match(source, /bg-amber-100.*text-amber-800/);
-  assert.match(source, /bg-red-100.*text-red-800/);
+  assert.match(libSource, /bg-green-100.*text-green-800/);
+  assert.match(libSource, /bg-amber-100.*text-amber-800/);
+  assert.match(libSource, /bg-red-100.*text-red-800/);
 });
 
 test("renders Badge component with staleness", () => {
@@ -67,9 +69,9 @@ test("displays enrichment source labels", () => {
   assert.match(source, /Website/);
 });
 
-test("deduplicates sources via latestBySource helper", () => {
-  assert.match(source, /function\s+latestBySource/);
-  assert.match(source, /new Map</);
+test("imports latestBySource from shared enrichment lib", () => {
+  assert.match(source, /import.*latestBySource.*from.*enrichment/);
+  assert.match(libSource, /export\s+function\s+latestBySource/);
 });
 
 // --- Source badges ---
@@ -81,7 +83,7 @@ test("renders each source as an outline Badge with fetch date", () => {
 });
 
 test("latestBySource keeps only latest entry per source", () => {
-  assert.match(source, /entry\.fetchedAt\s*>\s*existing\.fetchedAt/);
+  assert.match(libSource, /entry\.fetchedAt\s*>\s*existing\.fetchedAt/);
 });
 
 test("formats source fetch date with Intl.DateTimeFormat", () => {
