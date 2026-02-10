@@ -37,6 +37,7 @@ import type * as seeds_importLeadsMapper from "../seeds/importLeadsMapper.js";
 import type * as seeds_runSeed from "../seeds/runSeed.js";
 import type * as seeds_seedTemplates from "../seeds/seedTemplates.js";
 import type * as settings from "../settings.js";
+import type * as smartlead_actions from "../smartlead/actions.js";
 import type * as smartlead_analyticsCron from "../smartlead/analyticsCron.js";
 import type * as smartlead_client from "../smartlead/client.js";
 import type * as smartlead_rateLimiter from "../smartlead/rateLimiter.js";
@@ -79,6 +80,7 @@ declare const fullApi: ApiFromModules<{
   "seeds/runSeed": typeof seeds_runSeed;
   "seeds/seedTemplates": typeof seeds_seedTemplates;
   settings: typeof settings;
+  "smartlead/actions": typeof smartlead_actions;
   "smartlead/analyticsCron": typeof smartlead_analyticsCron;
   "smartlead/client": typeof smartlead_client;
   "smartlead/rateLimiter": typeof smartlead_rateLimiter;
