@@ -43,6 +43,23 @@ export const set = mutation({
   },
 })
 
+export const setBatch = mutation({
+  args: { items: v.array(v.object({ key: v.string(), value: v.string() })) },
+  handler: async (ctx, args) => {
+    for (const item of args.items) {
+      const existing = await ctx.db
+        .query("settings")
+        .withIndex("by_key", (q) => q.eq("key", item.key))
+        .unique()
+      if (existing) {
+        await ctx.db.patch(existing._id, { value: item.value })
+      } else {
+        await ctx.db.insert("settings", { key: item.key, value: item.value })
+      }
+    }
+  },
+})
+
 export const remove = mutation({
   args: { key: v.string() },
   handler: async (ctx, args) => {
