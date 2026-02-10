@@ -166,6 +166,17 @@ export default defineSchema({
     blockedAt: v.number(),
   }).index("by_email", ["email"]),
 
+  generatedEmails: defineTable({
+    campaignId: v.id("campaigns"),
+    leadId: v.id("leads"),
+    templateId: v.id("emailTemplates"),
+    subject: v.string(),
+    body: v.string(),
+    generatedAt: v.number(),
+  })
+    .index("by_campaignId", ["campaignId"])
+    .index("by_leadId", ["leadId"]),
+
   campaigns: defineTable({
     name: v.string(),
     smartleadCampaignId: v.optional(v.string()),
