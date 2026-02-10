@@ -6,6 +6,7 @@ import { Circle, Eye, EyeOff, Loader2 } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
 
 import { AppLayout } from "@/components/layout/app-layout"
+import { EmailTemplates } from "@/components/settings/email-templates"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -302,6 +303,11 @@ export default function SettingsPage() {
             </form>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Email Templates Card */}
+      <div className="mt-6">
+        <EmailTemplates />
       </div>
 
       {/* Domain Configuration Card */}
