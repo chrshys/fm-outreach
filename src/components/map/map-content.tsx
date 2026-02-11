@@ -11,6 +11,10 @@ import {
   Tooltip,
 } from "react-leaflet"
 
+import DiscoveryGrid from "./discovery-grid"
+import type { CellData } from "./discovery-grid"
+import { MapBoundsEmitter } from "./map-bounds-emitter"
+import type { MapBounds } from "./map-bounds-emitter"
 import { MarkerPopup } from "./marker-popup"
 import { PolygonDraw } from "./polygon-draw"
 import { getStatusColor } from "./status-colors"
@@ -46,9 +50,12 @@ type MapContentProps = {
   isDrawing?: boolean
   onPolygonDrawn?: (latlngs: { lat: number; lng: number }[]) => void
   pendingPolygon?: { lat: number; lng: number }[] | null
+  gridCells?: CellData[]
+  onCellClick?: (cellId: string) => void
+  onBoundsChange?: (bounds: MapBounds) => void
 }
 
-export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon }: MapContentProps) {
+export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon, gridCells, onCellClick, onBoundsChange }: MapContentProps) {
   return (
     <MapContainer
       center={NIAGARA_CENTER}
@@ -120,6 +127,12 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
           </CircleMarker>
         )
       })}
+      {gridCells && onCellClick && (
+        <DiscoveryGrid cells={gridCells} onCellClick={onCellClick} />
+      )}
+      {onBoundsChange && (
+        <MapBoundsEmitter onBoundsChange={onBoundsChange} />
+      )}
       {onPolygonDrawn && (
         <PolygonDraw isDrawing={isDrawing} onPolygonDrawn={onPolygonDrawn} />
       )}
