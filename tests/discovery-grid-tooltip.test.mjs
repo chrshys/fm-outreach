@@ -26,7 +26,7 @@ test("Tooltip is interactive with styled className", () => {
   assert.match(source, /className="!bg-card !border !border-border !rounded-lg !shadow-md !px-2\.5 !py-2 !text-foreground"/)
 })
 
-test("CellTooltipContent is rendered inside Tooltip", () => {
+test("CellTooltipContent is rendered inside Tooltip via hover wrapper", () => {
   assert.match(source, /<CellTooltipContent\s+cell=\{cell\}\s+onCellAction=\{onCellAction\}\s*\/>/)
 })
 

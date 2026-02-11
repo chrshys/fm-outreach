@@ -1,5 +1,6 @@
 "use client"
 
+import { useCallback, useRef, useState } from "react"
 import { Rectangle, Tooltip } from "react-leaflet"
 import { Play, Grid2x2Plus, Minimize2 } from "lucide-react"
 import { getCellColor } from "./cell-colors"
@@ -151,32 +152,80 @@ function CellTooltipContent({
   )
 }
 
+/** Delay in ms before the tooltip closes after the cursor leaves both cell and tooltip. */
+const TOOLTIP_CLOSE_DELAY = 150
+
+function DiscoveryGridCell({
+  cell,
+  onCellAction,
+}: {
+  cell: CellData
+  onCellAction: (cellId: string, action: CellAction) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const cancelClose = useCallback(() => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
+  }, [])
+
+  const scheduleClose = useCallback(() => {
+    cancelClose()
+    closeTimer.current = setTimeout(() => {
+      setOpen(false)
+      closeTimer.current = null
+    }, TOOLTIP_CLOSE_DELAY)
+  }, [cancelClose])
+
+  const handleEnter = useCallback(() => {
+    cancelClose()
+    setOpen(true)
+  }, [cancelClose])
+
+  const pathOptions = getCellColor(cell.status)
+  const bounds: [[number, number], [number, number]] = [
+    [cell.swLat, cell.swLng],
+    [cell.neLat, cell.neLng],
+  ]
+
+  return (
+    <Rectangle
+      key={cell._id}
+      bounds={bounds}
+      pathOptions={pathOptions}
+      eventHandlers={{
+        mouseover: handleEnter,
+        mouseout: scheduleClose,
+      }}
+    >
+      <Tooltip
+        interactive
+        permanent={open}
+        className="!bg-card !border !border-border !rounded-lg !shadow-md !px-2.5 !py-2 !text-foreground"
+        direction="top"
+        offset={[0, -10]}
+      >
+        <div onMouseEnter={handleEnter} onMouseLeave={scheduleClose}>
+          <CellTooltipContent cell={cell} onCellAction={onCellAction} />
+        </div>
+      </Tooltip>
+    </Rectangle>
+  )
+}
+
 export default function DiscoveryGrid({ cells, onCellAction }: DiscoveryGridProps) {
   return (
     <>
-      {cells.map((cell) => {
-        const pathOptions = getCellColor(cell.status)
-        const bounds: [[number, number], [number, number]] = [
-          [cell.swLat, cell.swLng],
-          [cell.neLat, cell.neLng],
-        ]
-        return (
-          <Rectangle
-            key={cell._id}
-            bounds={bounds}
-            pathOptions={pathOptions}
-          >
-            <Tooltip
-              interactive
-              className="!bg-card !border !border-border !rounded-lg !shadow-md !px-2.5 !py-2 !text-foreground"
-              direction="top"
-              offset={[0, -10]}
-            >
-              <CellTooltipContent cell={cell} onCellAction={onCellAction} />
-            </Tooltip>
-          </Rectangle>
-        )
-      })}
+      {cells.map((cell) => (
+        <DiscoveryGridCell
+          key={cell._id}
+          cell={cell}
+          onCellAction={onCellAction}
+        />
+      ))}
     </>
   )
 }

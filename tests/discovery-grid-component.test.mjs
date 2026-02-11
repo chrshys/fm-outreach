@@ -60,9 +60,12 @@ test("Rectangle receives pathOptions from getCellColor", () => {
   assert.match(source, /pathOptions=\{pathOptions\}/)
 })
 
-test("Rectangle does not have click eventHandler", () => {
-  // Rectangle rendering no longer has eventHandlers — interaction is via Tooltip
-  assert.doesNotMatch(source, /eventHandlers=\{/)
+test("Rectangle uses hover eventHandlers (not click) for tooltip management", () => {
+  assert.match(source, /eventHandlers=\{/)
+  assert.match(source, /mouseover:\s*handleEnter/)
+  assert.match(source, /mouseout:\s*scheduleClose/)
+  // No click handler on the Rectangle
+  assert.doesNotMatch(source, /click:\s*\(\)\s*=>\s*onCellAction/)
 })
 
 test("Tooltip is interactive with custom className, direction, and offset", () => {

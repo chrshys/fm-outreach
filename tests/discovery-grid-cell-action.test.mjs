@@ -54,9 +54,10 @@ test("DiscoveryGrid destructures onCellAction in function params", () => {
   assert.match(gridSource, /\{\s*cells,\s*onCellAction\s*\}/)
 })
 
-test("Rectangle no longer has click eventHandler — interaction via tooltip only", () => {
-  assert.doesNotMatch(gridSource, /eventHandlers=\{/)
-  assert.doesNotMatch(gridSource, /mechanism:\s*"click"/)
+test("Rectangle uses hover handlers, not click — interaction via tooltip only", () => {
+  assert.match(gridSource, /eventHandlers=\{/)
+  assert.match(gridSource, /mouseover:\s*handleEnter/)
+  assert.doesNotMatch(gridSource, /click:\s*\(\)\s*=>\s*onCellAction/)
 })
 
 // ============================================================

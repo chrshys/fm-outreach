@@ -8,11 +8,13 @@ const source = fs.readFileSync(
 )
 
 // ============================================================
-// Rectangle no longer has click eventHandler
+// Rectangle uses hover eventHandlers (not click) for tooltip
 // ============================================================
 
-test("Rectangle does not use eventHandlers prop", () => {
-  assert.doesNotMatch(source, /eventHandlers=\{/)
+test("Rectangle uses eventHandlers for mouseover and mouseout", () => {
+  assert.match(source, /eventHandlers=\{/)
+  assert.match(source, /mouseover:\s*handleEnter/)
+  assert.match(source, /mouseout:\s*scheduleClose/)
 })
 
 test("Rectangle does not fire onCellAction on click", () => {
@@ -68,8 +70,10 @@ test("Tooltip remains interactive", () => {
   assert.match(source, /<Tooltip[\s\S]*?interactive/)
 })
 
-test("CellTooltipContent is rendered inside Tooltip", () => {
+test("CellTooltipContent is rendered inside Tooltip via hover wrapper div", () => {
   assert.match(source, /<CellTooltipContent\s+cell=\{cell\}\s+onCellAction=\{onCellAction\}\s*\/>/)
+  // Wrapped in a div with onMouseEnter/onMouseLeave for delayed close
+  assert.match(source, /<div onMouseEnter=\{handleEnter\} onMouseLeave=\{scheduleClose\}>/)
 })
 
 // ============================================================
