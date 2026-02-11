@@ -1,6 +1,11 @@
 import { ConvexError, v } from "convex/values";
 
-import { internalMutation, mutation, query } from "../_generated/server";
+import {
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+} from "../_generated/server";
 
 const MAX_DEPTH = 4;
 const DEFAULT_CELL_SIZE_KM = 20;
@@ -234,5 +239,92 @@ export const claimCellForSearch = internalMutation({
     await ctx.db.patch(args.cellId, { status: "searching" });
 
     return { previousStatus };
+  },
+});
+
+export const getCell = internalQuery({
+  args: {
+    cellId: v.id("discoveryCells"),
+  },
+  handler: async (ctx, args) => {
+    const cell = await ctx.db.get(args.cellId);
+    if (!cell) {
+      throw new ConvexError("Cell not found");
+    }
+
+    const grid = await ctx.db.get(cell.gridId);
+    if (!grid) {
+      throw new ConvexError("Grid not found");
+    }
+
+    return {
+      ...cell,
+      grid: {
+        _id: grid._id,
+        queries: grid.queries,
+        region: grid.region,
+        province: grid.province,
+      },
+    };
+  },
+});
+
+export const updateCellStatus = internalMutation({
+  args: {
+    cellId: v.id("discoveryCells"),
+    status: v.union(
+      v.literal("unsearched"),
+      v.literal("searched"),
+      v.literal("saturated"),
+      v.literal("searching"),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const cell = await ctx.db.get(args.cellId);
+    if (!cell) {
+      throw new ConvexError("Cell not found");
+    }
+
+    await ctx.db.patch(args.cellId, { status: args.status });
+  },
+});
+
+export const updateCellSearchResult = internalMutation({
+  args: {
+    cellId: v.id("discoveryCells"),
+    status: v.union(
+      v.literal("unsearched"),
+      v.literal("searched"),
+      v.literal("saturated"),
+      v.literal("searching"),
+    ),
+    resultCount: v.number(),
+    querySaturation: v.array(
+      v.object({ query: v.string(), count: v.number() }),
+    ),
+    lastSearchedAt: v.number(),
+    newLeadsCount: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const cell = await ctx.db.get(args.cellId);
+    if (!cell) {
+      throw new ConvexError("Cell not found");
+    }
+
+    await ctx.db.patch(args.cellId, {
+      status: args.status,
+      resultCount: args.resultCount,
+      querySaturation: args.querySaturation,
+      lastSearchedAt: args.lastSearchedAt,
+    });
+
+    const grid = await ctx.db.get(cell.gridId);
+    if (!grid) {
+      throw new ConvexError("Grid not found");
+    }
+
+    await ctx.db.patch(cell.gridId, {
+      totalLeadsFound: grid.totalLeadsFound + args.newLeadsCount,
+    });
   },
 });
