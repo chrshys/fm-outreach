@@ -60,6 +60,7 @@ export default function MapPage() {
   )
   const requestDiscoverCell = useMutation(api.discovery.discoverCell.requestDiscoverCell)
   const subdivideCell = useMutation(api.discovery.gridCells.subdivideCell)
+  const undivideCell = useMutation(api.discovery.gridCells.undivideCell)
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [drawnPolygon, setDrawnPolygon] = useState<
@@ -176,15 +177,18 @@ export default function MapPage() {
         return
       }
 
-      if (cell.status === "unsearched" || cell.status === "searched") {
-        try {
-          await requestDiscoverCell({ cellId: cellId as Id<"discoveryCells"> })
-          toast.success("Discovery started for cell")
-        } catch (err) {
-          toast.error(err instanceof Error ? err.message : "Failed to discover cell")
-        }
+      if (action.mechanism !== "google_places") {
+        toast.info("Coming soon")
         return
       }
+
+      try {
+        await requestDiscoverCell({ cellId: cellId as Id<"discoveryCells"> })
+        toast.success("Discovery started for cell")
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to discover cell")
+      }
+      return
     }
 
     if (action.type === "subdivide") {
@@ -200,7 +204,17 @@ export default function MapPage() {
       }
       return
     }
-  }, [gridCells, requestDiscoverCell, subdivideCell])
+
+    if (action.type === "undivide") {
+      try {
+        await undivideCell({ cellId: cellId as Id<"discoveryCells"> })
+        toast.success("Cell merged back to parent")
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to merge cell")
+      }
+      return
+    }
+  }, [gridCells, requestDiscoverCell, subdivideCell, undivideCell])
 
   return (
     <AppLayout>
