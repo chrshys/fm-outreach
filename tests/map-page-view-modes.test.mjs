@@ -139,9 +139,9 @@ test("DiscoveryGrid attaches click handler to cells via onCellAction", () => {
   assert.match(discoveryGridSource, /click:\s*\(\)\s*=>\s*onCellAction\(cell\._id/)
 })
 
-test("DiscoveryGrid shows tooltip with formatted status", () => {
-  assert.match(discoveryGridSource, /<Tooltip>/)
-  assert.match(discoveryGridSource, /formatTooltip\(cell\)/)
+test("DiscoveryGrid shows interactive tooltip with CellTooltipContent", () => {
+  assert.match(discoveryGridSource, /<Tooltip\s+interactive>/)
+  assert.match(discoveryGridSource, /<CellTooltipContent\s+cell=\{cell\}/)
 })
 
 // --- DiscoveryPanel component ---

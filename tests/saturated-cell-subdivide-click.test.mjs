@@ -7,16 +7,17 @@ const gridSource = fs.readFileSync("src/components/map/discovery-grid.tsx", "utf
 const gridCellsSource = fs.readFileSync("convex/discovery/gridCells.ts", "utf8")
 
 // ============================================================
-// Tooltip: saturated cell shows subdivision hint
+// Tooltip: Split button hidden at max depth, Merge button needs parentCellId
 // ============================================================
 
-test("tooltip includes 'Click to subdivide' for saturated cells below max depth", () => {
+test("Split button is hidden when cell depth >= MAX_DEPTH", () => {
   assert.match(gridSource, /cell\.depth\s*<\s*MAX_DEPTH/)
-  assert.match(gridSource, /"Click to subdivide"/)
+  assert.match(gridSource, /type:\s*"subdivide"/)
 })
 
-test("tooltip includes 'Max depth reached' for saturated cells at max depth", () => {
-  assert.match(gridSource, /"Max depth reached"/)
+test("Merge button is hidden when cell has no parentCellId", () => {
+  assert.match(gridSource, /cell\.parentCellId/)
+  assert.match(gridSource, /type:\s*"undivide"/)
 })
 
 test("MAX_DEPTH is defined as 4 in discovery-grid component", () => {
@@ -112,14 +113,14 @@ test("listCells filters by isLeaf: true via index", () => {
 })
 
 // ============================================================
-// Tooltip structure: saturated cell tooltip has capacity + action hint
+// Tooltip structure: CellTooltipContent renders status and result count
 // ============================================================
 
-test("formatTooltip shows at capacity queries for saturated cells", () => {
-  assert.match(gridSource, /At capacity:/)
-  assert.match(gridSource, /qs\.count\s*>=\s*60/)
+test("CellTooltipContent shows result count for cells", () => {
+  assert.match(gridSource, /cell\.resultCount\s*\?\?\s*0/)
 })
 
-test("formatTooltip shows result count for saturated cells", () => {
-  assert.match(gridSource, /cell\.resultCount\s*\?\?\s*0/)
+test("CellTooltipContent renders mechanism rows with Run buttons", () => {
+  assert.match(gridSource, /DISCOVERY_MECHANISMS\.map\(/)
+  assert.match(gridSource, /<Play/)
 })

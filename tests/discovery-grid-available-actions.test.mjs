@@ -53,7 +53,7 @@ test("includes subdivide action when cell depth is less than MAX_DEPTH", () => {
   // The function body should push subdivide
   const fnBlock = source.slice(
     source.indexOf("export function getAvailableActions"),
-    source.indexOf("function formatTooltip"),
+    source.indexOf("function formatShortDate"),
   )
   assert.match(fnBlock, /\{\s*type:\s*"subdivide"\s*\}/)
 })
@@ -65,7 +65,7 @@ test("includes subdivide action when cell depth is less than MAX_DEPTH", () => {
 test("includes undivide action when cell has parentCellId", () => {
   const fnBlock = source.slice(
     source.indexOf("export function getAvailableActions"),
-    source.indexOf("function formatTooltip"),
+    source.indexOf("function formatShortDate"),
   )
   assert.match(fnBlock, /cell\.parentCellId/)
   assert.match(fnBlock, /\{\s*type:\s*"undivide"\s*\}/)

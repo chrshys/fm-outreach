@@ -65,32 +65,35 @@ test("Rectangle has click eventHandler calling onCellAction", () => {
   assert.match(source, /click:\s*\(\)\s*=>\s*onCellAction\(cell\._id/)
 })
 
-test("Tooltip is nested inside Rectangle", () => {
-  assert.match(source, /<Rectangle[\s\S]*<Tooltip>[\s\S]*<\/Tooltip>[\s\S]*<\/Rectangle>/)
+test("Tooltip is interactive and nested inside Rectangle", () => {
+  assert.match(source, /<Rectangle[\s\S]*<Tooltip\s+interactive>[\s\S]*<\/Tooltip>[\s\S]*<\/Rectangle>/)
 })
 
-test("tooltip shows Unsearched for unsearched cells", () => {
-  assert.match(source, /["']unsearched["'].*["']Unsearched["']|["']Unsearched["'].*unsearched/)
+test("Tooltip renders CellTooltipContent component", () => {
+  assert.match(source, /<CellTooltipContent\s+cell=\{cell\}\s+onCellAction=\{onCellAction\}/)
 })
 
-test("tooltip shows Searching for searching cells", () => {
-  assert.match(source, /searching.*Searching|Searching.*searching/)
+test("CellTooltipContent shows status badge with label", () => {
+  assert.match(source, /cell\.status\.charAt\(0\)\.toUpperCase\(\)/)
 })
 
-test("tooltip shows result count for searched cells", () => {
+test("CellTooltipContent shows result count", () => {
   assert.match(source, /resultCount/)
   assert.match(source, /results/)
 })
 
-test("tooltip shows saturated query info for saturated cells", () => {
-  assert.match(source, /saturated/)
-  assert.match(source, /querySaturation/)
-  assert.match(source, /count\s*>=\s*60/)
+test("CellTooltipContent renders DISCOVERY_MECHANISMS rows", () => {
+  assert.match(source, /DISCOVERY_MECHANISMS\.map\(/)
+  assert.match(source, /mechanism\.label/)
 })
 
-test("filters querySaturation for queries at 60 capacity", () => {
-  assert.match(source, /\.filter\(/)
-  assert.match(source, /qs\.count\s*>=\s*60/)
+test("mechanism Run button calls onCellAction with search action", () => {
+  assert.match(source, /onCellAction\(cell\._id,\s*\{\s*type:\s*"search",\s*mechanism:\s*mechanism\.id\s*\}\)/)
+})
+
+test("Run button is disabled when mechanism not enabled or cell is searching", () => {
+  assert.match(source, /!mechanism\.enabled\s*\|\|\s*isSearching/)
+  assert.match(source, /opacity-50 pointer-events-none/)
 })
 
 test("exports DiscoveryGrid as default export", () => {
