@@ -144,11 +144,15 @@ export default function MapPage() {
 
   const handleCreateCluster = useCallback(async () => {
     if (!drawnPolygon || !clusterName.trim()) return
-    const result = await createCluster({ name: clusterName.trim(), boundary: drawnPolygon })
-    setPendingCluster({ boundary: drawnPolygon, clusterId: result.clusterId })
-    setShowNamingDialog(false)
-    setDrawnPolygon(null)
-    setClusterName("")
+    try {
+      const result = await createCluster({ name: clusterName.trim(), boundary: drawnPolygon })
+      setPendingCluster({ boundary: drawnPolygon, clusterId: result.clusterId })
+      setShowNamingDialog(false)
+      setDrawnPolygon(null)
+      setClusterName("")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to create cluster")
+    }
   }, [drawnPolygon, clusterName, createCluster])
 
   const handleBoundsChange = useCallback((bounds: MapBounds) => {

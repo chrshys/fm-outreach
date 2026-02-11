@@ -38,8 +38,9 @@ test("EditableClusterName applies optimistic update before mutation resolves", (
 
 test("EditableClusterName reverts optimistic value on save failure", () => {
   // If the mutation throws, the optimistic value is cleared so the UI reverts
-  assert.match(detailSource, /catch\s*\{/)
+  assert.match(detailSource, /catch\s*\(err\)\s*\{/)
   assert.match(detailSource, /setOptimisticValue\(null\)/)
+  assert.match(detailSource, /toast\.error\(/)
 })
 
 test("EditableClusterName skips save when name is unchanged", () => {

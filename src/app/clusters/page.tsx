@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useMutation, useQuery } from "convex/react"
 import { MapPin, Trash2, Users } from "lucide-react"
+import { toast } from "sonner"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 
@@ -43,7 +44,11 @@ export default function ClustersPage() {
     if (selectedClusterId === cluster._id) {
       setSelectedClusterId(null)
     }
-    await deleteCluster({ clusterId: cluster._id })
+    try {
+      await deleteCluster({ clusterId: cluster._id })
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete cluster")
+    }
   }
 
   return (

@@ -6,6 +6,7 @@ import { useParams } from "next/navigation"
 import { useMutation, useQuery } from "convex/react"
 import type { KeyboardEvent } from "react"
 import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 import { api } from "../../../../convex/_generated/api"
 import type { Doc, Id } from "../../../../convex/_generated/dataModel"
@@ -116,8 +117,9 @@ function InlineEditableValue({ value, multiline = false, onSave }: InlineEditabl
     setIsEditing(false)
     try {
       await onSave(draft)
-    } catch {
+    } catch (err) {
       setOptimisticValue(null)
+      toast.error(err instanceof Error ? err.message : "Failed to save changes")
     } finally {
       setIsSaving(false)
     }
@@ -246,19 +248,27 @@ export default function LeadDetailPage() {
   const followUpStatus = lead !== undefined && lead !== null ? getFollowUpStatus(lead.nextFollowUpAt) : null
 
   async function updateField(field: EditableField, value: string) {
-    await updateLead({
-      leadId,
-      [field]: value,
-    })
+    try {
+      await updateLead({
+        leadId,
+        [field]: value,
+      })
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update field")
+    }
   }
 
   async function updateSocialLink(field: "facebook" | "instagram", value: string) {
-    await updateLead({
-      leadId,
-      socialLinks: {
-        [field]: value,
-      },
-    })
+    try {
+      await updateLead({
+        leadId,
+        socialLinks: {
+          [field]: value,
+        },
+      })
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update social link")
+    }
   }
 
   async function updateStatus(status: LeadStatus) {
@@ -272,6 +282,8 @@ export default function LeadDetailPage() {
         leadId,
         status,
       })
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update status")
     } finally {
       setIsUpdatingStatus(false)
     }

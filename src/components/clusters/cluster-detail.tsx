@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "convex/react"
 import type { KeyboardEvent } from "react"
+import { toast } from "sonner"
 
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
@@ -66,8 +67,9 @@ function EditableClusterName({
     setIsEditing(false)
     try {
       await onSave(draft)
-    } catch {
+    } catch (err) {
       setOptimisticValue(null)
+      toast.error(err instanceof Error ? err.message : "Failed to save name")
     } finally {
       setIsSaving(false)
     }

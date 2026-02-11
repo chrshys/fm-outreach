@@ -3,6 +3,7 @@
 import { useAction, useMutation } from "convex/react"
 import { useRef, useState } from "react"
 import { Check, ClipboardCopy, Loader2, MessageCircle, Sparkles } from "lucide-react"
+import { toast } from "sonner"
 
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
@@ -141,6 +142,8 @@ export function SocialDmComposer({ leadId, leadName }: SocialDmComposerProps) {
       setShowLogPrompt(false)
       setIsOpen(false)
       setShowFollowUpPrompt(true)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to log activity")
     } finally {
       setIsLogging(false)
     }

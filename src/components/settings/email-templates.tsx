@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useMutation, useQuery } from "convex/react"
 import { Loader2, Pencil, Plus, Star, Trash2 } from "lucide-react"
+import { toast } from "sonner"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 
@@ -156,6 +157,8 @@ export function EmailTemplates() {
         })
       }
       setEditDialogOpen(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save template")
     } finally {
       setSaving(false)
     }
@@ -167,6 +170,8 @@ export function EmailTemplates() {
     try {
       await removeTemplate({ id: deletingId })
       setDeleteDialogOpen(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete template")
     } finally {
       setDeleting(false)
     }

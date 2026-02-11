@@ -3,6 +3,7 @@
 import { useMutation } from "convex/react"
 import { useState } from "react"
 import type { FormEvent } from "react"
+import { toast } from "sonner"
 
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
@@ -82,6 +83,8 @@ export function FollowUpReminder({ leadId, nextFollowUpAt }: FollowUpReminderPro
         nextFollowUpAt: parseDateInputValue(dateInput),
       })
       setIsOpen(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to set follow-up reminder")
     } finally {
       setIsSubmitting(false)
     }

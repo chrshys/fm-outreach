@@ -3,6 +3,7 @@
 import { useMutation } from "convex/react"
 import { useState } from "react"
 import type { FormEvent } from "react"
+import { toast } from "sonner"
 
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
@@ -132,6 +133,8 @@ export function LogActivity({ leadId, className }: LogActivityProps) {
       if (wasDmSent) {
         setShowFollowUpPrompt(true)
       }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to log activity")
     } finally {
       setIsSubmitting(false)
     }

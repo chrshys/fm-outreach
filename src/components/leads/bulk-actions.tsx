@@ -57,6 +57,8 @@ export function BulkActions({ selectedLeadIds, clusterOptions, onComplete }: Bul
         status,
       })
       onComplete()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update status")
     } finally {
       setIsApplying(false)
     }
@@ -71,6 +73,8 @@ export function BulkActions({ selectedLeadIds, clusterOptions, onComplete }: Bul
         clusterId,
       })
       onComplete()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to assign cluster")
     } finally {
       setIsApplying(false)
     }
