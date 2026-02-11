@@ -32,6 +32,7 @@ type GridWithStats = {
   totalLeafCells: number
   searchedCount: number
   saturatedCount: number
+  searchingCount: number
 }
 
 const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
@@ -317,9 +318,17 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect }: Disc
                   <div className="flex justify-between">
                     <span>Searched</span>
                     <span className="font-medium">
-                      {selectedGrid.searchedCount} / {selectedGrid.totalLeafCells}
+                      {selectedGrid.searchedCount + selectedGrid.saturatedCount} / {selectedGrid.totalLeafCells}
                     </span>
                   </div>
+                  {selectedGrid.searchingCount > 0 && (
+                    <div className="flex justify-between">
+                      <span>Searching</span>
+                      <span className="font-medium text-blue-500">
+                        {selectedGrid.searchingCount}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span>Saturated</span>
                     <span className="font-medium text-orange-500">

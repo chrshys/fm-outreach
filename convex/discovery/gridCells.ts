@@ -154,9 +154,11 @@ export const listGrids = query({
 
         let searchedCount = 0;
         let saturatedCount = 0;
+        let searchingCount = 0;
         for (const cell of leafCells) {
           if (cell.status === "searched") searchedCount++;
           else if (cell.status === "saturated") saturatedCount++;
+          else if (cell.status === "searching") searchingCount++;
         }
 
         return {
@@ -171,6 +173,7 @@ export const listGrids = query({
           totalLeafCells: leafCells.length,
           searchedCount,
           saturatedCount,
+          searchingCount,
         };
       }),
     );
