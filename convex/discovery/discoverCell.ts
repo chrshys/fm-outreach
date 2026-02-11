@@ -57,14 +57,14 @@ export const discoverCell = internalAction({
       const querySaturation: { query: string; count: number }[] = [];
 
       for (const query of queries) {
-        const results = await searchPlacesWithLocation(
+        const { results, totalCount } = await searchPlacesWithLocation(
           query,
           apiKey,
           centerLat,
           centerLng,
           radiusKm,
         );
-        querySaturation.push({ query, count: results.length });
+        querySaturation.push({ query, count: totalCount });
         allApiResults.push(...results);
       }
 

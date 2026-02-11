@@ -129,7 +129,7 @@ export async function searchPlacesWithLocation(
   lat: number,
   lng: number,
   radiusKm: number,
-): Promise<PlaceTextResult[]> {
+): Promise<{ results: PlaceTextResult[]; totalCount: number }> {
   const radiusMeters = Math.round(radiusKm * 1000);
   const allResults: PlaceTextResult[] = [];
 
@@ -150,7 +150,7 @@ export async function searchPlacesWithLocation(
   };
 
   if (data.status === "ZERO_RESULTS") {
-    return [];
+    return { results: [], totalCount: 0 };
   }
 
   if (data.status !== "OK") {
@@ -165,10 +165,29 @@ export async function searchPlacesWithLocation(
   let nextToken = data.next_page_token;
   let pagesLeft = 2;
   while (nextToken && pagesLeft > 0) {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    const pageUrl = `${PLACES_TEXT_SEARCH_URL}?pagetoken=${nextToken}&key=${apiKey}`;
+    const pageResults = await fetchPageWithRetry(nextToken, apiKey);
+    if (!pageResults) break;
+    allResults.push(...pageResults.results);
+    nextToken = pageResults.nextPageToken;
+    pagesLeft -= 1;
+  }
+
+  return { results: allResults, totalCount: allResults.length };
+}
+
+async function fetchPageWithRetry(
+  pageToken: string,
+  apiKey: string,
+): Promise<{ results: PlaceTextResult[]; nextPageToken?: string } | null> {
+  const INITIAL_DELAY_MS = 2000;
+  const MAX_RETRIES = 3;
+
+  await new Promise((resolve) => setTimeout(resolve, INITIAL_DELAY_MS));
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const pageUrl = `${PLACES_TEXT_SEARCH_URL}?pagetoken=${pageToken}&key=${apiKey}`;
     const pageResponse = await fetch(pageUrl);
-    if (!pageResponse.ok) break;
+    if (!pageResponse.ok) return null;
 
     const pageData = (await pageResponse.json()) as {
       status: string;
@@ -176,13 +195,23 @@ export async function searchPlacesWithLocation(
       next_page_token?: string;
     };
 
-    if (pageData.status !== "OK") break;
-    allResults.push(...(pageData.results ?? []));
-    nextToken = pageData.next_page_token;
-    pagesLeft -= 1;
+    if (pageData.status === "OK") {
+      return {
+        results: pageData.results ?? [],
+        nextPageToken: pageData.next_page_token,
+      };
+    }
+
+    if (pageData.status === "INVALID_REQUEST" && attempt < MAX_RETRIES) {
+      const backoffMs = INITIAL_DELAY_MS * Math.pow(2, attempt);
+      await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      continue;
+    }
+
+    return null;
   }
 
-  return allResults;
+  return null;
 }
 
 export const discoveredLeadValidator = v.object({
