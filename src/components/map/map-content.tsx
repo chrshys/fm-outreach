@@ -12,6 +12,7 @@ import {
 } from "react-leaflet"
 
 import { MarkerPopup } from "./marker-popup"
+import { PolygonDraw } from "./polygon-draw"
 import { getStatusColor } from "./status-colors"
 import { getClusterColor } from "./cluster-colors"
 
@@ -42,9 +43,11 @@ export type ClusterBoundary = {
 type MapContentProps = {
   leads: LeadMarker[]
   clusters?: ClusterBoundary[]
+  isDrawing?: boolean
+  onPolygonDrawn?: (latlngs: { lat: number; lng: number }[]) => void
 }
 
-export default function MapContent({ leads, clusters = [] }: MapContentProps) {
+export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn }: MapContentProps) {
   return (
     <MapContainer
       center={NIAGARA_CENTER}
@@ -104,6 +107,9 @@ export default function MapContent({ leads, clusters = [] }: MapContentProps) {
           </CircleMarker>
         )
       })}
+      {onPolygonDrawn && (
+        <PolygonDraw isDrawing={isDrawing} onPolygonDrawn={onPolygonDrawn} />
+      )}
     </MapContainer>
   )
 }
