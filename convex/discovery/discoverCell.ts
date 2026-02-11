@@ -111,7 +111,7 @@ export const discoverCell = internalAction({
       const querySaturation: { query: string; count: number }[] = [];
       let totalApiResults = 0;
 
-      for (const { query, results, totalCount } of queryResults) {
+      for (const { query, results } of queryResults) {
         totalApiResults += results.length;
 
         // Count in-bounds results per query (before cross-query dedup)

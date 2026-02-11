@@ -434,8 +434,8 @@ test("discoverCell source builds querySaturation by pushing per-query counts", a
   // Verify per-query counts are pushed in the search loop
   assert.match(
     source,
-    /querySaturation\.push\(\{\s*query,\s*count:\s*totalCount\s*\}\)/,
-    "Each query's totalCount is pushed to querySaturation",
+    /querySaturation\.push\(\{\s*query,\s*count:\s*inBoundsForQuery\.length\s*\}\)/,
+    "Each query's in-bounds count is pushed to querySaturation",
   );
 
   // Verify querySaturation is passed to updateCellSearchResult

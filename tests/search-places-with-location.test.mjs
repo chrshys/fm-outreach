@@ -99,7 +99,7 @@ test("discoverCell destructures results and totalCount from searchPlacesWithLoca
   assert.match(cellSource, /\{\s*results,\s*totalCount\s*\}\s*=\s*await\s+searchPlacesWithLocation/);
 });
 
-test("discoverCell uses totalCount for querySaturation count", () => {
+test("discoverCell uses in-bounds count for querySaturation count", () => {
   const cellSource = fs.readFileSync("convex/discovery/discoverCell.ts", "utf8");
-  assert.match(cellSource, /count:\s*totalCount/);
+  assert.match(cellSource, /count:\s*inBoundsForQuery\.length/);
 });

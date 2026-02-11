@@ -525,7 +525,7 @@ test("listCells returns parentCellId pointing to parent after subdivision", asyn
   const { gridId, cellIds } = await seedGrid(db, { cellCount: 1 });
 
   await db.patch(cellIds[0], { status: "saturated" });
-  const { childIds } = await subdivideCell({ db }, { cellId: cellIds[0] });
+  await subdivideCell({ db }, { cellId: cellIds[0] });
 
   const result = await listCells({ db }, { gridId });
 

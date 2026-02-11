@@ -21,7 +21,7 @@ test("parallel results are collected into allApiResults", () => {
 });
 
 test("querySaturation is built from parallel query results", () => {
-  assert.match(source, /querySaturation\.push\(\s*\{\s*query,\s*count:\s*totalCount\s*\}\s*\)/);
+  assert.match(source, /querySaturation\.push\(\s*\{\s*query,\s*count:\s*inBoundsForQuery\.length\s*\}\s*\)/);
 });
 
 // ============================================================

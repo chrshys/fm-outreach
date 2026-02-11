@@ -108,7 +108,7 @@ test("calls searchPlacesWithLocation with center and radius", () => {
 
 test("tracks per-query result counts in querySaturation", () => {
   assert.match(source, /querySaturation\.push\(/);
-  assert.match(source, /query,\s*count:\s*totalCount/);
+  assert.match(source, /query,\s*count:\s*inBoundsForQuery\.length/);
 });
 
 // ============================================================
