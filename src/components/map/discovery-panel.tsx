@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { useMutation, useQuery } from "convex/react"
 import { ChevronDown, Plus, Search, X } from "lucide-react"
 import { toast } from "sonner"
@@ -49,6 +49,9 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect }: Disc
   const [province, setProvince] = useState("")
   const [newQuery, setNewQuery] = useState("")
   const [showGridSelector, setShowGridSelector] = useState(false)
+  const [editingQuery, setEditingQuery] = useState<string | null>(null)
+  const [editValue, setEditValue] = useState("")
+  const editInputRef = useRef<HTMLInputElement>(null)
 
   // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
   const grids = useQuery(api.discovery.gridCells.listGrids) as GridWithStats[] | undefined
@@ -114,6 +117,38 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect }: Disc
       toast.error("Failed to remove query")
     }
   }, [selectedGrid, updateGridQueries])
+
+  const handleStartEdit = useCallback((query: string) => {
+    setEditingQuery(query)
+    setEditValue(query)
+    setTimeout(() => editInputRef.current?.focus(), 0)
+  }, [])
+
+  const handleSaveEdit = useCallback(async () => {
+    if (!selectedGrid || editingQuery === null) return
+    const trimmed = editValue.trim()
+    if (!trimmed || trimmed === editingQuery) {
+      setEditingQuery(null)
+      return
+    }
+    if (selectedGrid.queries.includes(trimmed)) {
+      toast.error("Query already exists")
+      return
+    }
+    try {
+      await updateGridQueries({
+        gridId: selectedGrid._id,
+        queries: selectedGrid.queries.map((q) => q === editingQuery ? trimmed : q),
+      })
+      setEditingQuery(null)
+    } catch {
+      toast.error("Failed to update query")
+    }
+  }, [selectedGrid, editingQuery, editValue, updateGridQueries])
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingQuery(null)
+  }, [])
 
   if (!open) {
     return (
@@ -321,7 +356,29 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect }: Disc
                 <div className="flex flex-wrap gap-1">
                   {selectedGrid.queries.map((query) => (
                     <Badge key={query} variant="secondary" className="gap-1 pr-1 text-xs">
-                      <span>{query}</span>
+                      {editingQuery === query ? (
+                        <input
+                          ref={editInputRef}
+                          className="w-20 bg-transparent text-xs outline-none"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSaveEdit()
+                            if (e.key === "Escape") handleCancelEdit()
+                          }}
+                          onBlur={handleSaveEdit}
+                          aria-label={`Edit query: ${query}`}
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          className="cursor-text"
+                          onClick={() => handleStartEdit(query)}
+                          aria-label={`Click to edit query: ${query}`}
+                        >
+                          {query}
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="rounded-full p-0.5 hover:bg-black/10"
