@@ -28,6 +28,11 @@ type DiscoveryGridProps = {
   onCellAction: (cellId: string, action: CellAction) => void
 }
 
+export const DISCOVERY_MECHANISMS = [
+  { id: "google_places", label: "Google Places", enabled: true },
+  { id: "web_scraper", label: "Web Scraping", enabled: false },
+] as const
+
 const MAX_DEPTH = 4
 
 function formatTooltip(cell: CellData): string {
