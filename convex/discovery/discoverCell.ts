@@ -34,13 +34,27 @@ export const discoverCell = internalAction({
 
     // Step 1: Claim cell atomically
     // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
-    const { previousStatus } = await ctx.runMutation(
+    const claimResult = await ctx.runMutation(
       internal.discovery.gridCells.claimCellForSearch,
       {
         cellId: args.cellId,
         expectedStatuses: ["unsearched", "searched"],
       },
     );
+
+    // Another action already claimed this cell — skip silently
+    if (!claimResult.claimed) {
+      return {
+        totalApiResults: 0,
+        inBoundsResults: 0,
+        newLeads: 0,
+        duplicatesSkipped: 0,
+        saturated: false,
+        querySaturation: [],
+      };
+    }
+
+    const { previousStatus } = claimResult;
 
     // Steps 2-11 wrapped in try/catch — reset on failure
     try {
@@ -187,6 +201,11 @@ export const requestDiscoverCell = mutation({
     const cell = await ctx.db.get(args.cellId);
     if (!cell) {
       throw new Error("Cell not found");
+    }
+
+    // Already being searched — silently skip to avoid scheduling a doomed action
+    if (cell.status === "searching") {
+      return;
     }
 
     if (cell.status !== "unsearched" && cell.status !== "searched") {

@@ -75,14 +75,12 @@ async function claimCellForSearch(db, cellId, expectedStatuses) {
   if (!cell) throw new Error("Cell not found");
 
   if (!expectedStatuses.includes(cell.status)) {
-    throw new Error(
-      `Cell status is "${cell.status}", expected one of: ${expectedStatuses.join(", ")}`,
-    );
+    return { claimed: false, previousStatus: cell.status };
   }
 
   const previousStatus = cell.status;
   await db.patch(cellId, { status: "searching" });
-  return { previousStatus };
+  return { claimed: true, previousStatus };
 }
 
 // -- Seed helper ----------------------------------------------
@@ -378,28 +376,26 @@ test("failure rolls back 'searched' cell from 'searching' to 'searched'", async 
 // Claim rejection: cannot claim cell in wrong status
 // ============================================================
 
-test("cannot claim a cell that is already 'searching'", async () => {
+test("claiming a cell that is already 'searching' returns claimed: false", async () => {
   const db = createMockDb();
   const { cellId } = await seedGridAndCell(db, {
     cell: { status: "searching" },
   });
 
-  await assert.rejects(
-    () => claimCellForSearch(db, cellId, ["unsearched", "searched"]),
-    /Cell status is "searching"/,
-  );
+  const result = await claimCellForSearch(db, cellId, ["unsearched", "searched"]);
+  assert.equal(result.claimed, false);
+  assert.equal(result.previousStatus, "searching");
 });
 
-test("cannot claim a cell that is 'saturated'", async () => {
+test("claiming a cell that is 'saturated' returns claimed: false", async () => {
   const db = createMockDb();
   const { cellId } = await seedGridAndCell(db, {
     cell: { status: "saturated" },
   });
 
-  await assert.rejects(
-    () => claimCellForSearch(db, cellId, ["unsearched", "searched"]),
-    /Cell status is "saturated"/,
-  );
+  const result = await claimCellForSearch(db, cellId, ["unsearched", "searched"]);
+  assert.equal(result.claimed, false);
+  assert.equal(result.previousStatus, "saturated");
 });
 
 // ============================================================

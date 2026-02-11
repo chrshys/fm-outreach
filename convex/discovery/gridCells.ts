@@ -232,15 +232,13 @@ export const claimCellForSearch = internalMutation({
     }
 
     if (!args.expectedStatuses.includes(cell.status)) {
-      throw new ConvexError(
-        `Cell status is "${cell.status}", expected one of: ${args.expectedStatuses.join(", ")}`,
-      );
+      return { claimed: false as const, previousStatus: cell.status };
     }
 
     const previousStatus = cell.status;
     await ctx.db.patch(args.cellId, { status: "searching" });
 
-    return { previousStatus };
+    return { claimed: true as const, previousStatus };
   },
 });
 

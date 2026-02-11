@@ -64,14 +64,13 @@ test("checks cell.status against expectedStatuses using includes", () => {
   assert.match(claimSection, /args\.expectedStatuses\.includes\(cell\.status\)/);
 });
 
-test("throws ConvexError when status does not match expected", () => {
+test("returns claimed: false when status does not match expected", () => {
   const claimSection = source.slice(
     source.indexOf("claimCellForSearch"),
   );
-  // Should throw with a message that mentions the actual status
-  assert.match(claimSection, /throw new ConvexError\(/);
-  assert.match(claimSection, /cell\.status/);
-  assert.match(claimSection, /expectedStatuses/);
+  // Should return { claimed: false } instead of throwing
+  assert.match(claimSection, /claimed:\s*false/);
+  assert.match(claimSection, /previousStatus:\s*cell\.status/);
 });
 
 // ============================================================
@@ -99,9 +98,10 @@ test("captures previousStatus before patching", () => {
   assert.match(claimSection, /const\s+previousStatus\s*=\s*cell\.status/);
 });
 
-test("returns object with previousStatus", () => {
+test("returns object with claimed: true and previousStatus", () => {
   const claimSection = source.slice(
     source.indexOf("claimCellForSearch"),
   );
-  assert.match(claimSection, /return\s*\{\s*previousStatus\s*\}/);
+  assert.match(claimSection, /claimed:\s*true/);
+  assert.match(claimSection, /previousStatus/);
 });

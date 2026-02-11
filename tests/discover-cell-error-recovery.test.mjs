@@ -58,9 +58,10 @@ test("catch block resets status to previousStatus", () => {
   );
 });
 
-test("no code between claimCellForSearch result and try block can set cell status", () => {
-  // Between claim closing and try opening, there should be no db.patch or updateCellStatus
-  const claimEnd = source.indexOf("previousStatus");
+test("early return between claim and try only happens when not claimed", () => {
+  // Between claim result and try opening, only the claimed check + early return
+  // and destructuring of previousStatus should exist — no db.patch or updateCellStatus
+  const claimEnd = source.indexOf("claimResult");
   const tryIdx = source.indexOf("try {");
   const between = source.slice(claimEnd, tryIdx);
 
@@ -71,6 +72,10 @@ test("no code between claimCellForSearch result and try block can set cell statu
   assert.ok(
     !between.includes("db.patch"),
     "No db.patch between claim and try",
+  );
+  assert.ok(
+    between.includes("!claimResult.claimed"),
+    "Early return check for unclaimed result exists between claim and try",
   );
 });
 

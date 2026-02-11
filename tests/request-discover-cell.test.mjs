@@ -24,6 +24,12 @@ test("requestDiscoverCell fetches cell and validates it exists", () => {
   assert.match(mutationBlock, /Cell not found/);
 });
 
+test("requestDiscoverCell silently skips cells in searching status", () => {
+  const mutationBlock = source.slice(source.indexOf("requestDiscoverCell"));
+  assert.match(mutationBlock, /status\s*===\s*"searching"/);
+  assert.match(mutationBlock, /return/);
+});
+
 test("requestDiscoverCell rejects cells not in unsearched or searched status", () => {
   const mutationBlock = source.slice(source.indexOf("requestDiscoverCell"));
   assert.match(mutationBlock, /status\s*!==\s*"unsearched"/);

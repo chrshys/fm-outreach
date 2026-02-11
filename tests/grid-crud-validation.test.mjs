@@ -148,15 +148,15 @@ test("claimCellForSearch transitions cell to searching status atomically", () =>
   assert.match(block, /ctx\.db\.patch\(args\.cellId,\s*\{\s*status:\s*"searching"\s*\}\)/);
 });
 
-test("claimCellForSearch throws when status doesn't match (prevents concurrent claims)", () => {
+test("claimCellForSearch returns claimed: false when status doesn't match (prevents concurrent claims)", () => {
   const claimStart = source.indexOf("export const claimCellForSearch");
   const claimEnd = source.indexOf("export const getCell");
   const block = source.slice(claimStart, claimEnd);
 
   // If a second caller tries to claim while cell is "searching", it won't be
-  // in expectedStatuses and will throw
+  // in expectedStatuses and returns { claimed: false } instead of throwing
   assert.match(block, /!args\.expectedStatuses\.includes\(cell\.status\)/);
-  assert.match(block, /throw\s+new\s+ConvexError\(/);
+  assert.match(block, /claimed:\s*false/);
 });
 
 test("claimCellForSearch returns previousStatus for rollback on failure", () => {
@@ -165,5 +165,6 @@ test("claimCellForSearch returns previousStatus for rollback on failure", () => 
   const block = source.slice(claimStart, claimEnd);
 
   assert.match(block, /const\s+previousStatus\s*=\s*cell\.status/);
-  assert.match(block, /return\s*\{\s*previousStatus\s*\}/);
+  assert.match(block, /claimed:\s*true/);
+  assert.match(block, /previousStatus/);
 });
