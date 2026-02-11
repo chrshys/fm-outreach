@@ -22,6 +22,8 @@ type DiscoveryGridProps = {
   onCellClick: (cellId: string) => void
 }
 
+const MAX_DEPTH = 4
+
 function formatTooltip(cell: CellData): string {
   const label = cell.status.charAt(0).toUpperCase() + cell.status.slice(1)
 
@@ -36,6 +38,11 @@ function formatTooltip(cell: CellData): string {
       .map((qs) => qs.query)
     if (saturatedQueries.length > 0) {
       parts.push(`At capacity: ${saturatedQueries.join(", ")}`)
+    }
+    if (cell.depth < MAX_DEPTH) {
+      parts.push("Click to subdivide")
+    } else {
+      parts.push("Max depth reached")
     }
   }
 

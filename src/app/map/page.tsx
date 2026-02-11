@@ -181,6 +181,10 @@ export default function MapPage() {
     }
 
     if (cell.status === "saturated") {
+      if (cell.depth >= 4) {
+        toast.info("Cell is already at maximum depth")
+        return
+      }
       try {
         await subdivideCell({ cellId: cellId as Id<"discoveryCells"> })
         toast.success("Cell subdivided into 4 quadrants")
