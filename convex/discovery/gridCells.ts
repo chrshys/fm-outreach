@@ -1,6 +1,8 @@
 import { ConvexError, v } from "convex/values";
 
+import { internal } from "../_generated/api";
 import {
+  internalAction,
   internalMutation,
   internalQuery,
   mutation,
@@ -326,5 +328,84 @@ export const updateCellSearchResult = internalMutation({
     await ctx.db.patch(cell.gridId, {
       totalLeadsFound: grid.totalLeadsFound + args.newLeadsCount,
     });
+  },
+});
+
+const DELETE_BATCH_SIZE = 500;
+
+export const deleteCellBatch = internalMutation({
+  args: {
+    gridId: v.id("discoveryGrids"),
+  },
+  handler: async (ctx, args) => {
+    const cells = await ctx.db
+      .query("discoveryCells")
+      .withIndex("by_gridId", (q) => q.eq("gridId", args.gridId))
+      .take(DELETE_BATCH_SIZE);
+
+    for (const cell of cells) {
+      await ctx.db.delete(cell._id);
+    }
+
+    return { deleted: cells.length };
+  },
+});
+
+export const deleteGrid = internalAction({
+  args: {
+    gridId: v.id("discoveryGrids"),
+  },
+  handler: async (ctx, args) => {
+    // @ts-expect-error — deep type instantiation in generated Convex API types
+    const deleteBatchRef = internal.discovery.gridCells.deleteCellBatch;
+    const deleteRecordRef = internal.discovery.gridCells.deleteGridRecord;
+    let totalDeleted = 0;
+    let done = false;
+
+    while (!done) {
+      const { deleted } = await ctx.runMutation(deleteBatchRef, {
+        gridId: args.gridId,
+      });
+      totalDeleted += deleted;
+
+      if (deleted < DELETE_BATCH_SIZE) {
+        done = true;
+      }
+    }
+
+    await ctx.runMutation(deleteRecordRef, { gridId: args.gridId });
+
+    return { totalCellsDeleted: totalDeleted };
+  },
+});
+
+export const deleteGridRecord = internalMutation({
+  args: {
+    gridId: v.id("discoveryGrids"),
+  },
+  handler: async (ctx, args) => {
+    const grid = await ctx.db.get(args.gridId);
+    if (!grid) {
+      throw new ConvexError("Grid not found");
+    }
+    await ctx.db.delete(args.gridId);
+  },
+});
+
+export const requestDeleteGrid = mutation({
+  args: {
+    gridId: v.id("discoveryGrids"),
+  },
+  handler: async (ctx, args) => {
+    const grid = await ctx.db.get(args.gridId);
+    if (!grid) {
+      throw new ConvexError("Grid not found");
+    }
+
+    await ctx.scheduler.runAfter(
+      0,
+      internal.discovery.gridCells.deleteGrid,
+      { gridId: args.gridId },
+    );
   },
 });
