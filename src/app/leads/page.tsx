@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useConvex } from "convex/react"
+import { useConvex, useQuery } from "convex/react"
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
 import type { KeyboardEvent, MouseEvent } from "react"
 import { api } from "../../../convex/_generated/api"
@@ -51,11 +51,6 @@ type Lead = {
 type LeadSortField = "name" | "city" | "status"
 type LeadSortOrder = "asc" | "desc"
 
-const clusters = [
-  { id: "cluster-east-coast" as Id<"clusters">, name: "East Coast" },
-  { id: "cluster-gulf-coast" as Id<"clusters">, name: "Gulf Coast" },
-]
-
 const statusClassNames: Record<LeadStatus, string> = {
   new_lead: "bg-blue-100 text-blue-800",
   enriched: "bg-indigo-100 text-indigo-800",
@@ -74,6 +69,7 @@ const defaultFilters: LeadFiltersValue = {
   status: "all",
   type: "all",
   source: "all",
+  clusterId: "all",
   hasEmail: false,
   hasSocial: false,
   hasFacebook: false,
@@ -128,6 +124,12 @@ function isInteractiveTarget(target: EventTarget | null) {
 export default function LeadsPage() {
   const router = useRouter()
   const convex = useConvex()
+  // @ts-expect-error Convex FilterApi type instantiation too deep with many modules
+  const clusterData = useQuery(api.clusters.list) as { _id: string; name: string }[] | undefined
+  const clusterOptions = useMemo(
+    () => (clusterData ?? []).map((c) => ({ id: c._id, name: c.name })),
+    [clusterData],
+  )
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([])
   const [filters, setFilters] = useState<LeadFiltersValue>(defaultFilters)
   const [searchTerm, setSearchTerm] = useState("")
@@ -143,6 +145,7 @@ export default function LeadsPage() {
       status: filters.status === "all" ? undefined : filters.status,
       type: filters.type === "all" ? undefined : filters.type,
       source: filters.source === "all" ? undefined : filters.source,
+      clusterId: filters.clusterId !== "all" ? (filters.clusterId as Id<"clusters">) : undefined,
       hasEmail: filters.hasEmail ? true : undefined,
       hasSocial: filters.hasSocial ? true : undefined,
       hasFacebook: filters.hasFacebook ? true : undefined,
@@ -312,10 +315,10 @@ export default function LeadsPage() {
         </Tabs>
 
         <LeadSearch value={searchTerm} onChange={setSearchTerm} />
-        <LeadFilters value={filters} onChange={setFilters} />
+        <LeadFilters value={filters} onChange={setFilters} clusters={clusterOptions} />
         <BulkActions
           selectedLeadIds={selectedLeadIds as Id<"leads">[]}
-          clusterOptions={clusters}
+          clusterOptions={clusterOptions as { id: Id<"clusters">; name: string }[]}
           onComplete={handleBulkActionComplete}
         />
 

@@ -44,6 +44,7 @@ export type LeadFiltersValue = {
   status: LeadStatus | "all"
   type: LeadType | "all"
   source: LeadSource | "all"
+  clusterId: string | "all"
   hasEmail: boolean
   hasSocial: boolean
   hasFacebook: boolean
@@ -51,9 +52,15 @@ export type LeadFiltersValue = {
   needsFollowUp: boolean
 }
 
+type ClusterOption = {
+  id: string
+  name: string
+}
+
 type LeadFiltersProps = {
   value: LeadFiltersValue
   onChange: (next: LeadFiltersValue) => void
+  clusters?: ClusterOption[]
 }
 
 function toLabel(value: string) {
@@ -63,7 +70,7 @@ function toLabel(value: string) {
     .join(" ")
 }
 
-export function LeadFilters({ value, onChange }: LeadFiltersProps) {
+export function LeadFilters({ value, onChange, clusters = [] }: LeadFiltersProps) {
   const activeFilters = [
     value.status !== "all"
       ? {
@@ -84,6 +91,13 @@ export function LeadFilters({ value, onChange }: LeadFiltersProps) {
           key: "source",
           label: `Source: ${toLabel(value.source)}`,
           clear: () => onChange({ ...value, source: "all" }),
+        }
+      : null,
+    value.clusterId !== "all"
+      ? {
+          key: "clusterId",
+          label: `Cluster: ${clusters.find((c) => c.id === value.clusterId)?.name ?? "Unknown"}`,
+          clear: () => onChange({ ...value, clusterId: "all" }),
         }
       : null,
     value.hasEmail
@@ -167,6 +181,22 @@ export function LeadFilters({ value, onChange }: LeadFiltersProps) {
             ))}
           </SelectContent>
         </Select>
+
+        {clusters.length > 0 && (
+          <Select value={value.clusterId} onValueChange={(clusterId) => onChange({ ...value, clusterId })}>
+            <SelectTrigger className="w-[190px]">
+              <SelectValue placeholder="Cluster" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Clusters</SelectItem>
+              {clusters.map((cluster) => (
+                <SelectItem key={cluster.id} value={cluster.id}>
+                  {cluster.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
 
         <Button
           type="button"
