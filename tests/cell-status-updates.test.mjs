@@ -509,10 +509,10 @@ test("discoverCell source uses 'saturated ? \"saturated\" : \"searched\"' for st
   assert.match(source, /saturated\s*\?\s*"saturated"\s*:\s*"searched"/);
 });
 
-test("discoverCell source determines saturation via querySaturation.every >= GOOGLE_MAX_RESULTS", async () => {
+test("discoverCell source determines saturation via querySaturation.every with in-bounds threshold", async () => {
   const { readFileSync } = await import("node:fs");
   const source = readFileSync("convex/discovery/discoverCell.ts", "utf8");
-  assert.match(source, /querySaturation\.every\(\s*\(qs\)\s*=>\s*qs\.count\s*>=\s*GOOGLE_MAX_RESULTS\s*\)/);
+  assert.match(source, /querySaturation\.every\(\s*\(qs\)\s*=>\s*qs\.count\s*>=\s*20\s*\)/);
 });
 
 test("updateCellSearchResult source accepts status as union of all valid states", async () => {

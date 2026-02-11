@@ -25,9 +25,9 @@ test("requires GOOGLE_PLACES_API_KEY", () => {
 // Step 1: Claims cell with expected statuses
 // ============================================================
 
-test("calls claimCellForSearch with expectedStatuses [unsearched, searched]", () => {
+test("calls claimCellForSearch with expectedStatuses [unsearched, searched, saturated]", () => {
   assert.match(source, /claimCellForSearch/);
-  assert.match(source, /expectedStatuses:\s*\["unsearched",\s*"searched"\]/);
+  assert.match(source, /expectedStatuses:\s*\["unsearched",\s*"searched",\s*"saturated"\]/);
 });
 
 test("captures previousStatus from claim result", () => {
@@ -141,8 +141,8 @@ test("imports inferLeadType and extractCity from placeHelpers", () => {
   assert.match(source, /import\s*\{[^}]*extractCity[^}]*\}\s*from\s*"\.\/placeHelpers"/);
 });
 
-test("sets sourceDetail with depth", () => {
-  assert.match(source, /Discovery grid cell \[depth=\$\{depth\}\]/);
+test("sets sourceDetail with grid name, cell id, and depth", () => {
+  assert.match(source, /Discovery grid "\$\{gridName\}" cell \$\{args\.cellId\} \[depth=\$\{depth\}\]/);
 });
 
 test("sets region and province from grid record", () => {

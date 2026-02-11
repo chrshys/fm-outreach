@@ -533,7 +533,7 @@ export default function LeadDetailPage() {
                     <p className="text-sm text-muted-foreground">No activity logged yet.</p>
                   ) : (
                     <ActivityTimeline
-                      activities={activitiesPage.activities.map((activity: { _id: string; type: string; description: string; createdAt: number; channel?: string | null }) => ({
+                      activities={activitiesPage.activities.map((activity) => ({
                         id: activity._id,
                         type: activity.type,
                         description: activity.description,

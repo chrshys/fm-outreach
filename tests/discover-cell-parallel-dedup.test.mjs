@@ -16,8 +16,8 @@ test("each query calls searchPlacesWithLocation", () => {
   assert.match(source, /searchPlacesWithLocation\(\s*\n?\s*query/);
 });
 
-test("parallel results are collected into allApiResults", () => {
-  assert.match(source, /allApiResults\.push\(\.\.\.results\)/);
+test("parallel results are iterated and counted via totalApiResults", () => {
+  assert.match(source, /totalApiResults \+= results\.length/);
 });
 
 test("querySaturation is built from parallel query results", () => {

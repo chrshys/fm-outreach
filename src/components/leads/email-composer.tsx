@@ -242,7 +242,7 @@ export function EmailComposer({ leadId, leadName }: EmailComposerProps) {
                   <SelectValue placeholder="Select a template" />
                 </SelectTrigger>
                 <SelectContent>
-                  {templates?.map((template: { _id: string; name: string }) => (
+                  {templates?.map((template) => (
                     <SelectItem key={template._id} value={template._id}>
                       {template.name}
                     </SelectItem>
