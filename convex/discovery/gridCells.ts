@@ -1,7 +1,8 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 import { mutation } from "../_generated/server";
 
+const MAX_DEPTH = 4;
 const DEFAULT_CELL_SIZE_KM = 20;
 
 const DEFAULT_QUERIES = [
@@ -70,5 +71,62 @@ export const generateGrid = mutation({
     }
 
     return { gridId, cellCount: cellIds.length };
+  },
+});
+
+export const subdivideCell = mutation({
+  args: {
+    cellId: v.id("discoveryCells"),
+  },
+  handler: async (ctx, args) => {
+    const cell = await ctx.db.get(args.cellId);
+    if (!cell) {
+      throw new ConvexError("Cell not found");
+    }
+
+    if (cell.status !== "saturated") {
+      throw new ConvexError("Cell must be saturated before subdividing");
+    }
+
+    if (cell.depth >= MAX_DEPTH) {
+      throw new ConvexError("Cell is already at maximum depth");
+    }
+
+    const existingChildren = await ctx.db
+      .query("discoveryCells")
+      .withIndex("by_parentCellId", (q) => q.eq("parentCellId", args.cellId))
+      .first();
+
+    if (existingChildren) {
+      throw new ConvexError("Cell has already been subdivided");
+    }
+
+    const midLat = (cell.swLat + cell.neLat) / 2;
+    const midLng = (cell.swLng + cell.neLng) / 2;
+    const childDepth = cell.depth + 1;
+
+    const quadrants = [
+      { swLat: cell.swLat, swLng: cell.swLng, neLat: midLat, neLng: midLng },
+      { swLat: cell.swLat, swLng: midLng, neLat: midLat, neLng: cell.neLng },
+      { swLat: midLat, swLng: cell.swLng, neLat: cell.neLat, neLng: midLng },
+      { swLat: midLat, swLng: midLng, neLat: cell.neLat, neLng: cell.neLng },
+    ];
+
+    const childIds = [];
+    for (const q of quadrants) {
+      const childId = await ctx.db.insert("discoveryCells", {
+        ...q,
+        depth: childDepth,
+        parentCellId: args.cellId,
+        isLeaf: true,
+        status: "unsearched",
+        gridId: cell.gridId,
+      });
+      childIds.push(childId);
+    }
+
+    await ctx.db.patch(args.cellId, { isLeaf: false });
+
+    return { childIds };
   },
 });
