@@ -37,22 +37,8 @@ type DiscoveredLead = {
 export type DiscoverLeadsResult = {
   newLeads: number;
   duplicatesSkipped: number;
-  totalInDatabase: number;
 };
 
-function normalizeDedupValue(value: string): string {
-  return value.trim().toLocaleLowerCase();
-}
-
-function normalizeDedupName(value: string): string {
-  return normalizeDedupValue(value)
-    .replace(/\bfarmers['']/g, "farmers")
-    .replace(/\bst\.?\b/g, "street");
-}
-
-function dedupKeyForLead(lead: { name: string; city: string }): string {
-  return `${normalizeDedupName(lead.name)}::${normalizeDedupValue(lead.city)}`;
-}
 
 function extractCity(formattedAddress: string): string {
   const parts = formattedAddress.split(",").map((p) => p.trim());
@@ -161,33 +147,36 @@ export const insertDiscoveredLeads = internalMutation({
     leads: v.array(discoveredLeadValidator),
   },
   handler: async (ctx, args) => {
-    const existingLeads = await ctx.db.query("leads").collect();
-    const seenKeys = new Set(existingLeads.map((l) => dedupKeyForLead(l)));
-    const seenPlaceIds = new Set(
-      existingLeads
-        .filter((l) => l.placeId)
-        .map((l) => l.placeId as string),
-    );
+    const seenPlaceIds = new Set<string>();
 
     let inserted = 0;
     let skipped = 0;
 
     for (const lead of args.leads) {
-      const dedupKey = dedupKeyForLead(lead);
-      if (seenKeys.has(dedupKey) || seenPlaceIds.has(lead.placeId)) {
+      // Skip if we already inserted a lead with this placeId in this batch
+      if (seenPlaceIds.has(lead.placeId)) {
         skipped += 1;
         continue;
       }
 
+      // Use the by_placeId index to check for existing leads
+      const existingByPlaceId = await ctx.db
+        .query("leads")
+        .withIndex("by_placeId", (q) => q.eq("placeId", lead.placeId))
+        .first();
+
+      if (existingByPlaceId) {
+        skipped += 1;
+        seenPlaceIds.add(lead.placeId);
+        continue;
+      }
+
       await ctx.db.insert("leads", lead);
-      seenKeys.add(dedupKey);
       seenPlaceIds.add(lead.placeId);
       inserted += 1;
     }
 
-    const totalInDatabase = existingLeads.length + inserted;
-
-    return { inserted, skipped, totalInDatabase };
+    return { inserted, skipped };
   },
 });
 
@@ -247,7 +236,6 @@ export const discoverLeads = action({
     return {
       newLeads: result.inserted,
       duplicatesSkipped: result.skipped,
-      totalInDatabase: result.totalInDatabase,
     };
   },
 });

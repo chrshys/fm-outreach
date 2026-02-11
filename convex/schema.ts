@@ -79,7 +79,8 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_clusterId", ["clusterId"])
     .index("by_city", ["city"])
-    .index("by_name", ["name"]),
+    .index("by_name", ["name"])
+    .index("by_placeId", ["placeId"]),
 
   clusters: defineTable({
     name: v.string(),

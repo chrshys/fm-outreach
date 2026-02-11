@@ -25,6 +25,7 @@ test("defines required leads indexes", () => {
   assert.match(schemaSource, /\.index\("by_clusterId",\s*\["clusterId"\]\)/);
   assert.match(schemaSource, /\.index\("by_city",\s*\["city"\]\)/);
   assert.match(schemaSource, /\.index\("by_name",\s*\["name"\]\)/);
+  assert.match(schemaSource, /\.index\("by_placeId",\s*\["placeId"\]\)/);
 });
 
 test("defines required activities indexes", () => {

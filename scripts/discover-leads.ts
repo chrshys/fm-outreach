@@ -43,7 +43,6 @@ async function main(): Promise<void> {
   console.log(`\nResults:`);
   console.log(`  New leads found:     ${result.newLeads}`);
   console.log(`  Duplicates skipped:  ${result.duplicatesSkipped}`);
-  console.log(`  Total in database:   ${result.totalInDatabase}`);
 }
 
 main().catch((error: unknown) => {

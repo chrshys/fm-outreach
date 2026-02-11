@@ -50,12 +50,9 @@ test("insertDiscoveredLeads internal mutation exists for deduplication and inser
   assert.match(source, /export\s+const\s+insertDiscoveredLeads\s*=\s*internalMutation\(/);
 });
 
-test("deduplication uses name+city key and placeId", () => {
-  assert.match(source, /function\s+dedupKeyForLead\(/);
-  assert.match(source, /normalizeDedupName/);
-  assert.match(source, /normalizeDedupValue/);
+test("deduplication uses by_placeId index and in-batch Set", () => {
+  assert.match(source, /withIndex\("by_placeId"/);
   assert.match(source, /seenPlaceIds/);
-  assert.match(source, /seenKeys/);
 });
 
 test("leads are created with google_places source", () => {
@@ -69,11 +66,10 @@ test("leads include geographic coordinates from Google Places", () => {
   assert.match(source, /longitude:\s*place\.geometry\?\.location\?\.lng/);
 });
 
-test("action returns DiscoverLeadsResult with newLeads, duplicatesSkipped, totalInDatabase", () => {
+test("action returns DiscoverLeadsResult with newLeads and duplicatesSkipped", () => {
   assert.match(source, /export\s+type\s+DiscoverLeadsResult\s*=/);
   assert.match(source, /newLeads:\s*number/);
   assert.match(source, /duplicatesSkipped:\s*number/);
-  assert.match(source, /totalInDatabase:\s*number/);
 });
 
 test("inferLeadType categorizes leads based on name keywords and place types", () => {
@@ -89,9 +85,8 @@ test("extractCity parses city from Google Places formatted address", () => {
   assert.match(source, /formattedAddress.*split.*,/);
 });
 
-test("empty results still go through insertDiscoveredLeads for total count", () => {
+test("empty results still go through insertDiscoveredLeads", () => {
   assert.match(source, /insertDiscoveredLeads/);
-  assert.match(source, /totalInDatabase/);
 });
 
 test("new leads are created with status new_lead and followUpCount 0", () => {

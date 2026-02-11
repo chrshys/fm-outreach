@@ -35,8 +35,7 @@ test("script uses convex url from environment with validation", () => {
   );
 });
 
-test("script prints results summary with new leads, duplicates, and total", () => {
+test("script prints results summary with new leads and duplicates", () => {
   assert.match(source, /result\.newLeads/);
   assert.match(source, /result\.duplicatesSkipped/);
-  assert.match(source, /result\.totalInDatabase/);
 });
