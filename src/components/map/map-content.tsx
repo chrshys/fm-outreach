@@ -45,9 +45,10 @@ type MapContentProps = {
   clusters?: ClusterBoundary[]
   isDrawing?: boolean
   onPolygonDrawn?: (latlngs: { lat: number; lng: number }[]) => void
+  pendingPolygon?: { lat: number; lng: number }[] | null
 }
 
-export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn }: MapContentProps) {
+export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon }: MapContentProps) {
   return (
     <MapContainer
       center={NIAGARA_CENTER}
@@ -79,6 +80,18 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
           </Polygon>
         )
       })}
+      {pendingPolygon && pendingPolygon.length > 0 && (
+        <Polygon
+          positions={pendingPolygon.map((p) => [p.lat, p.lng] as [number, number])}
+          pathOptions={{
+            fillColor: getClusterColor(clusters.length),
+            color: getClusterColor(clusters.length),
+            weight: 2,
+            opacity: 0.6,
+            fillOpacity: 0.15,
+          }}
+        />
+      )}
       {leads.map((lead) => {
         const color = getStatusColor(lead.status)
         return (

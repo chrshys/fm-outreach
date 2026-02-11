@@ -48,6 +48,10 @@ export default function MapPage() {
   >(null)
   const [showNamingDialog, setShowNamingDialog] = useState(false)
   const [clusterName, setClusterName] = useState("")
+  const [pendingCluster, setPendingCluster] = useState<{
+    boundary: { lat: number; lng: number }[]
+    clusterId: string
+  } | null>(null)
 
   const clusterOptions = useMemo(
     () => (clusters ?? []).map((c) => ({ id: c._id, name: c.name })),
@@ -75,6 +79,14 @@ export default function MapPage() {
     }))
   }, [clusters, filters.clusterId])
 
+  const pendingPolygon = useMemo(() => {
+    if (!pendingCluster) return null
+    const alreadyInQuery = (clusters ?? []).some(
+      (c) => c._id === pendingCluster.clusterId,
+    )
+    return alreadyInQuery ? null : pendingCluster.boundary
+  }, [pendingCluster, clusters])
+
   const previewLeadCount = useMemo(() => {
     if (!drawnPolygon || !leads) return 0
     return leads.filter((lead) =>
@@ -93,7 +105,8 @@ export default function MapPage() {
 
   const handleCreateCluster = useCallback(async () => {
     if (!drawnPolygon || !clusterName.trim()) return
-    await createCluster({ name: clusterName.trim(), boundary: drawnPolygon })
+    const result = await createCluster({ name: clusterName.trim(), boundary: drawnPolygon })
+    setPendingCluster({ boundary: drawnPolygon, clusterId: result.clusterId })
     setShowNamingDialog(false)
     setDrawnPolygon(null)
     setClusterName("")
@@ -113,6 +126,7 @@ export default function MapPage() {
           clusters={filteredClusters}
           isDrawing={isDrawing}
           onPolygonDrawn={handlePolygonDrawn}
+          pendingPolygon={pendingPolygon}
         />
         <MapFilters
           value={filters}
