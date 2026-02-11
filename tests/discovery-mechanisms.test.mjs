@@ -24,13 +24,13 @@ test("contains google_places mechanism with enabled: true", () => {
   assert.match(gpBlock[0], /enabled:\s*true/)
 })
 
-test("contains web_scraper mechanism with enabled: false", () => {
+test("contains web_scraper mechanism with enabled: true", () => {
   assert.match(source, /id:\s*"web_scraper"/)
   assert.match(source, /label:\s*"Web Scraping"/)
-  // web_scraper entry should have enabled: false
+  // web_scraper entry should have enabled: true (clickable, but backend guard shows "Coming soon")
   const wsBlock = source.match(/\{\s*id:\s*"web_scraper"[^}]*\}/s)
   assert.ok(wsBlock, "web_scraper entry should exist")
-  assert.match(wsBlock[0], /enabled:\s*false/)
+  assert.match(wsBlock[0], /enabled:\s*true/)
 })
 
 test("DISCOVERY_MECHANISMS has exactly 2 entries", () => {

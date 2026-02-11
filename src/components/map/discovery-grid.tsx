@@ -33,7 +33,7 @@ type DiscoveryGridProps = {
 
 export const DISCOVERY_MECHANISMS = [
   { id: "google_places", label: "Google Places", enabled: true },
-  { id: "web_scraper", label: "Web Scraping", enabled: false },
+  { id: "web_scraper", label: "Web Scraping", enabled: true },
 ] as const
 
 const MAX_DEPTH = 4

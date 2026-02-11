@@ -1,0 +1,75 @@
+import test from "node:test"
+import assert from "node:assert/strict"
+import fs from "node:fs"
+
+const pageSource = fs.readFileSync("src/app/map/page.tsx", "utf8")
+const gridSource = fs.readFileSync(
+  "src/components/map/discovery-grid.tsx",
+  "utf8",
+)
+
+// ============================================================
+// Web Scraping mechanism is enabled in the UI (button is clickable)
+// ============================================================
+
+test("web_scraper mechanism is enabled so button is clickable", () => {
+  const wsBlock = gridSource.match(/\{\s*id:\s*"web_scraper"[^}]*\}/s)
+  assert.ok(wsBlock, "web_scraper entry should exist")
+  assert.match(wsBlock[0], /enabled:\s*true/)
+})
+
+// ============================================================
+// handleCellAction shows "Coming soon" for non-google_places mechanisms
+// ============================================================
+
+test("handleCellAction guards non-google_places mechanisms with Coming soon toast", () => {
+  assert.match(
+    pageSource,
+    /action\.mechanism\s*!==\s*"google_places"/,
+    "should check if mechanism is not google_places",
+  )
+  assert.match(
+    pageSource,
+    /toast\.info\("Coming soon"\)/,
+    "should show Coming soon toast for unsupported mechanisms",
+  )
+})
+
+test("Coming soon guard returns early before calling requestDiscoverCell", () => {
+  // Extract handleCellAction body to check ordering within the handler
+  const handlerStart = pageSource.indexOf("handleCellAction")
+  const handlerSource = pageSource.slice(handlerStart)
+  const comingSoonIdx = handlerSource.indexOf('toast.info("Coming soon")')
+  const discoverIdx = handlerSource.indexOf("await requestDiscoverCell")
+  assert.ok(comingSoonIdx > -1, "Coming soon toast should exist in handler")
+  assert.ok(discoverIdx > -1, "requestDiscoverCell call should exist in handler")
+  assert.ok(
+    comingSoonIdx < discoverIdx,
+    "Coming soon guard should appear before requestDiscoverCell call",
+  )
+})
+
+// ============================================================
+// Web Scraping button dispatches search action with web_scraper mechanism
+// ============================================================
+
+test("tooltip button dispatches search action with mechanism id on click", () => {
+  assert.match(
+    gridSource,
+    /onCellAction\(cell\._id,\s*\{\s*type:\s*"search",\s*mechanism:\s*mechanism\.id\s*\}\)/,
+    "button onClick should dispatch search action with the mechanism id",
+  )
+})
+
+// ============================================================
+// Both mechanisms are enabled so getAvailableActions includes both
+// ============================================================
+
+test("getAvailableActions includes web_scraper search action (both mechanisms enabled)", () => {
+  // Since both mechanisms are enabled, filter(m => m.enabled) returns both
+  const mechanisms = gridSource.match(
+    /\{\s*id:\s*"[^"]+",\s*label:\s*"[^"]+",\s*enabled:\s*true\s*\}/g,
+  )
+  assert.ok(mechanisms, "should find enabled mechanism entries")
+  assert.equal(mechanisms.length, 2, "both mechanisms should be enabled")
+})

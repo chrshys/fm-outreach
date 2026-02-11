@@ -55,8 +55,8 @@ test("all tooltip buttons use e.stopPropagation to prevent map interaction", () 
 // Web Scraping row shows as disabled with dash for date
 // ============================================================
 
-test("Web Scraping mechanism is in DISCOVERY_MECHANISMS with enabled: false", () => {
-  assert.match(gridSource, /id:\s*"web_scraper",\s*label:\s*"Web Scraping",\s*enabled:\s*false/)
+test("Web Scraping mechanism is in DISCOVERY_MECHANISMS with enabled: true", () => {
+  assert.match(gridSource, /id:\s*"web_scraper",\s*label:\s*"Web Scraping",\s*enabled:\s*true/)
 })
 
 test("disabled mechanisms get opacity-50 and pointer-events-none", () => {

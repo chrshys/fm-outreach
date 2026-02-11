@@ -8,13 +8,13 @@ const source = fs.readFileSync(
 )
 
 // ============================================================
-// Web Scraping mechanism is defined as disabled
+// Web Scraping mechanism is defined as enabled (button clickable, backend guard shows "Coming soon")
 // ============================================================
 
-test("web_scraper mechanism has enabled: false", () => {
+test("web_scraper mechanism has enabled: true", () => {
   const wsBlock = source.match(/\{\s*id:\s*"web_scraper"[^}]*\}/s)
   assert.ok(wsBlock, "web_scraper entry should exist")
-  assert.match(wsBlock[0], /enabled:\s*false/)
+  assert.match(wsBlock[0], /enabled:\s*true/)
 })
 
 // ============================================================
@@ -28,7 +28,8 @@ test("non-google_places mechanisms show dash for last-run date", () => {
 })
 
 // ============================================================
-// Entire row is visually disabled when mechanism.enabled is false
+// Disabled mechanism styling (opacity, pointer-events) still exists
+// for mechanisms that have enabled: false
 // ============================================================
 
 test("mechanism row container applies opacity-50 when mechanism not enabled", () => {
@@ -51,7 +52,7 @@ test("disabled mechanism row button has HTML disabled attribute", () => {
 
 test("enabled mechanisms do not get row-level opacity (conditional check)", () => {
   // The className conditional only applies opacity when !mechanism.enabled
-  // so google_places (enabled: true) won't be dimmed at the row level
+  // so both google_places and web_scraper (enabled: true) won't be dimmed at the row level
   const rowOpacityCheck = source.match(/!mechanism\.enabled\s*\?\s*"\s*opacity-50"\s*:\s*""/)
   assert.ok(rowOpacityCheck, "should only apply opacity-50 when mechanism is not enabled")
 })
