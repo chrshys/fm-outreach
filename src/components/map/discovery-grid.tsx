@@ -12,6 +12,7 @@ export type CellData = {
   neLng: number
   depth: number
   status: CellStatus
+  parentCellId?: string
   resultCount?: number
   querySaturation?: Array<{ query: string; count: number }>
   lastSearchedAt?: number
