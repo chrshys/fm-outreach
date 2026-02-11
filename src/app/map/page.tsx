@@ -40,6 +40,7 @@ const MapContent = dynamic(() => import("@/components/map/map-content"), {
 })
 
 export default function MapPage() {
+  // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
   const leads = useQuery(api.leads.listWithCoords)
   const clusters = useQuery(api.clusters.list)
   const createCluster = useMutation(api.clusters.createPolygonCluster)

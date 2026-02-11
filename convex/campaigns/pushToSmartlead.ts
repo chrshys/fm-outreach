@@ -75,7 +75,7 @@ export const pushToSmartlead = action({
   },
   handler: async (ctx, args): Promise<PushToSmartleadResult> => {
     // 1. Load campaign
-    // @ts-expect-error TS2589 nondeterministic deep type instantiation in generated Convex API types
+    // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
     const campaign = await ctx.runQuery(api.campaigns.get, {
       campaignId: args.campaignId,
     });
@@ -128,7 +128,7 @@ export const pushToSmartlead = action({
 
     // Save smartleadCampaignId immediately so we can recover if later steps fail
     await ctx.runMutation(
-      // @ts-expect-error TS2589 nondeterministic deep type instantiation in generated Convex API types
+      // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
       internal.campaigns.pushToSmartlead.setCampaignSmartleadId,
       {
         campaignId: args.campaignId,

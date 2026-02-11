@@ -33,8 +33,8 @@ export const discoverCell = internalAction({
     }
 
     // Step 1: Claim cell atomically
-    // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
     const claimResult = await ctx.runMutation(
+      // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
       internal.discovery.gridCells.claimCellForSearch,
       {
         cellId: args.cellId,
