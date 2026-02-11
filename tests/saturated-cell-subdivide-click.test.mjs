@@ -7,7 +7,7 @@ const gridSource = fs.readFileSync("src/components/map/discovery-grid.tsx", "utf
 const gridCellsSource = fs.readFileSync("convex/discovery/gridCells.ts", "utf8")
 
 // ============================================================
-// Tooltip: Split button hidden at max depth, Merge button needs parentCellId
+// Tooltip: Split button hidden at max depth, Merge button uses depth > 0
 // ============================================================
 
 test("Split button is hidden when cell depth >= MAX_DEPTH", () => {
@@ -15,8 +15,8 @@ test("Split button is hidden when cell depth >= MAX_DEPTH", () => {
   assert.match(gridSource, /type:\s*"subdivide"/)
 })
 
-test("Merge button is hidden when cell has no parentCellId", () => {
-  assert.match(gridSource, /cell\.parentCellId/)
+test("Merge button is shown when cell depth > 0", () => {
+  assert.match(gridSource, /cell\.depth\s*>\s*0/)
   assert.match(gridSource, /type:\s*"undivide"/)
 })
 

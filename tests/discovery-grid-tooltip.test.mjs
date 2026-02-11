@@ -189,8 +189,8 @@ test("Merge button calls onCellAction with undivide type", () => {
   assert.match(source, /onCellAction\(cell\._id,\s*\{\s*type:\s*"undivide"\s*\}\)/)
 })
 
-test("Merge button is hidden when cell has no parentCellId", () => {
-  assert.match(source, /cell\.parentCellId/)
+test("Merge button is hidden when cell depth is 0", () => {
+  assert.match(source, /cell\.depth\s*>\s*0/)
 })
 
 test("Split and Merge buttons are hidden entirely when cell is searching", () => {

@@ -49,7 +49,7 @@ export function getAvailableActions(cell: CellData): CellAction[] {
     actions.push({ type: "subdivide" })
   }
 
-  if (cell.parentCellId) {
+  if (cell.depth > 0) {
     actions.push({ type: "undivide" })
   }
 
@@ -135,7 +135,7 @@ function CellTooltipContent({
             <Grid2x2Plus className="h-3 w-3" />
             Split
           </button>
-          {cell.parentCellId && (
+          {cell.depth > 0 && (
             <button
               className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors"
               onClick={(e) => {

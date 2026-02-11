@@ -59,14 +59,22 @@ test("includes subdivide action when cell depth is less than MAX_DEPTH", () => {
 })
 
 // ============================================================
-// Undivide action based on parentCellId
+// Undivide action based on depth > 0
 // ============================================================
 
-test("includes undivide action when cell has parentCellId", () => {
+test("includes undivide action when cell depth is greater than 0", () => {
   const fnBlock = source.slice(
     source.indexOf("export function getAvailableActions"),
     source.indexOf("function formatShortDate"),
   )
-  assert.match(fnBlock, /cell\.parentCellId/)
+  assert.match(fnBlock, /cell\.depth\s*>\s*0/)
   assert.match(fnBlock, /\{\s*type:\s*"undivide"\s*\}/)
+})
+
+test("does not gate undivide action on parentCellId", () => {
+  const fnBlock = source.slice(
+    source.indexOf("export function getAvailableActions"),
+    source.indexOf("function formatShortDate"),
+  )
+  assert.doesNotMatch(fnBlock, /cell\.parentCellId/)
 })

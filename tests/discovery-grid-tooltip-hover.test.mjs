@@ -82,13 +82,13 @@ test("Split button is conditionally rendered when depth < MAX_DEPTH", () => {
 })
 
 // ============================================================
-// Merge button hidden on root cells (no parentCellId)
+// Merge button shown on non-root cells (depth > 0)
 // ============================================================
 
-test("Merge button is conditionally rendered when parentCellId exists", () => {
+test("Merge button is conditionally rendered when depth > 0", () => {
   // The conditional guard appears before the Merge button
   const beforeMerge = gridSource.slice(0, gridSource.indexOf("<Minimize2"))
-  assert.match(beforeMerge, /cell\.parentCellId\s*&&/)
+  assert.match(beforeMerge, /cell\.depth\s*>\s*0\s*&&/)
 })
 
 // ============================================================
