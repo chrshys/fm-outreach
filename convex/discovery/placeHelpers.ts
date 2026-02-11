@@ -123,6 +123,68 @@ export async function searchPlaces(
   };
 }
 
+export async function searchPlacesWithLocation(
+  query: string,
+  apiKey: string,
+  lat: number,
+  lng: number,
+  radiusKm: number,
+): Promise<PlaceTextResult[]> {
+  const radiusMeters = Math.round(radiusKm * 1000);
+  const allResults: PlaceTextResult[] = [];
+
+  const url =
+    `${PLACES_TEXT_SEARCH_URL}?query=${encodeURIComponent(query)}` +
+    `&location=${lat},${lng}&radius=${radiusMeters}&key=${apiKey}`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Places Text Search failed: ${response.status}`);
+  }
+
+  const data = (await response.json()) as {
+    status: string;
+    results?: PlaceTextResult[];
+    next_page_token?: string;
+    error_message?: string;
+  };
+
+  if (data.status === "ZERO_RESULTS") {
+    return [];
+  }
+
+  if (data.status !== "OK") {
+    throw new Error(
+      `Places Text Search error: ${data.status} - ${data.error_message ?? "unknown"}`,
+    );
+  }
+
+  allResults.push(...(data.results ?? []));
+
+  // Fetch additional pages (up to 2 more = 60 results max)
+  let nextToken = data.next_page_token;
+  let pagesLeft = 2;
+  while (nextToken && pagesLeft > 0) {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const pageUrl = `${PLACES_TEXT_SEARCH_URL}?pagetoken=${nextToken}&key=${apiKey}`;
+    const pageResponse = await fetch(pageUrl);
+    if (!pageResponse.ok) break;
+
+    const pageData = (await pageResponse.json()) as {
+      status: string;
+      results?: PlaceTextResult[];
+      next_page_token?: string;
+    };
+
+    if (pageData.status !== "OK") break;
+    allResults.push(...(pageData.results ?? []));
+    nextToken = pageData.next_page_token;
+    pagesLeft -= 1;
+  }
+
+  return allResults;
+}
+
 export const discoveredLeadValidator = v.object({
   name: v.string(),
   type: v.union(
