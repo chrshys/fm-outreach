@@ -91,8 +91,8 @@ export const subdivideCell = mutation({
       throw new ConvexError("Cell not found");
     }
 
-    if (cell.status !== "saturated") {
-      throw new ConvexError("Cell must be saturated before subdividing");
+    if (cell.status === "searching") {
+      throw new ConvexError("Cannot subdivide while cell is being searched");
     }
 
     if (cell.depth >= MAX_DEPTH) {
