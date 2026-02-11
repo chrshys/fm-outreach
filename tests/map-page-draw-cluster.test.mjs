@@ -46,8 +46,8 @@ test("button is positioned in top-right control area", () => {
 
 // --- PolygonDraw integration ---
 
-test("passes isDrawing prop to MapContent", () => {
-  assert.match(source, /isDrawing=\{isDrawing\}/)
+test("passes isDrawing prop to MapContent gated by clusters viewMode", () => {
+  assert.match(source, /isDrawing=\{viewMode\s*===\s*"clusters"\s*&&\s*isDrawing\}/)
 })
 
 test("passes onPolygonDrawn callback to MapContent", () => {

@@ -198,7 +198,7 @@ export default function MapPage() {
         <MapContent
           leads={filteredLeads}
           clusters={viewMode === "clusters" ? filteredClusters : []}
-          isDrawing={isDrawing}
+          isDrawing={viewMode === "clusters" && isDrawing}
           onPolygonDrawn={handlePolygonDrawn}
           pendingPolygon={pendingPolygon}
           gridCells={viewMode === "discovery" ? gridCells ?? undefined : undefined}
@@ -220,7 +220,12 @@ export default function MapPage() {
             size="sm"
             variant="outline"
             className="bg-card shadow-md"
-            onClick={() => setViewMode((prev) => prev === "clusters" ? "discovery" : "clusters")}
+            onClick={() => {
+              setViewMode((prev) => prev === "clusters" ? "discovery" : "clusters")
+              setIsDrawing(false)
+              setShowNamingDialog(false)
+              setDrawnPolygon(null)
+            }}
           >
             <Grid3X3 className="mr-1.5 size-4" />
             {viewMode === "clusters" ? "Discovery" : "Clusters"}
