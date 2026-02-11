@@ -35,6 +35,24 @@ export const DISCOVERY_MECHANISMS = [
 
 const MAX_DEPTH = 4
 
+export function getAvailableActions(cell: CellData): CellAction[] {
+  if (cell.status === "searching") return []
+
+  const actions: CellAction[] = DISCOVERY_MECHANISMS
+    .filter((m) => m.enabled)
+    .map((m) => ({ type: "search" as const, mechanism: m.id }))
+
+  if (cell.depth < MAX_DEPTH) {
+    actions.push({ type: "subdivide" })
+  }
+
+  if (cell.parentCellId) {
+    actions.push({ type: "undivide" })
+  }
+
+  return actions
+}
+
 function formatTooltip(cell: CellData): string {
   const label = cell.status.charAt(0).toUpperCase() + cell.status.slice(1)
 
