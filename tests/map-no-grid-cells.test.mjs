@@ -24,12 +24,12 @@ test("DiscoveryGrid is guarded by gridCells && onCellClick", () => {
   assert.match(mapContentSource, /\{gridCells\s*&&\s*onCellClick\s*&&/)
 })
 
-test("map page does not pass gridCells to MapContent", () => {
-  assert.doesNotMatch(mapPageSource, /gridCells=/)
+test("map page conditionally passes gridCells to MapContent in discovery mode", () => {
+  assert.match(mapPageSource, /gridCells=\{viewMode\s*===\s*"discovery"/)
 })
 
-test("map page does not pass onCellClick to MapContent", () => {
-  assert.doesNotMatch(mapPageSource, /onCellClick=/)
+test("map page conditionally passes onCellClick to MapContent in discovery mode", () => {
+  assert.match(mapPageSource, /onCellClick=\{viewMode\s*===\s*"discovery"/)
 })
 
 test("DiscoveryGrid maps over cells array safely", () => {

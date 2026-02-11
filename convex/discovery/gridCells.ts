@@ -360,8 +360,8 @@ export const deleteGrid = internalAction({
     let done = false;
 
     while (!done) {
-      // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
       const { deleted } = await ctx.runMutation(
+        // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
         internal.discovery.gridCells.deleteCellBatch,
         { gridId: args.gridId },
       );

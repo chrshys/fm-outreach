@@ -43,7 +43,7 @@ test("map page computes filteredClusters with useMemo", () => {
 
 test("filteredClusters filters clusters when a specific clusterId is selected", () => {
   assert.match(pageSource, /filters\.clusterId\s*!==\s*"all"/)
-  assert.match(pageSource, /all\.filter\(\(c\)\s*=>\s*c\._id\s*===\s*filters\.clusterId\)/)
+  assert.match(pageSource, /all\.filter\(\(c[^)]*\)\s*=>\s*c\._id\s*===\s*filters\.clusterId\)/)
 })
 
 test("filteredClusters shows all clusters when clusterId is 'all'", () => {
@@ -52,7 +52,7 @@ test("filteredClusters shows all clusters when clusterId is 'all'", () => {
 })
 
 test("map page passes filteredClusters (not all clusters) to MapContent", () => {
-  assert.match(pageSource, /clusters=\{filteredClusters\}/)
+  assert.match(pageSource, /clusters=\{viewMode\s*===\s*"clusters"\s*\?\s*filteredClusters\s*:\s*\[\]\}/)
 })
 
 test("filteredClusters memo depends on filters.clusterId", () => {

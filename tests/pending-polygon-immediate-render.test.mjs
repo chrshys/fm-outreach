@@ -38,7 +38,7 @@ test("pendingPolygon returns null when cluster already in query", () => {
 test("pendingPolygon checks clusters query for matching clusterId", () => {
   assert.match(
     mapPageSource,
-    /\.some\(\s*\n?\s*\(c\)\s*=>\s*c\._id\s*===\s*pendingCluster\.clusterId/,
+    /\.some\(\s*\n?\s*\(c[^)]*\)\s*=>\s*c\._id\s*===\s*pendingCluster\.clusterId/,
   )
 })
 
@@ -65,7 +65,7 @@ test("MapContentProps includes optional pendingPolygon prop", () => {
 })
 
 test("MapContent destructures pendingPolygon from props", () => {
-  assert.match(mapContentSource, /pendingPolygon\s*\}/)
+  assert.match(mapContentSource, /pendingPolygon[,\s}]/)
 })
 
 test("MapContent renders Polygon for pendingPolygon when present", () => {

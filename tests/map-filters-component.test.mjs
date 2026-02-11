@@ -146,7 +146,7 @@ test("map page uses useState for filter state", () => {
 
 test("map page computes filteredLeads with useMemo", () => {
   assert.match(pageSource, /const\s+filteredLeads\s*=\s*useMemo\(/)
-  assert.match(pageSource, /filterLeads\(leads\s*\?\?\s*\[\],\s*filters\)/)
+  assert.match(pageSource, /filterLeads[^(]*\([^,]*leads\s*\?\?\s*\[\][^,]*,\s*filters\)/)
 })
 
 test("map page passes filteredLeads to MapContent", () => {
