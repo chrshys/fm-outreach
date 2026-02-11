@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react"
 import dynamic from "next/dynamic"
 import { useQuery } from "convex/react"
 import { useMutation } from "convex/react"
-import { PenTool } from "lucide-react"
+import { Grid3X3, PenTool } from "lucide-react"
 
 import { api } from "../../../convex/_generated/api"
 import { AppLayout } from "@/components/layout/app-layout"
@@ -45,6 +45,7 @@ export default function MapPage() {
   const clusters = useQuery(api.clusters.list)
   const createCluster = useMutation(api.clusters.createPolygonCluster)
   const [filters, setFilters] = useState<MapFiltersValue>(defaultMapFilters)
+  const [viewMode, setViewMode] = useState<"clusters" | "discovery">("clusters")
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [drawnPolygon, setDrawnPolygon] = useState<
@@ -149,7 +150,7 @@ export default function MapPage() {
         <div className="isolate h-full w-full">
         <MapContent
           leads={filteredLeads}
-          clusters={filteredClusters}
+          clusters={viewMode === "clusters" ? filteredClusters : []}
           isDrawing={isDrawing}
           onPolygonDrawn={handlePolygonDrawn}
           pendingPolygon={pendingPolygon}
@@ -160,16 +161,27 @@ export default function MapPage() {
           onChange={setFilters}
           clusters={clusterOptions}
         />
-        <div className="absolute right-3 top-3 z-10">
+        <div className="absolute right-3 top-3 z-10 flex gap-2">
           <Button
             size="sm"
-            variant={isDrawing ? "default" : "outline"}
+            variant="outline"
             className="bg-card shadow-md"
-            onClick={() => setIsDrawing((prev) => !prev)}
+            onClick={() => setViewMode((prev) => prev === "clusters" ? "discovery" : "clusters")}
           >
-            <PenTool className="mr-1.5 size-4" />
-            {isDrawing ? "Cancel Drawing" : "Draw Cluster"}
+            <Grid3X3 className="mr-1.5 size-4" />
+            {viewMode === "clusters" ? "Discovery" : "Clusters"}
           </Button>
+          {viewMode === "clusters" && (
+            <Button
+              size="sm"
+              variant={isDrawing ? "default" : "outline"}
+              className="bg-card shadow-md"
+              onClick={() => setIsDrawing((prev) => !prev)}
+            >
+              <PenTool className="mr-1.5 size-4" />
+              {isDrawing ? "Cancel Drawing" : "Draw Cluster"}
+            </Button>
+          )}
         </div>
         <Dialog open={showNamingDialog} onOpenChange={(open) => {
           if (!open) handleCancelDialog()
