@@ -83,8 +83,8 @@ const MAX_DEPTH = 4;
 async function subdivideCell(ctx, args) {
   const cell = await ctx.db.get(args.cellId);
   if (!cell) throw new Error("Cell not found");
-  if (cell.status !== "saturated")
-    throw new Error("Cell must be saturated before subdividing");
+  if (cell.status === "searching")
+    throw new Error("Cannot subdivide while cell is being searched");
   if (cell.depth >= MAX_DEPTH)
     throw new Error("Cell is already at maximum depth");
 

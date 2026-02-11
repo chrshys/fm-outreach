@@ -72,8 +72,8 @@ async function subdivideCell(ctx, args) {
     throw new ConvexError("Cell not found");
   }
 
-  if (cell.status !== "saturated") {
-    throw new ConvexError("Cell must be saturated before subdividing");
+  if (cell.status === "searching") {
+    throw new ConvexError("Cannot subdivide while cell is being searched");
   }
 
   if (cell.depth >= MAX_DEPTH) {
@@ -295,27 +295,23 @@ test("4 children tile the parent cell with no gaps or overlaps", async () => {
 });
 
 // ============================================================
-// Guard: rejects non-saturated cells
+// Guard: allows unsearched, searched, saturated; blocks searching
 // ============================================================
 
-test("throws when cell status is unsearched", async () => {
+test("allows subdividing an unsearched cell", async () => {
   const db = createMockDb();
   const { cellId } = await seedSaturatedCell(db, { status: "unsearched" });
 
-  await assert.rejects(
-    () => subdivideCell({ db }, { cellId }),
-    { message: "Cell must be saturated before subdividing" },
-  );
+  const result = await subdivideCell({ db }, { cellId });
+  assert.equal(result.childIds.length, 4, "Unsearched cell can be subdivided into 4 children");
 });
 
-test("throws when cell status is searched", async () => {
+test("allows subdividing a searched cell", async () => {
   const db = createMockDb();
-  const { cellId } = await seedSaturatedCell(db, { status: "searched" });
+  const { cellId } = await seedSaturatedCell(db, { status: "searched", resultCount: 15 });
 
-  await assert.rejects(
-    () => subdivideCell({ db }, { cellId }),
-    { message: "Cell must be saturated before subdividing" },
-  );
+  const result = await subdivideCell({ db }, { cellId });
+  assert.equal(result.childIds.length, 4, "Searched cell can be subdivided into 4 children");
 });
 
 test("throws when cell status is searching", async () => {
@@ -324,7 +320,7 @@ test("throws when cell status is searching", async () => {
 
   await assert.rejects(
     () => subdivideCell({ db }, { cellId }),
-    { message: "Cell must be saturated before subdividing" },
+    { message: "Cannot subdivide while cell is being searched" },
   );
 });
 
@@ -426,4 +422,79 @@ test("can subdivide a child cell (depth 1 → 2) after marking it saturated", as
   // First child is no longer a leaf
   const firstChild = await db.get(firstChildId);
   assert.equal(firstChild.isLeaf, false);
+});
+
+// ============================================================
+// Subdividing searched (non-saturated) cells via Convex dashboard
+// ============================================================
+
+test("subdividing a searched cell creates 4 unsearched children", async () => {
+  const db = createMockDb();
+  const { cellId } = await seedSaturatedCell(db, {
+    status: "searched",
+    resultCount: 15,
+    querySaturation: [{ query: "farms", count: 15 }],
+    lastSearchedAt: Date.now(),
+  });
+
+  const { childIds } = await subdivideCell({ db }, { cellId });
+
+  assert.equal(childIds.length, 4, "Searched cell subdivides into 4 children");
+  for (const childId of childIds) {
+    const child = await db.get(childId);
+    assert.equal(child.status, "unsearched", "Children of searched cell start as unsearched");
+    assert.equal(child.isLeaf, true);
+  }
+});
+
+test("subdividing a searched cell patches parent to isLeaf: false", async () => {
+  const db = createMockDb();
+  const { cellId } = await seedSaturatedCell(db, { status: "searched", resultCount: 8 });
+
+  await subdivideCell({ db }, { cellId });
+
+  const parent = await db.get(cellId);
+  assert.equal(parent.isLeaf, false, "Searched parent becomes non-leaf after subdivision");
+});
+
+test("searched cell children inherit correct depth and parentCellId", async () => {
+  const db = createMockDb();
+  const { cellId } = await seedSaturatedCell(db, { status: "searched", depth: 1 });
+
+  const { childIds } = await subdivideCell({ db }, { cellId });
+
+  for (const childId of childIds) {
+    const child = await db.get(childId);
+    assert.equal(child.depth, 2, "Children of depth-1 searched cell have depth 2");
+    assert.equal(child.parentCellId, cellId, "Children reference searched parent");
+  }
+});
+
+test("searched cell children tile the parent exactly", async () => {
+  const db = createMockDb();
+  const { cellId } = await seedSaturatedCell(db, { status: "searched" });
+  const parent = await db.get(cellId);
+
+  const { childIds } = await subdivideCell({ db }, { cellId });
+  const children = await Promise.all(childIds.map((id) => db.get(id)));
+
+  const minLat = Math.min(...children.map((c) => c.swLat));
+  const maxLat = Math.max(...children.map((c) => c.neLat));
+  const minLng = Math.min(...children.map((c) => c.swLng));
+  const maxLng = Math.max(...children.map((c) => c.neLng));
+
+  assert.equal(minLat, parent.swLat, "Union swLat matches parent");
+  assert.equal(maxLat, parent.neLat, "Union neLat matches parent");
+  assert.equal(minLng, parent.swLng, "Union swLng matches parent");
+  assert.equal(maxLng, parent.neLng, "Union neLng matches parent");
+});
+
+test("searched cell at max depth cannot be subdivided", async () => {
+  const db = createMockDb();
+  const { cellId } = await seedSaturatedCell(db, { status: "searched", depth: 4 });
+
+  await assert.rejects(
+    () => subdivideCell({ db }, { cellId }),
+    { message: "Cell is already at maximum depth" },
+  );
 });

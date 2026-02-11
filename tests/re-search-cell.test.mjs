@@ -35,7 +35,7 @@ test("requestDiscoverCell accepts 'searched' status", () => {
 test("discoverCell passes 'searched' in expectedStatuses to claimCellForSearch", () => {
   assert.match(
     discoverCellSource,
-    /expectedStatuses:\s*\["unsearched",\s*"searched"\]/,
+    /expectedStatuses:\s*\["unsearched",\s*"searched",\s*"saturated"\]/,
   );
 });
 

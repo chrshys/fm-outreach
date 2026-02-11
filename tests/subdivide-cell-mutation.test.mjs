@@ -27,12 +27,12 @@ test("subdivideCell accepts cellId as id of discoveryCells", () => {
 });
 
 // ============================================================
-// 3. Guard: cell status must be saturated
+// 3. Guard: only blocks searching status
 // ============================================================
 
-test("throws ConvexError when cell status is not saturated", () => {
-  assert.match(source, /cell\.status\s*!==\s*"saturated"/);
-  assert.match(source, /throw\s+new\s+ConvexError\("Cell must be saturated before subdividing"\)/);
+test("throws ConvexError when cell status is searching", () => {
+  assert.match(source, /cell\.status\s*===\s*"searching"/);
+  assert.match(source, /throw\s+new\s+ConvexError\("Cannot subdivide while cell is being searched"\)/);
 });
 
 // ============================================================

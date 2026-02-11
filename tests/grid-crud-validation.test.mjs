@@ -38,12 +38,12 @@ test("subdivideCell patches parent to isLeaf: false", () => {
   assert.match(block, /ctx\.db\.patch\(args\.cellId,\s*\{\s*isLeaf:\s*false\s*\}\)/);
 });
 
-test("subdivideCell requires cell status === saturated (guard)", () => {
+test("subdivideCell only blocks searching status (guard)", () => {
   const subdivideStart = source.indexOf("export const subdivideCell");
   const subdivideEnd = source.indexOf("export const listGrids");
   const block = source.slice(subdivideStart, subdivideEnd);
 
-  assert.match(block, /cell\.status\s*!==\s*"saturated"/);
+  assert.match(block, /cell\.status\s*===\s*"searching"/);
   assert.match(block, /throw\s+new\s+ConvexError/);
 });
 
