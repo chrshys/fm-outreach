@@ -65,6 +65,28 @@ export const update = mutation({
   },
 })
 
+export const deleteAllClusters = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const clusters = await ctx.db.query("clusters").collect()
+    for (const cluster of clusters) {
+      await ctx.db.delete(cluster._id)
+    }
+
+    const leads = await ctx.db.query("leads").collect()
+    const now = Date.now()
+    let leadsPatched = 0
+    for (const lead of leads) {
+      if (lead.clusterId !== undefined) {
+        await ctx.db.patch(lead._id, { clusterId: undefined, updatedAt: now })
+        leadsPatched++
+      }
+    }
+
+    return { clustersDeleted: clusters.length, leadsPatched }
+  },
+})
+
 // --- Internal helpers for autoGenerate ---
 
 export const getLeadsWithCoords = internalQuery({
