@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
-import { mutation } from "../_generated/server";
+import { mutation, query } from "../_generated/server";
 
 const MAX_DEPTH = 4;
 const DEFAULT_CELL_SIZE_KM = 20;
@@ -128,5 +128,32 @@ export const subdivideCell = mutation({
     await ctx.db.patch(args.cellId, { isLeaf: false });
 
     return { childIds };
+  },
+});
+
+export const listCells = query({
+  args: {
+    gridId: v.id("discoveryGrids"),
+  },
+  handler: async (ctx, args) => {
+    const cells = await ctx.db
+      .query("discoveryCells")
+      .withIndex("by_gridId_isLeaf", (q) =>
+        q.eq("gridId", args.gridId).eq("isLeaf", true),
+      )
+      .collect();
+
+    return cells.map((cell) => ({
+      _id: cell._id,
+      swLat: cell.swLat,
+      swLng: cell.swLng,
+      neLat: cell.neLat,
+      neLng: cell.neLng,
+      depth: cell.depth,
+      status: cell.status,
+      resultCount: cell.resultCount,
+      querySaturation: cell.querySaturation,
+      lastSearchedAt: cell.lastSearchedAt,
+    }));
   },
 });
