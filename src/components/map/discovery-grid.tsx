@@ -39,8 +39,6 @@ export const DISCOVERY_MECHANISMS = [
 const MAX_DEPTH = 4
 
 export function getAvailableActions(cell: CellData): CellAction[] {
-  if (cell.status === "searching") return []
-
   const actions: CellAction[] = DISCOVERY_MECHANISMS
     .filter((m) => m.enabled)
     .map((m) => ({ type: "search" as const, mechanism: m.id }))
@@ -121,34 +119,33 @@ function CellTooltipContent({
         })}
       </div>
 
-      {!isSearching && (
-        <div className="flex items-center gap-2 border-t pt-2">
+      <div className="flex items-center gap-2 border-t pt-2">
+        <button
+          className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors ${cell.depth >= MAX_DEPTH || isSearching ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"}`}
+          onClick={(e) => {
+            e.stopPropagation()
+            onCellAction(cell._id, { type: "subdivide" })
+          }}
+          disabled={cell.depth >= MAX_DEPTH || isSearching}
+          title={cell.depth >= MAX_DEPTH ? "Maximum depth reached" : undefined}
+        >
+          <Grid2x2Plus className="h-3 w-3" />
+          Split
+        </button>
+        {cell.depth > 0 && (
           <button
-            className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors ${cell.depth >= MAX_DEPTH ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"}`}
+            className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors ${isSearching ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"}`}
             onClick={(e) => {
               e.stopPropagation()
-              onCellAction(cell._id, { type: "subdivide" })
+              onCellAction(cell._id, { type: "undivide" })
             }}
-            disabled={cell.depth >= MAX_DEPTH}
-            title={cell.depth >= MAX_DEPTH ? "Maximum depth reached" : undefined}
+            disabled={isSearching}
           >
-            <Grid2x2Plus className="h-3 w-3" />
-            Split
+            <Minimize2 className="h-3 w-3" />
+            Merge
           </button>
-          {cell.depth > 0 && (
-            <button
-              className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors"
-              onClick={(e) => {
-                e.stopPropagation()
-                onCellAction(cell._id, { type: "undivide" })
-              }}
-            >
-              <Minimize2 className="h-3 w-3" />
-              Merge
-            </button>
-          )}
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

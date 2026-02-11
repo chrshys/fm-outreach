@@ -24,11 +24,17 @@ test("getAvailableActions returns CellAction[]", () => {
 })
 
 // ============================================================
-// Searching cells return no actions
+// Searching cells still return actions (buttons shown but disabled in UI)
 // ============================================================
 
-test("returns empty array when cell status is searching", () => {
-  assert.match(source, /cell\.status\s*===\s*"searching"\)\s*return\s*\[\]/)
+test("does not return empty array when cell status is searching", () => {
+  // getAvailableActions should NOT early-return [] for searching cells;
+  // the UI handles disabling buttons instead of hiding them.
+  const fnBlock = source.slice(
+    source.indexOf("export function getAvailableActions"),
+    source.indexOf("function formatShortDate"),
+  )
+  assert.doesNotMatch(fnBlock, /cell\.status\s*===\s*"searching"\)\s*return\s*\[\]/)
 })
 
 // ============================================================

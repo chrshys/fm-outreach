@@ -36,8 +36,8 @@ test("split button element exists unconditionally in tooltip", () => {
 // Split button is disabled at max depth
 // ============================================================
 
-test("split button has disabled attribute tied to max depth", () => {
-  assert.match(tooltipBlock, /disabled=\{cell\.depth\s*>=\s*MAX_DEPTH\}/)
+test("split button has disabled attribute tied to max depth and searching", () => {
+  assert.match(tooltipBlock, /disabled=\{cell\.depth\s*>=\s*MAX_DEPTH\s*\|\|\s*isSearching\}/)
 })
 
 test("split button shows disabled styling at max depth", () => {

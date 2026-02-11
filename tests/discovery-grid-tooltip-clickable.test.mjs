@@ -62,7 +62,7 @@ test("tooltip action buttons are <button> elements", () => {
 })
 
 test("enabled buttons do not have pointer-events-none", () => {
-  // The pointer-events-none class only appears inside a conditional for disabled buttons
-  const disabledOnly = source.match(/disabled\s*\?\s*"opacity-50 pointer-events-none"/g)
+  // pointer-events-none only appears inside a conditional for disabled buttons
+  const disabledOnly = source.match(/disabled\s*\?\s*"pointer-events-none"/g)
   assert.ok(disabledOnly, "pointer-events-none is conditional on disabled state")
 })

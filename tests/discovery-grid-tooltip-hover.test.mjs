@@ -62,7 +62,8 @@ test("Web Scraping mechanism is in DISCOVERY_MECHANISMS with enabled: false", ()
 test("disabled mechanisms get opacity-50 and pointer-events-none", () => {
   // When !mechanism.enabled || isSearching, the button gets disabled styling
   assert.match(gridSource, /!mechanism\.enabled\s*\|\|\s*isSearching/)
-  assert.match(gridSource, /opacity-50 pointer-events-none/)
+  assert.match(gridSource, /pointer-events-none/)
+  assert.match(gridSource, /opacity-50/)
 })
 
 test("non-google_places mechanisms show dash for last-run date", () => {
@@ -92,11 +93,16 @@ test("Merge button is conditionally rendered when depth > 0", () => {
 })
 
 // ============================================================
-// No buttons shown on cells with status "searching"
+// Buttons shown but disabled on cells with status "searching"
 // ============================================================
 
-test("bottom row (Split/Merge) is hidden when isSearching", () => {
-  assert.match(gridSource, /!isSearching\s*&&/)
+test("Split button is disabled when isSearching", () => {
+  // Split button's disabled attribute includes isSearching
+  assert.match(gridSource, /disabled=\{cell\.depth\s*>=\s*MAX_DEPTH\s*\|\|\s*isSearching\}/)
+})
+
+test("Merge button is disabled when isSearching", () => {
+  assert.match(gridSource, /disabled=\{isSearching\}/)
 })
 
 test("Run buttons are disabled when cell is searching", () => {

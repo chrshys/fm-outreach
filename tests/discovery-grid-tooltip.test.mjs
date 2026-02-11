@@ -129,7 +129,7 @@ test("Split button uses compact control styling", () => {
   const splitActionIdx = source.indexOf('onCellAction(cell._id, { type: "subdivide" })')
   assert.ok(splitActionIdx > 0, "should find subdivide action call")
   const beforeSplit = source.slice(0, splitActionIdx)
-  const lastClassName = beforeSplit.lastIndexOf("inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors")
+  const lastClassName = beforeSplit.lastIndexOf("inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors")
   assert.ok(lastClassName > 0, "Split button should have compact control styling")
 })
 
@@ -138,13 +138,13 @@ test("Merge button uses compact control styling", () => {
   const mergeActionIdx = source.indexOf('onCellAction(cell._id, { type: "undivide" })')
   assert.ok(mergeActionIdx > 0, "should find undivide action call")
   const beforeMerge = source.slice(0, mergeActionIdx)
-  const lastClassName = beforeMerge.lastIndexOf("inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors")
+  const lastClassName = beforeMerge.lastIndexOf("inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors")
   assert.ok(lastClassName > 0, "Merge button should have compact control styling")
 })
 
 test("all tooltip buttons have border class for visual outline", () => {
-  // Count occurrences of the compact button pattern - should be 3 (Run, Split, Merge)
-  const matches = source.match(/inline-flex items-center gap-1 rounded-md border px-1\.5 py-0\.5 text-xs hover:bg-accent transition-colors/g)
+  // Count occurrences of the compact button base pattern - should be 3 (Run, Split, Merge)
+  const matches = source.match(/inline-flex items-center gap-1 rounded-md border px-1\.5 py-0\.5 text-xs/g)
   assert.ok(matches, "should find compact button styling")
   assert.equal(matches.length, 3, "all three buttons (Run, Split, Merge) should have compact styling")
 })
@@ -193,9 +193,13 @@ test("Merge button is hidden when cell depth is 0", () => {
   assert.match(source, /cell\.depth\s*>\s*0/)
 })
 
-test("Split and Merge buttons are hidden entirely when cell is searching", () => {
-  // The bottom row is wrapped in {!isSearching && (...)}
-  assert.match(source, /!isSearching\s*&&/)
+test("Split and Merge buttons are disabled (not hidden) when cell is searching", () => {
+  // Split button disabled includes isSearching
+  assert.match(source, /disabled=\{cell\.depth\s*>=\s*MAX_DEPTH\s*\|\|\s*isSearching\}/)
+  // Merge button disabled when isSearching
+  assert.match(source, /disabled=\{isSearching\}/)
+  // The bottom row is NOT conditionally hidden
+  assert.doesNotMatch(source, /\{!isSearching\s*&&\s*\(/)
 })
 
 test("isSearching is derived from cell.status === searching", () => {
