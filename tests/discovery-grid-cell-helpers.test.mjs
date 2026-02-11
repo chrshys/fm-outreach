@@ -24,9 +24,10 @@ test("getCell throws ConvexError when grid not found", () => {
   assert.match(source, /throw new ConvexError\("Grid not found"\)/);
 });
 
-test("getCell returns cell spread with grid containing queries, region, province", () => {
+test("getCell returns cell spread with grid containing name, queries, region, province", () => {
   assert.match(source, /\.\.\.cell/);
   assert.match(source, /grid:\s*\{/);
+  assert.match(source, /name:\s*grid\.name/);
   assert.match(source, /queries:\s*grid\.queries/);
   assert.match(source, /region:\s*grid\.region/);
   assert.match(source, /province:\s*grid\.province/);

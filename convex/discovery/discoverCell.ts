@@ -51,10 +51,10 @@ export const discoverCell = internalAction({
 
     const { swLat, swLng, neLat, neLng, depth } = cellData as {
       swLat: number; swLng: number; neLat: number; neLng: number; depth: number;
-      grid: { queries: string[]; region: string; province: string };
+      grid: { name: string; queries: string[]; region: string; province: string };
     };
-    const { queries, region, province } = (cellData as {
-      grid: { queries: string[]; region: string; province: string };
+    const { name: gridName, queries, region, province } = (cellData as {
+      grid: { name: string; queries: string[]; region: string; province: string };
     }).grid;
 
     // Steps 3-11 wrapped in try/catch — reset on failure
@@ -115,7 +115,7 @@ export const discoverCell = internalAction({
         latitude: place.geometry?.location?.lat,
         longitude: place.geometry?.location?.lng,
         source: "google_places" as const,
-        sourceDetail: `Discovery grid cell [depth=${depth}]`,
+        sourceDetail: `Discovery grid "${gridName}" cell ${args.cellId} [depth=${depth}]`,
         status: "new_lead" as const,
         followUpCount: 0 as const,
         createdAt: now,

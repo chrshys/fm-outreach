@@ -263,6 +263,7 @@ export const getCell = internalQuery({
       ...cell,
       grid: {
         _id: grid._id,
+        name: grid.name,
         queries: grid.queries,
         region: grid.region,
         province: grid.province,
