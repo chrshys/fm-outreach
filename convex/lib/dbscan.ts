@@ -117,6 +117,53 @@ export function dbscan(
   return clusters;
 }
 
+/**
+ * Compute the convex hull of a set of 2D points using the gift-wrapping algorithm.
+ * Returns vertices in counter-clockwise order.
+ */
+export function convexHull(
+  points: Array<{ lat: number; lng: number }>,
+): Array<{ lat: number; lng: number }> {
+  if (points.length < 3) return [...points];
+
+  // Find leftmost point
+  let start = 0;
+  for (let i = 1; i < points.length; i++) {
+    if (
+      points[i].lng < points[start].lng ||
+      (points[i].lng === points[start].lng && points[i].lat < points[start].lat)
+    ) {
+      start = i;
+    }
+  }
+
+  const hull: Array<{ lat: number; lng: number }> = [];
+  let current = start;
+
+  do {
+    hull.push(points[current]);
+    let next = 0;
+    for (let i = 1; i < points.length; i++) {
+      if (i === current) continue;
+      if (next === current) {
+        next = i;
+        continue;
+      }
+      const cross =
+        (points[i].lng - points[current].lng) *
+          (points[next].lat - points[current].lat) -
+        (points[i].lat - points[current].lat) *
+          (points[next].lng - points[current].lng);
+      if (cross > 0) {
+        next = i;
+      }
+    }
+    current = next;
+  } while (current !== start);
+
+  return hull;
+}
+
 function mostFrequentCity(points: GeoPoint[], pointIds: string[]): string {
   const idSet = new Set(pointIds);
   const counts = new Map<string, number>();

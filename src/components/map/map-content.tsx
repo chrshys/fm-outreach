@@ -6,7 +6,7 @@ import {
   MapContainer,
   TileLayer,
   CircleMarker,
-  Circle,
+  Polygon,
   Popup,
   Tooltip,
 } from "react-leaflet"
@@ -33,6 +33,7 @@ type LeadMarker = {
 export type ClusterBoundary = {
   _id: string
   name: string
+  boundary: Array<{ lat: number; lng: number }>
   centerLat: number
   centerLng: number
   radiusKm: number
@@ -56,11 +57,11 @@ export default function MapContent({ leads, clusters = [] }: MapContentProps) {
       />
       {clusters.map((cluster, index) => {
         const color = getClusterColor(index)
+        const positions: [number, number][] = cluster.boundary.map((p) => [p.lat, p.lng])
         return (
-          <Circle
+          <Polygon
             key={cluster._id}
-            center={[cluster.centerLat, cluster.centerLng]}
-            radius={cluster.radiusKm * 1000}
+            positions={positions}
             pathOptions={{
               fillColor: color,
               color: color,
@@ -72,7 +73,7 @@ export default function MapContent({ leads, clusters = [] }: MapContentProps) {
             <Tooltip direction="center" permanent={false}>
               {cluster.name}
             </Tooltip>
-          </Circle>
+          </Polygon>
         )
       })}
       {leads.map((lead) => {

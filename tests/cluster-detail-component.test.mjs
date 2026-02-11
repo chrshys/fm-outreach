@@ -58,7 +58,8 @@ test("renders ClusterMap with dynamic import (no SSR)", () => {
   assert.match(source, /<ClusterMap/)
 })
 
-test("passes cluster center and radius to ClusterMap", () => {
+test("passes cluster boundary, center and radius to ClusterMap", () => {
+  assert.match(source, /boundary=\{cluster\.boundary\}/)
   assert.match(source, /centerLat=\{cluster\.centerLat\}/)
   assert.match(source, /centerLng=\{cluster\.centerLng\}/)
   assert.match(source, /radiusKm=\{cluster\.radiusKm\}/)

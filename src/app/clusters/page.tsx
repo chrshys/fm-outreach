@@ -21,6 +21,7 @@ import {
 type Cluster = {
   _id: Id<"clusters">
   name: string
+  boundary: Array<{ lat: number; lng: number }>
   centerLat: number
   centerLng: number
   radiusKm: number

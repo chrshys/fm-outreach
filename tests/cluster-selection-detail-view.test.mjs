@@ -28,8 +28,9 @@ test("detail view dynamically imports ClusterMap (no SSR)", () => {
   assert.match(detailSource, /const ClusterMap = dynamic\(\(\) => import\("\.\/cluster-map"\), \{ ssr: false \}\)/)
 })
 
-test("detail view renders ClusterMap with cluster center and radius", () => {
+test("detail view renders ClusterMap with boundary, center, and radius", () => {
   assert.match(detailSource, /<ClusterMap/)
+  assert.match(detailSource, /boundary=\{cluster\.boundary\}/)
   assert.match(detailSource, /centerLat=\{cluster\.centerLat\}/)
   assert.match(detailSource, /centerLng=\{cluster\.centerLng\}/)
   assert.match(detailSource, /radiusKm=\{cluster\.radiusKm\}/)
@@ -78,9 +79,9 @@ test("ClusterMap renders a Leaflet MapContainer with cluster center", () => {
   assert.match(mapSource, /center=\{\[centerLat, centerLng\]\}/)
 })
 
-test("ClusterMap renders cluster boundary as a Circle", () => {
-  assert.match(mapSource, /<Circle/)
-  assert.match(mapSource, /radius=\{radiusKm \* 1000\}/)
+test("ClusterMap renders cluster boundary as a Polygon", () => {
+  assert.match(mapSource, /<Polygon/)
+  assert.match(mapSource, /positions=\{positions\}/)
 })
 
 test("ClusterMap renders lead markers as CircleMarkers with status colors", () => {

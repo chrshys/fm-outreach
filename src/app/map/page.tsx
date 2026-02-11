@@ -46,6 +46,7 @@ export default function MapPage() {
     return selected.map((c) => ({
       _id: c._id,
       name: c.name,
+      boundary: c.boundary,
       centerLat: c.centerLat,
       centerLng: c.centerLng,
       radiusKm: c.radiusKm,

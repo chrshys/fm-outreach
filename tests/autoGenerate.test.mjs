@@ -219,3 +219,59 @@ test("autoGenerate: activity logging uses note_added type", () => {
     "Activity description should mention auto-assignment",
   );
 });
+
+// --- Convex hull tests ---
+
+test("convexHull: returns all points when fewer than 3", () => {
+  const { convexHull } = loadDbscan();
+  const points = [
+    { lat: 43.0, lng: -80.0 },
+    { lat: 44.0, lng: -81.0 },
+  ];
+  const hull = convexHull(points);
+  assert.equal(hull.length, 2);
+});
+
+test("convexHull: returns correct hull for triangle", () => {
+  const { convexHull } = loadDbscan();
+  const points = [
+    { lat: 0, lng: 0 },
+    { lat: 1, lng: 0 },
+    { lat: 0, lng: 1 },
+  ];
+  const hull = convexHull(points);
+  assert.equal(hull.length, 3, "triangle should have 3 hull vertices");
+});
+
+test("convexHull: excludes interior point", () => {
+  const { convexHull } = loadDbscan();
+  const points = [
+    { lat: 0, lng: 0 },
+    { lat: 4, lng: 0 },
+    { lat: 4, lng: 4 },
+    { lat: 0, lng: 4 },
+    { lat: 2, lng: 2 }, // interior point
+  ];
+  const hull = convexHull(points);
+  assert.equal(hull.length, 4, "square with interior point should have 4 hull vertices");
+});
+
+test("autoGenerate: boundary field is computed from convexHull", () => {
+  const source = fs.readFileSync("convex/clusters.ts", "utf8");
+  assert.ok(
+    source.includes("convexHull"),
+    "autoGenerate should use convexHull to compute boundary",
+  );
+  assert.ok(
+    source.includes("boundary"),
+    "autoGenerate should pass boundary to createCluster",
+  );
+});
+
+test("createCluster mutation accepts boundary argument", () => {
+  const source = fs.readFileSync("convex/clusters.ts", "utf8");
+  assert.match(
+    source,
+    /boundary:\s*v\.array\(v\.object\(\{\s*lat:\s*v\.number\(\),\s*lng:\s*v\.number\(\)\s*\}\)\)/,
+  );
+});

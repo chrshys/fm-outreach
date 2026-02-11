@@ -44,3 +44,10 @@ test("defines required settings indexes", () => {
 test("defines required campaigns indexes", () => {
   assert.match(schemaSource, /campaigns:[\s\S]*?\.index\("by_status",\s*\["status"\]\)/);
 });
+
+test("clusters table has boundary field with lat/lng array", () => {
+  assert.match(
+    schemaSource,
+    /clusters:[\s\S]*?boundary:\s*v\.array\(v\.object\(\{\s*lat:\s*v\.number\(\),\s*lng:\s*v\.number\(\)\s*\}\)\)/,
+  );
+});

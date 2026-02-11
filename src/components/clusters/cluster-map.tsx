@@ -2,7 +2,7 @@
 
 import "leaflet/dist/leaflet.css"
 
-import { MapContainer, TileLayer, Circle, CircleMarker } from "react-leaflet"
+import { MapContainer, TileLayer, Polygon, CircleMarker } from "react-leaflet"
 
 import { getStatusColor } from "@/components/map/status-colors"
 
@@ -14,14 +14,16 @@ type LeadPoint = {
 }
 
 type ClusterMapProps = {
+  boundary: Array<{ lat: number; lng: number }>
   centerLat: number
   centerLng: number
   radiusKm: number
   leads: LeadPoint[]
 }
 
-export default function ClusterMap({ centerLat, centerLng, radiusKm, leads }: ClusterMapProps) {
+export default function ClusterMap({ boundary, centerLat, centerLng, radiusKm, leads }: ClusterMapProps) {
   const zoom = radiusKm < 2 ? 13 : radiusKm < 5 ? 12 : radiusKm < 15 ? 10 : 9
+  const positions: [number, number][] = boundary.map((p) => [p.lat, p.lng])
 
   return (
     <MapContainer
@@ -34,9 +36,8 @@ export default function ClusterMap({ centerLat, centerLng, radiusKm, leads }: Cl
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Circle
-        center={[centerLat, centerLng]}
-        radius={radiusKm * 1000}
+      <Polygon
+        positions={positions}
         pathOptions={{
           fillColor: "#3b82f6",
           color: "#3b82f6",

@@ -83,6 +83,7 @@ export default defineSchema({
 
   clusters: defineTable({
     name: v.string(),
+    boundary: v.array(v.object({ lat: v.number(), lng: v.number() })),
     centerLat: v.number(),
     centerLng: v.number(),
     radiusKm: v.number(),

@@ -8,7 +8,8 @@ test("passes clusters prop to MapContent", () => {
   assert.match(source, /clusters=\{/)
 })
 
-test("maps cluster data with centerLat, centerLng, radiusKm", () => {
+test("maps cluster data with boundary, centerLat, centerLng, radiusKm", () => {
+  assert.match(source, /boundary:\s*c\.boundary/)
   assert.match(source, /centerLat:\s*c\.centerLat/)
   assert.match(source, /centerLng:\s*c\.centerLng/)
   assert.match(source, /radiusKm:\s*c\.radiusKm/)

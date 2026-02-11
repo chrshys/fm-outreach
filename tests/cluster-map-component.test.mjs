@@ -12,8 +12,8 @@ test("imports leaflet CSS", () => {
   assert.match(source, /import "leaflet\/dist\/leaflet\.css"/)
 })
 
-test("uses react-leaflet MapContainer, TileLayer, Circle, CircleMarker", () => {
-  assert.match(source, /import \{ MapContainer, TileLayer, Circle, CircleMarker \} from "react-leaflet"/)
+test("uses react-leaflet MapContainer, TileLayer, Polygon, CircleMarker", () => {
+  assert.match(source, /import \{ MapContainer, TileLayer, Polygon, CircleMarker \} from "react-leaflet"/)
 })
 
 test("renders MapContainer centered on cluster coordinates", () => {
@@ -27,9 +27,9 @@ test("calculates zoom level based on radius", () => {
   assert.match(source, /radiusKm < 15 \? 10/)
 })
 
-test("renders cluster boundary Circle", () => {
-  assert.match(source, /<Circle/)
-  assert.match(source, /radius=\{radiusKm \* 1000\}/)
+test("renders cluster boundary Polygon", () => {
+  assert.match(source, /<Polygon/)
+  assert.match(source, /positions=\{positions\}/)
 })
 
 test("renders lead CircleMarkers with status colors", () => {
