@@ -99,6 +99,9 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
           }}
         />
       )}
+      {gridCells && onCellClick && (
+        <DiscoveryGrid cells={gridCells} onCellClick={onCellClick} />
+      )}
       {leads.map((lead) => {
         const color = getStatusColor(lead.status)
         return (
@@ -127,9 +130,6 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
           </CircleMarker>
         )
       })}
-      {gridCells && onCellClick && (
-        <DiscoveryGrid cells={gridCells} onCellClick={onCellClick} />
-      )}
       {onBoundsChange && (
         <MapBoundsEmitter onBoundsChange={onBoundsChange} />
       )}
