@@ -123,18 +123,18 @@ function CellTooltipContent({
 
       {!isSearching && (
         <div className="flex items-center gap-2 border-t pt-2">
-          {cell.depth < MAX_DEPTH && (
-            <button
-              className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors"
-              onClick={(e) => {
-                e.stopPropagation()
-                onCellAction(cell._id, { type: "subdivide" })
-              }}
-            >
-              <Grid2x2Plus className="h-3 w-3" />
-              Split
-            </button>
-          )}
+          <button
+            className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors ${cell.depth >= MAX_DEPTH ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"}`}
+            onClick={(e) => {
+              e.stopPropagation()
+              onCellAction(cell._id, { type: "subdivide" })
+            }}
+            disabled={cell.depth >= MAX_DEPTH}
+            title={cell.depth >= MAX_DEPTH ? "Maximum depth reached" : undefined}
+          >
+            <Grid2x2Plus className="h-3 w-3" />
+            Split
+          </button>
           {cell.parentCellId && (
             <button
               className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors"
