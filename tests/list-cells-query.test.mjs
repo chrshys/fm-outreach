@@ -56,6 +56,11 @@ test("returns _id field", () => {
   assert.match(listCellsBlock, /_id:\s*cell\._id/);
 });
 
+test("returns parentCellId field", () => {
+  const listCellsBlock = source.slice(source.indexOf("listCells"));
+  assert.match(listCellsBlock, /parentCellId:\s*cell\.parentCellId/);
+});
+
 test("returns swLat field", () => {
   const listCellsBlock = source.slice(source.indexOf("listCells"));
   assert.match(listCellsBlock, /swLat:\s*cell\.swLat/);
