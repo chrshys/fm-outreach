@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 
-import { internalAction } from "../_generated/server";
+import { internalAction, mutation } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { haversineKm } from "../lib/pointInPolygon";
 import {
@@ -171,5 +171,29 @@ export const discoverCell = internalAction({
       );
       throw error;
     }
+  },
+});
+
+export const requestDiscoverCell = mutation({
+  args: {
+    cellId: v.id("discoveryCells"),
+  },
+  handler: async (ctx, args) => {
+    const cell = await ctx.db.get(args.cellId);
+    if (!cell) {
+      throw new Error("Cell not found");
+    }
+
+    if (cell.status !== "unsearched" && cell.status !== "searched") {
+      throw new Error(
+        `Cell status is "${cell.status}", expected "unsearched" or "searched"`,
+      );
+    }
+
+    await ctx.scheduler.runAfter(
+      0,
+      internal.discovery.discoverCell.discoverCell,
+      { cellId: args.cellId },
+    );
   },
 });
