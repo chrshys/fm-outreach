@@ -159,13 +159,19 @@ async function undivideCell(ctx, args) {
       .collect();
 
     for (const child of children) {
-      toDelete.push(child._id);
+      toDelete.push({ _id: child._id, status: child.status });
       queue.push(child._id);
     }
   }
 
-  for (const id of toDelete) {
-    await ctx.db.delete(id);
+  if (toDelete.some((d) => d.status === "searching")) {
+    throw new ConvexError(
+      "Cannot undivide while a child cell is being searched",
+    );
+  }
+
+  for (const { _id } of toDelete) {
+    await ctx.db.delete(_id);
   }
 
   await ctx.db.patch(targetCellId, { isLeaf: true });
@@ -462,31 +468,33 @@ test("undivide on root cell with grandchildren: deletes all descendants", async 
 });
 
 // ============================================================
-// Undividing while a child is searching succeeds
+// Guard: undividing while a child is searching throws
 // ============================================================
 
-test("undivide succeeds when a sibling cell is searching", async () => {
+test("undivide throws when a sibling cell is searching", async () => {
   const db = createMockDb();
   const { cellId } = await seedCell(db);
 
   const { childIds } = await subdivideCell({ db }, { cellId });
   await db.patch(childIds[2], { status: "searching" });
 
-  const result = await undivideCell({ db }, { cellId: childIds[0] });
-  assert.equal(result.deletedCount, 4);
+  await assert.rejects(
+    () => undivideCell({ db }, { cellId: childIds[0] }),
+    { message: "Cannot undivide while a child cell is being searched" },
+  );
 
-  // All children deleted including the searching one
+  // All children still exist (nothing deleted)
   for (const id of childIds) {
     const child = await db.get(id);
-    assert.equal(child, null, `Child ${id} must be deleted`);
+    assert.notEqual(child, null, `Child ${id} must still exist`);
   }
 
-  // Parent restored to leaf
+  // Parent unchanged
   const parent = await db.get(cellId);
-  assert.equal(parent.isLeaf, true);
+  assert.equal(parent.isLeaf, false);
 });
 
-test("undivide succeeds when a grandchild is searching", async () => {
+test("undivide throws when a grandchild is searching", async () => {
   const db = createMockDb();
   const { cellId } = await seedCell(db);
 
@@ -498,13 +506,14 @@ test("undivide succeeds when a grandchild is searching", async () => {
 
   await db.patch(grandchildIds[1], { status: "searching" });
 
-  const result = await undivideCell({ db }, { cellId: childIds[1] });
-  // 4 children + 4 grandchildren = 8
-  assert.equal(result.deletedCount, 8);
+  await assert.rejects(
+    () => undivideCell({ db }, { cellId: childIds[1] }),
+    { message: "Cannot undivide while a child cell is being searched" },
+  );
 
-  // Parent restored to leaf
+  // Parent unchanged
   const parent = await db.get(cellId);
-  assert.equal(parent.isLeaf, true);
+  assert.equal(parent.isLeaf, false);
 });
 
 // ============================================================

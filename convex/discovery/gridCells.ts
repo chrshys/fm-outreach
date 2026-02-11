@@ -174,7 +174,7 @@ export const undivideCell = mutation({
     }
 
     // BFS-walk all descendants of the target
-    const toDelete: typeof args.cellId[] = [];
+    const toDelete: { _id: typeof args.cellId; status: string }[] = [];
     const queue: (typeof args.cellId)[] = [targetCellId];
 
     while (queue.length > 0) {
@@ -185,13 +185,19 @@ export const undivideCell = mutation({
         .collect();
 
       for (const child of children) {
-        toDelete.push(child._id);
+        toDelete.push({ _id: child._id, status: child.status });
         queue.push(child._id);
       }
     }
 
-    for (const id of toDelete) {
-      await ctx.db.delete(id);
+    if (toDelete.some((d) => d.status === "searching")) {
+      throw new ConvexError(
+        "Cannot undivide while a child cell is being searched",
+      );
+    }
+
+    for (const { _id } of toDelete) {
+      await ctx.db.delete(_id);
     }
 
     await ctx.db.patch(targetCellId, { isLeaf: true });
