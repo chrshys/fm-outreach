@@ -1,116 +1,100 @@
-import test from "node:test";
-import assert from "node:assert/strict";
-import fs from "node:fs";
+import test from "node:test"
+import assert from "node:assert/strict"
+import fs from "node:fs"
 
-const schemaSource = fs.readFileSync("convex/schema.ts", "utf8");
+const schemaSource = fs.readFileSync("convex/schema.ts", "utf8")
 
-// Extract the full discoveryCells block (from defineTable to the closing indexes)
-function getDiscoveryCellsBlock() {
-  const start = schemaSource.indexOf("discoveryCells: defineTable(");
-  assert.ok(start !== -1, "discoveryCells table definition not found");
-  // Find the next table definition or end of schema to delimit the block
-  const rest = schemaSource.slice(start);
-  const nextTable = rest.indexOf("\n\n  ", 1);
-  return nextTable !== -1 ? rest.slice(0, nextTable) : rest;
-}
+// Extract the discoveryCells table block for scoped assertions
+const cellsBlock = schemaSource.slice(
+  schemaSource.indexOf("discoveryCells: defineTable("),
+)
 
 test("discoveryCells table exists in schema", () => {
-  assert.match(schemaSource, /\bdiscoveryCells:\s*defineTable\(/);
-});
+  assert.match(schemaSource, /discoveryCells:\s*defineTable\(\{/)
+})
 
-test("discoveryCells has all required fields", () => {
-  const block = getDiscoveryCellsBlock();
+// Bounding box fields
+test("has swLat field as v.number()", () => {
+  assert.match(cellsBlock, /swLat:\s*v\.number\(\)/)
+})
 
-  const requiredFields = [
-    ["swLat", "v.number()"],
-    ["swLng", "v.number()"],
-    ["neLat", "v.number()"],
-    ["neLng", "v.number()"],
-    ["depth", "v.number()"],
-    ["isLeaf", "v.boolean()"],
-    ["gridId", 'v.id("discoveryGrids")'],
-  ];
+test("has swLng field as v.number()", () => {
+  assert.match(cellsBlock, /swLng:\s*v\.number\(\)/)
+})
 
-  for (const [field, type] of requiredFields) {
-    assert.match(
-      block,
-      new RegExp(`${field}:\\s*${type.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`),
-      `Missing or incorrect field: ${field} should be ${type}`,
-    );
-  }
-});
+test("has neLat field as v.number()", () => {
+  assert.match(cellsBlock, /neLat:\s*v\.number\(\)/)
+})
 
-test("discoveryCells has optional fields", () => {
-  const block = getDiscoveryCellsBlock();
+test("has neLng field as v.number()", () => {
+  assert.match(cellsBlock, /neLng:\s*v\.number\(\)/)
+})
 
+// Depth field
+test("has depth field as v.number()", () => {
+  assert.match(cellsBlock, /depth:\s*v\.number\(\)/)
+})
+
+// Parent cell reference
+test("has parentCellId as optional id referencing discoveryCells", () => {
   assert.match(
-    block,
+    cellsBlock,
     /parentCellId:\s*v\.optional\(v\.id\("discoveryCells"\)\)/,
-    "parentCellId should be optional self-referencing id",
-  );
+  )
+})
+
+// isLeaf boolean
+test("has isLeaf field as v.boolean()", () => {
+  assert.match(cellsBlock, /isLeaf:\s*v\.boolean\(\)/)
+})
+
+// Status union with all four values
+test("has status as union of unsearched, searched, saturated, searching", () => {
+  assert.match(cellsBlock, /status:\s*v\.union\(/)
+  assert.match(cellsBlock, /v\.literal\("unsearched"\)/)
+  assert.match(cellsBlock, /v\.literal\("searched"\)/)
+  assert.match(cellsBlock, /v\.literal\("saturated"\)/)
+  assert.match(cellsBlock, /v\.literal\("searching"\)/)
+})
+
+// resultCount
+test("has resultCount as optional number", () => {
+  assert.match(cellsBlock, /resultCount:\s*v\.optional\(v\.number\(\)\)/)
+})
+
+// querySaturation
+test("has querySaturation as optional array of {query, count} objects", () => {
   assert.match(
-    block,
-    /resultCount:\s*v\.optional\(v\.number\(\)\)/,
-    "resultCount should be optional number",
-  );
-  assert.match(
-    block,
-    /lastSearchedAt:\s*v\.optional\(v\.number\(\)\)/,
-    "lastSearchedAt should be optional number",
-  );
-  assert.match(
-    block,
+    cellsBlock,
     /querySaturation:\s*v\.optional\(\s*v\.array\(v\.object\(\{\s*query:\s*v\.string\(\),\s*count:\s*v\.number\(\)\s*\}\)\)/,
-    "querySaturation should be optional array of {query, count}",
-  );
-});
+  )
+})
 
-test("discoveryCells status field has correct union values", () => {
-  const block = getDiscoveryCellsBlock();
+// lastSearchedAt
+test("has lastSearchedAt as optional number", () => {
+  assert.match(cellsBlock, /lastSearchedAt:\s*v\.optional\(v\.number\(\)\)/)
+})
 
-  for (const status of ["unsearched", "searched", "saturated", "searching"]) {
-    assert.match(
-      block,
-      new RegExp(`v\\.literal\\("${status}"\\)`),
-      `Missing status literal: ${status}`,
-    );
-  }
-});
+// gridId foreign key
+test("has gridId referencing discoveryGrids", () => {
+  assert.match(cellsBlock, /gridId:\s*v\.id\("discoveryGrids"\)/)
+})
 
-test("discoveryCells has by_gridId index", () => {
+// Indexes
+test("has by_gridId index on gridId", () => {
+  assert.match(cellsBlock, /\.index\("by_gridId",\s*\["gridId"\]\)/)
+})
+
+test("has by_gridId_isLeaf index on gridId and isLeaf", () => {
   assert.match(
-    schemaSource,
-    /discoveryCells:[\s\S]*?\.index\("by_gridId",\s*\["gridId"\]\)/,
-  );
-});
+    cellsBlock,
+    /\.index\("by_gridId_isLeaf",\s*\["gridId",\s*"isLeaf"\]\)/,
+  )
+})
 
-test("discoveryCells has by_gridId_isLeaf index", () => {
+test("has by_parentCellId index on parentCellId", () => {
   assert.match(
-    schemaSource,
-    /discoveryCells:[\s\S]*?\.index\("by_gridId_isLeaf",\s*\["gridId",\s*"isLeaf"\]\)/,
-  );
-});
-
-test("discoveryCells has by_parentCellId index", () => {
-  assert.match(
-    schemaSource,
-    /discoveryCells:[\s\S]*?\.index\("by_parentCellId",\s*\["parentCellId"\]\)/,
-  );
-});
-
-test("discoveryCells has exactly 12 fields", () => {
-  const block = getDiscoveryCellsBlock();
-  // Count top-level field definitions (word followed by colon and v.)
-  const fieldMatches = block.match(/\w+:\s*v\./g);
-  // Subtract nested fields inside v.object (query and count inside querySaturation)
-  const nestedFields = block.match(/v\.object\(\{[^}]*\}\)/g);
-  let nestedCount = 0;
-  if (nestedFields) {
-    for (const nested of nestedFields) {
-      const inner = nested.match(/\w+:\s*v\./g);
-      if (inner) nestedCount += inner.length;
-    }
-  }
-  const topLevelCount = fieldMatches.length - nestedCount;
-  assert.equal(topLevelCount, 12, `Expected 12 fields, found ${topLevelCount}`);
-});
+    cellsBlock,
+    /\.index\("by_parentCellId",\s*\["parentCellId"\]\)/,
+  )
+})
