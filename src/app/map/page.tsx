@@ -15,6 +15,7 @@ import {
   filterLeads,
 } from "@/components/map/map-filters"
 import type { MapFiltersValue } from "@/components/map/map-filters"
+import { DiscoveryPanel } from "@/components/map/discovery-panel"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -163,11 +164,15 @@ export default function MapPage() {
           onBoundsChange={handleBoundsChange}
         />
         </div>
-        <MapFilters
-          value={filters}
-          onChange={setFilters}
-          clusters={clusterOptions}
-        />
+        {viewMode === "clusters" ? (
+          <MapFilters
+            value={filters}
+            onChange={setFilters}
+            clusters={clusterOptions}
+          />
+        ) : (
+          <DiscoveryPanel mapBounds={mapBounds} />
+        )}
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           <Button
             size="sm"

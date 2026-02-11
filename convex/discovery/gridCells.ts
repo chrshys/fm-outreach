@@ -164,6 +164,7 @@ export const listGrids = query({
           name: grid.name,
           region: grid.region,
           province: grid.province,
+          queries: grid.queries,
           cellSizeKm: grid.cellSizeKm,
           totalLeadsFound: grid.totalLeadsFound,
           createdAt: grid.createdAt,
