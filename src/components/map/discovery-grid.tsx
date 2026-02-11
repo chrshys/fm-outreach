@@ -101,12 +101,12 @@ function CellTooltipContent({
           const disabled = !mechanism.enabled || isSearching
 
           return (
-            <div key={mechanism.id} className="flex items-center justify-between gap-2">
+            <div key={mechanism.id} className={`flex items-center justify-between gap-2${!mechanism.enabled ? " opacity-50" : ""}`}>
               <span>{mechanism.label}</span>
               <div className="flex items-center gap-1.5">
                 <span className="text-muted-foreground">{lastRun}</span>
                 <button
-                  className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors ${disabled ? "opacity-50 pointer-events-none" : ""}`}
+                  className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors ${disabled ? "pointer-events-none" : ""}${isSearching && mechanism.enabled ? " opacity-50" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation()
                     onCellAction(cell._id, { type: "search", mechanism: mechanism.id })

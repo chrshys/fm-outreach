@@ -100,7 +100,11 @@ test("mechanism Run button calls onCellAction with search action", () => {
 
 test("Run button is disabled when mechanism not enabled or cell is searching", () => {
   assert.match(source, /!mechanism\.enabled\s*\|\|\s*isSearching/)
-  assert.match(source, /opacity-50 pointer-events-none/)
+  assert.match(source, /pointer-events-none/)
+})
+
+test("disabled mechanism row gets opacity-50 on row container", () => {
+  assert.match(source, /!mechanism\.enabled\s*\?\s*"\s*opacity-50"/)
 })
 
 test("exports DiscoveryGrid as default export", () => {

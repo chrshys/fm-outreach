@@ -104,8 +104,16 @@ test("Run button is disabled when mechanism not enabled or cell is searching", (
   assert.match(source, /!mechanism\.enabled\s*\|\|\s*isSearching/)
 })
 
-test("disabled Run button has opacity-50 and pointer-events-none", () => {
-  assert.match(source, /opacity-50 pointer-events-none/)
+test("disabled Run button has pointer-events-none", () => {
+  assert.match(source, /pointer-events-none/)
+})
+
+test("disabled mechanism row gets opacity-50 on the row container", () => {
+  assert.match(source, /!mechanism\.enabled\s*\?\s*"\s*opacity-50"/)
+})
+
+test("searching-but-enabled button gets opacity-50", () => {
+  assert.match(source, /isSearching\s*&&\s*mechanism\.enabled\s*\?\s*"\s*opacity-50"/)
 })
 
 // ============================================================
