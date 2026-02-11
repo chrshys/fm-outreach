@@ -170,11 +170,6 @@ export const undivideCell = mutation({
         .collect();
 
       for (const child of children) {
-        if (child.status === "searching") {
-          throw new ConvexError(
-            "Cannot undivide while a child cell is being searched",
-          );
-        }
         toDelete.push(child._id);
         queue.push(child._id);
       }
