@@ -59,7 +59,7 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {clusters.map((cluster, index) => {
+      {clusters.filter((c) => c.boundary).map((cluster, index) => {
         const color = getClusterColor(index)
         const positions: [number, number][] = cluster.boundary.map((p) => [p.lat, p.lng])
         return (

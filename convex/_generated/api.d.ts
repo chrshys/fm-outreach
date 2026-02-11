@@ -35,7 +35,6 @@ import type * as lib_activeCampaigns from "../lib/activeCampaigns.js";
 import type * as lib_activitiesList from "../lib/activitiesList.js";
 import type * as lib_clusterBreakdown from "../lib/clusterBreakdown.js";
 import type * as lib_csvParser from "../lib/csvParser.js";
-import type * as lib_dbscan from "../lib/dbscan.js";
 import type * as lib_emailStats from "../lib/emailStats.js";
 import type * as lib_followUpsDue from "../lib/followUpsDue.js";
 import type * as lib_getSettings from "../lib/getSettings.js";
@@ -93,7 +92,6 @@ declare const fullApi: ApiFromModules<{
   "lib/activitiesList": typeof lib_activitiesList;
   "lib/clusterBreakdown": typeof lib_clusterBreakdown;
   "lib/csvParser": typeof lib_csvParser;
-  "lib/dbscan": typeof lib_dbscan;
   "lib/emailStats": typeof lib_emailStats;
   "lib/followUpsDue": typeof lib_followUpsDue;
   "lib/getSettings": typeof lib_getSettings;

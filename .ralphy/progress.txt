@@ -624,3 +624,9 @@ Foundation work is complete. See `docs/26-02-05-fruitland-market-ui-tasklist.md`
 - [✓] 2026-02-10 19:40 - Add reply indicators to campaign detail — leads with replies highlighted, with "View Reply" link that opens the activity timeline showing the reply activity.
 - [✓] 2026-02-10 19:46 - Creating a campaign with selected leads and templates creates a draft record
 - [✓] 2026-02-10 19:52 - Batch email generation produces personalized emails for all campaign leads
+- [✓] 2026-02-11 02:57 - Clusters page lists the new polygon cluster with correct lead count
+- [✓] 2026-02-11 03:01 - Cluster detail map renders the polygon boundary (not a circle)
+- [✓] 2026-02-11 03:04 - Deleting a cluster removes it from the list and unassigns its leads
+- [✓] 2026-02-11 03:07 - No "Auto-generate Clusters" button exists anywhere
+- [✓] 2026-02-11 03:07 - `pnpm typecheck` passes
+- [✓] 2026-02-11 03:08 - `pnpm lint` passes
