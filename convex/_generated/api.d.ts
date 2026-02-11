@@ -41,6 +41,7 @@ import type * as lib_followUpsDue from "../lib/followUpsDue.js";
 import type * as lib_getSettings from "../lib/getSettings.js";
 import type * as lib_leadsList from "../lib/leadsList.js";
 import type * as lib_pipelineStats from "../lib/pipelineStats.js";
+import type * as lib_pointInPolygon from "../lib/pointInPolygon.js";
 import type * as lib_searchLeads from "../lib/searchLeads.js";
 import type * as lib_socialStats from "../lib/socialStats.js";
 import type * as seedHelpers from "../seedHelpers.js";
@@ -98,6 +99,7 @@ declare const fullApi: ApiFromModules<{
   "lib/getSettings": typeof lib_getSettings;
   "lib/leadsList": typeof lib_leadsList;
   "lib/pipelineStats": typeof lib_pipelineStats;
+  "lib/pointInPolygon": typeof lib_pointInPolygon;
   "lib/searchLeads": typeof lib_searchLeads;
   "lib/socialStats": typeof lib_socialStats;
   seedHelpers: typeof seedHelpers;

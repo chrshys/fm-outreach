@@ -4,48 +4,27 @@ import fs from "node:fs"
 
 const source = fs.readFileSync("src/app/clusters/page.tsx", "utf8")
 
-test("imports useAction from convex/react", () => {
-  assert.match(source, /import\s+\{.*useAction.*\}\s+from\s+"convex\/react"/)
+test("clusters page does not reference autoGenerate action", () => {
+  assert.ok(
+    !source.includes("autoGenerate"),
+    "autoGenerate should be removed from clusters page",
+  )
 })
 
-test("calls useAction with api.clusters.autoGenerate", () => {
-  assert.match(source, /useAction\(api\.clusters\.autoGenerate\)/)
+test("clusters page does not import useAction", () => {
+  assert.ok(
+    !source.includes("useAction"),
+    "useAction should be removed since autoGenerate is gone",
+  )
 })
 
-test("tracks isGenerating loading state", () => {
-  assert.match(source, /useState\(false\)/)
-  assert.match(source, /isGenerating/)
-  assert.match(source, /setIsGenerating/)
+test("clusters page uses useQuery for cluster list", () => {
+  assert.match(source, /useQuery\(api\.clusters\.list\)/)
 })
 
-test("button is disabled while generating", () => {
-  assert.match(source, /disabled=\{isGenerating\}/)
-})
-
-test("button shows loading spinner when generating", () => {
-  assert.match(source, /Loader2/)
-  assert.match(source, /animate-spin/)
-  assert.match(source, /Generating\.\.\./)
-})
-
-test("handleAutoGenerate calls autoGenerate action and shows result", () => {
-  assert.match(source, /async function handleAutoGenerate/)
-  assert.match(source, /await autoGenerate\(\)/)
-  assert.match(source, /result\.clustersCreated/)
-  assert.match(source, /result\.leadsAssigned/)
-})
-
-test("shows result message after generation", () => {
-  assert.match(source, /generateResult/)
-  assert.match(source, /setGenerateResult/)
-  assert.match(source, /Created.*clusters.*assigned.*leads/)
-})
-
-test("handles errors during generation", () => {
-  assert.match(source, /Failed to generate clusters/)
-})
-
-test("clears selected cluster before generating", () => {
-  // The handler should clear selection since clusters will be regenerated
-  assert.match(source, /setSelectedClusterId\(null\)/)
+test("clusters page does not render auto-generate button", () => {
+  assert.ok(
+    !source.includes("Auto-generate Clusters"),
+    "Auto-generate button should be removed",
+  )
 })

@@ -1,15 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { useAction, useQuery } from "convex/react"
-import { Loader2, MapPin, Sparkles, Users } from "lucide-react"
+import { useQuery } from "convex/react"
+import { MapPin, Users } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 
 import { AppLayout } from "@/components/layout/app-layout"
 import { ClusterDetail } from "@/components/clusters/cluster-detail"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -30,27 +29,9 @@ type Cluster = {
 }
 
 export default function ClustersPage() {
+  // @ts-expect-error Type instantiation too deep with nested boundary validator
   const clusters = useQuery(api.clusters.list) as Cluster[] | undefined
-  const autoGenerate = useAction(api.clusters.autoGenerate)
   const [selectedClusterId, setSelectedClusterId] = useState<Id<"clusters"> | null>(null)
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generateResult, setGenerateResult] = useState<string | null>(null)
-
-  async function handleAutoGenerate() {
-    setIsGenerating(true)
-    setGenerateResult(null)
-    setSelectedClusterId(null)
-    try {
-      const result = await autoGenerate()
-      setGenerateResult(
-        `Created ${result.clustersCreated} clusters, assigned ${result.leadsAssigned} leads`
-      )
-    } catch {
-      setGenerateResult("Failed to generate clusters")
-    } finally {
-      setIsGenerating(false)
-    }
-  }
 
   return (
     <AppLayout>
@@ -61,19 +42,6 @@ export default function ClustersPage() {
             <p className="text-muted-foreground text-sm">
               Group leads by geographic proximity for targeted outreach.
             </p>
-          </div>
-          <div className="flex items-center gap-3">
-            {generateResult && (
-              <p className="text-sm text-muted-foreground">{generateResult}</p>
-            )}
-            <Button onClick={handleAutoGenerate} disabled={isGenerating}>
-              {isGenerating ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Sparkles className="size-4" />
-              )}
-              {isGenerating ? "Generating..." : "Auto-generate Clusters"}
-            </Button>
           </div>
         </div>
 
@@ -88,7 +56,7 @@ export default function ClustersPage() {
               <Card>
                 <CardContent className="p-4 pt-0">
                   <p className="text-muted-foreground text-sm py-8 text-center">
-                    No clusters yet. Use &quot;Auto-generate Clusters&quot; to create clusters from your leads.
+                    No clusters yet. Draw a polygon on the map to create a cluster from your leads.
                   </p>
                 </CardContent>
               </Card>
