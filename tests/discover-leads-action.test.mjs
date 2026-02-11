@@ -20,30 +20,13 @@ test("action builds search query with region and province", () => {
   assert.match(source, /args\.province\s*\?\?\s*"Ontario"/);
 });
 
-test("action calls Google Places Text Search API", () => {
-  assert.match(
-    source,
-    /https:\/\/maps\.googleapis\.com\/maps\/api\/place\/textsearch\/json/,
-  );
-  assert.match(source, /encodeURIComponent\(query\)/);
+test("action imports searchPlaces from placeHelpers", () => {
+  assert.match(source, /import\s*\{[^}]*searchPlaces[^}]*\}\s*from\s*"\.\/placeHelpers"/);
 });
 
-test("action supports pagination with next_page_token", () => {
-  assert.match(source, /next_page_token/);
+test("action supports pagination via searchPlaces with page tokens", () => {
   assert.match(source, /nextPageToken/);
-  assert.match(source, /pagetoken/);
   assert.match(source, /pagesLeft/);
-});
-
-test("action handles ZERO_RESULTS status", () => {
-  assert.match(source, /ZERO_RESULTS/);
-  assert.match(source, /results:\s*\[\]/);
-});
-
-test("action handles API errors by throwing descriptive errors", () => {
-  assert.match(source, /Places Text Search failed:/);
-  assert.match(source, /Places Text Search error:/);
-  assert.match(source, /error_message/);
 });
 
 test("insertDiscoveredLeads internal mutation exists for deduplication and insertion", () => {
@@ -53,6 +36,27 @@ test("insertDiscoveredLeads internal mutation exists for deduplication and inser
 test("deduplication uses by_placeId index and in-batch Set", () => {
   assert.match(source, /withIndex\("by_placeId"/);
   assert.match(source, /seenPlaceIds/);
+});
+
+test("deduplication uses by_name index with city filter for name+city dedup", () => {
+  assert.match(source, /withIndex\("by_name"/);
+  assert.match(source, /q\.eq\(q\.field\("city"\),\s*lead\.city\)/);
+  assert.match(source, /seenNameCity/);
+});
+
+test("deduplication imports normalizeDedupName and normalizeDedupValue from placeHelpers", () => {
+  assert.match(source, /import\s*\{[^}]*normalizeDedupName[^}]*\}\s*from\s*"\.\/placeHelpers"/);
+  assert.match(source, /import\s*\{[^}]*normalizeDedupValue[^}]*\}\s*from\s*"\.\/placeHelpers"/);
+});
+
+test("in-batch dedup uses normalized name+city keys", () => {
+  assert.match(source, /normalizeDedupName\(lead\.name\)/);
+  assert.match(source, /normalizeDedupValue\(lead\.city\)/);
+  assert.match(source, /nameCityKey/);
+});
+
+test("placeId check is guarded by truthiness check", () => {
+  assert.match(source, /if\s*\(lead\.placeId\)/);
 });
 
 test("leads are created with google_places source", () => {
@@ -72,17 +76,9 @@ test("action returns DiscoverLeadsResult with newLeads and duplicatesSkipped", (
   assert.match(source, /duplicatesSkipped:\s*number/);
 });
 
-test("inferLeadType categorizes leads based on name keywords and place types", () => {
-  assert.match(source, /function\s+inferLeadType\(/);
-  assert.match(source, /farmers_market/);
-  assert.match(source, /roadside_stand/);
-  assert.match(source, /retail_store/);
-  assert.match(source, /"farm"/);
-});
-
-test("extractCity parses city from Google Places formatted address", () => {
-  assert.match(source, /function\s+extractCity\(/);
-  assert.match(source, /formattedAddress.*split.*,/);
+test("action imports inferLeadType and extractCity from placeHelpers", () => {
+  assert.match(source, /import\s*\{[^}]*inferLeadType[^}]*\}\s*from\s*"\.\/placeHelpers"/);
+  assert.match(source, /import\s*\{[^}]*extractCity[^}]*\}\s*from\s*"\.\/placeHelpers"/);
 });
 
 test("empty results still go through insertDiscoveredLeads", () => {
@@ -92,4 +88,9 @@ test("empty results still go through insertDiscoveredLeads", () => {
 test("new leads are created with status new_lead and followUpCount 0", () => {
   assert.match(source, /status:\s*"new_lead"/);
   assert.match(source, /followUpCount:\s*0/);
+});
+
+test("no full table scan - does not use .collect() on leads table", () => {
+  // Ensure we're not doing ctx.db.query("leads").collect()
+  assert.doesNotMatch(source, /\.query\("leads"\)\.collect\(\)/);
 });

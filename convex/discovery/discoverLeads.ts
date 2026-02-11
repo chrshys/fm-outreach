@@ -7,6 +7,8 @@ import {
   type DiscoveredLead,
   extractCity,
   inferLeadType,
+  normalizeDedupName,
+  normalizeDedupValue,
   searchPlaces,
   discoveredLeadValidator,
 } from "./placeHelpers";
@@ -22,31 +24,52 @@ export const insertDiscoveredLeads = internalMutation({
   },
   handler: async (ctx, args) => {
     const seenPlaceIds = new Set<string>();
+    const seenNameCity = new Set<string>();
 
     let inserted = 0;
     let skipped = 0;
 
     for (const lead of args.leads) {
+      const nameCityKey = `${normalizeDedupName(lead.name)}::${normalizeDedupValue(lead.city)}`;
+
       // Skip if we already inserted a lead with this placeId in this batch
-      if (seenPlaceIds.has(lead.placeId)) {
+      if (seenPlaceIds.has(lead.placeId) || seenNameCity.has(nameCityKey)) {
         skipped += 1;
         continue;
       }
 
-      // Use the by_placeId index to check for existing leads
-      const existingByPlaceId = await ctx.db
+      // Check by placeId index
+      if (lead.placeId) {
+        const existingByPlaceId = await ctx.db
+          .query("leads")
+          .withIndex("by_placeId", (q) => q.eq("placeId", lead.placeId))
+          .first();
+
+        if (existingByPlaceId) {
+          skipped += 1;
+          seenPlaceIds.add(lead.placeId);
+          seenNameCity.add(nameCityKey);
+          continue;
+        }
+      }
+
+      // Check by name index + city filter (catches leads without placeId)
+      const existingByName = await ctx.db
         .query("leads")
-        .withIndex("by_placeId", (q) => q.eq("placeId", lead.placeId))
+        .withIndex("by_name", (q) => q.eq("name", lead.name))
+        .filter((q) => q.eq(q.field("city"), lead.city))
         .first();
 
-      if (existingByPlaceId) {
+      if (existingByName) {
         skipped += 1;
         seenPlaceIds.add(lead.placeId);
+        seenNameCity.add(nameCityKey);
         continue;
       }
 
       await ctx.db.insert("leads", lead);
       seenPlaceIds.add(lead.placeId);
+      seenNameCity.add(nameCityKey);
       inserted += 1;
     }
 
