@@ -6,6 +6,7 @@ import { useQuery } from "convex/react"
 import { useMutation } from "convex/react"
 import { Grid3X3, PenTool } from "lucide-react"
 
+import type { MapBounds } from "@/components/map/map-bounds-emitter"
 import { api } from "../../../convex/_generated/api"
 import { AppLayout } from "@/components/layout/app-layout"
 import {
@@ -46,6 +47,7 @@ export default function MapPage() {
   const createCluster = useMutation(api.clusters.createPolygonCluster)
   const [filters, setFilters] = useState<MapFiltersValue>(defaultMapFilters)
   const [viewMode, setViewMode] = useState<"clusters" | "discovery">("clusters")
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [drawnPolygon, setDrawnPolygon] = useState<
@@ -138,6 +140,10 @@ export default function MapPage() {
     setClusterName("")
   }, [drawnPolygon, clusterName, createCluster])
 
+  const handleBoundsChange = useCallback((bounds: MapBounds) => {
+    setMapBounds(bounds)
+  }, [])
+
   const handleCancelDialog = useCallback(() => {
     setShowNamingDialog(false)
     setDrawnPolygon(null)
@@ -154,6 +160,7 @@ export default function MapPage() {
           isDrawing={isDrawing}
           onPolygonDrawn={handlePolygonDrawn}
           pendingPolygon={pendingPolygon}
+          onBoundsChange={handleBoundsChange}
         />
         </div>
         <MapFilters
