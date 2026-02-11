@@ -73,7 +73,7 @@ test("Tooltip remains interactive", () => {
 test("CellTooltipContent is rendered inside Tooltip via hover wrapper div", () => {
   assert.match(source, /<CellTooltipContent\s+cell=\{cell\}\s+onCellAction=\{onCellAction\}\s*\/>/)
   // Wrapped in a div with onMouseEnter/onMouseLeave for delayed close
-  assert.match(source, /<div onMouseEnter=\{handleEnter\} onMouseLeave=\{scheduleClose\}>/)
+  assert.match(source, /<div ref=\{wrapperRef\} onMouseEnter=\{handleEnter\} onMouseLeave=\{scheduleClose\}>/)
 })
 
 // ============================================================

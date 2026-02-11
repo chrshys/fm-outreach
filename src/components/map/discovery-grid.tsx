@@ -1,7 +1,8 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Rectangle, Tooltip } from "react-leaflet"
+import L from "leaflet"
 import { Play, Grid2x2Plus, Minimize2 } from "lucide-react"
 import { getCellColor } from "./cell-colors"
 import type { CellStatus } from "./cell-colors"
@@ -164,6 +165,18 @@ function DiscoveryGridCell({
 }) {
   const [open, setOpen] = useState(false)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
+
+  /* Prevent click/dblclick/contextmenu from reaching the Leaflet map.
+     Leaflet's Popup calls disableClickPropagation but Tooltip does not,
+     so buttons inside tooltips would otherwise be swallowed by the map. */
+  useEffect(() => {
+    const el = wrapperRef.current?.closest<HTMLElement>(".leaflet-tooltip")
+    if (el) {
+      L.DomEvent.disableClickPropagation(el)
+      L.DomEvent.disableScrollPropagation(el)
+    }
+  })
 
   const cancelClose = useCallback(() => {
     if (closeTimer.current) {
@@ -208,7 +221,7 @@ function DiscoveryGridCell({
         direction="top"
         offset={[0, -10]}
       >
-        <div onMouseEnter={handleEnter} onMouseLeave={scheduleClose}>
+        <div ref={wrapperRef} onMouseEnter={handleEnter} onMouseLeave={scheduleClose}>
           <CellTooltipContent cell={cell} onCellAction={onCellAction} />
         </div>
       </Tooltip>
