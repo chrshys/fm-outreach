@@ -188,8 +188,8 @@ export function ClusterDetail({ clusterId }: { clusterId: Id<"clusters"> }) {
               centerLng={cluster.centerLng}
               leads={
                 leads
-                  ?.filter((l) => l.latitude !== undefined && l.longitude !== undefined)
-                  .map((l) => ({
+                  ?.filter((l: { latitude?: number; longitude?: number }) => l.latitude !== undefined && l.longitude !== undefined)
+                  .map((l: { _id: string; latitude?: number; longitude?: number; status: string }) => ({
                     _id: l._id,
                     latitude: l.latitude as number,
                     longitude: l.longitude as number,
@@ -217,7 +217,7 @@ export function ClusterDetail({ clusterId }: { clusterId: Id<"clusters"> }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {leads.map((lead) => (
+              {leads.map((lead: { _id: string; name: string; status: string; contactEmail?: string }) => (
                 <TableRow key={lead._id}>
                   <TableCell className="font-medium">
                     <Link

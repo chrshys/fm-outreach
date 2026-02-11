@@ -15,6 +15,7 @@ import type * as campaigns_pushToSmartlead from "../campaigns/pushToSmartlead.js
 import type * as clusters from "../clusters.js";
 import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
+import type * as discovery_discoverCell from "../discovery/discoverCell.js";
 import type * as discovery_discoverLeads from "../discovery/discoverLeads.js";
 import type * as discovery_gridCells from "../discovery/gridCells.js";
 import type * as discovery_placeHelpers from "../discovery/placeHelpers.js";
@@ -74,6 +75,7 @@ declare const fullApi: ApiFromModules<{
   clusters: typeof clusters;
   crons: typeof crons;
   dashboard: typeof dashboard;
+  "discovery/discoverCell": typeof discovery_discoverCell;
   "discovery/discoverLeads": typeof discovery_discoverLeads;
   "discovery/gridCells": typeof discovery_gridCells;
   "discovery/placeHelpers": typeof discovery_placeHelpers;

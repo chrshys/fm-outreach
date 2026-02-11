@@ -57,22 +57,43 @@ export default function MapPage() {
   } | null>(null)
 
   const clusterOptions = useMemo(
-    () => (clusters ?? []).map((c) => ({ id: c._id, name: c.name })),
+    () => (clusters ?? []).map((c: { _id: string; name: string }) => ({ id: c._id, name: c.name })),
     [clusters],
   )
 
+  type LeadMarker = {
+    _id: string
+    name: string
+    type: string
+    city: string
+    status: string
+    contactEmail?: string
+    latitude: number
+    longitude: number
+    clusterId?: string
+  }
+
   const filteredLeads = useMemo(
-    () => filterLeads(leads ?? [], filters),
+    () => filterLeads<LeadMarker>((leads ?? []) as LeadMarker[], filters),
     [leads, filters],
   )
 
+  type ClusterDoc = {
+    _id: string
+    name: string
+    boundary: Array<{ lat: number; lng: number }>
+    centerLat: number
+    centerLng: number
+    radiusKm: number
+  }
+
   const filteredClusters = useMemo(() => {
-    const all = clusters ?? []
+    const all = (clusters ?? []) as ClusterDoc[]
     const selected =
       filters.clusterId !== "all"
-        ? all.filter((c) => c._id === filters.clusterId)
+        ? all.filter((c: ClusterDoc) => c._id === filters.clusterId)
         : all
-    return selected.map((c) => ({
+    return selected.map((c: ClusterDoc) => ({
       _id: c._id,
       name: c.name,
       boundary: c.boundary,
@@ -85,14 +106,14 @@ export default function MapPage() {
   const pendingPolygon = useMemo(() => {
     if (!pendingCluster) return null
     const alreadyInQuery = (clusters ?? []).some(
-      (c) => c._id === pendingCluster.clusterId,
+      (c: { _id: string }) => c._id === pendingCluster.clusterId,
     )
     return alreadyInQuery ? null : pendingCluster.boundary
   }, [pendingCluster, clusters])
 
   const previewLeadCount = useMemo(() => {
     if (!drawnPolygon || !leads) return 0
-    return leads.filter((lead) =>
+    return leads.filter((lead: { latitude: number; longitude: number }) =>
       pointInPolygon({ lat: lead.latitude, lng: lead.longitude }, drawnPolygon),
     ).length
   }, [drawnPolygon, leads])

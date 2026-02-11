@@ -2,7 +2,7 @@ import { v } from "convex/values";
 
 import { api, internal } from "../_generated/api";
 import { action, internalMutation } from "../_generated/server";
-import type { Id } from "../_generated/dataModel";
+import type { Doc, Id } from "../_generated/dataModel";
 import {
   createCampaign,
   updateCampaignSequence,
@@ -75,6 +75,7 @@ export const pushToSmartlead = action({
   },
   handler: async (ctx, args): Promise<PushToSmartleadResult> => {
     // 1. Load campaign
+    // @ts-expect-error TS2589 nondeterministic deep type instantiation in generated Convex API types
     const campaign = await ctx.runQuery(api.campaigns.get, {
       campaignId: args.campaignId,
     });
@@ -103,21 +104,21 @@ export const pushToSmartlead = action({
 
     // 3. Load templates for sequence ordering
     const templates = await Promise.all(
-      campaign.templateIds.map((id) =>
+      campaign.templateIds.map((id: Id<"emailTemplates">) =>
         ctx.runQuery(api.emailTemplates.get, { id }),
       ),
     );
     const templateMap = new Map(
-      templates.filter(Boolean).map((t) => [t!._id, t!]),
+      templates.filter((t): t is Doc<"emailTemplates"> => t !== null).map((t) => [t._id, t]),
     );
 
     // 4. Load leads for the approved emails
-    const leadIds = [...new Set(approvedEmails.map((e) => e.leadId))];
+    const leadIds = [...new Set(approvedEmails.map((e: Doc<"generatedEmails">) => e.leadId))];
     const leads = await Promise.all(
-      leadIds.map((id) => ctx.runQuery(api.leads.get, { leadId: id })),
+      leadIds.map((id: Id<"leads">) => ctx.runQuery(api.leads.get, { leadId: id })),
     );
     const leadMap = new Map(
-      leads.filter(Boolean).map((l) => [l!._id, l!]),
+      leads.filter((l): l is Doc<"leads"> => l !== null).map((l) => [l._id, l]),
     );
 
     // --- Step 1: Create campaign in Smartlead ---
@@ -127,6 +128,7 @@ export const pushToSmartlead = action({
 
     // Save smartleadCampaignId immediately so we can recover if later steps fail
     await ctx.runMutation(
+      // @ts-expect-error TS2589 nondeterministic deep type instantiation in generated Convex API types
       internal.campaigns.pushToSmartlead.setCampaignSmartleadId,
       {
         campaignId: args.campaignId,
@@ -171,7 +173,7 @@ export const pushToSmartlead = action({
       // For follow-ups: use template subject with placeholder
       const isInitial = template.sequenceType === "initial";
       const firstApproved = approvedEmails.find(
-        (e) => e.templateId === template._id,
+        (e: Doc<"generatedEmails">) => e.templateId === template._id,
       );
 
       sequences.push({

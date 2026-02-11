@@ -185,7 +185,7 @@ export function EmailTemplates() {
   }
 
   const deletingTemplate = deletingId
-    ? templates.find((t) => t._id === deletingId)
+    ? templates.find((t: { _id: string }) => t._id === deletingId)
     : null
 
   return (
@@ -212,7 +212,7 @@ export function EmailTemplates() {
             </p>
           ) : (
             <div className="space-y-3">
-              {templates.map((template) => (
+              {templates.map((template: { _id: Id<"emailTemplates">; name: string; sequenceType: SequenceType; subject: string; prompt: string; isDefault: boolean }) => (
                 <div
                   key={template._id}
                   className="flex items-center justify-between rounded-md border p-3"

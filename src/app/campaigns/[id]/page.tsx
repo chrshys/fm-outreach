@@ -175,8 +175,8 @@ export default function CampaignDetailPage({ params }: PageParams) {
     )
   }
 
-  const approvedCount = emails.filter((e) => e.status === "approved").length
-  const rejectedCount = emails.filter((e) => e.status === "rejected").length
+  const approvedCount = emails.filter((e: { status: string }) => e.status === "approved").length
+  const rejectedCount = emails.filter((e: { status: string }) => e.status === "rejected").length
   const allApproved =
     emails.length > 0 && approvedCount + rejectedCount === emails.length && approvedCount > 0
   const canPush = campaign.status === "draft" && !campaign.smartleadCampaignId && allApproved
@@ -342,7 +342,7 @@ export default function CampaignDetailPage({ params }: PageParams) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {leads.map((lead) => (
+                    {leads.map((lead: typeof leads[number]) => (
                       <TableRow
                         key={lead._id}
                         className={cn(

@@ -13,11 +13,20 @@ import {
 
 const GOOGLE_MAX_RESULTS = 60;
 
+type DiscoverCellResult = {
+  totalApiResults: number;
+  inBoundsResults: number;
+  newLeads: number;
+  duplicatesSkipped: number;
+  saturated: boolean;
+  querySaturation: { query: string; count: number }[];
+};
+
 export const discoverCell = internalAction({
   args: {
     cellId: v.id("discoveryCells"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<DiscoverCellResult> => {
     const apiKey = process.env.GOOGLE_PLACES_API_KEY;
     if (!apiKey) {
       throw new Error("Missing GOOGLE_PLACES_API_KEY environment variable");
@@ -40,8 +49,13 @@ export const discoverCell = internalAction({
       { cellId: args.cellId },
     );
 
-    const { swLat, swLng, neLat, neLng, depth } = cellData;
-    const { queries, region, province } = cellData.grid;
+    const { swLat, swLng, neLat, neLng, depth } = cellData as {
+      swLat: number; swLng: number; neLat: number; neLng: number; depth: number;
+      grid: { queries: string[]; region: string; province: string };
+    };
+    const { queries, region, province } = (cellData as {
+      grid: { queries: string[]; region: string; province: string };
+    }).grid;
 
     // Steps 3-11 wrapped in try/catch — reset on failure
     try {
@@ -81,7 +95,7 @@ export const discoverCell = internalAction({
       }
 
       // Step 7: Post-filter to cell bounds
-      const inBounds = deduplicated.filter((place) => {
+      const inBounds: PlaceTextResult[] = deduplicated.filter((place: PlaceTextResult) => {
         const lat = place.geometry?.location?.lat;
         const lng = place.geometry?.location?.lng;
         if (lat == null || lng == null) return false;
@@ -90,7 +104,7 @@ export const discoverCell = internalAction({
 
       // Step 8: Convert to lead objects
       const now = Date.now();
-      const leads: DiscoveredLead[] = inBounds.map((place) => ({
+      const leads: DiscoveredLead[] = inBounds.map((place: PlaceTextResult) => ({
         name: place.name,
         type: inferLeadType(place.name, place.types ?? []),
         address: place.formatted_address ?? "",
@@ -115,8 +129,8 @@ export const discoverCell = internalAction({
         { leads },
       );
 
-      const newLeads = insertResult.inserted;
-      const duplicatesSkipped = insertResult.skipped;
+      const newLeads: number = insertResult.inserted;
+      const duplicatesSkipped: number = insertResult.skipped;
 
       // Step 10: Determine saturation — only if ALL queries hit 60
       const saturated = querySaturation.length > 0 &&
