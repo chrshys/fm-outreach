@@ -38,7 +38,7 @@ export const discoverCell = internalAction({
       internal.discovery.gridCells.claimCellForSearch,
       {
         cellId: args.cellId,
-        expectedStatuses: ["unsearched", "searched"],
+        expectedStatuses: ["unsearched", "searched", "saturated"],
       },
     );
 
