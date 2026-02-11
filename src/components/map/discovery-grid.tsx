@@ -104,7 +104,7 @@ function CellTooltipContent({
               <div className="flex items-center gap-1.5">
                 <span className="text-muted-foreground">{lastRun}</span>
                 <button
-                  className={`p-0.5 rounded hover:bg-accent ${disabled ? "opacity-50 pointer-events-none" : ""}`}
+                  className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors ${disabled ? "opacity-50 pointer-events-none" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation()
                     onCellAction(cell._id, { type: "search", mechanism: mechanism.id })
@@ -123,7 +123,7 @@ function CellTooltipContent({
         <div className="flex items-center gap-2 border-t pt-2">
           {cell.depth < MAX_DEPTH && (
             <button
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-accent text-[10px]"
+              className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors"
               onClick={(e) => {
                 e.stopPropagation()
                 onCellAction(cell._id, { type: "subdivide" })
@@ -135,7 +135,7 @@ function CellTooltipContent({
           )}
           {cell.parentCellId && (
             <button
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-accent text-[10px]"
+              className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors"
               onClick={(e) => {
                 e.stopPropagation()
                 onCellAction(cell._id, { type: "undivide" })

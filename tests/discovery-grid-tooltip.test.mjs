@@ -109,6 +109,45 @@ test("disabled Run button has opacity-50 and pointer-events-none", () => {
 })
 
 // ============================================================
+// Compact button styling
+// ============================================================
+
+test("Run button uses compact control styling", () => {
+  assert.match(source, /inline-flex items-center gap-1 rounded-md border px-1\.5 py-0\.5 text-xs hover:bg-accent transition-colors/)
+})
+
+test("Split button uses compact control styling", () => {
+  // Find the Split button in the onCellAction call
+  const splitActionIdx = source.indexOf('onCellAction(cell._id, { type: "subdivide" })')
+  assert.ok(splitActionIdx > 0, "should find subdivide action call")
+  const beforeSplit = source.slice(0, splitActionIdx)
+  const lastClassName = beforeSplit.lastIndexOf("inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors")
+  assert.ok(lastClassName > 0, "Split button should have compact control styling")
+})
+
+test("Merge button uses compact control styling", () => {
+  // Find the Merge button in the onCellAction call
+  const mergeActionIdx = source.indexOf('onCellAction(cell._id, { type: "undivide" })')
+  assert.ok(mergeActionIdx > 0, "should find undivide action call")
+  const beforeMerge = source.slice(0, mergeActionIdx)
+  const lastClassName = beforeMerge.lastIndexOf("inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent transition-colors")
+  assert.ok(lastClassName > 0, "Merge button should have compact control styling")
+})
+
+test("all tooltip buttons have border class for visual outline", () => {
+  // Count occurrences of the compact button pattern - should be 3 (Run, Split, Merge)
+  const matches = source.match(/inline-flex items-center gap-1 rounded-md border px-1\.5 py-0\.5 text-xs hover:bg-accent transition-colors/g)
+  assert.ok(matches, "should find compact button styling")
+  assert.equal(matches.length, 3, "all three buttons (Run, Split, Merge) should have compact styling")
+})
+
+test("all tooltip buttons have transition-colors for hover effect", () => {
+  const matches = source.match(/transition-colors/g)
+  assert.ok(matches, "should find transition-colors")
+  assert.ok(matches.length >= 3, "at least 3 buttons should have transition-colors")
+})
+
+// ============================================================
 // Split and Merge buttons (bottom row)
 // ============================================================
 
