@@ -233,6 +233,10 @@ export default function LeadDetailPage() {
   const lead = useQuery(api.leads.get, {
     leadId,
   })
+  const cluster = useQuery(
+    api.clusters.get,
+    lead?.clusterId ? { clusterId: lead.clusterId } : "skip"
+  )
   const updateLead = useMutation(api.leads.update)
   const updateLeadStatus = useMutation(api.leads.updateStatus)
   const activitiesPage = useQuery(api.activities.listByLead, {
@@ -296,6 +300,11 @@ export default function LeadDetailPage() {
                   <Badge className="bg-amber-100 text-amber-800">Due Today</Badge>
                 ) : followUpStatus === "upcoming" ? (
                   <Badge className="bg-sky-100 text-sky-800">Due {formatFollowUpDate(lead.nextFollowUpAt!)}</Badge>
+                ) : null}
+                {cluster ? (
+                  <Link href="/clusters">
+                    <Badge variant="outline">{cluster.name}</Badge>
+                  </Link>
                 ) : null}
               </div>
               <p className="mt-2 text-sm text-muted-foreground">

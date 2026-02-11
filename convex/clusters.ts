@@ -20,6 +20,15 @@ export const list = query({
   },
 })
 
+export const get = query({
+  args: {
+    clusterId: v.id("clusters"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.clusterId)
+  },
+})
+
 export const getLeads = query({
   args: {
     clusterId: v.id("clusters"),
