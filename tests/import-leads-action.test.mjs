@@ -17,13 +17,8 @@ test("importLeads action uses csv parser and writes through internal mutation", 
   assert.match(source, /\{\s*leads\s*\}/);
 });
 
-test("insertImportedLeads deduplicates by normalized name and city", () => {
-  assert.match(source, /normalizeDedupValue\(value:\s*string\):\s*string/);
-  assert.match(source, /trim\(\)\.toLocaleLowerCase\(\)/);
-  assert.match(source, /normalizeDedupName\(value:\s*string\):\s*string/);
-  assert.match(source, /replace\(\/\\bfarmers\['’\]\/g,\s*"farmers"\)/);
-  assert.match(source, /replace\(\/\\bst\\\.\?\\b\/g,\s*"street"\)/);
-  assert.match(source, /dedupKeyForLead\(lead:\s*\{\s*name:\s*string;\s*city:\s*string\s*\}\)/);
+test("insertImportedLeads imports dedupKeyForLead from placeHelpers and deduplicates", () => {
+  assert.match(source, /import\s*\{[^}]*dedupKeyForLead[^}]*\}\s*from\s*["']\.\.\/discovery\/placeHelpers["']/);
   assert.match(source, /query\("leads"\)\.collect\(\)/);
   assert.match(source, /if\s*\(seenLeadKeys\.has\(dedupKey\)\)\s*\{/);
 });

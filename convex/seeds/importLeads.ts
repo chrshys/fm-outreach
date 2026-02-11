@@ -4,6 +4,7 @@ import { action, internalMutation } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { parseCsv } from "../lib/csvParser";
 import { buildImportedLead } from "./importLeadsMapper";
+import { dedupKeyForLead } from "../discovery/placeHelpers";
 
 const importedLeadValidator = v.object({
   name: v.string(),
@@ -28,20 +29,6 @@ const importedLeadValidator = v.object({
     }),
   ),
 });
-
-function normalizeDedupValue(value: string): string {
-  return value.trim().toLocaleLowerCase();
-}
-
-function normalizeDedupName(value: string): string {
-  return normalizeDedupValue(value)
-    .replace(/\bfarmers['’]/g, "farmers")
-    .replace(/\bst\.?\b/g, "street");
-}
-
-function dedupKeyForLead(lead: { name: string; city: string }): string {
-  return `${normalizeDedupName(lead.name)}::${normalizeDedupValue(lead.city)}`;
-}
 
 export const insertImportedLeads = internalMutation({
   args: {
