@@ -100,7 +100,6 @@ async function main(): Promise<void> {
 
   if (filter.type === "cluster") {
     // Look up cluster by name
-    // @ts-expect-error — deep type instantiation in generated Convex API types
     const clusters: Array<{ _id: string; name: string; leadCount: number }> = await convex.query(api.clusters.list, {});
     const match = clusters.find(
       (c) => c.name.toLowerCase() === filter.name.toLowerCase(),

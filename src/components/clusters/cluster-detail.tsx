@@ -125,7 +125,6 @@ type ClusterRow = {
 }
 
 export function ClusterDetail({ clusterId }: { clusterId: Id<"clusters"> }) {
-  // @ts-expect-error Convex type instantiation too deep with nested boundary validator
   const clusters = useQuery(api.clusters.list) as ClusterRow[] | undefined
   const leads = useQuery(api.clusters.getLeads, { clusterId })
   const updateName = useMutation(api.clusters.updateName)

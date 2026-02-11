@@ -30,7 +30,6 @@ type Cluster = {
 }
 
 export default function ClustersPage() {
-  // @ts-expect-error Type instantiation too deep with nested boundary validator
   const clusters = useQuery(api.clusters.list) as Cluster[] | undefined
   const [selectedClusterId, setSelectedClusterId] = useState<Id<"clusters"> | null>(null)
   const deleteCluster = useMutation(api.clusters.deleteCluster)
