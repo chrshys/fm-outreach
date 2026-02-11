@@ -128,19 +128,28 @@ async function undivideCell(ctx, args) {
     throw new ConvexError("Cell not found");
   }
 
-  const parentCellId = cell.parentCellId;
-  if (!parentCellId) {
-    throw new ConvexError("Cell has no parent to undivide");
+  let targetCellId;
+
+  if (cell.parentCellId) {
+    const parentCell = await ctx.db.get(cell.parentCellId);
+    if (!parentCell) {
+      throw new ConvexError("Parent cell not found");
+    }
+    targetCellId = cell.parentCellId;
+  } else {
+    const children = await ctx.db
+      .query("discoveryCells")
+      .withIndex("by_parentCellId", (q) => q.eq("parentCellId", args.cellId))
+      .collect();
+    if (children.length === 0) {
+      throw new ConvexError("Cell has no children to undivide");
+    }
+    targetCellId = args.cellId;
   }
 
-  const parentCell = await ctx.db.get(parentCellId);
-  if (!parentCell) {
-    throw new ConvexError("Parent cell not found");
-  }
-
-  // BFS-walk all descendants of the parent
+  // BFS-walk all descendants of the target
   const toDelete = [];
-  const queue = [parentCellId];
+  const queue = [targetCellId];
 
   while (queue.length > 0) {
     const currentId = queue.shift();
@@ -159,7 +168,7 @@ async function undivideCell(ctx, args) {
     await ctx.db.delete(id);
   }
 
-  await ctx.db.patch(parentCellId, { isLeaf: true });
+  await ctx.db.patch(targetCellId, { isLeaf: true });
 
   return { deletedCount: toDelete.length };
 }
@@ -388,17 +397,68 @@ test("undivide at root level after 2-level subdivide: removes all descendants", 
 });
 
 // ============================================================
-// Guard: undividing a root cell throws
+// Guard: undividing a leaf root cell (no children) throws
 // ============================================================
 
-test("undivide on root cell throws 'Cell has no parent to undivide'", async () => {
+test("undivide on leaf root cell throws 'Cell has no children to undivide'", async () => {
   const db = createMockDb();
   const { cellId } = await seedCell(db);
 
   await assert.rejects(
     () => undivideCell({ db }, { cellId }),
-    { message: "Cell has no parent to undivide" },
+    { message: "Cell has no children to undivide" },
   );
+});
+
+// ============================================================
+// Undividing a subdivided root cell directly
+// ============================================================
+
+test("undivide on subdivided root cell: deletes children and restores leaf", async () => {
+  const db = createMockDb();
+  const { cellId } = await seedCell(db);
+
+  const { childIds } = await subdivideCell({ db }, { cellId });
+  const result = await undivideCell({ db }, { cellId });
+
+  assert.equal(result.deletedCount, 4);
+
+  for (const id of childIds) {
+    const child = await db.get(id);
+    assert.equal(child, null, `Child ${id} must be deleted`);
+  }
+
+  const cell = await db.get(cellId);
+  assert.equal(cell.isLeaf, true);
+});
+
+test("undivide on subdivided root cell: listCells shows single leaf again", async () => {
+  const db = createMockDb();
+  const { gridId, cellId } = await seedCell(db);
+
+  await subdivideCell({ db }, { cellId });
+  await undivideCell({ db }, { cellId });
+
+  const cells = await listCells({ db }, { gridId });
+  assert.equal(cells.length, 1);
+  assert.equal(cells[0]._id, cellId);
+});
+
+test("undivide on root cell with grandchildren: deletes all descendants", async () => {
+  const db = createMockDb();
+  const { gridId, cellId } = await seedCell(db);
+
+  const { childIds } = await subdivideCell({ db }, { cellId });
+  await subdivideCell({ db }, { cellId: childIds[0] });
+
+  const result = await undivideCell({ db }, { cellId });
+
+  // 4 children + 4 grandchildren = 8
+  assert.equal(result.deletedCount, 8);
+
+  const cells = await listCells({ db }, { gridId });
+  assert.equal(cells.length, 1);
+  assert.equal(cells[0]._id, cellId);
 });
 
 // ============================================================

@@ -72,19 +72,28 @@ async function undivideCell(ctx, args) {
     throw new ConvexError("Cell not found");
   }
 
-  const parentCellId = cell.parentCellId;
-  if (!parentCellId) {
-    throw new ConvexError("Cell has no parent to undivide");
+  let targetCellId;
+
+  if (cell.parentCellId) {
+    const parentCell = await ctx.db.get(cell.parentCellId);
+    if (!parentCell) {
+      throw new ConvexError("Parent cell not found");
+    }
+    targetCellId = cell.parentCellId;
+  } else {
+    const children = await ctx.db
+      .query("discoveryCells")
+      .withIndex("by_parentCellId", (q) => q.eq("parentCellId", args.cellId))
+      .collect();
+    if (children.length === 0) {
+      throw new ConvexError("Cell has no children to undivide");
+    }
+    targetCellId = args.cellId;
   }
 
-  const parentCell = await ctx.db.get(parentCellId);
-  if (!parentCell) {
-    throw new ConvexError("Parent cell not found");
-  }
-
-  // BFS-walk all descendants of the parent
+  // BFS-walk all descendants of the target
   const toDelete = [];
-  const queue = [parentCellId];
+  const queue = [targetCellId];
 
   while (queue.length > 0) {
     const currentId = queue.shift();
@@ -103,7 +112,7 @@ async function undivideCell(ctx, args) {
     await ctx.db.delete(id);
   }
 
-  await ctx.db.patch(parentCellId, { isLeaf: true });
+  await ctx.db.patch(targetCellId, { isLeaf: true });
 
   return { deletedCount: toDelete.length };
 }
@@ -244,10 +253,10 @@ test("throws when cellId does not exist", async () => {
 });
 
 // ============================================================
-// Guard: cell has no parent (root cell)
+// Guard: root cell with no children throws
 // ============================================================
 
-test("throws when cell has no parentCellId (root cell)", async () => {
+test("throws when root cell has no children to undivide", async () => {
   const db = createMockDb();
 
   const gridId = await db.insert("discoveryGrids", {
@@ -277,8 +286,93 @@ test("throws when cell has no parentCellId (root cell)", async () => {
 
   await assert.rejects(
     () => undivideCell({ db }, { cellId: rootCellId }),
-    { message: "Cell has no parent to undivide" },
+    { message: "Cell has no children to undivide" },
   );
+});
+
+// ============================================================
+// Undividing a subdivided root cell directly
+// ============================================================
+
+test("undivideCell on subdivided root cell deletes all children", async () => {
+  const db = createMockDb();
+  const { parentId, childIds } = await seedSubdividedCell(db);
+
+  const result = await undivideCell({ db }, { cellId: parentId });
+
+  assert.equal(result.deletedCount, 4, "Must delete exactly 4 children");
+  for (const childId of childIds) {
+    const child = await db.get(childId);
+    assert.equal(child, null, `Child ${childId} must be deleted`);
+  }
+});
+
+test("undivideCell on subdivided root cell restores isLeaf", async () => {
+  const db = createMockDb();
+  const { parentId } = await seedSubdividedCell(db);
+
+  await undivideCell({ db }, { cellId: parentId });
+
+  const parent = await db.get(parentId);
+  assert.equal(parent.isLeaf, true);
+});
+
+test("undivideCell on subdivided root cell preserves status and data", async () => {
+  const db = createMockDb();
+  const { parentId } = await seedSubdividedCell(db);
+
+  const before = await db.get(parentId);
+  await undivideCell({ db }, { cellId: parentId });
+  const after = await db.get(parentId);
+
+  assert.equal(after.status, before.status);
+  assert.equal(after.resultCount, before.resultCount);
+  assert.deepStrictEqual(after.querySaturation, before.querySaturation);
+});
+
+test("undivideCell on root cell with grandchildren deletes all descendants", async () => {
+  const db = createMockDb();
+  const { parentId, childIds, gridId } = await seedSubdividedCell(db);
+
+  // Subdivide first child to create grandchildren
+  const firstChild = await db.get(childIds[0]);
+  await db.patch(childIds[0], { isLeaf: false });
+
+  const midLat = (firstChild.swLat + firstChild.neLat) / 2;
+  const midLng = (firstChild.swLng + firstChild.neLng) / 2;
+
+  const grandchildIds = [];
+  const quadrants = [
+    { swLat: firstChild.swLat, swLng: firstChild.swLng, neLat: midLat, neLng: midLng },
+    { swLat: firstChild.swLat, swLng: midLng, neLat: midLat, neLng: firstChild.neLng },
+    { swLat: midLat, swLng: firstChild.swLng, neLat: firstChild.neLat, neLng: midLng },
+    { swLat: midLat, swLng: midLng, neLat: firstChild.neLat, neLng: firstChild.neLng },
+  ];
+
+  for (const q of quadrants) {
+    const gcId = await db.insert("discoveryCells", {
+      ...q,
+      depth: 2,
+      parentCellId: childIds[0],
+      isLeaf: true,
+      status: "unsearched",
+      gridId,
+    });
+    grandchildIds.push(gcId);
+  }
+
+  const result = await undivideCell({ db }, { cellId: parentId });
+
+  // 4 children + 4 grandchildren = 8
+  assert.equal(result.deletedCount, 8);
+
+  for (const id of [...childIds, ...grandchildIds]) {
+    const doc = await db.get(id);
+    assert.equal(doc, null, `Descendant ${id} must be deleted`);
+  }
+
+  const parent = await db.get(parentId);
+  assert.equal(parent.isLeaf, true);
 });
 
 // ============================================================

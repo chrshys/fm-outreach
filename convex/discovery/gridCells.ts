@@ -148,19 +148,34 @@ export const undivideCell = mutation({
       throw new ConvexError("Cell not found");
     }
 
-    const parentCellId = cell.parentCellId;
-    if (!parentCellId) {
-      throw new ConvexError("Cell has no parent to undivide");
+    // Determine which cell to collapse: if the cell has a parent, collapse the
+    // parent (original behaviour). If it has no parent it IS the subdivided root
+    // cell, so collapse itself.
+    let targetCellId: typeof args.cellId;
+
+    if (cell.parentCellId) {
+      const parentCell = await ctx.db.get(cell.parentCellId);
+      if (!parentCell) {
+        throw new ConvexError("Parent cell not found");
+      }
+      targetCellId = cell.parentCellId;
+    } else {
+      // Root cell — verify it actually has children to undivide
+      const children = await ctx.db
+        .query("discoveryCells")
+        .withIndex("by_parentCellId", (q) =>
+          q.eq("parentCellId", args.cellId),
+        )
+        .collect();
+      if (children.length === 0) {
+        throw new ConvexError("Cell has no children to undivide");
+      }
+      targetCellId = args.cellId;
     }
 
-    const parentCell = await ctx.db.get(parentCellId);
-    if (!parentCell) {
-      throw new ConvexError("Parent cell not found");
-    }
-
-    // BFS-walk all descendants of the parent
+    // BFS-walk all descendants of the target
     const toDelete: typeof args.cellId[] = [];
-    const queue: (typeof args.cellId)[] = [parentCellId];
+    const queue: (typeof args.cellId)[] = [targetCellId];
 
     while (queue.length > 0) {
       const currentId = queue.shift()!;
@@ -179,7 +194,7 @@ export const undivideCell = mutation({
       await ctx.db.delete(id);
     }
 
-    await ctx.db.patch(parentCellId, { isLeaf: true });
+    await ctx.db.patch(targetCellId, { isLeaf: true });
 
     return { deletedCount: toDelete.length };
   },
