@@ -42,23 +42,23 @@ export const discoverCell = internalAction({
       },
     );
 
-    // Step 2: Fetch cell + grid record
-    // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
-    const cellData = await ctx.runQuery(
-      internal.discovery.gridCells.getCell,
-      { cellId: args.cellId },
-    );
-
-    const { swLat, swLng, neLat, neLng, depth } = cellData as {
-      swLat: number; swLng: number; neLat: number; neLng: number; depth: number;
-      grid: { name: string; queries: string[]; region: string; province: string };
-    };
-    const { name: gridName, queries, region, province } = (cellData as {
-      grid: { name: string; queries: string[]; region: string; province: string };
-    }).grid;
-
-    // Steps 3-11 wrapped in try/catch — reset on failure
+    // Steps 2-11 wrapped in try/catch — reset on failure
     try {
+      // Step 2: Fetch cell + grid record
+      // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
+      const cellData = await ctx.runQuery(
+        internal.discovery.gridCells.getCell,
+        { cellId: args.cellId },
+      );
+
+      const { swLat, swLng, neLat, neLng, depth } = cellData as {
+        swLat: number; swLng: number; neLat: number; neLng: number; depth: number;
+        grid: { name: string; queries: string[]; region: string; province: string };
+      };
+      const { name: gridName, queries, region, province } = (cellData as {
+        grid: { name: string; queries: string[]; region: string; province: string };
+      }).grid;
+
       // Step 4: Compute cell center and circumscribed circle radius
       const centerLat = (swLat + neLat) / 2;
       const centerLng = (swLng + neLng) / 2;
@@ -165,7 +165,7 @@ export const discoverCell = internalAction({
         querySaturation,
       };
     } catch (error) {
-      // Step 3: On any failure, reset cell status to previousStatus
+      // On any failure, reset cell status to previousStatus
       // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
       await ctx.runMutation(
         internal.discovery.gridCells.updateCellStatus,
