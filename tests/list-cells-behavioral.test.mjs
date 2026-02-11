@@ -65,6 +65,7 @@ async function listCells(ctx, args) {
 
   return cells.map((cell) => ({
     _id: cell._id,
+    parentCellId: cell.parentCellId,
     swLat: cell.swLat,
     swLng: cell.swLng,
     neLat: cell.neLat,
@@ -315,6 +316,7 @@ test("returned cells contain only projected fields", async () => {
   const cell = result[0];
   const expectedKeys = [
     "_id",
+    "parentCellId",
     "swLat",
     "swLng",
     "neLat",
@@ -333,7 +335,7 @@ test("returned cells contain only projected fields", async () => {
   );
 });
 
-test("projected fields do not include isLeaf, gridId, or parentCellId", async () => {
+test("projected fields do not include isLeaf or gridId", async () => {
   const db = createMockDb();
   const { gridId } = await seedGrid(db, { cellCount: 1 });
 
@@ -342,7 +344,6 @@ test("projected fields do not include isLeaf, gridId, or parentCellId", async ()
   const cell = result[0];
   assert.ok(!("isLeaf" in cell), "isLeaf must not be exposed");
   assert.ok(!("gridId" in cell), "gridId must not be exposed");
-  assert.ok(!("parentCellId" in cell), "parentCellId must not be exposed");
   assert.ok(!("_creationTime" in cell), "_creationTime must not be exposed");
 });
 
@@ -503,4 +504,37 @@ test("listCells preserves resultCount and querySaturation on searched cells", as
     { query: "orchard", count: 5 },
   ]);
   assert.equal(result[0].lastSearchedAt, now);
+});
+
+// ============================================================
+// 9. parentCellId projection
+// ============================================================
+
+test("listCells returns parentCellId as undefined for root cells", async () => {
+  const db = createMockDb();
+  const { gridId } = await seedGrid(db, { cellCount: 1 });
+
+  const result = await listCells({ db }, { gridId });
+
+  assert.equal(result.length, 1);
+  assert.equal(result[0].parentCellId, undefined, "Root cell has no parentCellId");
+});
+
+test("listCells returns parentCellId pointing to parent after subdivision", async () => {
+  const db = createMockDb();
+  const { gridId, cellIds } = await seedGrid(db, { cellCount: 1 });
+
+  await db.patch(cellIds[0], { status: "saturated" });
+  const { childIds } = await subdivideCell({ db }, { cellId: cellIds[0] });
+
+  const result = await listCells({ db }, { gridId });
+
+  assert.equal(result.length, 4, "4 child leaves after subdivision");
+  for (const cell of result) {
+    assert.equal(
+      cell.parentCellId,
+      cellIds[0],
+      `Child ${cell._id} must reference parent ${cellIds[0]}`,
+    );
+  }
 });

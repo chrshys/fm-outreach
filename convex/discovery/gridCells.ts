@@ -211,6 +211,7 @@ export const listCells = query({
 
     return cells.map((cell) => ({
       _id: cell._id,
+      parentCellId: cell.parentCellId,
       swLat: cell.swLat,
       swLng: cell.swLng,
       neLat: cell.neLat,
