@@ -94,8 +94,9 @@ test("imports searchPlacesWithLocation from placeHelpers", () => {
   assert.match(source, /import\s*\{[^}]*searchPlacesWithLocation[^}]*\}\s*from\s*"\.\/placeHelpers"/);
 });
 
-test("iterates over grid queries", () => {
-  assert.match(source, /for\s*\(\s*const\s+query\s+of\s+queries\s*\)/);
+test("executes all queries in parallel via Promise.all", () => {
+  assert.match(source, /Promise\.all\(/);
+  assert.match(source, /queries\.map\(/);
 });
 
 test("calls searchPlacesWithLocation with center and radius", () => {

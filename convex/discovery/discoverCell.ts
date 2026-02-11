@@ -66,18 +66,23 @@ export const discoverCell = internalAction({
       // Circumscribed radius = distance from center to a corner (covers entire cell)
       const radiusKm = haversineKm(centerLat, centerLng, neLat, neLng);
 
-      // Step 5: Search for each query
+      // Step 5: Search all queries in parallel and deduplicate by placeId
+      const queryResults = await Promise.all(
+        queries.map(async (query) => {
+          const { results, totalCount } = await searchPlacesWithLocation(
+            query,
+            apiKey,
+            centerLat,
+            centerLng,
+            radiusKm,
+          );
+          return { query, results, totalCount };
+        }),
+      );
+
       const allApiResults: PlaceTextResult[] = [];
       const querySaturation: { query: string; count: number }[] = [];
-
-      for (const query of queries) {
-        const { results, totalCount } = await searchPlacesWithLocation(
-          query,
-          apiKey,
-          centerLat,
-          centerLng,
-          radiusKm,
-        );
+      for (const { query, results, totalCount } of queryResults) {
         querySaturation.push({ query, count: totalCount });
         allApiResults.push(...results);
       }
