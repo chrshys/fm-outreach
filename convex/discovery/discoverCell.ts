@@ -219,9 +219,9 @@ export const requestDiscoverCell = mutation({
       return;
     }
 
-    if (cell.status !== "unsearched" && cell.status !== "searched") {
+    if (cell.status !== "unsearched" && cell.status !== "searched" && cell.status !== "saturated") {
       throw new Error(
-        `Cell status is "${cell.status}", expected "unsearched" or "searched"`,
+        `Cell status is "${cell.status}", expected "unsearched", "searched", or "saturated"`,
       );
     }
 
