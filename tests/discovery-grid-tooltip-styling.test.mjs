@@ -71,3 +71,35 @@ test("Tooltip remains interactive", () => {
 test("CellTooltipContent is rendered inside Tooltip", () => {
   assert.match(source, /<CellTooltipContent\s+cell=\{cell\}\s+onCellAction=\{onCellAction\}\s*\/>/)
 })
+
+// ============================================================
+// CSS hover-bridge: globals.css widens the ::before pseudo-element
+// so the cursor can travel from the cell to the tooltip
+// ============================================================
+
+const cssSource = fs.readFileSync("src/app/globals.css", "utf8")
+
+test("globals.css overrides .leaflet-tooltip-top::before for hover bridge", () => {
+  assert.match(cssSource, /\.leaflet-tooltip-top::before/)
+})
+
+test("hover bridge is 14px tall to cover the 10px offset gap", () => {
+  assert.match(cssSource, /height:\s*14px\s*!important/)
+})
+
+test("hover bridge spans the full tooltip width (left: 0, right: 0)", () => {
+  assert.match(cssSource, /left:\s*0\s*!important/)
+  assert.match(cssSource, /right:\s*0\s*!important/)
+})
+
+test("hover bridge positioned below the tooltip (bottom: -14px)", () => {
+  assert.match(cssSource, /bottom:\s*-14px\s*!important/)
+})
+
+test("hover bridge removes default border arrow styling", () => {
+  assert.match(cssSource, /border:\s*none\s*!important/)
+})
+
+test("hover bridge background is transparent", () => {
+  assert.match(cssSource, /background:\s*transparent\s*!important/)
+})
