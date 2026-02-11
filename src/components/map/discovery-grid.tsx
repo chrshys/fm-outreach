@@ -33,11 +33,11 @@ function formatTooltip(cell: CellData): string {
   const parts = [`${label} — ${cell.resultCount ?? 0} results`]
 
   if (cell.status === "saturated" && cell.querySaturation) {
-    const saturatedQueries = cell.querySaturation
-      .filter((qs) => qs.count >= 60)
-      .map((qs) => qs.query)
-    if (saturatedQueries.length > 0) {
-      parts.push(`At capacity: ${saturatedQueries.join(", ")}`)
+    const topQueries = cell.querySaturation
+      .filter((qs) => qs.count >= 20)
+      .map((qs) => `${qs.query} (${qs.count})`)
+    if (topQueries.length > 0) {
+      parts.push(`Dense: ${topQueries.join(", ")}`)
     }
     if (cell.depth < MAX_DEPTH) {
       parts.push("Click to subdivide")

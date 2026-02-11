@@ -94,32 +94,39 @@ export const discoverCell = internalAction({
         }),
       );
 
-      const allApiResults: PlaceTextResult[] = [];
-      const querySaturation: { query: string; count: number }[] = [];
-      for (const { query, results, totalCount } of queryResults) {
-        querySaturation.push({ query, count: totalCount });
-        allApiResults.push(...results);
-      }
-
-      const totalApiResults = allApiResults.length;
-
-      // Step 6: Deduplicate by place_id across queries
-      const seenPlaceIds = new Set<string>();
-      const deduplicated: PlaceTextResult[] = [];
-      for (const result of allApiResults) {
-        if (!seenPlaceIds.has(result.place_id)) {
-          seenPlaceIds.add(result.place_id);
-          deduplicated.push(result);
-        }
-      }
-
-      // Step 7: Post-filter to cell bounds
-      const inBounds: PlaceTextResult[] = deduplicated.filter((place: PlaceTextResult) => {
+      const isInBounds = (place: PlaceTextResult) => {
         const lat = place.geometry?.location?.lat;
         const lng = place.geometry?.location?.lng;
         if (lat == null || lng == null) return false;
         return lat >= swLat && lat <= neLat && lng >= swLng && lng <= neLng;
-      });
+      };
+
+      // Step 6: Deduplicate by place_id across queries, filter to cell bounds,
+      // and track per-query in-bounds counts for accurate saturation detection.
+      // Raw API counts are unreliable for saturation because Google's `radius`
+      // is a bias not a hard filter — subdivided cells can see 60 API results
+      // where only a handful are actually in-bounds.
+      const seenPlaceIds = new Set<string>();
+      const inBounds: PlaceTextResult[] = [];
+      const querySaturation: { query: string; count: number }[] = [];
+      let totalApiResults = 0;
+
+      for (const { query, results, totalCount } of queryResults) {
+        totalApiResults += results.length;
+
+        // Count in-bounds results per query (before cross-query dedup)
+        // to determine if this specific query is saturated for this cell
+        const inBoundsForQuery = results.filter(isInBounds);
+        querySaturation.push({ query, count: inBoundsForQuery.length });
+
+        // Cross-query dedup + bounds filter for the final lead set
+        for (const result of results) {
+          if (!seenPlaceIds.has(result.place_id) && isInBounds(result)) {
+            seenPlaceIds.add(result.place_id);
+            inBounds.push(result);
+          }
+        }
+      }
 
       // Step 8: Convert to lead objects
       const now = Date.now();
@@ -151,9 +158,13 @@ export const discoverCell = internalAction({
       const newLeads: number = insertResult.inserted;
       const duplicatesSkipped: number = insertResult.skipped;
 
-      // Step 10: Determine saturation — only if ALL queries hit 60
+      // Step 10: Determine saturation — only if ALL queries returned 60 API
+      // results AND had a high in-bounds ratio (>= 20 in-bounds per query).
+      // A query hitting 60 API results but only 1 in-bounds means the results
+      // are spread across a wider area, not that this cell is dense.
       const saturated = querySaturation.length > 0 &&
-        querySaturation.every((qs) => qs.count >= GOOGLE_MAX_RESULTS);
+        queryResults.every(({ totalCount }) => totalCount >= GOOGLE_MAX_RESULTS) &&
+        querySaturation.every((qs) => qs.count >= 20);
 
       // Step 11: Update cell with search result
       // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types

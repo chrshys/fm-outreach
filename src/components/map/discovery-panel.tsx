@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useMutation, useQuery } from "convex/react"
 import { ChevronDown, Plus, Search, X } from "lucide-react"
 import { toast } from "sonner"
@@ -62,9 +62,11 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect }: Disc
   const selectedGrid = grids?.find((g) => g._id === selectedGridId) ?? grids?.[0] ?? null
 
   // Auto-select first grid if none selected
-  if (!selectedGridId && grids && grids.length > 0) {
-    onGridSelect(grids[0]._id)
-  }
+  useEffect(() => {
+    if (!selectedGridId && grids && grids.length > 0) {
+      onGridSelect(grids[0]._id)
+    }
+  }, [selectedGridId, grids, onGridSelect])
 
   const handleCreateGrid = useCallback(async () => {
     if (!gridName.trim() || !region.trim() || !province.trim() || !mapBounds) return
