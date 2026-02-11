@@ -71,7 +71,7 @@ test("setCampaignActive updates updatedAt timestamp", () => {
 
 test("action calls setCampaignActive mutation after Smartlead API call", () => {
   assert.match(source, /internal\.campaigns\.launchCampaign\.setCampaignActive/)
-  assert.match(source, /ctx\.runMutation\(setCampaignActiveRef/)
+  assert.match(source, /ctx\.runMutation\(internal\.campaigns\.launchCampaign\.setCampaignActive/)
 })
 
 // --- Push flow updated ---

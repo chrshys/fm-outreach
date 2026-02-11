@@ -356,16 +356,15 @@ export const deleteGrid = internalAction({
     gridId: v.id("discoveryGrids"),
   },
   handler: async (ctx, args) => {
-    // @ts-expect-error — deep type instantiation in generated Convex API types
-    const deleteBatchRef = internal.discovery.gridCells.deleteCellBatch;
-    const deleteRecordRef = internal.discovery.gridCells.deleteGridRecord;
     let totalDeleted = 0;
     let done = false;
 
     while (!done) {
-      const { deleted } = await ctx.runMutation(deleteBatchRef, {
-        gridId: args.gridId,
-      });
+      // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
+      const { deleted } = await ctx.runMutation(
+        internal.discovery.gridCells.deleteCellBatch,
+        { gridId: args.gridId },
+      );
       totalDeleted += deleted;
 
       if (deleted < DELETE_BATCH_SIZE) {
@@ -373,7 +372,10 @@ export const deleteGrid = internalAction({
       }
     }
 
-    await ctx.runMutation(deleteRecordRef, { gridId: args.gridId });
+    // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
+    await ctx.runMutation(internal.discovery.gridCells.deleteGridRecord, {
+      gridId: args.gridId,
+    });
 
     return { totalCellsDeleted: totalDeleted };
   },

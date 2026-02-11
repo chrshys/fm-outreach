@@ -27,7 +27,7 @@ export const launchCampaign = action({
   },
   handler: async (ctx, args): Promise<void> => {
     // 1. Load campaign and validate
-    // @ts-expect-error — deep type instantiation in generated Convex API types
+    // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
     const campaign = (await ctx.runQuery(api.campaigns.get, {
       campaignId: args.campaignId,
     })) as Doc<"campaigns"> | null;
@@ -53,9 +53,8 @@ export const launchCampaign = action({
     );
 
     // 3. Update local status to active
-    // @ts-expect-error — deep type instantiation in generated Convex API types
-    const setCampaignActiveRef = internal.campaigns.launchCampaign.setCampaignActive;
-    await ctx.runMutation(setCampaignActiveRef, {
+    // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
+    await ctx.runMutation(internal.campaigns.launchCampaign.setCampaignActive, {
       campaignId: args.campaignId,
     });
 

@@ -18,13 +18,13 @@ test("exports deleteGrid internalAction that loops deleteCellBatch until all cel
   assert.match(source, /gridId:\s*v\.id\("discoveryGrids"\)/)
   assert.match(source, /while\s*\(!done\)/)
   assert.match(source, /internal\.discovery\.gridCells\.deleteCellBatch/)
-  assert.match(source, /ctx\.runMutation\(deleteBatchRef/)
+  assert.match(source, /ctx\.runMutation\(\s*internal\.discovery\.gridCells\.deleteCellBatch/)
   assert.match(source, /if\s*\(deleted < DELETE_BATCH_SIZE\)/)
 })
 
 test("deleteGrid calls deleteGridRecord after all cells are deleted", () => {
   assert.match(source, /internal\.discovery\.gridCells\.deleteGridRecord/)
-  assert.match(source, /ctx\.runMutation\(deleteRecordRef/)
+  assert.match(source, /ctx\.runMutation\(internal\.discovery\.gridCells\.deleteGridRecord/)
 })
 
 test("exports deleteGridRecord internalMutation that deletes the discoveryGrids record", () => {

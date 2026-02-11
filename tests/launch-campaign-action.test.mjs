@@ -54,7 +54,7 @@ test("launchCampaign calls updateCampaignStatus with START", () => {
 })
 
 test("launchCampaign runs setCampaignActive mutation after Smartlead call", () => {
-  assert.match(source, /ctx\.runMutation\(setCampaignActiveRef/)
+  assert.match(source, /ctx\.runMutation\(internal\.campaigns\.launchCampaign\.setCampaignActive/)
 })
 
 test("launchCampaign throws if campaign is not found", () => {
