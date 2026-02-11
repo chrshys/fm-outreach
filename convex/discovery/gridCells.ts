@@ -138,6 +138,58 @@ export const subdivideCell = mutation({
   },
 });
 
+export const undivideCell = mutation({
+  args: {
+    cellId: v.id("discoveryCells"),
+  },
+  handler: async (ctx, args) => {
+    const cell = await ctx.db.get(args.cellId);
+    if (!cell) {
+      throw new ConvexError("Cell not found");
+    }
+
+    const parentCellId = cell.parentCellId;
+    if (!parentCellId) {
+      throw new ConvexError("Cell has no parent to undivide");
+    }
+
+    const parentCell = await ctx.db.get(parentCellId);
+    if (!parentCell) {
+      throw new ConvexError("Parent cell not found");
+    }
+
+    // BFS-walk all descendants of the parent
+    const toDelete: typeof args.cellId[] = [];
+    const queue: (typeof args.cellId)[] = [parentCellId];
+
+    while (queue.length > 0) {
+      const currentId = queue.shift()!;
+      const children = await ctx.db
+        .query("discoveryCells")
+        .withIndex("by_parentCellId", (q) => q.eq("parentCellId", currentId))
+        .collect();
+
+      for (const child of children) {
+        if (child.status === "searching") {
+          throw new ConvexError(
+            "Cannot undivide while a child cell is being searched",
+          );
+        }
+        toDelete.push(child._id);
+        queue.push(child._id);
+      }
+    }
+
+    for (const id of toDelete) {
+      await ctx.db.delete(id);
+    }
+
+    await ctx.db.patch(parentCellId, { isLeaf: true });
+
+    return { deletedCount: toDelete.length };
+  },
+});
+
 export const listGrids = query({
   args: {},
   handler: async (ctx) => {
