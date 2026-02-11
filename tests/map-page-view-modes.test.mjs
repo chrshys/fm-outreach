@@ -135,12 +135,13 @@ test("DiscoveryGrid uses getCellColor for path options", () => {
   assert.match(discoveryGridSource, /getCellColor\(cell\.status\)/)
 })
 
-test("DiscoveryGrid attaches click handler to cells via onCellAction", () => {
-  assert.match(discoveryGridSource, /click:\s*\(\)\s*=>\s*onCellAction\(cell\._id/)
+test("DiscoveryGrid uses hover handlers instead of click for cell interaction", () => {
+  assert.match(discoveryGridSource, /mouseover:\s*handleEnter/)
+  assert.match(discoveryGridSource, /mouseout:\s*scheduleClose/)
 })
 
 test("DiscoveryGrid shows interactive tooltip with CellTooltipContent", () => {
-  assert.match(discoveryGridSource, /<Tooltip\s+interactive>/)
+  assert.match(discoveryGridSource, /<Tooltip[\s\S]*?interactive/)
   assert.match(discoveryGridSource, /<CellTooltipContent\s+cell=\{cell\}/)
 })
 
@@ -179,8 +180,8 @@ test("DiscoveryPanel displays cell status color legend", () => {
 
 // --- Cell click handlers ---
 
-test("handleCellAction routes search action for unsearched cells to requestDiscoverCell", () => {
-  assert.match(mapPageSource, /cell\.status\s*===\s*"unsearched"/)
+test("handleCellAction routes search action for google_places mechanism to requestDiscoverCell", () => {
+  assert.match(mapPageSource, /action\.mechanism\s*!==\s*"google_places"/)
   assert.match(mapPageSource, /requestDiscoverCell\(\{/)
 })
 

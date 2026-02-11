@@ -14,11 +14,8 @@ const gridCellsSource = fs.readFileSync("convex/discovery/gridCells.ts", "utf8")
 
 // --- Step 1: Click dispatches discovery ---
 
-test("clicking unsearched cell calls requestDiscoverCell", () => {
-  assert.match(
-    pageSource,
-    /cell\.status\s*===\s*"unsearched"\s*\|\|\s*cell\.status\s*===\s*"searched"/,
-  )
+test("search action with google_places mechanism calls requestDiscoverCell", () => {
+  assert.match(pageSource, /action\.mechanism\s*!==\s*"google_places"/)
   assert.match(pageSource, /requestDiscoverCell\(\{\s*cellId/)
 })
 
@@ -58,10 +55,14 @@ test("discoverCell sets status to searched when not all queries saturated", () =
   )
 })
 
-test("saturation requires ALL queries to hit 60 results", () => {
+test("saturation requires ALL queries to hit 60 API results and high in-bounds count", () => {
   assert.match(
     discoverCellSource,
-    /querySaturation\.every\(\(qs\)\s*=>\s*qs\.count\s*>=\s*GOOGLE_MAX_RESULTS\)/,
+    /queryResults\.every\(\(\{ totalCount \}\)\s*=>\s*totalCount\s*>=\s*GOOGLE_MAX_RESULTS\)/,
+  )
+  assert.match(
+    discoverCellSource,
+    /querySaturation\.every\(\(qs\)\s*=>\s*qs\.count\s*>=\s*20\)/,
   )
 })
 

@@ -49,8 +49,8 @@ test("handleCellAction shows info toast for searching status on search action", 
   assert.match(pageSource, /toast\.info\("Search already in progress"\)/)
 })
 
-test("handleCellAction calls requestDiscoverCell for unsearched cells on search action", () => {
-  assert.match(pageSource, /cell\.status\s*===\s*"unsearched"\s*\|\|\s*cell\.status\s*===\s*"searched"/)
+test("handleCellAction calls requestDiscoverCell for google_places mechanism", () => {
+  assert.match(pageSource, /action\.mechanism\s*!==\s*"google_places"/)
   assert.match(pageSource, /requestDiscoverCell\(\{/)
 })
 
@@ -73,6 +73,36 @@ test("handleCellAction has try/catch for discover with error toast", () => {
 
 test("handleCellAction has try/catch for subdivide with error toast", () => {
   assert.match(pageSource, /toast\.error\(err instanceof Error \? err\.message : "Failed to subdivide cell"\)/)
+})
+
+// --- handleCellAction: undivide ---
+
+test("handleCellAction dispatches on action.type for undivide", () => {
+  assert.match(pageSource, /action\.type\s*===\s*"undivide"/)
+  assert.match(pageSource, /undivideCell\(\{/)
+})
+
+test("handleCellAction shows success toast on undivide", () => {
+  assert.match(pageSource, /toast\.success\("Cell merged back to parent"\)/)
+})
+
+test("handleCellAction has try/catch for undivide with error toast", () => {
+  assert.match(pageSource, /toast\.error\(err instanceof Error \? err\.message : "Failed to merge cell"\)/)
+})
+
+test("handleCellAction dependency array includes undivideCell", () => {
+  assert.match(pageSource, /\[gridCells,\s*requestDiscoverCell,\s*subdivideCell,\s*undivideCell\]/)
+})
+
+test("uses undivideCell mutation", () => {
+  assert.match(pageSource, /useMutation\(api\.discovery\.gridCells\.undivideCell\)/)
+})
+
+// --- handleCellAction: non-google_places mechanism ---
+
+test("handleCellAction shows Coming soon for non-google_places mechanism", () => {
+  assert.match(pageSource, /action\.mechanism\s*!==\s*"google_places"/)
+  assert.match(pageSource, /toast\.info\("Coming soon"\)/)
 })
 
 // --- MapContent receives gridCells and onCellAction ---
