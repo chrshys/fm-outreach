@@ -149,7 +149,7 @@ export function ClusterDetail({ clusterId }: { clusterId: Id<"clusters"> }) {
           }}
         />
         <p className="text-sm text-muted-foreground mt-1">
-          {cluster.leadCount} leads within {cluster.radiusKm} km radius
+          {cluster.leadCount} leads within {Math.round(cluster.radiusKm)} km radius
         </p>
       </div>
 
@@ -163,7 +163,7 @@ export function ClusterDetail({ clusterId }: { clusterId: Id<"clusters"> }) {
         <Card>
           <CardHeader className="p-4">
             <CardDescription>Radius</CardDescription>
-            <CardTitle>{cluster.radiusKm} km</CardTitle>
+            <CardTitle>{Math.round(cluster.radiusKm)} km</CardTitle>
           </CardHeader>
         </Card>
         <Card>

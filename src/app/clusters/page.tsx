@@ -115,7 +115,7 @@ export default function ClustersPage() {
                       </span>
                       <span className="inline-flex items-center gap-1">
                         <MapPin className="size-3" />
-                        {cluster.radiusKm} km
+                        {Math.round(cluster.radiusKm)} km
                       </span>
                     </CardDescription>
                   </CardHeader>
