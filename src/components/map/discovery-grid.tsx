@@ -165,9 +165,13 @@ export default function DiscoveryGrid({ cells, onCellAction }: DiscoveryGridProp
             key={cell._id}
             bounds={bounds}
             pathOptions={pathOptions}
-            eventHandlers={{ click: () => onCellAction(cell._id, { type: "search", mechanism: "click" }) }}
           >
-            <Tooltip interactive>
+            <Tooltip
+              interactive
+              className="!bg-card !border !border-border !rounded-lg !shadow-md !px-2.5 !py-2 !text-foreground"
+              direction="top"
+              offset={[0, -10]}
+            >
               <CellTooltipContent cell={cell} onCellAction={onCellAction} />
             </Tooltip>
           </Rectangle>

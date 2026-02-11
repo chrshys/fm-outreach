@@ -60,13 +60,17 @@ test("Rectangle receives pathOptions from getCellColor", () => {
   assert.match(source, /pathOptions=\{pathOptions\}/)
 })
 
-test("Rectangle has click eventHandler calling onCellAction", () => {
-  assert.match(source, /eventHandlers=\{/)
-  assert.match(source, /click:\s*\(\)\s*=>\s*onCellAction\(cell\._id/)
+test("Rectangle does not have click eventHandler", () => {
+  // Rectangle rendering no longer has eventHandlers — interaction is via Tooltip
+  assert.doesNotMatch(source, /eventHandlers=\{/)
 })
 
-test("Tooltip is interactive and nested inside Rectangle", () => {
-  assert.match(source, /<Rectangle[\s\S]*<Tooltip\s+interactive>[\s\S]*<\/Tooltip>[\s\S]*<\/Rectangle>/)
+test("Tooltip is interactive with custom className, direction, and offset", () => {
+  assert.match(source, /<Tooltip/)
+  assert.match(source, /interactive/)
+  assert.match(source, /className="!bg-card !border !border-border !rounded-lg !shadow-md !px-2\.5 !py-2 !text-foreground"/)
+  assert.match(source, /direction="top"/)
+  assert.match(source, /offset=\{\[0,\s*-10\]\}/)
 })
 
 test("Tooltip renders CellTooltipContent component", () => {

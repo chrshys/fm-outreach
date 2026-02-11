@@ -20,8 +20,10 @@ test("CellTooltipContent accepts cell and onCellAction props", () => {
   assert.match(source, /onCellAction:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>\s*void/)
 })
 
-test("Tooltip is interactive", () => {
-  assert.match(source, /<Tooltip\s+interactive>/)
+test("Tooltip is interactive with styled className", () => {
+  assert.match(source, /<Tooltip/)
+  assert.match(source, /interactive/)
+  assert.match(source, /className="!bg-card !border !border-border !rounded-lg !shadow-md !px-2\.5 !py-2 !text-foreground"/)
 })
 
 test("CellTooltipContent is rendered inside Tooltip", () => {
