@@ -131,6 +131,46 @@ export const subdivideCell = mutation({
   },
 });
 
+export const listGrids = query({
+  args: {},
+  handler: async (ctx) => {
+    const grids = await ctx.db.query("discoveryGrids").collect();
+
+    const results = await Promise.all(
+      grids.map(async (grid) => {
+        const leafCells = await ctx.db
+          .query("discoveryCells")
+          .withIndex("by_gridId_isLeaf", (q) =>
+            q.eq("gridId", grid._id).eq("isLeaf", true),
+          )
+          .collect();
+
+        let searchedCount = 0;
+        let saturatedCount = 0;
+        for (const cell of leafCells) {
+          if (cell.status === "searched") searchedCount++;
+          else if (cell.status === "saturated") saturatedCount++;
+        }
+
+        return {
+          _id: grid._id,
+          name: grid.name,
+          region: grid.region,
+          province: grid.province,
+          cellSizeKm: grid.cellSizeKm,
+          totalLeadsFound: grid.totalLeadsFound,
+          createdAt: grid.createdAt,
+          totalLeafCells: leafCells.length,
+          searchedCount,
+          saturatedCount,
+        };
+      }),
+    );
+
+    return results;
+  },
+});
+
 export const listCells = query({
   args: {
     gridId: v.id("discoveryGrids"),
