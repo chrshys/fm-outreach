@@ -175,6 +175,31 @@ export default defineSchema({
     createdAt: v.number(),
   }),
 
+  discoveryCells: defineTable({
+    swLat: v.number(),
+    swLng: v.number(),
+    neLat: v.number(),
+    neLng: v.number(),
+    depth: v.number(),
+    parentCellId: v.optional(v.id("discoveryCells")),
+    isLeaf: v.boolean(),
+    status: v.union(
+      v.literal("unsearched"),
+      v.literal("searched"),
+      v.literal("saturated"),
+      v.literal("searching"),
+    ),
+    resultCount: v.optional(v.number()),
+    querySaturation: v.optional(
+      v.array(v.object({ query: v.string(), count: v.number() })),
+    ),
+    lastSearchedAt: v.optional(v.number()),
+    gridId: v.id("discoveryGrids"),
+  })
+    .index("by_gridId", ["gridId"])
+    .index("by_gridId_isLeaf", ["gridId", "isLeaf"])
+    .index("by_parentCellId", ["parentCellId"]),
+
   emailBlockList: defineTable({
     email: v.string(),
     reason: v.string(),

@@ -14,6 +14,7 @@ test("defines all required tables", () => {
     "settings",
     "campaigns",
     "discoveryGrids",
+    "discoveryCells",
   ]) {
     assert.match(schemaSource, new RegExp(`\\b${tableName}:\\s*defineTable\\(`));
   }
