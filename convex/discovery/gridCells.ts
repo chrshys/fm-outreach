@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
-import { mutation, query } from "../_generated/server";
+import { internalMutation, mutation, query } from "../_generated/server";
 
 const MAX_DEPTH = 4;
 const DEFAULT_CELL_SIZE_KM = 20;
@@ -210,5 +210,29 @@ export const listCells = query({
       querySaturation: cell.querySaturation,
       lastSearchedAt: cell.lastSearchedAt,
     }));
+  },
+});
+
+export const claimCellForSearch = internalMutation({
+  args: {
+    cellId: v.id("discoveryCells"),
+    expectedStatuses: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const cell = await ctx.db.get(args.cellId);
+    if (!cell) {
+      throw new ConvexError("Cell not found");
+    }
+
+    if (!args.expectedStatuses.includes(cell.status)) {
+      throw new ConvexError(
+        `Cell status is "${cell.status}", expected one of: ${args.expectedStatuses.join(", ")}`,
+      );
+    }
+
+    const previousStatus = cell.status;
+    await ctx.db.patch(args.cellId, { status: "searching" });
+
+    return { previousStatus };
   },
 });
