@@ -12,24 +12,41 @@ test("imports leaflet CSS", () => {
   assert.match(source, /import "leaflet\/dist\/leaflet\.css"/)
 })
 
-test("uses react-leaflet MapContainer, TileLayer, Polygon, CircleMarker", () => {
-  assert.match(source, /import \{ MapContainer, TileLayer, Polygon, CircleMarker \} from "react-leaflet"/)
+test("imports leaflet L for bounds calculation", () => {
+  assert.match(source, /import L from "leaflet"/)
+})
+
+test("uses react-leaflet MapContainer, TileLayer, Polygon, CircleMarker, useMap", () => {
+  assert.match(source, /import \{ MapContainer, TileLayer, Polygon, CircleMarker, useMap \} from "react-leaflet"/)
 })
 
 test("renders MapContainer centered on cluster coordinates", () => {
   assert.match(source, /center=\{\[centerLat, centerLng\]\}/)
-  assert.match(source, /zoom=\{zoom\}/)
 })
 
-test("calculates zoom level based on radius", () => {
-  assert.match(source, /radiusKm < 2 \? 13/)
-  assert.match(source, /radiusKm < 5 \? 12/)
-  assert.match(source, /radiusKm < 15 \? 10/)
+test("does not use radiusKm for zoom calculation", () => {
+  assert.doesNotMatch(source, /radiusKm/)
 })
 
-test("renders cluster boundary Polygon", () => {
+test("FitBounds component uses useMap and fitBounds to fit polygon", () => {
+  assert.match(source, /function FitBounds\(/)
+  assert.match(source, /const map = useMap\(\)/)
+  assert.match(source, /L\.latLngBounds\(positions\)/)
+  assert.match(source, /map\.fitBounds\(bounds/)
+})
+
+test("FitBounds is rendered inside MapContainer", () => {
+  assert.match(source, /<FitBounds positions=\{positions\} \/>/)
+})
+
+test("renders cluster boundary Polygon (not Circle)", () => {
   assert.match(source, /<Polygon/)
   assert.match(source, /positions=\{positions\}/)
+  assert.doesNotMatch(source, /<Circle[\s>]/)
+})
+
+test("converts boundary array to positions", () => {
+  assert.match(source, /boundary\.map\(\(p\) => \[p\.lat, p\.lng\]\)/)
 })
 
 test("renders lead CircleMarkers with status colors", () => {

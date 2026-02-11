@@ -58,11 +58,11 @@ test("renders ClusterMap with dynamic import (no SSR)", () => {
   assert.match(source, /<ClusterMap/)
 })
 
-test("passes cluster boundary, center and radius to ClusterMap", () => {
+test("passes cluster boundary and center to ClusterMap (no radiusKm)", () => {
   assert.match(source, /boundary=\{cluster\.boundary\}/)
   assert.match(source, /centerLat=\{cluster\.centerLat\}/)
   assert.match(source, /centerLng=\{cluster\.centerLng\}/)
-  assert.match(source, /radiusKm=\{cluster\.radiusKm\}/)
+  assert.doesNotMatch(source, /radiusKm=\{cluster\.radiusKm\}/)
 })
 
 test("renders a leads table with Name, Status, and Email columns", () => {

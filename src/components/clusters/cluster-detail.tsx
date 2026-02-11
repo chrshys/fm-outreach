@@ -186,7 +186,6 @@ export function ClusterDetail({ clusterId }: { clusterId: Id<"clusters"> }) {
               boundary={cluster.boundary}
               centerLat={cluster.centerLat}
               centerLng={cluster.centerLng}
-              radiusKm={cluster.radiusKm}
               leads={
                 leads
                   ?.filter((l) => l.latitude !== undefined && l.longitude !== undefined)

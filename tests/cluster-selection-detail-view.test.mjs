@@ -28,12 +28,11 @@ test("detail view dynamically imports ClusterMap (no SSR)", () => {
   assert.match(detailSource, /const ClusterMap = dynamic\(\(\) => import\("\.\/cluster-map"\), \{ ssr: false \}\)/)
 })
 
-test("detail view renders ClusterMap with boundary, center, and radius", () => {
+test("detail view renders ClusterMap with boundary and center (no radiusKm)", () => {
   assert.match(detailSource, /<ClusterMap/)
   assert.match(detailSource, /boundary=\{cluster\.boundary\}/)
   assert.match(detailSource, /centerLat=\{cluster\.centerLat\}/)
   assert.match(detailSource, /centerLng=\{cluster\.centerLng\}/)
-  assert.match(detailSource, /radiusKm=\{cluster\.radiusKm\}/)
 })
 
 test("detail view passes filtered leads to ClusterMap", () => {
