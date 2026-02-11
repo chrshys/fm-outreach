@@ -125,6 +125,7 @@ export default function MapPage() {
   return (
     <AppLayout>
       <div className="relative h-[calc(100vh-73px)] -m-6">
+        <div className="isolate h-full w-full">
         <MapContent
           leads={filteredLeads}
           clusters={filteredClusters}
@@ -132,12 +133,13 @@ export default function MapPage() {
           onPolygonDrawn={handlePolygonDrawn}
           pendingPolygon={pendingPolygon}
         />
+        </div>
         <MapFilters
           value={filters}
           onChange={setFilters}
           clusters={clusterOptions}
         />
-        <div className="absolute right-3 top-3 z-[1000]">
+        <div className="absolute right-3 top-3 z-10">
           <Button
             size="sm"
             variant={isDrawing ? "default" : "outline"}

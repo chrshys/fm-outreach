@@ -151,7 +151,7 @@ export function MapFilters({ value, onChange, clusters }: MapFiltersProps) {
   }
 
   return (
-    <div className="absolute left-3 top-3 z-[1000]">
+    <div className="absolute left-3 top-3 z-10">
       {!open ? (
         <Button
           size="sm"
