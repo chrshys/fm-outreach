@@ -171,6 +171,21 @@ export const listGrids = query({
   },
 });
 
+export const updateGridQueries = mutation({
+  args: {
+    gridId: v.id("discoveryGrids"),
+    queries: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const grid = await ctx.db.get(args.gridId);
+    if (!grid) {
+      throw new ConvexError("Grid not found");
+    }
+
+    await ctx.db.patch(args.gridId, { queries: args.queries });
+  },
+});
+
 export const listCells = query({
   args: {
     gridId: v.id("discoveryGrids"),
