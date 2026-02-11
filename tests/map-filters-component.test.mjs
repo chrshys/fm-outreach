@@ -74,7 +74,7 @@ test("Cluster select maps over clusters prop", () => {
 
 test("MapFilters renders as absolute-positioned overlay panel", () => {
   assert.match(source, /absolute/)
-  assert.match(source, /z-\[1000\]/)
+  assert.match(source, /z-10/)
 })
 
 test("panel has solid bg-card background", () => {

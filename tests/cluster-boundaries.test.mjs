@@ -41,7 +41,7 @@ test("MapContentProps accepts optional clusters prop", () => {
 })
 
 test("renders Polygon elements for each cluster", () => {
-  assert.match(source, /clusters\.map\(/)
+  assert.match(source, /clusters\.filter\(.*\)\.map\(/)
   assert.match(source, /<Polygon/)
 })
 
@@ -67,9 +67,9 @@ test("Tooltip shows cluster name", () => {
 })
 
 test("cluster boundaries render before lead markers (z-order)", () => {
-  const circlePos = source.indexOf("clusters.map(")
+  const circlePos = source.indexOf("clusters.filter(")
   const markerPos = source.indexOf("leads.map(")
-  assert.ok(circlePos >= 0, "should have clusters.map")
+  assert.ok(circlePos >= 0, "should have clusters.filter/map")
   assert.ok(markerPos >= 0, "should have leads.map")
   assert.ok(circlePos < markerPos, "clusters should render before leads for proper z-order")
 })

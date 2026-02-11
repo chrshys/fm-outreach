@@ -124,7 +124,6 @@ function isInteractiveTarget(target: EventTarget | null) {
 export default function LeadsPage() {
   const router = useRouter()
   const convex = useConvex()
-  // @ts-expect-error Convex FilterApi type instantiation too deep with many modules
   const clusterData = useQuery(api.clusters.list) as { _id: string; name: string }[] | undefined
   const clusterOptions = useMemo(
     () => (clusterData ?? []).map((c) => ({ id: c._id, name: c.name })),

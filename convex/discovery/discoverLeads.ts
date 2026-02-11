@@ -127,7 +127,6 @@ export const discoverLeads = action({
       updatedAt: now,
     }));
 
-    // @ts-expect-error Convex type instantiation too deep with many modules
     const insertRef = internal.discovery.discoverLeads.insertDiscoveredLeads;
     const result = await ctx.runMutation(insertRef, { leads });
 

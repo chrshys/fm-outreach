@@ -10,7 +10,7 @@ test("wraps the leads page content with AppLayout", () => {
 })
 
 test("loads leads from Convex and paginates until cursor is exhausted", () => {
-  assert.match(source, /import\s+\{\s*useConvex\s*\}\s+from\s+"convex\/react"/)
+  assert.match(source, /import\s+\{[^}]*useConvex[^}]*\}\s+from\s+"convex\/react"/)
   assert.match(source, /const\s+convex\s*=\s*useConvex\(\)/)
   assert.match(source, /await\s+convex\.query\(api\.leads\.list,\s*\{[\s\S]*cursor,[\s\S]*\}\)/)
   assert.match(source, /loadedLeads\.push\(\.\.\.result\.leads\)/)

@@ -41,7 +41,7 @@ test("button shows Cancel Drawing text when isDrawing is true", () => {
 })
 
 test("button is positioned in top-right control area", () => {
-  assert.match(source, /absolute right-3 top-3 z-\[1000\]/)
+  assert.match(source, /absolute right-3 top-3 z-10/)
 })
 
 // --- PolygonDraw integration ---

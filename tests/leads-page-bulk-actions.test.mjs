@@ -8,7 +8,7 @@ test("leads page imports and renders bulk actions with selected lead ids", () =>
   assert.match(source, /import\s+\{\s*BulkActions\s*\}\s+from\s+"@\/components\/leads\/bulk-actions"/)
   assert.match(
     source,
-    /<BulkActions\s+selectedLeadIds=\{selectedLeadIds\s+as\s+Id<"leads">\[\]\}\s+clusterOptions=\{clusters\}\s+onComplete=\{handleBulkActionComplete\}\s*\/>/s
+    /<BulkActions\s+selectedLeadIds=\{selectedLeadIds\s+as\s+Id<"leads">\[\]\}\s+clusterOptions=\{clusterOptions\s+as\s+\{[^}]*\}\[\]\}\s+onComplete=\{handleBulkActionComplete\}\s*\/>/s
   )
 })
 

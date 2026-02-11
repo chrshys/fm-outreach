@@ -55,6 +55,6 @@ test("lead filters renders required toggles and dismissible pills", () => {
 
 test("leads page renders lead filters above the table", () => {
   assert.match(pageSource, /import\s+\{\s*LeadFilters/)
-  assert.match(pageSource, /<LeadFilters\s+value=\{filters\}\s+onChange=\{setFilters\}\s*\/>/)
+  assert.match(pageSource, /<LeadFilters\s+value=\{filters\}\s+onChange=\{setFilters\}\s+clusters=\{clusterOptions\}\s*\/>/)
   assert.match(pageSource, /const\s+filteredLeads\s*=\s*useMemo\(/)
 })

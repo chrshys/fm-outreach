@@ -29,7 +29,7 @@ test("clusters defaults to empty array", () => {
 })
 
 test("maps over clusters array to render polygons", () => {
-  assert.match(source, /clusters\.map\(/)
+  assert.match(source, /clusters\.filter\(.*\)\.map\(/)
 })
 
 test("converts boundary coordinates to positions array", () => {

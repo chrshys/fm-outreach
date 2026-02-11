@@ -37,6 +37,8 @@ test("convex schema exports to JSON with all required tables", () => {
       "activities",
       "campaigns",
       "clusters",
+      "discoveryCells",
+      "discoveryGrids",
       "emailBlockList",
       "emailTemplates",
       "emails",

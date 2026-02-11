@@ -40,7 +40,6 @@ const MapContent = dynamic(() => import("@/components/map/map-content"), {
 })
 
 export default function MapPage() {
-  // @ts-expect-error Convex FilterApi type instantiation too deep with many modules
   const leads = useQuery(api.leads.listWithCoords)
   const clusters = useQuery(api.clusters.list)
   const createCluster = useMutation(api.clusters.createPolygonCluster)
