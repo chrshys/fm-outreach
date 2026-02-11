@@ -84,6 +84,48 @@ export const deleteAllClusters = mutation({
   },
 })
 
+export const deleteCluster = mutation({
+  args: {
+    clusterId: v.id("clusters"),
+  },
+  handler: async (ctx, args) => {
+    const cluster = await ctx.db.get(args.clusterId)
+    if (!cluster) {
+      throw new Error("Cluster not found")
+    }
+
+    // Find all leads assigned to this cluster
+    const leads = await ctx.db
+      .query("leads")
+      .withIndex("by_clusterId", (q) => q.eq("clusterId", args.clusterId))
+      .collect()
+
+    // Unassign each lead and log activity
+    const now = Date.now()
+    for (const lead of leads) {
+      await ctx.db.patch(lead._id, {
+        clusterId: undefined,
+        updatedAt: now,
+      })
+      await ctx.db.insert("activities", {
+        leadId: lead._id,
+        type: "note_added",
+        description: `Unassigned from cluster "${cluster.name}"`,
+        metadata: {
+          clusterId: args.clusterId,
+          clusterName: cluster.name,
+        },
+        createdAt: now,
+      })
+    }
+
+    // Delete the cluster doc
+    await ctx.db.delete(args.clusterId)
+
+    return { leadsUnassigned: leads.length }
+  },
+})
+
 export const createPolygonCluster = mutation({
   args: {
     name: v.string(),
