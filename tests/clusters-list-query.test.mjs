@@ -21,3 +21,14 @@ test("list query computes live lead counts from leads table", () => {
   assert.match(source, /\.withIndex\("by_clusterId"/)
   assert.match(source, /leadCount:\s*leads\.length/)
 })
+
+test("list query returns boundary field via cluster spread", () => {
+  // The spread { ...cluster, leadCount } includes all cluster fields.
+  // Verify the spread is used so boundary (a schema field) is passed through.
+  assert.match(source, /\{\s*\.\.\.cluster/)
+})
+
+test("clusters schema includes boundary field", () => {
+  const schema = fs.readFileSync("convex/schema.ts", "utf8")
+  assert.match(schema, /boundary:\s*v\.array\(v\.object\(\{\s*lat:\s*v\.number\(\),\s*lng:\s*v\.number\(\)\s*\}\)\)/)
+})
