@@ -2,12 +2,13 @@
 
 import { useCallback, useMemo, useState } from "react"
 import dynamic from "next/dynamic"
-import { useQuery } from "convex/react"
-import { useMutation } from "convex/react"
+import { useQuery, useMutation } from "convex/react"
 import { Grid3X3, PenTool } from "lucide-react"
+import { toast } from "sonner"
 
 import type { MapBounds } from "@/components/map/map-bounds-emitter"
 import { api } from "../../../convex/_generated/api"
+import type { Id } from "../../../convex/_generated/dataModel"
 import { AppLayout } from "@/components/layout/app-layout"
 import {
   MapFilters,
@@ -49,6 +50,15 @@ export default function MapPage() {
   const [filters, setFilters] = useState<MapFiltersValue>(defaultMapFilters)
   const [viewMode, setViewMode] = useState<"clusters" | "discovery">("clusters")
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
+  const [selectedGridId, setSelectedGridId] = useState<Id<"discoveryGrids"> | null>(null)
+
+  // Discovery queries & mutations
+  const gridCells = useQuery(
+    api.discovery.gridCells.listCells,
+    selectedGridId && viewMode === "discovery" ? { gridId: selectedGridId } : "skip",
+  )
+  const requestDiscoverCell = useMutation(api.discovery.discoverCell.requestDiscoverCell)
+  const subdivideCell = useMutation(api.discovery.gridCells.subdivideCell)
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [drawnPolygon, setDrawnPolygon] = useState<
@@ -151,6 +161,36 @@ export default function MapPage() {
     setClusterName("")
   }, [])
 
+  const handleCellClick = useCallback(async (cellId: string) => {
+    const cell = gridCells?.find((c) => c._id === cellId)
+    if (!cell) return
+
+    if (cell.status === "searching") {
+      toast.info("Search already in progress")
+      return
+    }
+
+    if (cell.status === "unsearched" || cell.status === "searched") {
+      try {
+        await requestDiscoverCell({ cellId: cellId as Id<"discoveryCells"> })
+        toast.success("Discovery started for cell")
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to discover cell")
+      }
+      return
+    }
+
+    if (cell.status === "saturated") {
+      try {
+        await subdivideCell({ cellId: cellId as Id<"discoveryCells"> })
+        toast.success("Cell subdivided into 4 quadrants")
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to subdivide cell")
+      }
+      return
+    }
+  }, [gridCells, requestDiscoverCell, subdivideCell])
+
   return (
     <AppLayout>
       <div className="relative h-[calc(100vh-73px)] -m-6">
@@ -161,6 +201,8 @@ export default function MapPage() {
           isDrawing={isDrawing}
           onPolygonDrawn={handlePolygonDrawn}
           pendingPolygon={pendingPolygon}
+          gridCells={viewMode === "discovery" ? gridCells ?? undefined : undefined}
+          onCellClick={viewMode === "discovery" ? handleCellClick : undefined}
           onBoundsChange={handleBoundsChange}
         />
         </div>
@@ -171,7 +213,7 @@ export default function MapPage() {
             clusters={clusterOptions}
           />
         ) : (
-          <DiscoveryPanel mapBounds={mapBounds} />
+          <DiscoveryPanel mapBounds={mapBounds} selectedGridId={selectedGridId} onGridSelect={setSelectedGridId} />
         )}
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           <Button

@@ -16,6 +16,8 @@ import { Separator } from "@/components/ui/separator"
 
 type DiscoveryPanelProps = {
   mapBounds: MapBounds | null
+  selectedGridId: Id<"discoveryGrids"> | null
+  onGridSelect: (gridId: Id<"discoveryGrids">) => void
 }
 
 type GridWithStats = {
@@ -39,9 +41,8 @@ const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
   { status: "saturated", color: "#f97316", label: "Saturated" },
 ]
 
-export function DiscoveryPanel({ mapBounds }: DiscoveryPanelProps) {
+export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect }: DiscoveryPanelProps) {
   const [open, setOpen] = useState(true)
-  const [selectedGridId, setSelectedGridId] = useState<Id<"discoveryGrids"> | null>(null)
   const [showNewGridForm, setShowNewGridForm] = useState(false)
   const [gridName, setGridName] = useState("")
   const [region, setRegion] = useState("")
@@ -58,7 +59,7 @@ export function DiscoveryPanel({ mapBounds }: DiscoveryPanelProps) {
 
   // Auto-select first grid if none selected
   if (!selectedGridId && grids && grids.length > 0) {
-    setSelectedGridId(grids[0]._id)
+    onGridSelect(grids[0]._id)
   }
 
   const handleCreateGrid = useCallback(async () => {
@@ -73,7 +74,7 @@ export function DiscoveryPanel({ mapBounds }: DiscoveryPanelProps) {
         neLat: mapBounds.neLat,
         neLng: mapBounds.neLng,
       })
-      setSelectedGridId(result.gridId as Id<"discoveryGrids">)
+      onGridSelect(result.gridId as Id<"discoveryGrids">)
       setShowNewGridForm(false)
       setGridName("")
       setRegion("")
@@ -82,7 +83,7 @@ export function DiscoveryPanel({ mapBounds }: DiscoveryPanelProps) {
     } catch {
       toast.error("Failed to create grid")
     }
-  }, [gridName, region, province, mapBounds, generateGrid])
+  }, [gridName, region, province, mapBounds, generateGrid, onGridSelect])
 
   const handleAddQuery = useCallback(async () => {
     if (!newQuery.trim() || !selectedGrid) return
@@ -167,7 +168,7 @@ export function DiscoveryPanel({ mapBounds }: DiscoveryPanelProps) {
                         type="button"
                         className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
                         onClick={() => {
-                          setSelectedGridId(grid._id)
+                          onGridSelect(grid._id)
                           setShowGridSelector(false)
                           setShowNewGridForm(false)
                         }}
