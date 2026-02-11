@@ -161,6 +161,20 @@ export default defineSchema({
     value: v.string(),
   }).index("by_key", ["key"]),
 
+  discoveryGrids: defineTable({
+    name: v.string(),
+    region: v.string(),
+    province: v.string(),
+    queries: v.array(v.string()),
+    swLat: v.number(),
+    swLng: v.number(),
+    neLat: v.number(),
+    neLng: v.number(),
+    cellSizeKm: v.number(),
+    totalLeadsFound: v.number(),
+    createdAt: v.number(),
+  }),
+
   emailBlockList: defineTable({
     email: v.string(),
     reason: v.string(),

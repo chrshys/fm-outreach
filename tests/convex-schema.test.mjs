@@ -13,6 +13,7 @@ test("defines all required tables", () => {
     "emailTemplates",
     "settings",
     "campaigns",
+    "discoveryGrids",
   ]) {
     assert.match(schemaSource, new RegExp(`\\b${tableName}:\\s*defineTable\\(`));
   }
