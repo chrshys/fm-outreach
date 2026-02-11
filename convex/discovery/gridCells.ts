@@ -102,10 +102,10 @@ export const subdivideCell = mutation({
     const existingChildren = await ctx.db
       .query("discoveryCells")
       .withIndex("by_parentCellId", (q) => q.eq("parentCellId", args.cellId))
-      .first();
+      .collect();
 
-    if (existingChildren) {
-      throw new ConvexError("Cell has already been subdivided");
+    if (existingChildren.length > 0) {
+      return { childIds: existingChildren.map((c) => c._id) };
     }
 
     const midLat = (cell.swLat + cell.neLat) / 2;

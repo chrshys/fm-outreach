@@ -83,10 +83,10 @@ async function subdivideCell(ctx, args) {
   const existingChildren = await ctx.db
     .query("discoveryCells")
     .withIndex("by_parentCellId", (q) => q.eq("parentCellId", args.cellId))
-    .first();
+    .collect();
 
-  if (existingChildren) {
-    throw new ConvexError("Cell has already been subdivided");
+  if (existingChildren.length > 0) {
+    return { childIds: existingChildren.map((c) => c._id) };
   }
 
   const midLat = (cell.swLat + cell.neLat) / 2;
@@ -346,21 +346,41 @@ test("throws when cell is already at MAX_DEPTH (4)", async () => {
 // Guard: rejects duplicate subdivision
 // ============================================================
 
-test("throws when cell has already been subdivided", async () => {
+test("re-subdividing an already-subdivided cell returns existing children (idempotent)", async () => {
   const db = createMockDb();
   const { cellId } = await seedSaturatedCell(db);
 
   // First subdivision succeeds
-  await subdivideCell({ db }, { cellId });
+  const first = await subdivideCell({ db }, { cellId });
 
   // Patch parent back to saturated to bypass status guard
   await db.patch(cellId, { status: "saturated", isLeaf: true });
 
-  // Second subdivision should fail due to existing children
-  await assert.rejects(
-    () => subdivideCell({ db }, { cellId }),
-    { message: "Cell has already been subdivided" },
+  // Second subdivision returns the same children without creating duplicates
+  const second = await subdivideCell({ db }, { cellId });
+
+  assert.deepStrictEqual(
+    second.childIds.sort(),
+    first.childIds.sort(),
+    "Second call must return the same child IDs",
   );
+});
+
+test("idempotent subdivision does not create additional children", async () => {
+  const db = createMockDb();
+  const { cellId } = await seedSaturatedCell(db);
+
+  await subdivideCell({ db }, { cellId });
+  await db.patch(cellId, { status: "saturated", isLeaf: true });
+  await subdivideCell({ db }, { cellId });
+
+  // Count children for this parent
+  const children = await db
+    .query("discoveryCells")
+    .withIndex("by_parentCellId", (q) => q.eq("parentCellId", cellId))
+    .collect();
+
+  assert.equal(children.length, 4, "Must still have exactly 4 children after idempotent retry");
 });
 
 // ============================================================

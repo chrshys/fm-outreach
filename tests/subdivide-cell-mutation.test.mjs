@@ -49,7 +49,7 @@ test("throws ConvexError when cell depth >= MAX_DEPTH", () => {
 });
 
 // ============================================================
-// 5. Guard: no existing children (prevents duplicate subdivision)
+// 5. Idempotent: returns existing children if already subdivided
 // ============================================================
 
 test("queries by_parentCellId index to check for existing children", () => {
@@ -57,8 +57,9 @@ test("queries by_parentCellId index to check for existing children", () => {
   assert.match(source, /q\.eq\("parentCellId",\s*args\.cellId\)/);
 });
 
-test("throws ConvexError when children already exist", () => {
-  assert.match(source, /throw\s+new\s+ConvexError\("Cell has already been subdivided"\)/);
+test("returns existing children when already subdivided (idempotent)", () => {
+  assert.match(source, /if\s*\(existingChildren\.length\s*>\s*0\)/);
+  assert.match(source, /return\s*\{\s*childIds:\s*existingChildren\.map/);
 });
 
 // ============================================================

@@ -47,16 +47,18 @@ test("subdivideCell requires cell status === saturated (guard)", () => {
   assert.match(block, /throw\s+new\s+ConvexError/);
 });
 
-test("subdivideCell rejects duplicate subdivision via by_parentCellId index", () => {
+test("subdivideCell is idempotent — returns existing children via by_parentCellId index", () => {
   const subdivideStart = source.indexOf("export const subdivideCell");
   const subdivideEnd = source.indexOf("export const listGrids");
   const block = source.slice(subdivideStart, subdivideEnd);
 
   // Queries the index to check for existing children
   assert.match(block, /\.withIndex\("by_parentCellId"/);
-  // If children found, throws
-  assert.match(block, /if\s*\(existingChildren\)/);
-  assert.match(block, /throw\s+new\s+ConvexError\("Cell has already been subdivided"\)/);
+  // Collects existing children
+  assert.match(block, /\.collect\(\)/);
+  // If children found, returns them instead of throwing
+  assert.match(block, /if\s*\(existingChildren\.length\s*>\s*0\)/);
+  assert.match(block, /return\s*\{\s*childIds:\s*existingChildren\.map/);
 });
 
 test("subdivideCell enforces max depth of 4", () => {
