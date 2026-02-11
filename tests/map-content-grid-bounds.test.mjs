@@ -8,8 +8,9 @@ test("imports DiscoveryGrid from ./discovery-grid", () => {
   assert.match(source, /import\s+DiscoveryGrid\s+from\s+["']\.\/discovery-grid["']/)
 })
 
-test("imports CellData type from ./discovery-grid", () => {
-  assert.match(source, /import\s+type\s+\{\s*CellData\s*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("imports CellData and CellAction types from ./discovery-grid", () => {
+  assert.match(source, /import\s+type\s+\{.*CellData.*\}\s+from\s+["']\.\/discovery-grid["']/)
+  assert.match(source, /import\s+type\s+\{.*CellAction.*\}\s+from\s+["']\.\/discovery-grid["']/)
 })
 
 test("imports MapBoundsEmitter from ./map-bounds-emitter", () => {
@@ -24,30 +25,30 @@ test("MapContentProps includes optional gridCells of CellData[]", () => {
   assert.match(source, /gridCells\?:\s*CellData\[\]/)
 })
 
-test("MapContentProps includes optional onCellClick callback", () => {
-  assert.match(source, /onCellClick\?:\s*\(cellId:\s*string\)\s*=>\s*void/)
+test("MapContentProps includes optional onCellAction callback", () => {
+  assert.match(source, /onCellAction\?:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>\s*void/)
 })
 
 test("MapContentProps includes optional onBoundsChange callback", () => {
   assert.match(source, /onBoundsChange\?:\s*\(bounds:\s*MapBounds\)\s*=>\s*void/)
 })
 
-test("destructures gridCells, onCellClick, onBoundsChange in function params", () => {
+test("destructures gridCells, onCellAction, onBoundsChange in function params", () => {
   assert.match(source, /gridCells/)
-  assert.match(source, /onCellClick/)
+  assert.match(source, /onCellAction/)
   assert.match(source, /onBoundsChange/)
   // All three should appear in the function signature
   const funcMatch = source.match(/export default function MapContent\(\{([^}]+)\}/)
   assert.ok(funcMatch, "should have MapContent function with destructured params")
   const params = funcMatch[1]
   assert.ok(params.includes("gridCells"), "gridCells in function params")
-  assert.ok(params.includes("onCellClick"), "onCellClick in function params")
+  assert.ok(params.includes("onCellAction"), "onCellAction in function params")
   assert.ok(params.includes("onBoundsChange"), "onBoundsChange in function params")
 })
 
-test("renders DiscoveryGrid conditionally when gridCells and onCellClick provided", () => {
-  assert.match(source, /gridCells\s*&&\s*onCellClick\s*&&/)
-  assert.match(source, /<DiscoveryGrid\s+cells=\{gridCells\}\s+onCellClick=\{onCellClick\}\s*\/>/)
+test("renders DiscoveryGrid conditionally when gridCells and onCellAction provided", () => {
+  assert.match(source, /gridCells\s*&&\s*onCellAction\s*&&/)
+  assert.match(source, /<DiscoveryGrid\s+cells=\{gridCells\}\s+onCellAction=\{onCellAction\}\s*\/>/)
 })
 
 test("renders MapBoundsEmitter conditionally when onBoundsChange provided", () => {

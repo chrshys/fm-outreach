@@ -27,21 +27,21 @@ test("MAX_DEPTH is defined as 4 in discovery-grid component", () => {
 // UI max-depth guard: prevent backend call for max-depth cells
 // ============================================================
 
-test("handleCellClick checks depth >= 4 before calling subdivideCell", () => {
+test("handleCellAction checks depth >= 4 before calling subdivideCell", () => {
   assert.match(pageSource, /cell\.depth\s*>=\s*4/)
 })
 
-test("handleCellClick shows info toast for max-depth cells", () => {
+test("handleCellAction shows info toast for max-depth cells", () => {
   assert.match(pageSource, /toast\.info\("Cell is already at maximum depth"\)/)
 })
 
 test("max-depth guard returns before calling subdivideCell", () => {
   // The depth check and return must appear before the subdivideCell call
-  const saturatedBlock = pageSource.slice(
-    pageSource.indexOf('cell.status === "saturated"'),
+  const subdivideBlock = pageSource.slice(
+    pageSource.indexOf('action.type === "subdivide"'),
   )
-  const depthCheckIdx = saturatedBlock.indexOf("cell.depth >= 4")
-  const subdividCallIdx = saturatedBlock.indexOf("await subdivideCell")
+  const depthCheckIdx = subdivideBlock.indexOf("cell.depth >= 4")
+  const subdividCallIdx = subdivideBlock.indexOf("await subdivideCell")
   assert.ok(depthCheckIdx > -1, "depth check must exist")
   assert.ok(subdividCallIdx > -1, "subdivide call must exist")
   assert.ok(
@@ -51,15 +51,15 @@ test("max-depth guard returns before calling subdivideCell", () => {
 })
 
 // ============================================================
-// Click handler: saturated cell triggers subdivision
+// Click handler: subdivide action triggers subdivision
 // ============================================================
 
-test("handleCellClick calls subdivideCell for saturated cells", () => {
-  assert.match(pageSource, /cell\.status\s*===\s*"saturated"/)
+test("handleCellAction dispatches subdivide via action.type", () => {
+  assert.match(pageSource, /action\.type\s*===\s*"subdivide"/)
   assert.match(pageSource, /subdivideCell\(\{/)
 })
 
-test("handleCellClick passes cellId to subdivideCell", () => {
+test("handleCellAction passes cellId to subdivideCell", () => {
   assert.match(pageSource, /subdivideCell\(\{\s*cellId:\s*cellId\s+as\s+Id<"discoveryCells">/)
 })
 

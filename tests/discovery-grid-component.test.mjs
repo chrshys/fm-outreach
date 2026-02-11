@@ -39,9 +39,9 @@ test("CellData includes optional querySaturation array", () => {
   assert.match(source, /querySaturation\?:\s*Array<\{\s*query:\s*string;\s*count:\s*number\s*\}>/)
 })
 
-test("accepts cells and onCellClick props", () => {
+test("accepts cells and onCellAction props", () => {
   assert.match(source, /cells:\s*CellData\[\]/)
-  assert.match(source, /onCellClick:\s*\(cellId:\s*string\)\s*=>\s*void/)
+  assert.match(source, /onCellAction:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>\s*void/)
 })
 
 test("renders Rectangle for each cell", () => {
@@ -60,9 +60,9 @@ test("Rectangle receives pathOptions from getCellColor", () => {
   assert.match(source, /pathOptions=\{pathOptions\}/)
 })
 
-test("Rectangle has click eventHandler calling onCellClick", () => {
+test("Rectangle has click eventHandler calling onCellAction", () => {
   assert.match(source, /eventHandlers=\{/)
-  assert.match(source, /click:\s*\(\)\s*=>\s*onCellClick\(cell\._id\)/)
+  assert.match(source, /click:\s*\(\)\s*=>\s*onCellAction\(cell\._id/)
 })
 
 test("Tooltip is nested inside Rectangle", () => {

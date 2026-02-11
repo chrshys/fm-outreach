@@ -16,20 +16,20 @@ test("gridCells prop is optional in MapContentProps", () => {
   assert.match(mapContentSource, /gridCells\?:\s*CellData\[\]/)
 })
 
-test("onCellClick prop is optional in MapContentProps", () => {
-  assert.match(mapContentSource, /onCellClick\?:\s*\(cellId:\s*string\)\s*=>/)
+test("onCellAction prop is optional in MapContentProps", () => {
+  assert.match(mapContentSource, /onCellAction\?:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>/)
 })
 
-test("DiscoveryGrid is guarded by gridCells && onCellClick", () => {
-  assert.match(mapContentSource, /\{gridCells\s*&&\s*onCellClick\s*&&/)
+test("DiscoveryGrid is guarded by gridCells && onCellAction", () => {
+  assert.match(mapContentSource, /\{gridCells\s*&&\s*onCellAction\s*&&/)
 })
 
 test("map page conditionally passes gridCells to MapContent in discovery mode", () => {
   assert.match(mapPageSource, /gridCells=\{viewMode\s*===\s*"discovery"/)
 })
 
-test("map page conditionally passes onCellClick to MapContent in discovery mode", () => {
-  assert.match(mapPageSource, /onCellClick=\{viewMode\s*===\s*"discovery"/)
+test("map page conditionally passes onCellAction to MapContent in discovery mode", () => {
+  assert.match(mapPageSource, /onCellAction=\{viewMode\s*===\s*"discovery"/)
 })
 
 test("DiscoveryGrid maps over cells array safely", () => {

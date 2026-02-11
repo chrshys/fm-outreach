@@ -7,6 +7,7 @@ import { Grid3X3, PenTool } from "lucide-react"
 import { toast } from "sonner"
 
 import type { MapBounds } from "@/components/map/map-bounds-emitter"
+import type { CellAction } from "@/components/map/discovery-grid"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import { AppLayout } from "@/components/layout/app-layout"
@@ -165,26 +166,28 @@ export default function MapPage() {
     setClusterName("")
   }, [])
 
-  const handleCellClick = useCallback(async (cellId: string) => {
+  const handleCellAction = useCallback(async (cellId: string, action: CellAction) => {
     const cell = gridCells?.find((c) => c._id === cellId)
     if (!cell) return
 
-    if (cell.status === "searching") {
-      toast.info("Search already in progress")
-      return
-    }
-
-    if (cell.status === "unsearched" || cell.status === "searched") {
-      try {
-        await requestDiscoverCell({ cellId: cellId as Id<"discoveryCells"> })
-        toast.success("Discovery started for cell")
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Failed to discover cell")
+    if (action.type === "search") {
+      if (cell.status === "searching") {
+        toast.info("Search already in progress")
+        return
       }
-      return
+
+      if (cell.status === "unsearched" || cell.status === "searched") {
+        try {
+          await requestDiscoverCell({ cellId: cellId as Id<"discoveryCells"> })
+          toast.success("Discovery started for cell")
+        } catch (err) {
+          toast.error(err instanceof Error ? err.message : "Failed to discover cell")
+        }
+        return
+      }
     }
 
-    if (cell.status === "saturated") {
+    if (action.type === "subdivide") {
       if (cell.depth >= 4) {
         toast.info("Cell is already at maximum depth")
         return
@@ -210,7 +213,7 @@ export default function MapPage() {
           onPolygonDrawn={handlePolygonDrawn}
           pendingPolygon={pendingPolygon}
           gridCells={viewMode === "discovery" ? gridCells ?? undefined : undefined}
-          onCellClick={viewMode === "discovery" ? handleCellClick : undefined}
+          onCellAction={viewMode === "discovery" ? handleCellAction : undefined}
           onBoundsChange={handleBoundsChange}
         />
         </div>

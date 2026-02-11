@@ -67,10 +67,10 @@ test("discovery mode passes gridCells to MapContent", () => {
   )
 })
 
-test("discovery mode passes onCellClick to MapContent", () => {
+test("discovery mode passes onCellAction to MapContent", () => {
   assert.match(
     mapPageSource,
-    /onCellClick=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellClick\s*:\s*undefined\}/,
+    /onCellAction=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellAction\s*:\s*undefined\}/,
   )
 })
 
@@ -90,15 +90,15 @@ test("discovery mode queries gridCells only when grid selected and in discovery 
 
 // --- MapContent renders both modes without error ---
 
-test("MapContent accepts optional gridCells and onCellClick props", () => {
+test("MapContent accepts optional gridCells and onCellAction props", () => {
   assert.match(mapContentSource, /gridCells\?:\s*CellData\[\]/)
-  assert.match(mapContentSource, /onCellClick\?:\s*\(cellId:\s*string\)\s*=>\s*void/)
+  assert.match(mapContentSource, /onCellAction\?:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>\s*void/)
 })
 
-test("MapContent conditionally renders DiscoveryGrid when gridCells and onCellClick provided", () => {
+test("MapContent conditionally renders DiscoveryGrid when gridCells and onCellAction provided", () => {
   assert.match(
     mapContentSource,
-    /\{gridCells\s*&&\s*onCellClick\s*&&\s*\(\s*<DiscoveryGrid/,
+    /\{gridCells\s*&&\s*onCellAction\s*&&\s*\(\s*<DiscoveryGrid/,
   )
 })
 
@@ -135,8 +135,8 @@ test("DiscoveryGrid uses getCellColor for path options", () => {
   assert.match(discoveryGridSource, /getCellColor\(cell\.status\)/)
 })
 
-test("DiscoveryGrid attaches click handler to cells", () => {
-  assert.match(discoveryGridSource, /click:\s*\(\)\s*=>\s*onCellClick\(cell\._id\)/)
+test("DiscoveryGrid attaches click handler to cells via onCellAction", () => {
+  assert.match(discoveryGridSource, /click:\s*\(\)\s*=>\s*onCellAction\(cell\._id/)
 })
 
 test("DiscoveryGrid shows tooltip with formatted status", () => {
@@ -179,17 +179,17 @@ test("DiscoveryPanel displays cell status color legend", () => {
 
 // --- Cell click handlers ---
 
-test("handleCellClick routes unsearched cells to requestDiscoverCell", () => {
+test("handleCellAction routes search action for unsearched cells to requestDiscoverCell", () => {
   assert.match(mapPageSource, /cell\.status\s*===\s*"unsearched"/)
   assert.match(mapPageSource, /requestDiscoverCell\(\{/)
 })
 
-test("handleCellClick routes saturated cells to subdivideCell", () => {
-  assert.match(mapPageSource, /cell\.status\s*===\s*"saturated"/)
+test("handleCellAction routes subdivide action to subdivideCell", () => {
+  assert.match(mapPageSource, /action\.type\s*===\s*"subdivide"/)
   assert.match(mapPageSource, /subdivideCell\(\{/)
 })
 
-test("handleCellClick shows toast for already-searching cells", () => {
+test("handleCellAction shows toast for already-searching cells", () => {
   assert.match(mapPageSource, /cell\.status\s*===\s*"searching"/)
   assert.match(mapPageSource, /toast\.info\("Search already in progress"\)/)
 })
@@ -214,11 +214,11 @@ test("cluster array is empty (not undefined) when in discovery mode", () => {
   )
 })
 
-test("MapContent guards DiscoveryGrid render with both gridCells and onCellClick", () => {
+test("MapContent guards DiscoveryGrid render with both gridCells and onCellAction", () => {
   // Both must be truthy to render, preventing crashes when either is undefined
   assert.match(
     mapContentSource,
-    /gridCells\s*&&\s*onCellClick/,
+    /gridCells\s*&&\s*onCellAction/,
   )
 })
 

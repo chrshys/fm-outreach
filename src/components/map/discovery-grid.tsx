@@ -4,6 +4,11 @@ import { Rectangle, Tooltip } from "react-leaflet"
 import { getCellColor } from "./cell-colors"
 import type { CellStatus } from "./cell-colors"
 
+export type CellAction =
+  | { type: "search"; mechanism: string }
+  | { type: "subdivide" }
+  | { type: "undivide" }
+
 export type CellData = {
   _id: string
   swLat: number
@@ -20,7 +25,7 @@ export type CellData = {
 
 type DiscoveryGridProps = {
   cells: CellData[]
-  onCellClick: (cellId: string) => void
+  onCellAction: (cellId: string, action: CellAction) => void
 }
 
 const MAX_DEPTH = 4
@@ -50,7 +55,7 @@ function formatTooltip(cell: CellData): string {
   return parts.join("\n")
 }
 
-export default function DiscoveryGrid({ cells, onCellClick }: DiscoveryGridProps) {
+export default function DiscoveryGrid({ cells, onCellAction }: DiscoveryGridProps) {
   return (
     <>
       {cells.map((cell) => {
@@ -64,7 +69,7 @@ export default function DiscoveryGrid({ cells, onCellClick }: DiscoveryGridProps
             key={cell._id}
             bounds={bounds}
             pathOptions={pathOptions}
-            eventHandlers={{ click: () => onCellClick(cell._id) }}
+            eventHandlers={{ click: () => onCellAction(cell._id, { type: "search", mechanism: "click" }) }}
           >
             <Tooltip>{formatTooltip(cell)}</Tooltip>
           </Rectangle>

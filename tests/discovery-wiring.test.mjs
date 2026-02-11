@@ -34,55 +34,55 @@ test("uses subdivideCell mutation", () => {
   assert.match(pageSource, /useMutation\(api\.discovery\.gridCells\.subdivideCell\)/)
 })
 
-// --- handleCellClick ---
+// --- handleCellAction ---
 
-test("defines handleCellClick callback", () => {
-  assert.match(pageSource, /handleCellClick\s*=\s*useCallback\(async\s*\(cellId:\s*string\)/)
+test("defines handleCellAction callback", () => {
+  assert.match(pageSource, /handleCellAction\s*=\s*useCallback\(async\s*\(cellId:\s*string,\s*action:\s*CellAction\)/)
 })
 
-test("handleCellClick looks up cell from gridCells", () => {
+test("handleCellAction looks up cell from gridCells", () => {
   assert.match(pageSource, /gridCells\?\s*\.find\(\(c\)\s*=>\s*c\._id\s*===\s*cellId\)/)
 })
 
-test("handleCellClick shows info toast for searching status", () => {
+test("handleCellAction shows info toast for searching status on search action", () => {
   assert.match(pageSource, /cell\.status\s*===\s*"searching"/)
   assert.match(pageSource, /toast\.info\("Search already in progress"\)/)
 })
 
-test("handleCellClick calls requestDiscoverCell for unsearched cells", () => {
+test("handleCellAction calls requestDiscoverCell for unsearched cells on search action", () => {
   assert.match(pageSource, /cell\.status\s*===\s*"unsearched"\s*\|\|\s*cell\.status\s*===\s*"searched"/)
   assert.match(pageSource, /requestDiscoverCell\(\{/)
 })
 
-test("handleCellClick shows success toast on discover", () => {
+test("handleCellAction shows success toast on discover", () => {
   assert.match(pageSource, /toast\.success\("Discovery started for cell"\)/)
 })
 
-test("handleCellClick calls subdivideCell for saturated cells", () => {
-  assert.match(pageSource, /cell\.status\s*===\s*"saturated"/)
+test("handleCellAction dispatches on action.type for subdivide", () => {
+  assert.match(pageSource, /action\.type\s*===\s*"subdivide"/)
   assert.match(pageSource, /subdivideCell\(\{/)
 })
 
-test("handleCellClick shows success toast on subdivide", () => {
+test("handleCellAction shows success toast on subdivide", () => {
   assert.match(pageSource, /toast\.success\("Cell subdivided into 4 quadrants"\)/)
 })
 
-test("handleCellClick has try/catch for discover with error toast", () => {
+test("handleCellAction has try/catch for discover with error toast", () => {
   assert.match(pageSource, /toast\.error\(err instanceof Error \? err\.message : "Failed to discover cell"\)/)
 })
 
-test("handleCellClick has try/catch for subdivide with error toast", () => {
+test("handleCellAction has try/catch for subdivide with error toast", () => {
   assert.match(pageSource, /toast\.error\(err instanceof Error \? err\.message : "Failed to subdivide cell"\)/)
 })
 
-// --- MapContent receives gridCells and onCellClick ---
+// --- MapContent receives gridCells and onCellAction ---
 
 test("passes gridCells to MapContent in discovery mode", () => {
   assert.match(pageSource, /gridCells=\{viewMode\s*===\s*"discovery"\s*\?\s*gridCells\s*\?\?\s*undefined\s*:\s*undefined\}/)
 })
 
-test("passes onCellClick to MapContent in discovery mode", () => {
-  assert.match(pageSource, /onCellClick=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellClick\s*:\s*undefined\}/)
+test("passes onCellAction to MapContent in discovery mode", () => {
+  assert.match(pageSource, /onCellAction=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellAction\s*:\s*undefined\}/)
 })
 
 // --- DiscoveryPanel receives selectedGridId and onGridSelect ---
