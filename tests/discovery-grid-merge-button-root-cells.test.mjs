@@ -2,8 +2,13 @@ import test from "node:test"
 import assert from "node:assert/strict"
 import fs from "node:fs"
 
-const source = fs.readFileSync(
+const gridSource = fs.readFileSync(
   "src/components/map/discovery-grid.tsx",
+  "utf8",
+)
+
+const panelSource = fs.readFileSync(
+  "src/components/map/discovery-panel.tsx",
   "utf8",
 )
 
@@ -12,18 +17,34 @@ const source = fs.readFileSync(
 // ============================================================
 
 test("getAvailableActions includes undivide for depth > 0 cells without parentCellId", () => {
-  const fnBlock = source.slice(
-    source.indexOf("export function getAvailableActions"),
-    source.indexOf("function formatShortDate"),
+  const fnBlock = gridSource.slice(
+    gridSource.indexOf("export function getAvailableActions"),
+    gridSource.indexOf("function formatShortDate"),
   )
   assert.match(fnBlock, /cell\.depth\s*>\s*0/)
   assert.doesNotMatch(fnBlock, /cell\.parentCellId/)
 })
 
 // ============================================================
+// Merge button in discovery panel uses depth > 0 (not parentCellId)
+// ============================================================
+
+test("panel merge button is gated on depth > 0", () => {
+  assert.match(panelSource, /selectedCell\.depth\s*>\s*0/)
+})
+
+test("panel merge button does not use parentCellId", () => {
+  // Extract the selected-cell section (from "Selected Cell" label to end of that block)
+  const selectedCellStart = panelSource.indexOf("{/* Selected Cell */}")
+  assert.ok(selectedCellStart !== -1, "Selected Cell section should exist in panel")
+  const selectedCellBlock = panelSource.slice(selectedCellStart, selectedCellStart + 2000)
+  assert.doesNotMatch(selectedCellBlock, /parentCellId/)
+})
+
+// ============================================================
 // Tooltip/CellTooltipContent are removed (merge button UI moved to panel)
 // ============================================================
 
-test("no CellTooltipContent component exists", () => {
-  assert.doesNotMatch(source, /function\s+CellTooltipContent/)
+test("no CellTooltipContent component exists in grid", () => {
+  assert.doesNotMatch(gridSource, /function\s+CellTooltipContent/)
 })
