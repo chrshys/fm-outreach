@@ -7,6 +7,10 @@ const gridSource = fs.readFileSync(
   "src/components/map/discovery-grid.tsx",
   "utf8",
 )
+const panelSource = fs.readFileSync(
+  "src/components/map/discovery-panel.tsx",
+  "utf8",
+)
 
 // ============================================================
 // Web Scraping mechanism is enabled in the UI
@@ -45,6 +49,18 @@ test("Coming soon guard returns early before calling requestDiscoverCell", () =>
   assert.ok(
     comingSoonIdx < discoverIdx,
     "Coming soon guard should appear before requestDiscoverCell call",
+  )
+})
+
+// ============================================================
+// Panel button dispatches search action with web_scraper mechanism
+// ============================================================
+
+test("panel button dispatches search action with mechanism id via onCellAction", () => {
+  assert.match(
+    panelSource,
+    /onCellAction\(selectedCell\._id,\s*\{\s*type:\s*"search",\s*mechanism:\s*mechanism\.id\s*\}\)/,
+    "panel button onClick should dispatch search action with the mechanism id",
   )
 })
 
