@@ -247,3 +247,56 @@ test("computeVirtualGrid uses correct midLat formula", () => {
   assert.ok(cells.length > 0);
   // midLat formula is tested implicitly through lngStep matching cell dimensions
 });
+
+test("computeVirtualGrid returns non-empty array for Toronto-area bounds with 20km cells", () => {
+  const bounds = { swLat: 43, swLng: -79.5, neLat: 43.5, neLng: -79 };
+  const cells = mod.computeVirtualGrid(bounds, 20);
+  assert.ok(Array.isArray(cells));
+  assert.ok(cells.length > 0, `expected non-empty array, got ${cells.length} cells`);
+});
+
+test("computeVirtualGrid tiles Toronto-area bounds without gaps (20km cells)", () => {
+  const bounds = { swLat: 43, swLng: -79.5, neLat: 43.5, neLng: -79 };
+  const cells = mod.computeVirtualGrid(bounds, 20);
+  assert.ok(cells.length > 0);
+
+  // Cells should fully cover the bounds
+  const minSwLat = Math.min(...cells.map((c) => c.swLat));
+  const minSwLng = Math.min(...cells.map((c) => c.swLng));
+  const maxNeLat = Math.max(...cells.map((c) => c.neLat));
+  const maxNeLng = Math.max(...cells.map((c) => c.neLng));
+
+  assert.ok(minSwLat <= bounds.swLat, `grid SW lat ${minSwLat} should be <= bounds SW lat ${bounds.swLat}`);
+  assert.ok(minSwLng <= bounds.swLng, `grid SW lng ${minSwLng} should be <= bounds SW lng ${bounds.swLng}`);
+  assert.ok(maxNeLat >= bounds.neLat, `grid NE lat ${maxNeLat} should be >= bounds NE lat ${bounds.neLat}`);
+  assert.ok(maxNeLng >= bounds.neLng, `grid NE lng ${maxNeLng} should be >= bounds NE lng ${bounds.neLng}`);
+
+  // Sort cells by lat then lng to check adjacency
+  const sorted = [...cells].sort((a, b) => a.swLat - b.swLat || a.swLng - b.swLng);
+
+  // Group cells by row (same swLat)
+  const rows = new Map();
+  for (const cell of sorted) {
+    const rowKey = cell.swLat.toFixed(10);
+    if (!rows.has(rowKey)) rows.set(rowKey, []);
+    rows.get(rowKey).push(cell);
+  }
+
+  // Check no horizontal gaps within each row
+  for (const [, rowCells] of rows) {
+    rowCells.sort((a, b) => a.swLng - b.swLng);
+    for (let i = 1; i < rowCells.length; i++) {
+      const gap = Math.abs(rowCells[i].swLng - rowCells[i - 1].neLng);
+      assert.ok(gap < 1e-10, `horizontal gap of ${gap} between cells in row`);
+    }
+  }
+
+  // Check no vertical gaps between rows
+  const rowKeys = [...rows.keys()].sort((a, b) => Number(a) - Number(b));
+  for (let i = 1; i < rowKeys.length; i++) {
+    const prevRow = rows.get(rowKeys[i - 1]);
+    const currRow = rows.get(rowKeys[i]);
+    const gap = Math.abs(currRow[0].swLat - prevRow[0].neLat);
+    assert.ok(gap < 1e-10, `vertical gap of ${gap} between rows`);
+  }
+});
