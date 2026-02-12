@@ -135,10 +135,10 @@ test("DiscoveryGridProps includes activatedBoundsKeys: string[]", () => {
   assert.match(source, /activatedBoundsKeys:\s*string\[\]/)
 })
 
-test("DiscoveryGridProps does not include onActivateCell", () => {
+test("DiscoveryGridProps includes onSelectVirtualCell", () => {
   const match = source.match(/type DiscoveryGridProps\s*=\s*\{[^}]*\}/)
   assert.ok(match, "DiscoveryGridProps type should exist")
-  assert.ok(!match[0].includes("onActivateCell"), "should not contain onActivateCell")
+  assert.ok(match[0].includes("onSelectVirtualCell"), "should contain onSelectVirtualCell")
 })
 
 test("DiscoveryGrid destructures new props", () => {
