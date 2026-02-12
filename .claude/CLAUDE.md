@@ -130,6 +130,15 @@ ralphy --init
 - GitHub: https://github.com/michaelshimeles/ralphy
 - Discord: https://discord.gg/SZZV74mCuV
 
+## Test Discipline
+
+After every code change, check for tests that cover the modified code (`tests/` directory). If a test exists:
+- If the change is intentional (new behavior, refactor, state management change), update the test to match the new code and preserve meaningful coverage.
+- If the test reveals the change broke something unintentionally, fix the code instead.
+- Tests in this project are source-code pattern-matching (regex against file contents), so renaming variables, changing state management patterns, or restructuring code will break assertions — always check.
+- Never delete or weaken a test just to make it pass. The test should remain meaningful.
+- Run `node --test tests/` after changes to confirm tests pass.
+
 ## UI/UX Design Rules
 
 ### Visual Treatment

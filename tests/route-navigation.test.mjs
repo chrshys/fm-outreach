@@ -17,7 +17,7 @@ test("leads page links to lead detail route", () => {
   assert.match(leadsSource, /router\.push\(`\/leads\/\$\{leadId\}`\)/)
 })
 
-test("lead detail page links back to leads route", () => {
-  assert.match(leadDetailSource, /import\s+Link\s+from\s+"next\/link"/)
-  assert.match(leadDetailSource, /href="\/leads"/)
+test("lead detail page back button uses browser history", () => {
+  assert.match(leadDetailSource, /import\s+\{\s*useParams,\s*useRouter\s*\}\s+from\s+"next\/navigation"/)
+  assert.match(leadDetailSource, /onClick=\{\(\)\s*=>\s*router\.back\(\)\}/)
 })

@@ -236,7 +236,7 @@ export default function LeadDetailPage() {
   const router = useRouter()
   const params = useParams<{ id: string }>()
   const leadId = params.id as Id<"leads">
-  // @ts-expect-error — Convex FilterApi causes TS2589 with large module count
+  // @ts-ignore -- Convex generated hook types can trigger TS2589 in this module
   const lead = useQuery(api.leads.get, {
     leadId,
   }) as Doc<"leads"> | null | undefined
