@@ -2,12 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useMutation, useQuery } from "convex/react"
-import { ChevronDown, Plus, Search, X } from "lucide-react"
+import { ChevronDown, Grid2x2Plus, Minimize2, Play, Plus, Search, X } from "lucide-react"
 import { toast } from "sonner"
 
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import type { MapBounds } from "./map-bounds-emitter"
+import type { CellData, CellAction } from "./discovery-grid"
+import { DISCOVERY_MECHANISMS, MAX_DEPTH, getStatusBadgeColor, formatShortDate } from "./discovery-grid"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,6 +20,9 @@ type DiscoveryPanelProps = {
   mapBounds: MapBounds | null
   selectedGridId: Id<"discoveryGrids"> | null
   onGridSelect: (gridId: Id<"discoveryGrids">) => void
+  cells: CellData[]
+  selectedCellId: string | null
+  onCellAction: (cellId: string, action: CellAction) => void
 }
 
 type GridWithStats = {
@@ -42,7 +47,7 @@ const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
   { status: "saturated", color: "#f97316", label: "Saturated" },
 ]
 
-export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect }: DiscoveryPanelProps) {
+export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
   const [open, setOpen] = useState(true)
   const [showNewGridForm, setShowNewGridForm] = useState(false)
   const [gridName, setGridName] = useState("")
@@ -60,6 +65,7 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect }: Disc
   const updateGridQueries = useMutation(api.discovery.gridCells.updateGridQueries)
 
   const selectedGrid = grids?.find((g) => g._id === selectedGridId) ?? grids?.[0] ?? null
+  const selectedCell = cells.find((c) => c._id === selectedCellId) ?? null
 
   // Auto-select first grid if none selected
   useEffect(() => {
@@ -354,6 +360,85 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect }: Disc
                     </div>
                   )}
                 </div>
+              </div>
+            </>
+          )}
+
+          {/* Selected Cell */}
+          {selectedCell && !showNewGridForm && (
+            <>
+              <Separator />
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Selected Cell</Label>
+                <div className="flex items-center justify-between text-xs">
+                  <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${getStatusBadgeColor(selectedCell.status)}`}>
+                    {selectedCell.status}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {selectedCell.status !== "unsearched" && selectedCell.resultCount !== undefined && (
+                      <span className="text-muted-foreground">{selectedCell.resultCount} results</span>
+                    )}
+                    <span className="text-muted-foreground">d{selectedCell.depth}</span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  {DISCOVERY_MECHANISMS.map((mechanism) => {
+                    const isDisabled = !mechanism.enabled || selectedCell.status === "searching"
+                    const lastRun = mechanism.id === "google_places" && selectedCell.lastSearchedAt
+                      ? formatShortDate(selectedCell.lastSearchedAt)
+                      : "\u2014"
+                    return (
+                      <div key={mechanism.id} className={`flex items-center justify-between text-xs ${isDisabled ? "opacity-50" : ""}`}>
+                        <span>{mechanism.label}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">{lastRun}</span>
+                          <button
+                            type="button"
+                            className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors ${isDisabled ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"}`}
+                            disabled={isDisabled}
+                            onClick={() => onCellAction(selectedCell._id, { type: "search", mechanism: mechanism.id })}
+                          >
+                            <Play className="size-3" />
+                            Run
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="flex items-center gap-1.5 pt-1">
+                  <button
+                    type="button"
+                    className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors ${selectedCell.depth >= MAX_DEPTH || selectedCell.status === "searching" ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"}`}
+                    disabled={selectedCell.depth >= MAX_DEPTH || selectedCell.status === "searching"}
+                    onClick={() => onCellAction(selectedCell._id, { type: "subdivide" })}
+                  >
+                    <Grid2x2Plus className="size-3" />
+                    Split
+                  </button>
+                  {selectedCell.depth > 0 && (
+                    <button
+                      type="button"
+                      className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors ${selectedCell.status === "searching" ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"}`}
+                      disabled={selectedCell.status === "searching"}
+                      onClick={() => onCellAction(selectedCell._id, { type: "undivide" })}
+                    >
+                      <Minimize2 className="size-3" />
+                      Merge
+                    </button>
+                  )}
+                </div>
+                {selectedCell.querySaturation && selectedCell.querySaturation.length > 0 && (
+                  <div className="space-y-0.5 pt-1">
+                    <span className="text-[10px] text-muted-foreground">Query Saturation</span>
+                    {selectedCell.querySaturation.map((qs) => (
+                      <div key={qs.query} className="flex items-center justify-between text-xs">
+                        <span className="truncate">{qs.query}</span>
+                        <span className="text-muted-foreground">{qs.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </>
           )}

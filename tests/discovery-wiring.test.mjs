@@ -122,7 +122,7 @@ test("passes selectedGridId to DiscoveryPanel", () => {
 })
 
 test("passes onGridSelect to DiscoveryPanel", () => {
-  assert.match(pageSource, /onGridSelect=\{setSelectedGridId\}/)
+  assert.match(pageSource, /onGridSelect=\{handleGridSelect\}/)
 })
 
 // --- DiscoveryPanel prop types ---
@@ -136,7 +136,7 @@ test("DiscoveryPanel accepts onGridSelect prop", () => {
 })
 
 test("DiscoveryPanel destructures selectedGridId and onGridSelect", () => {
-  assert.match(panelSource, /\{\s*mapBounds,\s*selectedGridId,\s*onGridSelect\s*\}/)
+  assert.match(panelSource, /\{\s*mapBounds,\s*selectedGridId,\s*onGridSelect,\s*cells,\s*selectedCellId,\s*onCellAction\s*\}/)
 })
 
 test("DiscoveryPanel calls onGridSelect on auto-select", () => {

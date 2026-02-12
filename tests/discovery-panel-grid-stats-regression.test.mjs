@@ -21,7 +21,7 @@ test("DiscoveryPanel is rendered only in discovery viewMode", () => {
 test("DiscoveryPanel receives all three required props from map page", () => {
   assert.match(pageSource, /mapBounds=\{mapBounds\}/)
   assert.match(pageSource, /selectedGridId=\{selectedGridId\}/)
-  assert.match(pageSource, /onGridSelect=\{setSelectedGridId\}/)
+  assert.match(pageSource, /onGridSelect=\{handleGridSelect\}/)
 })
 
 test("panel defaults to open state", () => {

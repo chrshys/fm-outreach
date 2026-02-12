@@ -54,6 +54,11 @@ export default function MapPage() {
   const [selectedGridId, setSelectedGridId] = useState<Id<"discoveryGrids"> | null>(null)
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null)
 
+  const handleGridSelect = useCallback((gridId: Id<"discoveryGrids">) => {
+    setSelectedGridId(gridId)
+    setSelectedCellId(null)
+  }, [])
+
   // Discovery queries & mutations
   const gridCells = useQuery(
     api.discovery.gridCells.listCells,
@@ -200,6 +205,7 @@ export default function MapPage() {
       try {
         await subdivideCell({ cellId: cellId as Id<"discoveryCells"> })
         toast.success("Cell subdivided into 4 quadrants")
+        setSelectedCellId(null)
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Failed to subdivide cell")
       }
@@ -210,6 +216,7 @@ export default function MapPage() {
       try {
         await undivideCell({ cellId: cellId as Id<"discoveryCells"> })
         toast.success("Cell merged back to parent")
+        setSelectedCellId(null)
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Failed to merge cell")
       }
@@ -240,7 +247,7 @@ export default function MapPage() {
             clusters={clusterOptions}
           />
         ) : (
-          <DiscoveryPanel mapBounds={mapBounds} selectedGridId={selectedGridId} onGridSelect={setSelectedGridId} />
+          <DiscoveryPanel mapBounds={mapBounds} selectedGridId={selectedGridId} onGridSelect={handleGridSelect} cells={viewMode === "discovery" ? gridCells ?? [] : []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
         )}
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           <Button
@@ -252,6 +259,7 @@ export default function MapPage() {
               setIsDrawing(false)
               setShowNamingDialog(false)
               setDrawnPolygon(null)
+              setSelectedCellId(null)
             }}
           >
             <Grid3X3 className="mr-1.5 size-4" />

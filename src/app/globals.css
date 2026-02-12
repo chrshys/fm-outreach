@@ -124,18 +124,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-/* Leaflet tooltip: enlarge the invisible bridge so the cursor can travel
-   from the cell rectangle to the tooltip without the tooltip closing.
-   The default arrow is tiny — replace it with a wide transparent pad. */
-.leaflet-tooltip-top::before {
-  content: "" !important;
-  position: absolute !important;
-  bottom: -14px !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 14px !important;
-  background: transparent !important;
-  border: none !important;
-  margin: 0 !important;
-}
