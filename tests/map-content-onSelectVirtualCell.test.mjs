@@ -44,3 +44,14 @@ test("passes selectedVirtualCell to DiscoveryGrid with fallback", () => {
 test("imports VirtualCell type from @/lib/virtual-grid", () => {
   assert.match(source, /import\s+type\s+\{\s*VirtualCell\s*\}\s+from\s+["']@\/lib\/virtual-grid["']/)
 })
+
+test("fallback DiscoveryGrid (virtual-grid-overlay pane) uses onSelectVirtualCell no-op, not onActivateCell", () => {
+  // Extract the virtual-grid-overlay branch (the `: cellSizeKm != null && gridId ?` branch)
+  const fallbackMatch = source.match(/virtual-grid-overlay[\s\S]*?<DiscoveryGrid([^/]+)\/>/)
+  assert.ok(fallbackMatch, "should have a DiscoveryGrid inside virtual-grid-overlay pane")
+  const fallbackProps = fallbackMatch[1]
+  assert.ok(fallbackProps.includes("onSelectVirtualCell"), "fallback DiscoveryGrid should pass onSelectVirtualCell")
+  assert.ok(!fallbackProps.includes("onActivateCell"), "fallback DiscoveryGrid must not use onActivateCell")
+  assert.match(fallbackProps, /onSelectVirtualCell=\{.*\(\)\s*=>\s*\{\}.*\}/, "onSelectVirtualCell should be a no-op arrow function")
+  assert.match(fallbackProps, /selectedVirtualCell=\{null\}/, "fallback DiscoveryGrid should pass selectedVirtualCell={null}")
+})
