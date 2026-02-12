@@ -190,8 +190,11 @@ test("DiscoveryGrid shows virtual cells at zoom 10 (zoom >= 8 gate passes)", () 
   // zoom 10 >= 8 is true, so virtual cells are computed
 })
 
-test("DiscoveryGrid shows persisted cells at zoom 10 (zoom >= 8 check)", () => {
-  assert.match(discoveryGridSource, /zoom\s*>=\s*8\s*&&\s*cells\.map/)
+test("DiscoveryGrid shows persisted cells at all zoom levels (no zoom gate)", () => {
+  // Persisted cells render without zoom gate so they're visible even when zoomed out
+  const mainComponent = discoveryGridSource.split("export default function DiscoveryGrid")[1]
+  assert.doesNotMatch(mainComponent, /zoom\s*>=\s*\d+\s*&&\s*cells\.map/)
+  assert.match(mainComponent, /cells\.map/)
 })
 
 // -- 9. Cell count is reasonable at zoom 10 (not exceeding maxCells) --

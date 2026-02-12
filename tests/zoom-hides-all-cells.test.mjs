@@ -7,8 +7,11 @@ const source = fs.readFileSync(
   "utf8",
 )
 
+// Extract the main DiscoveryGrid component body
+const discoveryGridBody = source.split("export default function DiscoveryGrid")[1]
+
 // ============================================================
-// Persisted cells hidden below zoom 8 (same as virtual cells)
+// Virtual grid hidden below zoom 8; persisted cells always visible
 // ============================================================
 
 test("DiscoveryGrid tracks zoom level in state", () => {
@@ -19,8 +22,12 @@ test("updateBounds updates zoom state alongside map bounds", () => {
   assert.match(source, /setZoom\(map\.getZoom\(\)\)/)
 })
 
-test("persisted cells are gated by zoom >= 8", () => {
-  assert.match(source, /zoom\s*>=\s*8\s*&&\s*cells\.map/)
+test("persisted cells render without zoom gate (always visible)", () => {
+  assert.ok(discoveryGridBody, "should have DiscoveryGrid component")
+  // The persisted cells.map should not be preceded by `zoom >= 8 &&`
+  assert.doesNotMatch(discoveryGridBody, /zoom\s*>=\s*8\s*&&\s*cells\.map/)
+  // But cells.map should still exist
+  assert.match(discoveryGridBody, /cells\.map/)
 })
 
 test("virtual cells use zoom state (not map.getZoom()) for the < 8 check", () => {
@@ -36,9 +43,9 @@ test("virtualCells useMemo depends on zoom (not map)", () => {
   assert.match(virtualCellsMemo, /\[mapBounds,\s*cellSizeKm,\s*zoom\]/)
 })
 
-test("both virtual and persisted cells are hidden below zoom 8", () => {
+test("virtual grid is hidden below zoom 8 while persisted cells are not", () => {
   // Virtual cells: `if (!mapBounds || zoom < 8) return []`
   assert.match(source, /if\s*\(!mapBounds\s*\|\|\s*zoom\s*<\s*8\)\s*return\s*\[\]/)
-  // Persisted cells: `{zoom >= 8 && cells.map(...)`
-  assert.match(source, /zoom\s*>=\s*8\s*&&\s*cells\.map/)
+  // Persisted cells: should NOT have zoom gate
+  assert.doesNotMatch(discoveryGridBody, /zoom\s*>=\s*8\s*&&\s*cells\.map/)
 })

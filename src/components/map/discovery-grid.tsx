@@ -139,7 +139,7 @@ export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cel
           onCellSelect={onCellSelect}
         />
       ))}
-      {zoom >= 8 && cells.map((cell) => (
+      {cells.map((cell) => (
         <DiscoveryGridCell
           key={cell._id}
           cell={cell}
