@@ -83,6 +83,6 @@ test("map page passes selectedCellId to MapContent conditionally on discovery mo
   assert.match(pageSource, /selectedCellId=\{viewMode\s*===\s*"discovery"\s*\?\s*selectedCellId\s*:\s*null\}/)
 })
 
-test("map page passes setSelectedCellId as onCellSelect in discovery mode", () => {
-  assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*setSelectedCellId\s*:\s*undefined\}/)
+test("map page passes handleCellSelect as onCellSelect in discovery mode", () => {
+  assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellSelect\s*:\s*undefined\}/)
 })

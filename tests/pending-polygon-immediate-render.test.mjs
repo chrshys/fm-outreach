@@ -110,5 +110,12 @@ test("handleCancelDialog does not affect pendingCluster", () => {
 })
 
 test("no useEffect used for clearing pending state (avoids lint violation)", () => {
-  assert.doesNotMatch(mapPageSource, /useEffect/)
+  // The page may use useEffect for other purposes (e.g. resetting selection),
+  // but pendingCluster should never be cleared via useEffect.
+  // Check each useEffect body individually for setPendingCluster.
+  const effectPattern = /useEffect\(\s*\(\)\s*=>\s*\{([^}]*)\}/g
+  let match
+  while ((match = effectPattern.exec(mapPageSource)) !== null) {
+    assert.doesNotMatch(match[1], /setPendingCluster/, "useEffect should not clear pendingCluster")
+  }
 })

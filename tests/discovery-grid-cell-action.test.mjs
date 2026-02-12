@@ -90,7 +90,7 @@ test("map page passes selectedCellId to MapContent", () => {
 })
 
 test("map page passes onCellSelect to MapContent", () => {
-  assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*setSelectedCellId\s*:\s*undefined\}/)
+  assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellSelect\s*:\s*undefined\}/)
 })
 
 // ============================================================

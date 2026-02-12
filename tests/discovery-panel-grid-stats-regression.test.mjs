@@ -305,7 +305,7 @@ test("grid cells query skips when not in discovery mode", () => {
 })
 
 test("onCellSelect only passed in discovery mode", () => {
-  assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*setSelectedCellId\s*:\s*undefined\}/)
+  assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellSelect\s*:\s*undefined\}/)
 })
 
 // =============================================================================
