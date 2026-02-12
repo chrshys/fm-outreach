@@ -4,26 +4,31 @@ import fs from "node:fs"
 
 const source = fs.readFileSync("src/components/map/map-content.tsx", "utf8")
 
-test("imports CellAction type from discovery-grid", () => {
-  assert.match(source, /import\s+type\s+\{[\s\S]*CellAction[\s\S]*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("imports CellData type from discovery-grid", () => {
+  assert.match(source, /import\s+type\s+\{[\s\S]*CellData[\s\S]*\}\s+from\s+["']\.\/discovery-grid["']/)
 })
 
-test("onCellAction prop accepts cellId string and CellAction", () => {
-  assert.match(source, /onCellAction\?:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>\s*void/)
+test("selectedCellId prop accepts string or null", () => {
+  assert.match(source, /selectedCellId\?:\s*string\s*\|\s*null/)
+})
+
+test("onCellSelect prop accepts cellId string or null", () => {
+  assert.match(source, /onCellSelect\?:\s*\(cellId:\s*string\s*\|\s*null\)\s*=>\s*void/)
 })
 
 test("does not use onCellClick prop", () => {
   assert.doesNotMatch(source, /onCellClick/)
 })
 
-test("passes onCellAction to DiscoveryGrid component", () => {
-  assert.match(source, /<DiscoveryGrid\s+cells=\{gridCells\}\s+onCellAction=\{onCellAction\}\s*\/>/)
+test("passes selectedCellId and onCellSelect to DiscoveryGrid component", () => {
+  assert.match(source, /<DiscoveryGrid\s+cells=\{gridCells\}\s+selectedCellId=/)
+  assert.match(source, /onCellSelect=\{onCellSelect\}/)
 })
 
-test("conditionally renders DiscoveryGrid when gridCells and onCellAction are present", () => {
-  assert.match(source, /gridCells\s*&&\s*onCellAction/)
+test("conditionally renders DiscoveryGrid when gridCells and onCellSelect are present", () => {
+  assert.match(source, /gridCells\s*&&\s*onCellSelect/)
 })
 
-test("destructures onCellAction from props", () => {
-  assert.match(source, /onCellAction[,\s}]/)
+test("destructures onCellSelect from props", () => {
+  assert.match(source, /onCellSelect[,\s}]/)
 })

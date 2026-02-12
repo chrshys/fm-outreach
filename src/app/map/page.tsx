@@ -52,6 +52,7 @@ export default function MapPage() {
   const [viewMode, setViewMode] = useState<"clusters" | "discovery">("clusters")
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
   const [selectedGridId, setSelectedGridId] = useState<Id<"discoveryGrids"> | null>(null)
+  const [selectedCellId, setSelectedCellId] = useState<string | null>(null)
 
   // Discovery queries & mutations
   const gridCells = useQuery(
@@ -227,7 +228,8 @@ export default function MapPage() {
           onPolygonDrawn={handlePolygonDrawn}
           pendingPolygon={pendingPolygon}
           gridCells={viewMode === "discovery" ? gridCells ?? undefined : undefined}
-          onCellAction={viewMode === "discovery" ? handleCellAction : undefined}
+          selectedCellId={viewMode === "discovery" ? selectedCellId : null}
+          onCellSelect={viewMode === "discovery" ? setSelectedCellId : undefined}
           onBoundsChange={handleBoundsChange}
         />
         </div>

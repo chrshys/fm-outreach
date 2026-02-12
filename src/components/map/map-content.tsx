@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css"
 
 import {
   MapContainer,
+  Pane,
   TileLayer,
   CircleMarker,
   Polygon,
@@ -12,7 +13,7 @@ import {
 } from "react-leaflet"
 
 import DiscoveryGrid from "./discovery-grid"
-import type { CellData, CellAction } from "./discovery-grid"
+import type { CellData } from "./discovery-grid"
 import { MapBoundsEmitter } from "./map-bounds-emitter"
 import type { MapBounds } from "./map-bounds-emitter"
 import { MarkerPopup } from "./marker-popup"
@@ -51,11 +52,12 @@ type MapContentProps = {
   onPolygonDrawn?: (latlngs: { lat: number; lng: number }[]) => void
   pendingPolygon?: { lat: number; lng: number }[] | null
   gridCells?: CellData[]
-  onCellAction?: (cellId: string, action: CellAction) => void
+  selectedCellId?: string | null
+  onCellSelect?: (cellId: string | null) => void
   onBoundsChange?: (bounds: MapBounds) => void
 }
 
-export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon, gridCells, onCellAction, onBoundsChange }: MapContentProps) {
+export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon, gridCells, selectedCellId, onCellSelect, onBoundsChange }: MapContentProps) {
   return (
     <MapContainer
       center={NIAGARA_CENTER}
@@ -99,8 +101,10 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
           }}
         />
       )}
-      {gridCells && onCellAction && (
-        <DiscoveryGrid cells={gridCells} onCellAction={onCellAction} />
+      {gridCells && onCellSelect && (
+        <Pane name="discovery-grid" style={{ zIndex: 450 }}>
+          <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} />
+        </Pane>
       )}
       {leads.map((lead) => {
         const color = getStatusColor(lead.status)
@@ -117,7 +121,7 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
               fillOpacity: 0.7,
             }}
           >
-            <Popup>
+            <Popup pane="popupPane">
               <MarkerPopup
                 id={lead._id}
                 name={lead.name}

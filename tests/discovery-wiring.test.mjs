@@ -105,14 +105,14 @@ test("handleCellAction shows Coming soon for non-google_places mechanism", () =>
   assert.match(pageSource, /toast\.info\("Coming soon"\)/)
 })
 
-// --- MapContent receives gridCells and onCellAction ---
+// --- MapContent receives gridCells, selectedCellId, and onCellSelect ---
 
 test("passes gridCells to MapContent in discovery mode", () => {
   assert.match(pageSource, /gridCells=\{viewMode\s*===\s*"discovery"\s*\?\s*gridCells\s*\?\?\s*undefined\s*:\s*undefined\}/)
 })
 
-test("passes onCellAction to MapContent in discovery mode", () => {
-  assert.match(pageSource, /onCellAction=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellAction\s*:\s*undefined\}/)
+test("passes onCellSelect to MapContent in discovery mode", () => {
+  assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*setSelectedCellId\s*:\s*undefined\}/)
 })
 
 // --- DiscoveryPanel receives selectedGridId and onGridSelect ---

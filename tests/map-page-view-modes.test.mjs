@@ -67,10 +67,10 @@ test("discovery mode passes gridCells to MapContent", () => {
   )
 })
 
-test("discovery mode passes onCellAction to MapContent", () => {
+test("discovery mode passes onCellSelect to MapContent", () => {
   assert.match(
     mapPageSource,
-    /onCellAction=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellAction\s*:\s*undefined\}/,
+    /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*setSelectedCellId\s*:\s*undefined\}/,
   )
 })
 
@@ -90,15 +90,16 @@ test("discovery mode queries gridCells only when grid selected and in discovery 
 
 // --- MapContent renders both modes without error ---
 
-test("MapContent accepts optional gridCells and onCellAction props", () => {
+test("MapContent accepts optional gridCells, selectedCellId, and onCellSelect props", () => {
   assert.match(mapContentSource, /gridCells\?:\s*CellData\[\]/)
-  assert.match(mapContentSource, /onCellAction\?:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>\s*void/)
+  assert.match(mapContentSource, /selectedCellId\?:\s*string\s*\|\s*null/)
+  assert.match(mapContentSource, /onCellSelect\?:\s*\(cellId:\s*string\s*\|\s*null\)\s*=>\s*void/)
 })
 
-test("MapContent conditionally renders DiscoveryGrid when gridCells and onCellAction provided", () => {
+test("MapContent conditionally renders DiscoveryGrid when gridCells and onCellSelect provided", () => {
   assert.match(
     mapContentSource,
-    /\{gridCells\s*&&\s*onCellAction\s*&&\s*\(/,
+    /\{gridCells\s*&&\s*onCellSelect\s*&&\s*\(/,
   )
   assert.match(mapContentSource, /<DiscoveryGrid\s+cells=\{gridCells\}/)
 })
@@ -215,11 +216,11 @@ test("cluster array is empty (not undefined) when in discovery mode", () => {
   )
 })
 
-test("MapContent guards DiscoveryGrid render with both gridCells and onCellAction", () => {
+test("MapContent guards DiscoveryGrid render with both gridCells and onCellSelect", () => {
   // Both must be truthy to render, preventing crashes when either is undefined
   assert.match(
     mapContentSource,
-    /gridCells\s*&&\s*onCellAction/,
+    /gridCells\s*&&\s*onCellSelect/,
   )
 })
 

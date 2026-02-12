@@ -61,9 +61,10 @@ test("CellData includes optional querySaturation array", () => {
   assert.match(source, /querySaturation\?:\s*Array<\{\s*query:\s*string;\s*count:\s*number\s*\}>/)
 })
 
-test("accepts cells and onCellAction props", () => {
+test("accepts cells, selectedCellId, and onCellSelect props", () => {
   assert.match(source, /cells:\s*CellData\[\]/)
-  assert.match(source, /onCellAction:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>\s*void/)
+  assert.match(source, /selectedCellId:\s*string\s*\|\s*null/)
+  assert.match(source, /onCellSelect:\s*\(cellId:\s*string\s*\|\s*null\)\s*=>\s*void/)
 })
 
 test("renders Rectangle for each cell", () => {

@@ -13,7 +13,7 @@ const mapContentSource = fs.readFileSync(
 const pageSource = fs.readFileSync("src/app/map/page.tsx", "utf8")
 
 // ============================================================
-// CellAction type definition
+// CellAction type definition (still exported for page-level use)
 // ============================================================
 
 test("exports CellAction type", () => {
@@ -42,41 +42,60 @@ test("CellAction is a discriminated union with three variants", () => {
 })
 
 // ============================================================
-// DiscoveryGrid uses onCellAction prop
+// DiscoveryGrid uses selectedCellId and onCellSelect props
 // ============================================================
 
-test("DiscoveryGridProps uses onCellAction instead of onCellClick", () => {
-  assert.match(gridSource, /onCellAction:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>\s*void/)
+test("DiscoveryGridProps uses selectedCellId and onCellSelect", () => {
+  assert.match(gridSource, /selectedCellId:\s*string\s*\|\s*null/)
+  assert.match(gridSource, /onCellSelect:\s*\(cellId:\s*string\s*\|\s*null\)\s*=>\s*void/)
   assert.doesNotMatch(gridSource, /onCellClick/)
 })
 
-test("DiscoveryGrid destructures onCellAction in function params", () => {
-  assert.match(gridSource, /\{\s*cells,\s*onCellAction/)
+test("DiscoveryGrid destructures selectedCellId and onCellSelect in function params", () => {
+  assert.match(gridSource, /\{\s*cells,\s*selectedCellId,\s*onCellSelect\s*\}/)
 })
 
 // ============================================================
-// MapContent uses onCellAction
+// MapContent uses selectedCellId and onCellSelect
 // ============================================================
 
-test("MapContent imports CellAction type from discovery-grid", () => {
-  assert.match(mapContentSource, /import\s+type\s+\{.*CellAction.*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("MapContent imports CellData type from discovery-grid", () => {
+  assert.match(mapContentSource, /import\s+type\s+\{.*CellData.*\}\s+from\s+["']\.\/discovery-grid["']/)
 })
 
-test("MapContent prop type uses onCellAction", () => {
-  assert.match(mapContentSource, /onCellAction\?:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>\s*void/)
+test("MapContent prop type uses selectedCellId and onCellSelect", () => {
+  assert.match(mapContentSource, /selectedCellId\?:\s*string\s*\|\s*null/)
+  assert.match(mapContentSource, /onCellSelect\?:\s*\(cellId:\s*string\s*\|\s*null\)\s*=>\s*void/)
 })
 
-test("MapContent passes onCellAction to DiscoveryGrid", () => {
-  assert.match(mapContentSource, /<DiscoveryGrid\s+cells=\{gridCells\}\s+onCellAction=\{onCellAction\}/)
+test("MapContent passes selectedCellId and onCellSelect to DiscoveryGrid", () => {
+  assert.match(mapContentSource, /<DiscoveryGrid\s+cells=\{gridCells\}\s+selectedCellId=/)
+  assert.match(mapContentSource, /onCellSelect=\{onCellSelect\}/)
 })
 
 // ============================================================
-// Map page handleCellAction dispatches by action type
+// Map page uses selectedCellId state and passes onCellSelect
 // ============================================================
 
 test("map page imports CellAction type", () => {
   assert.match(pageSource, /import\s+type\s+\{.*CellAction.*\}\s+from\s+["']@\/components\/map\/discovery-grid["']/)
 })
+
+test("map page has selectedCellId state", () => {
+  assert.match(pageSource, /useState<string\s*\|\s*null>\(null\)/)
+})
+
+test("map page passes selectedCellId to MapContent", () => {
+  assert.match(pageSource, /selectedCellId=\{viewMode\s*===\s*"discovery"\s*\?\s*selectedCellId\s*:\s*null\}/)
+})
+
+test("map page passes onCellSelect to MapContent", () => {
+  assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*setSelectedCellId\s*:\s*undefined\}/)
+})
+
+// ============================================================
+// handleCellAction still exists for dispatching actions
+// ============================================================
 
 test("handleCellAction signature accepts cellId and CellAction", () => {
   assert.match(pageSource, /handleCellAction\s*=\s*useCallback\(async\s*\(cellId:\s*string,\s*action:\s*CellAction\)/)
@@ -88,8 +107,4 @@ test("handleCellAction dispatches search via action.type", () => {
 
 test("handleCellAction dispatches subdivide via action.type", () => {
   assert.match(pageSource, /action\.type\s*===\s*"subdivide"/)
-})
-
-test("map page passes handleCellAction as onCellAction to MapContent", () => {
-  assert.match(pageSource, /onCellAction=\{.*handleCellAction/)
 })

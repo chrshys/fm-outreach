@@ -25,7 +25,8 @@ export type CellData = {
 
 type DiscoveryGridProps = {
   cells: CellData[]
-  onCellAction: (cellId: string, action: CellAction) => void
+  selectedCellId: string | null
+  onCellSelect: (cellId: string | null) => void
 }
 
 export const DISCOVERY_MECHANISMS = [
@@ -67,7 +68,7 @@ export function getStatusBadgeColor(status: CellStatus): string {
   }
 }
 
-export default function DiscoveryGrid({ cells, onCellAction: _onCellAction }: DiscoveryGridProps) {
+export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect }: DiscoveryGridProps) {
   return (
     <>
       {cells.map((cell) => {
@@ -75,11 +76,19 @@ export default function DiscoveryGrid({ cells, onCellAction: _onCellAction }: Di
           [cell.swLat, cell.swLng],
           [cell.neLat, cell.neLng],
         ]
+        const isSelected = cell._id === selectedCellId
+        const baseStyle = getCellColor(cell.status)
+        const pathOptions = isSelected
+          ? { ...baseStyle, weight: 3, color: "#2563eb" }
+          : baseStyle
         return (
           <Rectangle
             key={cell._id}
             bounds={bounds}
-            pathOptions={getCellColor(cell.status)}
+            pathOptions={pathOptions}
+            eventHandlers={{
+              click: () => onCellSelect(isSelected ? null : cell._id),
+            }}
           />
         )
       })}
