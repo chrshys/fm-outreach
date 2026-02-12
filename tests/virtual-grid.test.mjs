@@ -84,3 +84,112 @@ test("cellKey produces different keys for different coordinates", () => {
   const b = mod.cellKey(43.56, -80.25);
   assert.notEqual(a, b);
 });
+
+// --- computeVirtualGrid runtime tests ---
+
+test("exports computeVirtualGrid function", () => {
+  assert.equal(typeof mod.computeVirtualGrid, "function");
+});
+
+test("computeVirtualGrid returns array of VirtualCells for small bounds", () => {
+  const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.1, neLng: -79.9 };
+  const cells = mod.computeVirtualGrid(bounds, 1);
+  assert.ok(Array.isArray(cells));
+  assert.ok(cells.length > 0);
+  for (const cell of cells) {
+    assert.equal(typeof cell.key, "string");
+    assert.equal(typeof cell.swLat, "number");
+    assert.equal(typeof cell.swLng, "number");
+    assert.equal(typeof cell.neLat, "number");
+    assert.equal(typeof cell.neLng, "number");
+  }
+});
+
+test("computeVirtualGrid cell dimensions match latStep and lngStep", () => {
+  const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.1, neLng: -79.9 };
+  const cellSizeKm = 2;
+  const cells = mod.computeVirtualGrid(bounds, cellSizeKm);
+  assert.ok(cells.length > 0);
+
+  const latStep = cellSizeKm / 111;
+  const midLat = (bounds.swLat + bounds.neLat) / 2;
+  const lngStep = cellSizeKm / (111 * Math.cos(midLat * Math.PI / 180));
+
+  for (const cell of cells) {
+    assert.ok(Math.abs((cell.neLat - cell.swLat) - latStep) < 1e-10);
+    assert.ok(Math.abs((cell.neLng - cell.swLng) - lngStep) < 1e-10);
+  }
+});
+
+test("computeVirtualGrid returns empty array when exceeding maxCells", () => {
+  // A large area with tiny cells should exceed 500
+  const bounds = { swLat: 40.0, swLng: -80.0, neLat: 50.0, neLng: -70.0 };
+  const cells = mod.computeVirtualGrid(bounds, 0.1);
+  assert.deepEqual(cells, []);
+});
+
+test("computeVirtualGrid returns empty array when exceeding custom maxCells", () => {
+  const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.5, neLng: -79.5 };
+  const cells = mod.computeVirtualGrid(bounds, 1, 5);
+  assert.deepEqual(cells, []);
+});
+
+test("computeVirtualGrid cells cover the entire bounds", () => {
+  const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.05, neLng: -79.95 };
+  const cells = mod.computeVirtualGrid(bounds, 1);
+  assert.ok(cells.length > 0);
+
+  const minSwLat = Math.min(...cells.map((c) => c.swLat));
+  const minSwLng = Math.min(...cells.map((c) => c.swLng));
+  const maxNeLat = Math.max(...cells.map((c) => c.neLat));
+  const maxNeLng = Math.max(...cells.map((c) => c.neLng));
+
+  assert.ok(minSwLat <= bounds.swLat);
+  assert.ok(minSwLng <= bounds.swLng);
+  assert.ok(maxNeLat >= bounds.neLat);
+  assert.ok(maxNeLng >= bounds.neLng);
+});
+
+test("computeVirtualGrid snaps start coordinates to grid", () => {
+  const bounds = { swLat: 43.007, swLng: -80.003, neLat: 43.02, neLng: -79.99 };
+  const cellSizeKm = 1;
+  const cells = mod.computeVirtualGrid(bounds, cellSizeKm);
+  assert.ok(cells.length > 0);
+
+  const latStep = cellSizeKm / 111;
+  const midLat = (bounds.swLat + bounds.neLat) / 2;
+  const lngStep = cellSizeKm / (111 * Math.cos(midLat * Math.PI / 180));
+
+  const startLat = Math.floor(bounds.swLat / latStep) * latStep;
+  const startLng = Math.floor(bounds.swLng / lngStep) * lngStep;
+
+  assert.ok(Math.abs(cells[0].swLat - startLat) < 1e-10);
+  assert.ok(Math.abs(cells[0].swLng - startLng) < 1e-10);
+});
+
+test("computeVirtualGrid cell keys use cellKey format", () => {
+  const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.05, neLng: -79.95 };
+  const cells = mod.computeVirtualGrid(bounds, 1);
+  for (const cell of cells) {
+    assert.equal(cell.key, mod.cellKey(cell.swLat, cell.swLng));
+  }
+});
+
+test("computeVirtualGrid produces unique keys for each cell", () => {
+  const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.1, neLng: -79.9 };
+  const cells = mod.computeVirtualGrid(bounds, 1);
+  const keys = cells.map((c) => c.key);
+  assert.equal(new Set(keys).size, keys.length);
+});
+
+test("computeVirtualGrid defaults maxCells to 500", () => {
+  // Source-level check that default is 500
+  assert.match(source, /maxCells.*=\s*500/);
+});
+
+test("computeVirtualGrid uses correct midLat formula", () => {
+  const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.1, neLng: -79.9 };
+  const cells = mod.computeVirtualGrid(bounds, 5);
+  assert.ok(cells.length > 0);
+  // midLat formula is tested implicitly through lngStep matching cell dimensions
+});
