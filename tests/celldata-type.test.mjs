@@ -37,3 +37,7 @@ test("CellData still has optional fields", () => {
   assert.match(cellDataBlock, /resultCount\?:\s*number/)
   assert.match(cellDataBlock, /lastSearchedAt\?:\s*number/)
 })
+
+test("CellData has leadsFound as optional number", () => {
+  assert.match(cellDataBlock, /leadsFound\?:\s*number/)
+})
