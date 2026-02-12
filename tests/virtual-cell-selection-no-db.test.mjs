@@ -34,9 +34,9 @@ test("VirtualGridCell uses VIRTUAL_CELL_SELECTED_STYLE with blue dashed border",
   assert.match(colorsSource, /dashArray:\s*"6 4"/)
 })
 
-test("handleSelectVirtual in page sets selectedVirtualCell and clears selectedCellId", () => {
+test("handleSelectVirtualCell in page sets selectedVirtualCell and selectedCellId to cell.key", () => {
   assert.match(pageSource, /setSelectedVirtualCell\(cell\)/)
-  assert.match(pageSource, /setSelectedCellId\(null\)/)
+  assert.match(pageSource, /setSelectedCellId\(cell\s*\?\s*cell\.key\s*:\s*null\)/)
 })
 
 test("handleCellSelect in page clears selectedVirtualCell when selecting persisted cell", () => {

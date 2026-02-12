@@ -61,8 +61,8 @@ test("Map page passes onSelectVirtualCell to MapContent", () => {
 
 // ── Map page sets up virtual cell selection handler ──
 
-test("Map page defines handleSelectVirtual callback", () => {
-  assert.match(mapPageSource, /handleSelectVirtual/)
+test("Map page defines handleSelectVirtualCell callback", () => {
+  assert.match(mapPageSource, /handleSelectVirtualCell/)
 })
 
 test("Map page extracts activatedBoundsKeys from gridCellsData", () => {

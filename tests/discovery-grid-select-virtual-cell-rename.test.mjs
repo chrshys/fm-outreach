@@ -69,5 +69,5 @@ test("MapContent passes onSelectVirtualCell to DiscoveryGrid", () => {
 // ============================================================
 
 test("Page passes onSelectVirtualCell to MapContent", () => {
-  assert.match(pageSource, /onSelectVirtualCell=\{viewMode\s*===\s*"discovery"\s*\?\s*handleSelectVirtual\s*:\s*undefined\}/)
+  assert.match(pageSource, /onSelectVirtualCell=\{viewMode\s*===\s*"discovery"\s*\?\s*handleSelectVirtualCell\s*:\s*undefined\}/)
 })

@@ -62,9 +62,9 @@ export default function MapPage() {
     setSelectedVirtualCell(null)
   }, [])
 
-  const handleSelectVirtual = useCallback((cell: VirtualCell | null) => {
+  const handleSelectVirtualCell = useCallback((cell: VirtualCell | null) => {
     setSelectedVirtualCell(cell)
-    setSelectedCellId(null)
+    setSelectedCellId(cell ? cell.key : null)
   }, [])
 
   // Discovery queries & mutations – keep the subscription active across mode
@@ -264,7 +264,7 @@ export default function MapPage() {
           gridId={globalGridId ?? undefined}
           activatedBoundsKeys={activatedBoundsKeys}
           selectedVirtualCell={viewMode === "discovery" ? selectedVirtualCell : null}
-          onSelectVirtualCell={viewMode === "discovery" ? handleSelectVirtual : undefined}
+          onSelectVirtualCell={viewMode === "discovery" ? handleSelectVirtualCell : undefined}
 
         />
         </div>

@@ -47,29 +47,29 @@ test("VirtualGridCell uses default style when not selected", () => {
   )
 })
 
-// --- Page wiring: handleSelectVirtual accepts null ---
+// --- Page wiring: handleSelectVirtualCell accepts null ---
 
-test("handleSelectVirtual parameter type allows null (cell: VirtualCell | null)", () => {
+test("handleSelectVirtualCell parameter type allows null (cell: VirtualCell | null)", () => {
   assert.match(
     pageSource,
-    /handleSelectVirtual\s*=\s*useCallback\(\(cell:\s*VirtualCell\s*\|\s*null\)/,
+    /handleSelectVirtualCell\s*=\s*useCallback\(\(cell:\s*VirtualCell\s*\|\s*null\)/,
   )
 })
 
-test("handleSelectVirtual calls setSelectedVirtualCell with the received value", () => {
+test("handleSelectVirtualCell calls setSelectedVirtualCell with the received value", () => {
   const fnMatch = pageSource.match(
-    /handleSelectVirtual\s*=\s*useCallback\([\s\S]*?\),\s*\[/,
+    /handleSelectVirtualCell\s*=\s*useCallback\([\s\S]*?\),\s*\[/,
   )
-  assert.ok(fnMatch, "handleSelectVirtual not found")
+  assert.ok(fnMatch, "handleSelectVirtualCell not found")
   assert.match(fnMatch[0], /setSelectedVirtualCell\(cell\)/)
 })
 
-test("handleSelectVirtual clears selectedCellId when selecting or deselecting a virtual cell", () => {
+test("handleSelectVirtualCell sets selectedCellId to cell.key or null", () => {
   const fnMatch = pageSource.match(
-    /handleSelectVirtual\s*=\s*useCallback\([\s\S]*?\),\s*\[/,
+    /handleSelectVirtualCell\s*=\s*useCallback\([\s\S]*?\),\s*\[/,
   )
-  assert.ok(fnMatch, "handleSelectVirtual not found")
-  assert.match(fnMatch[0], /setSelectedCellId\(null\)/)
+  assert.ok(fnMatch, "handleSelectVirtualCell not found")
+  assert.match(fnMatch[0], /setSelectedCellId\(cell\s*\?\s*cell\.key\s*:\s*null\)/)
 })
 
 // --- DiscoveryGrid passes isSelected based on selectedVirtualCell ---

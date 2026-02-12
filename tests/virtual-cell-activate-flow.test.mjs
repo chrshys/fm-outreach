@@ -29,8 +29,8 @@ test("VirtualGridCell click handler calls onSelectVirtual to toggle selection", 
   assert.match(virtualSection, /onSelectVirtual\(isSelected\s*\?\s*null\s*:\s*cell\)/)
 })
 
-test("page.tsx defines handleSelectVirtual callback", () => {
-  assert.match(pageSource, /handleSelectVirtual/)
+test("page.tsx defines handleSelectVirtualCell callback", () => {
+  assert.match(pageSource, /handleSelectVirtualCell/)
 })
 
 test("activateCell mutation inserts cell with status 'unsearched' for newly activated cells", () => {
