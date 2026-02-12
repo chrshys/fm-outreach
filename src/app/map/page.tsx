@@ -59,6 +59,10 @@ export default function MapPage() {
     setSelectedCellId(null)
   }, [])
 
+  const handleCellSelect = useCallback((cellId: string | null) => {
+    setSelectedCellId(cellId)
+  }, [])
+
   // Discovery queries & mutations
   const gridCells = useQuery(
     api.discovery.gridCells.listCells,
@@ -236,7 +240,7 @@ export default function MapPage() {
           pendingPolygon={pendingPolygon}
           gridCells={viewMode === "discovery" ? gridCells ?? undefined : undefined}
           selectedCellId={viewMode === "discovery" ? selectedCellId : null}
-          onCellSelect={viewMode === "discovery" ? setSelectedCellId : undefined}
+          onCellSelect={viewMode === "discovery" ? handleCellSelect : undefined}
           onBoundsChange={handleBoundsChange}
         />
         </div>
