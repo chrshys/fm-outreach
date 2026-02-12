@@ -62,8 +62,8 @@ test("DiscoveryPanel function destructures cells, selectedCellId, selectedVirtua
 // Selected cell derivation
 // ============================================================
 
-test("panel derives selectedCell from cells and selectedCellId", () => {
-  assert.match(panelSource, /cells\.find\(\(c\)\s*=>\s*c\._id\s*===\s*selectedCellId\)/)
+test("panel derives persistedCell from cells and selectedCellId", () => {
+  assert.match(panelSource, /const persistedCell\s*=\s*cells\.find\(\(c\)\s*=>\s*c\._id\s*===\s*selectedCellId\)/)
 })
 
 // ============================================================

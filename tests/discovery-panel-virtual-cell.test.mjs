@@ -36,27 +36,65 @@ test("map page passes selectedVirtualCell to DiscoveryPanel", () => {
 })
 
 // ============================================================
-// Virtual cell section renders when no real cell is selected
+// Unified selectedCell derivation: persistedCell ?? virtual fallback
 // ============================================================
 
-test("panel shows virtual cell section only when selectedCell is absent and selectedVirtualCell is present", () => {
-  assert.match(panelSource, /!selectedCell\s*&&\s*selectedVirtualCell/)
+test("panel derives persistedCell from cells.find", () => {
+  assert.match(panelSource, /const persistedCell\s*=\s*cells\.find\(\(c\)\s*=>\s*c\._id\s*===\s*selectedCellId\)\s*\?\?\s*null/)
 })
 
-test("virtual cell section shows 'virtual' status badge", () => {
-  // The virtual cell section should display a "virtual" label
-  assert.match(panelSource, /virtual/)
+test("panel derives selectedCell with type CellData | null", () => {
+  assert.match(panelSource, /const selectedCell:\s*CellData\s*\|\s*null\s*=\s*persistedCell\s*\?\?/)
 })
 
-test("virtual cell section renders Run buttons using DISCOVERY_MECHANISMS", () => {
-  // Should iterate DISCOVERY_MECHANISMS in the virtual cell block
-  const virtualBlock = panelSource.slice(
-    panelSource.indexOf("Selected Virtual Cell"),
-    panelSource.indexOf("Selected Cell */"),
-  )
-  assert.match(virtualBlock, /DISCOVERY_MECHANISMS\.map/)
+test("virtual cell fallback uses selectedVirtualCell.key as _id", () => {
+  assert.match(panelSource, /_id:\s*selectedVirtualCell\.key/)
 })
 
-test("virtual cell Run button calls onCellAction with selectedVirtualCell.key", () => {
-  assert.match(panelSource, /onCellAction\(selectedVirtualCell\.key,\s*\{\s*type:\s*"search",\s*mechanism:\s*mechanism\.id\s*\}\)/)
+test("virtual cell fallback maps swLat, swLng, neLat, neLng from selectedVirtualCell", () => {
+  assert.match(panelSource, /swLat:\s*selectedVirtualCell\.swLat/)
+  assert.match(panelSource, /swLng:\s*selectedVirtualCell\.swLng/)
+  assert.match(panelSource, /neLat:\s*selectedVirtualCell\.neLat/)
+  assert.match(panelSource, /neLng:\s*selectedVirtualCell\.neLng/)
+})
+
+test("virtual cell fallback sets depth to 0", () => {
+  assert.match(panelSource, /depth:\s*0/)
+})
+
+test('virtual cell fallback sets status to "unsearched"', () => {
+  assert.match(panelSource, /status:\s*"unsearched"\s*as\s*const/)
+})
+
+test("virtual cell fallback returns null when no selectedVirtualCell", () => {
+  // The ternary should end with `: null)`
+  assert.match(panelSource, /selectedVirtualCell\s*\?[\s\S]*?:\s*null\)/)
+})
+
+// ============================================================
+// No separate virtual cell JSX section (unified into Selected Cell block)
+// ============================================================
+
+test("panel no longer has a separate 'Selected Virtual Cell' JSX section", () => {
+  assert.doesNotMatch(panelSource, /Selected Virtual Cell/)
+})
+
+test("panel does not have a separate !selectedCell && selectedVirtualCell guard", () => {
+  assert.doesNotMatch(panelSource, /!selectedCell\s*&&\s*selectedVirtualCell/)
+})
+
+// ============================================================
+// Virtual cell renders correctly through unified Selected Cell section
+// ============================================================
+
+test("selectedCell with depth 0 hides Merge button (depth > 0 guard)", () => {
+  assert.match(panelSource, /selectedCell\.depth\s*>\s*0/)
+})
+
+test("selectedCell with unsearched status shows status badge via getStatusBadgeColor", () => {
+  assert.match(panelSource, /getStatusBadgeColor\(selectedCell\.status\)/)
+})
+
+test("selectedCell with unsearched status hides result count (status !== unsearched guard)", () => {
+  assert.match(panelSource, /selectedCell\.status\s*!==\s*"unsearched"/)
 })

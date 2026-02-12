@@ -62,7 +62,16 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
   const updateGridMetadata = useMutation(api.discovery.gridCells.updateGridMetadata)
 
   const selectedGrid = grids?.find((g) => g._id === globalGridId) ?? null
-  const selectedCell = cells.find((c) => c._id === selectedCellId) ?? null
+  const persistedCell = cells.find((c) => c._id === selectedCellId) ?? null
+  const selectedCell: CellData | null = persistedCell ?? (selectedVirtualCell ? {
+    _id: selectedVirtualCell.key,
+    swLat: selectedVirtualCell.swLat,
+    swLng: selectedVirtualCell.swLng,
+    neLat: selectedVirtualCell.neLat,
+    neLng: selectedVirtualCell.neLng,
+    depth: 0,
+    status: "unsearched" as const,
+  } : null)
 
   const handleAddQuery = useCallback(async () => {
     if (!newQuery.trim() || !selectedGrid) return
@@ -293,50 +302,6 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                       />
                     </div>
                   )}
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Selected Virtual Cell (not yet activated) */}
-          {!selectedCell && selectedVirtualCell && (
-            <>
-              <Separator />
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Selected Cell</Label>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground">
-                    virtual
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  {DISCOVERY_MECHANISMS.map((mechanism) => (
-                    <div key={mechanism.id} className="flex items-center justify-between text-xs">
-                      <span>{mechanism.label}</span>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-muted-foreground">{"\u2014"}</span>
-                        <button
-                          type="button"
-                          className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors ${!mechanism.enabled ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"}`}
-                          disabled={!mechanism.enabled}
-                          onClick={() => onCellAction(selectedVirtualCell.key, { type: "search", mechanism: mechanism.id })}
-                        >
-                          <Play className="size-3" />
-                          Run
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center gap-1.5 pt-1">
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors hover:bg-accent"
-                    onClick={() => onCellAction(selectedVirtualCell.key, { type: "subdivide" })}
-                  >
-                    <Grid2x2Plus className="size-3" />
-                    Split
-                  </button>
                 </div>
               </div>
             </>
