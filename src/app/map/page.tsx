@@ -8,6 +8,7 @@ import { toast } from "sonner"
 
 import type { MapBounds } from "@/components/map/map-bounds-emitter"
 import type { CellAction } from "@/components/map/discovery-grid-shared"
+import type { VirtualCell } from "@/lib/virtual-grid"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import { AppLayout } from "@/components/layout/app-layout"
@@ -72,6 +73,26 @@ export default function MapPage() {
     selectedGridId && viewMode === "discovery" ? { gridId: selectedGridId } : "skip",
   )
   const gridCells = gridCellsResult?.cells
+  const activatedBoundsKeys = gridCellsResult?.activatedBoundsKeys
+
+  // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
+  const gridsResult = useQuery(api.discovery.gridCells.listGrids) as Array<{ _id: Id<"discoveryGrids">; cellSizeKm: number }> | undefined
+  const selectedGridCellSizeKm = gridsResult?.find((g) => g._id === selectedGridId)?.cellSizeKm
+
+  const activateCell = useMutation(api.discovery.gridCells.activateCell)
+  const handleActivateCell = useCallback(async (cell: VirtualCell): Promise<string> => {
+    if (!selectedGridId) throw new Error("No grid selected")
+    const result = await activateCell({
+      gridId: selectedGridId,
+      swLat: cell.swLat,
+      swLng: cell.swLng,
+      neLat: cell.neLat,
+      neLng: cell.neLng,
+      boundsKey: cell.key,
+    })
+    return result.cellId
+  }, [selectedGridId, activateCell])
+
   const requestDiscoverCell = useMutation(api.discovery.discoverCell.requestDiscoverCell)
   const subdivideCell = useMutation(api.discovery.gridCells.subdivideCell)
   const undivideCell = useMutation(api.discovery.gridCells.undivideCell)
@@ -245,6 +266,10 @@ export default function MapPage() {
           gridCells={viewMode === "discovery" ? gridCells ?? undefined : undefined}
           selectedCellId={viewMode === "discovery" ? selectedCellId : null}
           onCellSelect={viewMode === "discovery" ? handleCellSelect : undefined}
+          cellSizeKm={viewMode === "discovery" ? selectedGridCellSizeKm : undefined}
+          gridId={viewMode === "discovery" && selectedGridId ? selectedGridId : undefined}
+          activatedBoundsKeys={viewMode === "discovery" ? activatedBoundsKeys : undefined}
+          onActivateCell={viewMode === "discovery" ? handleActivateCell : undefined}
           onBoundsChange={handleBoundsChange}
         />
         </div>

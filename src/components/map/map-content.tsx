@@ -14,6 +14,7 @@ import {
 
 import DiscoveryGrid from "./discovery-grid"
 import type { CellData } from "./discovery-grid"
+import type { VirtualCell } from "@/lib/virtual-grid"
 import { MapBoundsEmitter } from "./map-bounds-emitter"
 import type { MapBounds } from "./map-bounds-emitter"
 import { MarkerPopup } from "./marker-popup"
@@ -54,10 +55,14 @@ type MapContentProps = {
   gridCells?: CellData[]
   selectedCellId?: string | null
   onCellSelect?: (cellId: string | null) => void
+  cellSizeKm?: number
+  gridId?: string
+  activatedBoundsKeys?: string[]
+  onActivateCell?: (cell: VirtualCell) => Promise<string>
   onBoundsChange?: (bounds: MapBounds) => void
 }
 
-export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon, gridCells, selectedCellId, onCellSelect, onBoundsChange }: MapContentProps) {
+export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon, gridCells, selectedCellId, onCellSelect, cellSizeKm, gridId, activatedBoundsKeys, onActivateCell, onBoundsChange }: MapContentProps) {
   return (
     <MapContainer
       center={NIAGARA_CENTER}
@@ -101,9 +106,9 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
           }}
         />
       )}
-      {gridCells && onCellSelect && (
+      {gridCells && onCellSelect && cellSizeKm && gridId && activatedBoundsKeys && onActivateCell && (
         <Pane name="discovery-grid" style={{ zIndex: 450 }}>
-          <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} />
+          <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} cellSizeKm={cellSizeKm} gridId={gridId} activatedBoundsKeys={activatedBoundsKeys} onActivateCell={onActivateCell} />
         </Pane>
       )}
       {leads.map((lead) => {
