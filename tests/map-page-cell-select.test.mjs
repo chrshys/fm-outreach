@@ -27,6 +27,19 @@ test("handleCellSelect has an empty dependency array", () => {
   )
 })
 
+test("handleCellSelect clears virtual cell state", () => {
+  const callbackMatch = source.match(
+    /const handleCellSelect = useCallback\(\(cellId: string \| null\) => \{([\s\S]*?)\}, \[\]\)/,
+  )
+  assert.ok(callbackMatch, "handleCellSelect callback should exist")
+  const body = callbackMatch[1]
+  assert.match(
+    body,
+    /setSelectedVirtualCell\(null\)/,
+    "handleCellSelect should clear virtual cell state with setSelectedVirtualCell(null)",
+  )
+})
+
 test("MapContent uses handleCellSelect instead of setSelectedCellId", () => {
   assert.match(source, /onCellSelect=\{.*handleCellSelect/)
   assert.doesNotMatch(
