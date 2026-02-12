@@ -135,15 +135,17 @@ test("DiscoveryGridProps includes activatedBoundsKeys: string[]", () => {
   assert.match(source, /activatedBoundsKeys:\s*string\[\]/)
 })
 
-test("DiscoveryGridProps includes onActivateCell returning Promise<string>", () => {
-  assert.match(source, /onActivateCell:\s*\(cell:\s*VirtualCell\)\s*=>\s*Promise<string>/)
+test("DiscoveryGridProps does not include onActivateCell", () => {
+  const match = source.match(/type DiscoveryGridProps\s*=\s*\{[^}]*\}/)
+  assert.ok(match, "DiscoveryGridProps type should exist")
+  assert.ok(!match[0].includes("onActivateCell"), "should not contain onActivateCell")
 })
 
 test("DiscoveryGrid destructures new props", () => {
   assert.match(source, /cellSizeKm/)
   assert.match(source, /gridId/)
   assert.match(source, /activatedBoundsKeys/)
-  assert.match(source, /onActivateCell/)
+  assert.match(source, /onSelectVirtual/)
 })
 
 // --- Virtual grid integration tests ---

@@ -21,44 +21,39 @@ const sharedSource = fs.readFileSync(
 )
 
 // ============================================================
-// Virtual cell click → activate → gray unsearched cell
+// Virtual cell click → simple toggle selection
 // ============================================================
 
-test("VirtualGridCell renders Rectangle with VIRTUAL_CELL_STYLE (faint gray)", () => {
+test("VirtualGridCell toggles pathOptions between selected and unselected styles", () => {
   const virtualSection = gridSource
     .split("function VirtualGridCell")[1]
     .split("function DiscoveryGridCell")[0]
 
-  assert.match(virtualSection, /pathOptions=\{VIRTUAL_CELL_STYLE\}/)
+  assert.match(virtualSection, /isSelected\s*\?\s*VIRTUAL_CELL_SELECTED_STYLE\s*:\s*VIRTUAL_CELL_STYLE/)
 })
 
-test("VIRTUAL_CELL_STYLE has faint gray appearance (low opacity, thin weight)", () => {
+test("VIRTUAL_CELL_STYLE uses gray color with low opacity and thin weight", () => {
   assert.match(cellColorsSource, /VIRTUAL_CELL_STYLE/)
-  assert.match(cellColorsSource, /fillOpacity:\s*0\.05/)
-  assert.match(cellColorsSource, /weight:\s*0\.5/)
+  assert.match(cellColorsSource, /fillOpacity:\s*0\.08/)
+  assert.match(cellColorsSource, /weight:\s*1/)
 })
 
-test("VirtualGridCell click activates cell and then selects it", () => {
+test("VIRTUAL_CELL_SELECTED_STYLE uses blue border with dashed pattern", () => {
+  assert.match(cellColorsSource, /VIRTUAL_CELL_SELECTED_STYLE/)
+  assert.match(cellColorsSource, /color:\s*"#2563eb"/)
+  assert.match(cellColorsSource, /dashArray:\s*"6 4"/)
+  assert.match(cellColorsSource, /weight:\s*3/)
+})
+
+test("VirtualGridCell click is a simple toggle (no async, no activating state)", () => {
   const virtualSection = gridSource
     .split("function VirtualGridCell")[1]
     .split("function DiscoveryGridCell")[0]
 
-  // Activation happens first (await), then selection
-  const activateIdx = virtualSection.indexOf("await onActivateCell(cell)")
-  const selectIdx = virtualSection.indexOf("onCellSelect(cellId)")
-  assert.ok(activateIdx >= 0, "should call onActivateCell")
-  assert.ok(selectIdx >= 0, "should call onCellSelect")
-  assert.ok(activateIdx < selectIdx, "activation must happen before selection")
-})
-
-test("VirtualGridCell prevents double-click with activating guard", () => {
-  const virtualSection = gridSource
-    .split("function VirtualGridCell")[1]
-    .split("function DiscoveryGridCell")[0]
-
-  assert.match(virtualSection, /if\s*\(activating\)\s*return/)
-  assert.match(virtualSection, /setActivating\(true\)/)
-  assert.match(virtualSection, /setActivating\(false\)/)
+  assert.match(virtualSection, /onSelectVirtual\(isSelected\s*\?\s*null\s*:\s*cell\)/)
+  assert.doesNotMatch(virtualSection, /async/)
+  assert.doesNotMatch(virtualSection, /activating/)
+  assert.doesNotMatch(virtualSection, /useState/)
 })
 
 // ============================================================
@@ -127,17 +122,8 @@ test("getStatusBadgeColor returns gray for unsearched status", () => {
 })
 
 // ============================================================
-// Page wiring: virtual cell activation → panel cell details
+// Page wiring: virtual cell selection
 // ============================================================
-
-test("page handleActivateCell calls activateCellMutation and returns cellId", () => {
-  assert.match(pageSource, /const\s+result\s*=\s*await\s+activateCellMutation/)
-  assert.match(pageSource, /return\s+result\.cellId/)
-})
-
-test("page passes handleActivateCell as onActivateCell in discovery mode", () => {
-  assert.match(pageSource, /onActivateCell=\{viewMode\s*===\s*"discovery"\s*\?\s*handleActivateCell\s*:\s*undefined\}/)
-})
 
 test("page passes cells and selectedCellId to DiscoveryPanel", () => {
   assert.match(pageSource, /<DiscoveryPanel[\s\S]*?cells=\{cells\s*\?\?\s*\[\]\}/)
@@ -150,134 +136,11 @@ test("page handleCellSelect sets selectedCellId state", () => {
 })
 
 // ============================================================
-// Behavioral: simulated full flow from virtual click to panel display
+// Behavioral: activated virtual cell is excluded from virtual grid rendering
 // ============================================================
 
-function createMockDb() {
-  const store = new Map()
-  let counter = 0
-  return {
-    _store: store,
-    async insert(table, doc) {
-      const id = `${table}:${++counter}`
-      store.set(id, { _id: id, ...doc })
-      return id
-    },
-    query(table) {
-      const docs = [...store.values()].filter((d) =>
-        d._id.startsWith(`${table}:`),
-      )
-      return {
-        withIndex(_name, filterFn) {
-          const eqs = []
-          const builder = {
-            eq(field, value) {
-              eqs.push({ field, value })
-              return builder
-            },
-          }
-          filterFn(builder)
-          const filtered = docs.filter((d) =>
-            eqs.every((e) => d[e.field] === e.value),
-          )
-          return { first: async () => filtered[0] ?? null }
-        },
-      }
-    },
-  }
-}
-
-async function activateCellHandler(ctx, args) {
-  const existing = await ctx.db
-    .query("discoveryCells")
-    .withIndex("by_gridId_boundsKey", (q) =>
-      q.eq("gridId", args.gridId).eq("boundsKey", args.boundsKey),
-    )
-    .first()
-  if (existing) return { cellId: existing._id, alreadyExisted: true }
-  const cellId = await ctx.db.insert("discoveryCells", {
-    swLat: args.swLat,
-    swLng: args.swLng,
-    neLat: args.neLat,
-    neLng: args.neLng,
-    depth: 0,
-    isLeaf: true,
-    status: "unsearched",
-    gridId: args.gridId,
-    boundsKey: args.boundsKey,
-  })
-  return { cellId, alreadyExisted: false }
-}
-
-test("full flow: virtual cell click → activate → cell has unsearched status for panel display", async () => {
-  const db = createMockDb()
-  const virtualCell = {
-    key: "43.500000_-79.500000",
-    swLat: 43.5,
-    swLng: -79.5,
-    neLat: 43.68,
-    neLng: -79.37,
-  }
-
-  // Step 1: Activate cell (simulates VirtualGridCell click → onActivateCell)
-  const result = await activateCellHandler({ db }, {
-    gridId: "discoveryGrids:1",
-    swLat: virtualCell.swLat,
-    swLng: virtualCell.swLng,
-    neLat: virtualCell.neLat,
-    neLng: virtualCell.neLng,
-    boundsKey: virtualCell.key,
-  })
-
-  assert.equal(result.alreadyExisted, false)
-  assert.ok(result.cellId)
-
-  // Step 2: Simulate onCellSelect(cellId) — sets selectedCellId
-  const selectedCellId = result.cellId
-
-  // Step 3: Simulate panel's selectedCell derivation: cells.find(c => c._id === selectedCellId)
-  const persistedCell = db._store.get(selectedCellId)
-  const selectedCell = persistedCell._id === selectedCellId ? persistedCell : null
-
-  assert.ok(selectedCell, "panel should find the selected cell")
-  assert.equal(selectedCell.status, "unsearched", "newly activated cell shows as unsearched")
-  assert.equal(selectedCell.depth, 0, "depth is 0 for new cells")
-  assert.equal(selectedCell.isLeaf, true, "new cell is a leaf")
-  assert.equal(selectedCell.boundsKey, virtualCell.key, "boundsKey matches virtual cell key")
-})
-
-test("full flow: re-clicking same virtual cell returns existing cell (idempotent)", async () => {
-  const db = createMockDb()
-  const virtualCell = {
-    key: "44.000000_-80.000000",
-    swLat: 44.0,
-    swLng: -80.0,
-    neLat: 44.18,
-    neLng: -79.87,
-  }
-
-  const args = {
-    gridId: "discoveryGrids:1",
-    swLat: virtualCell.swLat,
-    swLng: virtualCell.swLng,
-    neLat: virtualCell.neLat,
-    neLng: virtualCell.neLng,
-    boundsKey: virtualCell.key,
-  }
-
-  const first = await activateCellHandler({ db }, args)
-  const second = await activateCellHandler({ db }, args)
-
-  assert.equal(first.alreadyExisted, false)
-  assert.equal(second.alreadyExisted, true)
-  assert.equal(first.cellId, second.cellId, "same cell ID returned on re-click")
-})
-
 test("full flow: activated virtual cell is excluded from virtual grid rendering", () => {
-  // Verify the filtering logic in DiscoveryGrid
   assert.match(gridSource, /activatedSet\.has\(vc\.key\)/)
   assert.match(gridSource, /persistedBoundsKeySet\.has\(vc\.key\)/)
-
-  // Verify filteredVirtualCells is used for rendering
   assert.match(gridSource, /filteredVirtualCells\.map/)
 })
