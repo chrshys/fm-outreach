@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import type { CellData, CellAction } from "./discovery-grid-shared"
+import type { VirtualCell } from "@/lib/virtual-grid"
 import { DISCOVERY_MECHANISMS, MAX_DEPTH, getStatusBadgeColor, formatShortDate } from "./discovery-grid-shared"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -19,6 +20,7 @@ type DiscoveryPanelProps = {
   globalGridId: Id<"discoveryGrids"> | null
   cells: CellData[]
   selectedCellId: string | null
+  selectedVirtualCell: VirtualCell | null
   onCellAction: (cellId: string, action: CellAction) => void
 }
 
@@ -44,7 +46,7 @@ const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
   { status: "saturated", color: "#f97316", label: "Saturated" },
 ]
 
-export function DiscoveryPanel({ globalGridId, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
+export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVirtualCell, onCellAction }: DiscoveryPanelProps) {
   const [open, setOpen] = useState(true)
   const [newQuery, setNewQuery] = useState("")
   const [editingQuery, setEditingQuery] = useState<string | null>(null)
@@ -291,6 +293,40 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, onCellActi
                       />
                     </div>
                   )}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Selected Virtual Cell (not yet activated) */}
+          {!selectedCell && selectedVirtualCell && (
+            <>
+              <Separator />
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Selected Cell</Label>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground">
+                    virtual
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {DISCOVERY_MECHANISMS.map((mechanism) => (
+                    <div key={mechanism.id} className="flex items-center justify-between text-xs">
+                      <span>{mechanism.label}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-muted-foreground">{"\u2014"}</span>
+                        <button
+                          type="button"
+                          className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors ${!mechanism.enabled ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"}`}
+                          disabled={!mechanism.enabled}
+                          onClick={() => onCellAction(selectedVirtualCell.key, { type: "search", mechanism: mechanism.id })}
+                        >
+                          <Play className="size-3" />
+                          Run
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </>

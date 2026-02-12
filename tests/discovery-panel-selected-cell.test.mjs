@@ -54,8 +54,8 @@ test("DiscoveryPanelProps includes onCellAction", () => {
   assert.match(panelSource, /onCellAction:\s*\(cellId:\s*string,\s*action:\s*CellAction\)\s*=>\s*void/)
 })
 
-test("DiscoveryPanel function destructures cells, selectedCellId, onCellAction", () => {
-  assert.match(panelSource, /cells,\s*selectedCellId,\s*onCellAction/)
+test("DiscoveryPanel function destructures cells, selectedCellId, selectedVirtualCell, onCellAction", () => {
+  assert.match(panelSource, /cells,\s*selectedCellId,\s*selectedVirtualCell,\s*onCellAction/)
 })
 
 // ============================================================
@@ -167,10 +167,10 @@ test("map page passes onCellAction to DiscoveryPanel", () => {
 // Map page clears selection on grid change
 // ============================================================
 
-test("map page clears selectedCellId via useEffect when globalGridId changes", () => {
+test("map page clears selectedCellId and selectedVirtualCell via useEffect when globalGridId changes", () => {
   assert.match(
     pageSource,
-    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\)\s*\},\s*\[globalGridId\]\)/,
+    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\);\s*setSelectedVirtualCell\(null\)\s*\},\s*\[globalGridId\]\)/,
   )
 })
 
