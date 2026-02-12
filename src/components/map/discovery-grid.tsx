@@ -26,6 +26,39 @@ type DiscoveryGridCellProps = {
   onCellSelect: (cellId: string | null) => void
 }
 
+type VirtualGridCellProps = {
+  cell: VirtualCell
+  onActivateCell: (cell: VirtualCell) => Promise<string>
+  onCellSelect: (cellId: string | null) => void
+}
+
+function VirtualGridCell({ cell, onActivateCell, onCellSelect }: VirtualGridCellProps) {
+  const [activating, setActivating] = useState(false)
+  const bounds: [[number, number], [number, number]] = [
+    [cell.swLat, cell.swLng],
+    [cell.neLat, cell.neLng],
+  ]
+  const handleClick = async () => {
+    if (activating) return
+    setActivating(true)
+    try {
+      const cellId = await onActivateCell(cell)
+      onCellSelect(cellId)
+    } finally {
+      setActivating(false)
+    }
+  }
+  return (
+    <Rectangle
+      bounds={bounds}
+      pathOptions={VIRTUAL_CELL_STYLE}
+      eventHandlers={{
+        click: handleClick,
+      }}
+    />
+  )
+}
+
 function DiscoveryGridCell({ cell, isSelected, onCellSelect }: DiscoveryGridCellProps) {
   const bounds: [[number, number], [number, number]] = [
     [cell.swLat, cell.swLng],
