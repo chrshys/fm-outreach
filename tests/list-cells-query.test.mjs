@@ -106,6 +106,11 @@ test("returns lastSearchedAt field", () => {
   assert.match(listCellsBlock, /lastSearchedAt:\s*cell\.lastSearchedAt/);
 });
 
+test("returns leadsFound field", () => {
+  const listCellsBlock = source.slice(source.indexOf("listCells"));
+  assert.match(listCellsBlock, /leadsFound:\s*cell\.leadsFound/);
+});
+
 // ============================================================
 // 5. Shape projection (does NOT leak extra fields)
 // ============================================================

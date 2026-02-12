@@ -250,6 +250,7 @@ export const listCells = query({
         querySaturation: cell.querySaturation,
         lastSearchedAt: cell.lastSearchedAt,
         boundsKey: cell.boundsKey,
+        leadsFound: cell.leadsFound,
       })),
       activatedBoundsKeys,
     };

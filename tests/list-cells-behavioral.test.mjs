@@ -98,6 +98,7 @@ async function listCells(ctx, args) {
       querySaturation: cell.querySaturation,
       lastSearchedAt: cell.lastSearchedAt,
       boundsKey: cell.boundsKey,
+      leadsFound: cell.leadsFound,
     })),
     activatedBoundsKeys,
   };
@@ -355,6 +356,7 @@ test("returned cells contain only projected fields", async () => {
     "querySaturation",
     "lastSearchedAt",
     "boundsKey",
+    "leadsFound",
   ];
 
   assert.deepStrictEqual(
