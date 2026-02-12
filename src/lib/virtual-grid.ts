@@ -26,8 +26,11 @@ export function computeVirtualGrid(
   cellSizeKm: number,
   maxCells: number = 500,
 ): VirtualCell[] {
-  const midLat = (bounds.swLat + bounds.neLat) / 2;
   const latStep = cellSizeKm / 111;
+  // Snap midLat to a coarse 5° band so that lngStep (and therefore grid
+  // columns) stay stable across vertical pans within the same latitude zone.
+  const LAT_BAND = 5;
+  const midLat = Math.round(((bounds.swLat + bounds.neLat) / 2) / LAT_BAND) * LAT_BAND;
   const lngStep = cellSizeKm / (111 * Math.cos(midLat * Math.PI / 180));
 
   const startLat = Math.floor(bounds.swLat / latStep) * latStep;

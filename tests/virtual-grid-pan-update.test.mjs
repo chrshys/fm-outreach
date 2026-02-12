@@ -330,3 +330,93 @@ test("cells from old viewport that are outside new viewport are not produced", (
     "non-overlapping viewports should share no cells",
   )
 })
+
+// ============================================================
+// 11. Vertical pan: shared cells stay aligned (stable lngStep)
+// ============================================================
+
+test("vertical pan within same latitude band: shared cells have identical keys and coordinates", () => {
+  const cellSizeKm = 20
+  // Small vertical pan — both viewports stay in the same 5° band (midLat ≈ 43°, snaps to 45°)
+  const before = { swLat: 43.0, swLng: -79.5, neLat: 43.5, neLng: -79.0 }
+  const after = { swLat: 43.2, swLng: -79.5, neLat: 43.7, neLng: -79.0 }
+
+  const beforeCells = mod.computeVirtualGrid(before, cellSizeKm)
+  const afterCells = mod.computeVirtualGrid(after, cellSizeKm)
+
+  assert.ok(beforeCells.length > 0)
+  assert.ok(afterCells.length > 0)
+
+  const beforeMap = new Map(beforeCells.map((c) => [c.key, c]))
+  const afterMap = new Map(afterCells.map((c) => [c.key, c]))
+
+  const commonKeys = [...beforeMap.keys()].filter((k) => afterMap.has(k))
+  assert.ok(
+    commonKeys.length > 0,
+    "overlapping vertical viewports within same lat band should share cells",
+  )
+
+  for (const key of commonKeys) {
+    const b = beforeMap.get(key)
+    const a = afterMap.get(key)
+    assert.equal(b.swLat, a.swLat, `swLat stable for key ${key}`)
+    assert.equal(b.swLng, a.swLng, `swLng stable for key ${key}`)
+    assert.equal(b.neLat, a.neLat, `neLat stable for key ${key}`)
+    assert.equal(b.neLng, a.neLng, `neLng stable for key ${key}`)
+  }
+})
+
+// ============================================================
+// 12. Vertical pan: cell widths stay consistent (no jitter)
+// ============================================================
+
+test("vertical pan: cell widths are identical before and after pan within same lat band", () => {
+  const cellSizeKm = 20
+  const before = { swLat: 43.0, swLng: -79.5, neLat: 43.5, neLng: -79.0 }
+  const after = { swLat: 43.3, swLng: -79.5, neLat: 43.8, neLng: -79.0 }
+
+  const beforeCells = mod.computeVirtualGrid(before, cellSizeKm)
+  const afterCells = mod.computeVirtualGrid(after, cellSizeKm)
+
+  assert.ok(beforeCells.length > 0)
+  assert.ok(afterCells.length > 0)
+
+  const beforeWidth = beforeCells[0].neLng - beforeCells[0].swLng
+  const afterWidth = afterCells[0].neLng - afterCells[0].swLng
+
+  assert.ok(
+    Math.abs(beforeWidth - afterWidth) < 1e-10,
+    `cell widths should match: before=${beforeWidth}, after=${afterWidth}`,
+  )
+})
+
+// ============================================================
+// 13. Diagonal pan: cells stay aligned when midLat doesn't cross
+//     a latitude band boundary
+// ============================================================
+
+test("diagonal pan within same lat band: shared cells have stable coordinates", () => {
+  const cellSizeKm = 20
+  // Diagonal pan (NE) but stays in same 5° lat band
+  const before = { swLat: 43.0, swLng: -79.5, neLat: 43.5, neLng: -79.0 }
+  const after = { swLat: 43.15, swLng: -79.35, neLat: 43.65, neLng: -78.85 }
+
+  const beforeCells = mod.computeVirtualGrid(before, cellSizeKm)
+  const afterCells = mod.computeVirtualGrid(after, cellSizeKm)
+
+  assert.ok(beforeCells.length > 0)
+  assert.ok(afterCells.length > 0)
+
+  const beforeMap = new Map(beforeCells.map((c) => [c.key, c]))
+  const afterMap = new Map(afterCells.map((c) => [c.key, c]))
+
+  const commonKeys = [...beforeMap.keys()].filter((k) => afterMap.has(k))
+  assert.ok(commonKeys.length > 0, "diagonal pan should share some cells")
+
+  for (const key of commonKeys) {
+    const b = beforeMap.get(key)
+    const a = afterMap.get(key)
+    assert.equal(b.swLng, a.swLng, `swLng stable for key ${key}`)
+    assert.equal(b.neLng, a.neLng, `neLng stable for key ${key}`)
+  }
+})

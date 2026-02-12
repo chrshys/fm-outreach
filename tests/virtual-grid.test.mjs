@@ -166,7 +166,9 @@ test("computeVirtualGrid cell dimensions match latStep and lngStep", () => {
   assert.ok(cells.length > 0);
 
   const latStep = cellSizeKm / 111;
-  const midLat = (bounds.swLat + bounds.neLat) / 2;
+  // midLat is snapped to nearest 5° band for stable columns across vertical pans
+  const LAT_BAND = 5;
+  const midLat = Math.round(((bounds.swLat + bounds.neLat) / 2) / LAT_BAND) * LAT_BAND;
   const lngStep = cellSizeKm / (111 * Math.cos(midLat * Math.PI / 180));
 
   for (const cell of cells) {
@@ -211,7 +213,9 @@ test("computeVirtualGrid snaps start coordinates to grid", () => {
   assert.ok(cells.length > 0);
 
   const latStep = cellSizeKm / 111;
-  const midLat = (bounds.swLat + bounds.neLat) / 2;
+  // midLat is snapped to nearest 5° band for stable columns across vertical pans
+  const LAT_BAND = 5;
+  const midLat = Math.round(((bounds.swLat + bounds.neLat) / 2) / LAT_BAND) * LAT_BAND;
   const lngStep = cellSizeKm / (111 * Math.cos(midLat * Math.PI / 180));
 
   const startLat = Math.floor(bounds.swLat / latStep) * latStep;
