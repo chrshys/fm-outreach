@@ -206,6 +206,7 @@ export default function MapPage() {
   const handleCellAction = useCallback(async (cellId: string, action: CellAction) => {
     let cell = cells?.find((c) => c._id === cellId)
     if (!cell && selectedVirtualCell && selectedVirtualCell.key === cellId) {
+      if (!globalGridId) return
       try {
         const newCellId = await handleActivateCell(selectedVirtualCell)
         setSelectedVirtualCell(null)
@@ -264,7 +265,7 @@ export default function MapPage() {
       }
       return
     }
-  }, [cells, requestDiscoverCell, subdivideCell, undivideCell, selectedVirtualCell, handleActivateCell])
+  }, [cells, globalGridId, requestDiscoverCell, subdivideCell, undivideCell, selectedVirtualCell, handleActivateCell])
 
   return (
     <AppLayout>

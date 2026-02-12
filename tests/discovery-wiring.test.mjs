@@ -89,7 +89,7 @@ test("handleCellAction has try/catch for undivide with error toast", () => {
 })
 
 test("handleCellAction dependency array includes undivideCell", () => {
-  assert.match(pageSource, /\[cells,\s*requestDiscoverCell,\s*subdivideCell,\s*undivideCell,\s*selectedVirtualCell,\s*handleActivateCell\]/)
+  assert.match(pageSource, /\[cells,\s*globalGridId,\s*requestDiscoverCell,\s*subdivideCell,\s*undivideCell,\s*selectedVirtualCell,\s*handleActivateCell\]/)
 })
 
 test("uses undivideCell mutation", () => {
@@ -134,7 +134,7 @@ test("DiscoveryPanel does not accept setGlobalGridId prop (auto-select removed)"
 })
 
 test("DiscoveryPanel destructures globalGridId without setGlobalGridId", () => {
-  assert.match(panelSource, /\{\s*globalGridId,\s*cells,\s*selectedCellId,\s*onCellAction\s*\}/)
+  assert.match(panelSource, /\{\s*globalGridId,\s*cells,\s*selectedCellId,\s*selectedVirtualCell,\s*onCellAction\s*\}/)
 })
 
 test("DiscoveryPanel does not call setGlobalGridId (auto-select removed)", () => {
