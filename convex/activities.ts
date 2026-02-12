@@ -54,6 +54,48 @@ export const enrichmentProgress = query({
   },
 });
 
+export const hunterStats = query({
+  args: {},
+  handler: async (ctx) => {
+    const activities = await ctx.db
+      .query("activities")
+      .collect();
+
+    let totalCalls = 0;
+    let hits = 0;
+    let misses = 0;
+    let errors = 0;
+
+    for (const activity of activities) {
+      if (
+        activity.type !== "enrichment_source_added" ||
+        !activity.metadata ||
+        (activity.metadata as Record<string, unknown>).source !== "hunter"
+      ) {
+        continue;
+      }
+
+      totalCalls++;
+      const meta = activity.metadata as Record<string, unknown>;
+      if (meta.error) {
+        errors++;
+      } else if (meta.hit) {
+        hits++;
+      } else {
+        misses++;
+      }
+    }
+
+    return {
+      totalCalls,
+      hits,
+      misses,
+      errors,
+      hitRate: totalCalls > 0 ? hits / totalCalls : 0,
+    };
+  },
+});
+
 export const create = mutation({
   args: {
     leadId: v.id("leads"),

@@ -165,13 +165,27 @@ export const enrichLead = internalAction({
     const hasEmail = !!(lead.contactEmail || (scraperResult && scraperResult.emails.length > 0));
 
     if (domain && !hasEmail) {
+      let hunterError = false;
       try {
         hunterResult = await ctx.runAction(
           api.enrichment.hunter.searchDomain,
           { domain },
         );
       } catch {
-        // Hunter failed — continue pipeline
+        hunterError = true;
+        // Log Hunter error
+        await ctx.runMutation(internal.enrichment.orchestratorHelpers.logActivity, {
+          leadId: args.leadId,
+          type: "enrichment_source_added",
+          description: `Hunter.io error for ${domain}`,
+          metadata: {
+            source: "hunter",
+            domain,
+            emailsFound: 0,
+            hit: false,
+            error: true,
+          },
+        });
       }
 
       if (hunterResult && hunterResult.emails.length > 0) {
@@ -179,6 +193,23 @@ export const enrichLead = internalAction({
           source: "hunter",
           detail: domain,
           fetchedAt: Date.now(),
+        });
+      }
+
+      // Log Hunter attempt (hit or miss) — skip if already logged as error
+      if (!hunterError) {
+        await ctx.runMutation(internal.enrichment.orchestratorHelpers.logActivity, {
+          leadId: args.leadId,
+          type: "enrichment_source_added",
+          description: hunterResult && hunterResult.emails.length > 0
+            ? `Hunter.io found ${hunterResult.emails.length} email(s) for ${domain}`
+            : `Hunter.io returned no emails for ${domain}`,
+          metadata: {
+            source: "hunter",
+            domain,
+            emailsFound: hunterResult?.emails.length ?? 0,
+            hit: !!(hunterResult && hunterResult.emails.length > 0),
+          },
         });
       }
     }
