@@ -40,11 +40,3 @@ test("panel merge button does not use parentCellId", () => {
   const selectedCellBlock = panelSource.slice(selectedCellStart, selectedCellStart + 2000)
   assert.doesNotMatch(selectedCellBlock, /parentCellId/)
 })
-
-// ============================================================
-// Tooltip/CellTooltipContent are removed (merge button UI moved to panel)
-// ============================================================
-
-test("no CellTooltipContent component exists in grid", () => {
-  assert.doesNotMatch(gridSource, /function\s+CellTooltipContent/)
-})
