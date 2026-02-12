@@ -85,6 +85,11 @@ test("has boundsKey field as v.optional(v.string())", () => {
   assert.match(cellsBlock, /boundsKey:\s*v\.optional\(v\.string\(\)\)/)
 })
 
+// leadsFound
+test("has leadsFound as optional number", () => {
+  assert.match(cellsBlock, /leadsFound:\s*v\.optional\(v\.number\(\)\)/)
+})
+
 // Indexes
 test("has by_gridId index on gridId", () => {
   assert.match(cellsBlock, /\.index\("by_gridId",\s*\["gridId"\]\)/)
