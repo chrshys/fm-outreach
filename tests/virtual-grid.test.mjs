@@ -241,6 +241,28 @@ test("computeVirtualGrid defaults maxCells to 500", () => {
   assert.match(source, /maxCells.*=\s*500/);
 });
 
+test("computeVirtualGrid with same bounds called twice returns identical keys", () => {
+  const bounds = { swLat: 43.007, swLng: -79.503, neLat: 43.52, neLng: -79.01 };
+  const cellSizeKm = 5;
+  const first = mod.computeVirtualGrid(bounds, cellSizeKm);
+  const second = mod.computeVirtualGrid(bounds, cellSizeKm);
+
+  assert.ok(first.length > 0, "should produce cells");
+  assert.equal(first.length, second.length, "cell count must match");
+
+  const firstKeys = first.map((c) => c.key);
+  const secondKeys = second.map((c) => c.key);
+  assert.deepEqual(firstKeys, secondKeys, "keys must be identical across calls");
+
+  // Also verify full cell coordinates match exactly
+  for (let i = 0; i < first.length; i++) {
+    assert.equal(first[i].swLat, second[i].swLat, `swLat mismatch at cell ${i}`);
+    assert.equal(first[i].swLng, second[i].swLng, `swLng mismatch at cell ${i}`);
+    assert.equal(first[i].neLat, second[i].neLat, `neLat mismatch at cell ${i}`);
+    assert.equal(first[i].neLng, second[i].neLng, `neLng mismatch at cell ${i}`);
+  }
+});
+
 test("computeVirtualGrid uses correct midLat formula", () => {
   const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.1, neLng: -79.9 };
   const cells = mod.computeVirtualGrid(bounds, 5);
