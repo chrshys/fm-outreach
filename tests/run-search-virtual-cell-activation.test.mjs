@@ -168,32 +168,31 @@ test("handleCellAction dependency array includes handleActivateCell", () => {
 })
 
 // ============================================================
-// Source verification: DiscoveryPanel virtual cell Run button
+// Source verification: DiscoveryPanel unified Selected Cell section
+// includes Run button (virtual cells use selectedCell derivation)
 // ============================================================
 
-test("DiscoveryPanel renders Run button for virtual cell mechanisms", () => {
-  const virtualSection = panelSource.slice(
-    panelSource.indexOf("selectedVirtualCell && ("),
-    panelSource.indexOf("{/* Selected Cell */}") !== -1
-      ? panelSource.indexOf("{/* Selected Cell */}")
-      : panelSource.indexOf("selectedCell && ("),
+test("DiscoveryPanel renders Run button in unified Selected Cell section", () => {
+  const selectedSection = panelSource.slice(
+    panelSource.indexOf("{/* Selected Cell */}"),
+    panelSource.indexOf("{/* Search Queries */}"),
   )
   assert.match(
-    virtualSection,
+    selectedSection,
     /Run/,
-    "Virtual cell section should have Run button",
+    "Selected Cell section should have Run button (covers both virtual and persisted cells)",
   )
 })
 
-test("DiscoveryPanel Run button calls onCellAction with virtual cell key and search action", () => {
-  const virtualSection = panelSource.slice(
-    panelSource.indexOf("selectedVirtualCell && ("),
-    panelSource.indexOf("selectedCell && ("),
+test("DiscoveryPanel Run button calls onCellAction with selectedCell._id and search action", () => {
+  const selectedSection = panelSource.slice(
+    panelSource.indexOf("{/* Selected Cell */}"),
+    panelSource.indexOf("{/* Search Queries */}"),
   )
   assert.match(
-    virtualSection,
-    /onCellAction\(selectedVirtualCell\.key,\s*\{\s*type:\s*"search"/,
-    "Run button should call onCellAction with virtual cell key and search action type",
+    selectedSection,
+    /onCellAction\(selectedCell\._id,\s*\{\s*type:\s*"search",\s*mechanism:\s*mechanism\.id\s*\}\)/,
+    "Run button should call onCellAction with selectedCell._id (virtual cell key for unactivated cells)",
   )
 })
 

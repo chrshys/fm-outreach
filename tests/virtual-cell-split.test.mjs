@@ -13,35 +13,35 @@ const mutationSource = fs.readFileSync(
 )
 
 // ============================================================
-// DiscoveryPanel: Split button present in virtual cell section
+// DiscoveryPanel: Split button present in unified Selected Cell section
+// (virtual cells use the selectedCell derivation, no separate section)
 // ============================================================
 
-test("virtual cell section in DiscoveryPanel renders a Split button", () => {
-  // Extract the virtual cell section (between the two selected cell sections)
-  const virtualSection = panelSource
-    .split("Selected Cell")[1]
-    .split("Selected Cell")[0]
-
-  assert.match(virtualSection, /Split/, "virtual cell section should have a Split button")
+test("unified Selected Cell section in DiscoveryPanel renders a Split button", () => {
+  const selectedSection = panelSource.slice(
+    panelSource.indexOf("{/* Selected Cell */}"),
+    panelSource.indexOf("{/* Search Queries */}"),
+  )
+  assert.match(selectedSection, /Split/, "Selected Cell section should have a Split button")
 })
 
-test("virtual cell Split button uses Grid2x2Plus icon", () => {
-  const virtualSection = panelSource
-    .split("Selected Cell")[1]
-    .split("Selected Cell")[0]
-
-  assert.match(virtualSection, /Grid2x2Plus/, "Split button should use Grid2x2Plus icon")
+test("Split button uses Grid2x2Plus icon", () => {
+  const selectedSection = panelSource.slice(
+    panelSource.indexOf("{/* Selected Cell */}"),
+    panelSource.indexOf("{/* Search Queries */}"),
+  )
+  assert.match(selectedSection, /Grid2x2Plus/, "Split button should use Grid2x2Plus icon")
 })
 
-test("virtual cell Split button dispatches subdivide action with virtual cell key", () => {
-  const virtualSection = panelSource
-    .split("Selected Cell")[1]
-    .split("Selected Cell")[0]
-
+test("Split button dispatches subdivide action with selectedCell._id", () => {
+  const selectedSection = panelSource.slice(
+    panelSource.indexOf("{/* Selected Cell */}"),
+    panelSource.indexOf("{/* Search Queries */}"),
+  )
   assert.match(
-    virtualSection,
-    /onCellAction\(selectedVirtualCell\.key,\s*\{\s*type:\s*"subdivide"\s*\}\)/,
-    "Split button should call onCellAction with subdivide type and virtual cell key",
+    selectedSection,
+    /onCellAction\(selectedCell\._id,\s*\{\s*type:\s*"subdivide"\s*\}\)/,
+    "Split button should call onCellAction with subdivide type and selectedCell._id (virtual cell key for unactivated cells)",
   )
 })
 
