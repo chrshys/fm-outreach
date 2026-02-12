@@ -36,7 +36,7 @@ export const enrichLead = internalAction({
     overwrite: v.optional(v.boolean()),
   },
   handler: async (ctx, args): Promise<EnrichmentSummary> => {
-    // @ts-expect-error -- Convex generated API types can trigger TS2589 in large modules
+    // @ts-ignore -- Convex generated API types can trigger TS2589 in large modules
     const lead = await ctx.runQuery(api.leads.get, { leadId: args.leadId });
     if (!lead) {
       throw new Error(`Lead not found: ${args.leadId}`);
@@ -52,7 +52,7 @@ export const enrichLead = internalAction({
         { email: lead.contactEmail },
       );
       if (isBlocked) {
-        // @ts-expect-error -- Convex generated API types can trigger TS2589 in large modules
+        // @ts-ignore -- Convex generated API types can trigger TS2589 in large modules
         await ctx.runMutation(internal.enrichment.orchestratorHelpers.logActivity, {
           leadId: args.leadId,
           type: "enrichment_skipped",
