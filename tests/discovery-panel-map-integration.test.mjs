@@ -21,8 +21,8 @@ test("renders DiscoveryPanel when viewMode is discovery", () => {
   assert.match(pageSource, /<DiscoveryPanel/)
 })
 
-test("passes mapBounds to DiscoveryPanel", () => {
-  assert.match(pageSource, /mapBounds=\{mapBounds\}/)
+test("passes globalGridId to DiscoveryPanel", () => {
+  assert.match(pageSource, /globalGridId=\{globalGridId\}/)
 })
 
 // --- listGrids returns queries field ---

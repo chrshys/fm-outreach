@@ -15,12 +15,11 @@ const cellColorsSource = fs.readFileSync("src/components/map/cell-colors.ts", "u
 test("DiscoveryPanel is rendered only in discovery viewMode", () => {
   // MapFilters shown in clusters mode, DiscoveryPanel in discovery mode
   assert.match(pageSource, /viewMode\s*===\s*"clusters"\s*\?\s*\([\s\S]*?<MapFilters/)
-  assert.match(pageSource, /<DiscoveryPanel\s+mapBounds/)
+  assert.match(pageSource, /<DiscoveryPanel\s+globalGridId/)
 })
 
-test("DiscoveryPanel receives all three required props from map page", () => {
-  assert.match(pageSource, /mapBounds=\{mapBounds\}/)
-  assert.match(pageSource, /selectedGridId=\{globalGridId\}/)
+test("DiscoveryPanel receives globalGridId and onGridSelect props from map page", () => {
+  assert.match(pageSource, /globalGridId=\{globalGridId\}/)
   assert.match(pageSource, /onGridSelect=\{setGlobalGridId\}/)
 })
 
@@ -59,7 +58,7 @@ test("no New Grid form (grid creation replaced by virtual grid)", () => {
 })
 
 test("auto-selects first grid when none selected", () => {
-  assert.match(panelSource, /!selectedGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0/)
+  assert.match(panelSource, /!globalGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0/)
   assert.match(panelSource, /onGridSelect\(grids\[0\]\._id\)/)
 })
 

@@ -12,12 +12,12 @@ test("exports DiscoveryPanel as named export", () => {
 
 // --- Props ---
 
-test("accepts mapBounds prop of type MapBounds | null", () => {
-  assert.match(source, /mapBounds:\s*MapBounds\s*\|\s*null/)
+test("accepts globalGridId prop of type Id<discoveryGrids> | null", () => {
+  assert.match(source, /globalGridId:\s*Id<"discoveryGrids">\s*\|\s*null/)
 })
 
-test("imports MapBounds type from map-bounds-emitter", () => {
-  assert.match(source, /import\s+type\s+\{\s*MapBounds\s*\}\s+from\s+["']\.\/map-bounds-emitter["']/)
+test("does not import MapBounds type (mapBounds prop removed)", () => {
+  assert.doesNotMatch(source, /import\s+type\s+\{\s*MapBounds\s*\}\s+from\s+["']\.\/map-bounds-emitter["']/)
 })
 
 // --- Convex integration ---

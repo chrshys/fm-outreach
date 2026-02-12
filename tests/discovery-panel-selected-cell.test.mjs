@@ -152,7 +152,7 @@ test("panel shows query saturation when available", () => {
 // ============================================================
 
 test("map page passes cells to DiscoveryPanel", () => {
-  assert.match(pageSource, /cells=\{viewMode\s*===\s*"discovery"\s*\?\s*gridCells\s*\?\?\s*\[\]\s*:\s*\[\]\}/)
+  assert.match(pageSource, /cells=\{cells\s*\?\?\s*\[\]\}/)
 })
 
 test("map page passes selectedCellId to DiscoveryPanel", () => {

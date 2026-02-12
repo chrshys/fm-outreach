@@ -6,7 +6,6 @@ import { useQuery, useMutation } from "convex/react"
 import { Grid3X3, PenTool } from "lucide-react"
 import { toast } from "sonner"
 
-import type { MapBounds } from "@/components/map/map-bounds-emitter"
 import type { CellAction } from "@/components/map/discovery-grid-shared"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
@@ -50,7 +49,6 @@ export default function MapPage() {
   const createCluster = useMutation(api.clusters.createPolygonCluster)
   const [filters, setFilters] = useState<MapFiltersValue>(defaultMapFilters)
   const [viewMode, setViewMode] = useState<"clusters" | "discovery">("clusters")
-  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
   const [globalGridId, setGlobalGridId] = useState<Id<"discoveryGrids"> | null>(null)
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null)
 
@@ -197,10 +195,6 @@ export default function MapPage() {
     }
   }, [drawnPolygon, clusterName, createCluster])
 
-  const handleBoundsChange = useCallback((bounds: MapBounds) => {
-    setMapBounds(bounds)
-  }, [])
-
   const handleCancelDialog = useCallback(() => {
     setShowNamingDialog(false)
     setDrawnPolygon(null)
@@ -275,7 +269,7 @@ export default function MapPage() {
           gridId={globalGridId ?? undefined}
           activatedBoundsKeys={activatedBoundsKeys}
           onActivateCell={viewMode === "discovery" ? handleActivateCell : undefined}
-          onBoundsChange={handleBoundsChange}
+
         />
         </div>
         {viewMode === "clusters" ? (
@@ -285,7 +279,7 @@ export default function MapPage() {
             clusters={clusterOptions}
           />
         ) : (
-          <DiscoveryPanel mapBounds={mapBounds} selectedGridId={globalGridId} onGridSelect={setGlobalGridId} cells={viewMode === "discovery" ? cells ?? [] : []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
+          <DiscoveryPanel globalGridId={globalGridId} onGridSelect={setGlobalGridId} cells={cells ?? []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
         )}
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           <Button

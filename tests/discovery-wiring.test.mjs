@@ -117,8 +117,8 @@ test("passes onCellSelect to MapContent in discovery mode", () => {
 
 // --- DiscoveryPanel receives globalGridId and setGlobalGridId ---
 
-test("passes globalGridId to DiscoveryPanel as selectedGridId", () => {
-  assert.match(pageSource, /selectedGridId=\{globalGridId\}/)
+test("passes globalGridId to DiscoveryPanel as globalGridId prop", () => {
+  assert.match(pageSource, /globalGridId=\{globalGridId\}/)
 })
 
 test("passes setGlobalGridId directly to DiscoveryPanel as onGridSelect", () => {
@@ -127,20 +127,20 @@ test("passes setGlobalGridId directly to DiscoveryPanel as onGridSelect", () => 
 
 // --- DiscoveryPanel prop types ---
 
-test("DiscoveryPanel accepts selectedGridId prop", () => {
-  assert.match(panelSource, /selectedGridId:\s*Id<"discoveryGrids">\s*\|\s*null/)
+test("DiscoveryPanel accepts globalGridId prop", () => {
+  assert.match(panelSource, /globalGridId:\s*Id<"discoveryGrids">\s*\|\s*null/)
 })
 
 test("DiscoveryPanel accepts onGridSelect prop", () => {
   assert.match(panelSource, /onGridSelect:\s*\(gridId:\s*Id<"discoveryGrids">\)\s*=>\s*void/)
 })
 
-test("DiscoveryPanel destructures selectedGridId and onGridSelect", () => {
-  assert.match(panelSource, /\{\s*mapBounds,\s*selectedGridId,\s*onGridSelect,\s*cells,\s*selectedCellId,\s*onCellAction\s*\}/)
+test("DiscoveryPanel destructures globalGridId and onGridSelect", () => {
+  assert.match(panelSource, /\{\s*globalGridId,\s*onGridSelect,\s*cells,\s*selectedCellId,\s*onCellAction\s*\}/)
 })
 
 test("DiscoveryPanel calls onGridSelect on auto-select", () => {
-  assert.match(panelSource, /if\s*\(!selectedGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0\)\s*\{\s*\n\s*onGridSelect\(grids\[0\]\._id\)/)
+  assert.match(panelSource, /if\s*\(!globalGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0\)\s*\{\s*\n\s*onGridSelect\(grids\[0\]\._id\)/)
 })
 
 test("DiscoveryPanel calls onGridSelect on grid selector click", () => {

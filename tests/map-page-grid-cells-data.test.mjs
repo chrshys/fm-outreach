@@ -53,7 +53,7 @@ test("passes derived cells to MapContent gridCells prop", () => {
 test("passes derived cells to DiscoveryPanel cells prop", () => {
   assert.match(
     source,
-    /cells=\{viewMode\s*===\s*"discovery"\s*\?\s*cells\s*\?\?\s*\[\]\s*:\s*\[\]\}/,
+    /cells=\{cells\s*\?\?\s*\[\]\}/,
   )
 })
 

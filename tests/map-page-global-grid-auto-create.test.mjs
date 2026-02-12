@@ -65,12 +65,12 @@ test("auto-create useEffect appears after getOrCreateGlobalGrid mutation declara
 })
 
 // ============================================================
-// DiscoveryPanel receives globalGridId as selectedGridId prop
+// DiscoveryPanel receives globalGridId prop
 // ============================================================
 
-test("passes globalGridId to DiscoveryPanel as selectedGridId prop", () => {
+test("passes globalGridId to DiscoveryPanel as globalGridId prop", () => {
   assert.match(
     source,
-    /DiscoveryPanel[\s\S]*?selectedGridId=\{globalGridId\}/,
+    /DiscoveryPanel[\s\S]*?globalGridId=\{globalGridId\}/,
   )
 })

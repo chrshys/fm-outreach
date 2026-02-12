@@ -7,7 +7,6 @@ import { toast } from "sonner"
 
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
-import type { MapBounds } from "./map-bounds-emitter"
 import type { CellData, CellAction } from "./discovery-grid-shared"
 import { DISCOVERY_MECHANISMS, MAX_DEPTH, getStatusBadgeColor, formatShortDate } from "./discovery-grid-shared"
 import { Badge } from "@/components/ui/badge"
@@ -17,8 +16,7 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 
 type DiscoveryPanelProps = {
-  mapBounds: MapBounds | null
-  selectedGridId: Id<"discoveryGrids"> | null
+  globalGridId: Id<"discoveryGrids"> | null
   onGridSelect: (gridId: Id<"discoveryGrids">) => void
   cells: CellData[]
   selectedCellId: string | null
@@ -47,7 +45,7 @@ const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
   { status: "saturated", color: "#f97316", label: "Saturated" },
 ]
 
-export function DiscoveryPanel({ selectedGridId, onGridSelect, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
+export function DiscoveryPanel({ globalGridId, onGridSelect, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
   const [open, setOpen] = useState(true)
   const [newQuery, setNewQuery] = useState("")
   const [showGridSelector, setShowGridSelector] = useState(false)
@@ -59,15 +57,15 @@ export function DiscoveryPanel({ selectedGridId, onGridSelect, cells, selectedCe
   const grids = useQuery(api.discovery.gridCells.listGrids) as GridWithStats[] | undefined
   const updateGridQueries = useMutation(api.discovery.gridCells.updateGridQueries)
 
-  const selectedGrid = grids?.find((g) => g._id === selectedGridId) ?? grids?.[0] ?? null
+  const selectedGrid = grids?.find((g) => g._id === globalGridId) ?? grids?.[0] ?? null
   const selectedCell = cells.find((c) => c._id === selectedCellId) ?? null
 
   // Auto-select first grid if none selected
   useEffect(() => {
-    if (!selectedGridId && grids && grids.length > 0) {
+    if (!globalGridId && grids && grids.length > 0) {
       onGridSelect(grids[0]._id)
     }
-  }, [selectedGridId, grids, onGridSelect])
+  }, [globalGridId, grids, onGridSelect])
 
   const handleAddQuery = useCallback(async () => {
     if (!newQuery.trim() || !selectedGrid) return
