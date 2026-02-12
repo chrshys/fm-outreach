@@ -18,7 +18,7 @@ test("queries listCells into gridCellsData variable", () => {
 test("uses globalGridId (not selectedGridId) in listCells query condition", () => {
   assert.match(
     source,
-    /globalGridId\s*&&\s*viewMode\s*===\s*"discovery"\s*\?\s*\{\s*gridId:\s*globalGridId\s*\}\s*:\s*"skip"/,
+    /globalGridId\s*\?\s*\{\s*gridId:\s*globalGridId\s*\}\s*:\s*"skip"/,
   )
 })
 

@@ -59,10 +59,11 @@ export default function MapPage() {
     setSelectedCellId(cellId)
   }, [])
 
-  // Discovery queries & mutations
+  // Discovery queries & mutations – keep the subscription active across mode
+  // switches so that toggling Clusters → Discovery doesn't re-fetch / flash empty.
   const gridCellsData = useQuery(
     api.discovery.gridCells.listCells,
-    globalGridId && viewMode === "discovery" ? { gridId: globalGridId } : "skip",
+    globalGridId ? { gridId: globalGridId } : "skip",
   )
   const cells = gridCellsData?.cells
   const activatedBoundsKeys = gridCellsData?.activatedBoundsKeys ?? []

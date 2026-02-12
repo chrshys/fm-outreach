@@ -19,11 +19,9 @@ test("has globalGridId state with Id<discoveryGrids> type", () => {
   assert.match(pageSource, /useState<Id<"discoveryGrids">\s*\|\s*null>\(null\)/)
 })
 
-test("queries listCells conditionally on globalGridId and discovery viewMode", () => {
+test("queries listCells unconditionally on globalGridId (stays warm across mode switches)", () => {
   assert.match(pageSource, /useQuery\(\s*api\.discovery\.gridCells\.listCells/)
-  assert.match(pageSource, /globalGridId\s*&&\s*viewMode\s*===\s*"discovery"/)
-  assert.match(pageSource, /gridId:\s*globalGridId/)
-  assert.match(pageSource, /:\s*"skip"/)
+  assert.match(pageSource, /globalGridId\s*\?\s*\{\s*gridId:\s*globalGridId\s*\}\s*:\s*"skip"/)
 })
 
 test("uses requestDiscoverCell mutation", () => {

@@ -265,9 +265,8 @@ test("toggle resets drawing state when switching modes", () => {
   assert.match(pageSource, /setDrawnPolygon\(null\)/)
 })
 
-test("grid cells query skips when not in discovery mode", () => {
-  assert.match(pageSource, /globalGridId\s*&&\s*viewMode\s*===\s*"discovery"/)
-  assert.match(pageSource, /:\s*"skip"/)
+test("grid cells query stays active across mode switches (only gated on globalGridId)", () => {
+  assert.match(pageSource, /globalGridId\s*\?\s*\{\s*gridId:\s*globalGridId\s*\}\s*:\s*"skip"/)
 })
 
 test("onCellSelect only passed in discovery mode", () => {

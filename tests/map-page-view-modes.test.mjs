@@ -93,10 +93,10 @@ test("discovery mode shows DiscoveryPanel sidebar", () => {
   assert.match(mapPageSource, /globalGridId=\{globalGridId\}/)
 })
 
-test("discovery mode queries gridCells only when grid selected and in discovery mode", () => {
+test("gridCells query stays active across mode switches (gated only on globalGridId)", () => {
   assert.match(
     mapPageSource,
-    /globalGridId\s*&&\s*viewMode\s*===\s*"discovery"\s*\?\s*\{\s*gridId:\s*globalGridId\s*\}\s*:\s*"skip"/,
+    /globalGridId\s*\?\s*\{\s*gridId:\s*globalGridId\s*\}\s*:\s*"skip"/,
   )
 })
 

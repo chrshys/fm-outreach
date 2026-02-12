@@ -58,10 +58,10 @@ test("setGlobalGridId is called with result.gridId from getOrCreateGlobalGrid", 
 
 // 6. Once globalGridId is set, listCells query runs (not skipped)
 
-test("listCells query uses globalGridId and only runs in discovery mode", () => {
+test("listCells query stays active across mode switches (gated only on globalGridId)", () => {
   assert.match(
     pageSource,
-    /globalGridId\s*&&\s*viewMode\s*===\s*"discovery"\s*\?\s*\{\s*gridId:\s*globalGridId\s*\}\s*:\s*"skip"/,
+    /globalGridId\s*\?\s*\{\s*gridId:\s*globalGridId\s*\}\s*:\s*"skip"/,
   )
 })
 
