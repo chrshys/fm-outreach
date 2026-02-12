@@ -9,6 +9,13 @@ import {
 
 const MAX_DEPTH = 4;
 
+const DEFAULT_QUERIES = [
+  "farm market",
+  "fruit stand",
+  "farmers market",
+];
+const DEFAULT_CELL_SIZE_KM = 10;
+
 export const subdivideCell = mutation({
   args: {
     cellId: v.id("discoveryCells"),
@@ -326,6 +333,30 @@ export const activateCell = mutation({
     });
 
     return { cellId, alreadyExisted: false };
+  },
+});
+
+export const getOrCreateGlobalGrid = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const grids = await ctx.db.query("discoveryGrids").collect();
+    const grid = grids[0];
+
+    if (grid) {
+      return { gridId: grid._id, created: false };
+    }
+
+    const gridId = await ctx.db.insert("discoveryGrids", {
+      name: "Discovery",
+      region: "Ontario",
+      province: "Ontario",
+      queries: DEFAULT_QUERIES,
+      cellSizeKm: DEFAULT_CELL_SIZE_KM,
+      totalLeadsFound: 0,
+      createdAt: Date.now(),
+    });
+
+    return { gridId, created: true };
   },
 });
 
