@@ -12,10 +12,10 @@ test("imports useEffect from react", () => {
   assert.match(source, /import\s+\{[^}]*useEffect[^}]*\}\s+from\s+"react"/)
 })
 
-test("has a useEffect that clears selectedCellId when globalGridId changes", () => {
+test("has a useEffect that clears selectedCellId and selectedVirtualCell when globalGridId changes", () => {
   assert.match(
     source,
-    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\)\s*\},\s*\[globalGridId\]\)/,
+    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\);\s*setSelectedVirtualCell\(null\)\s*\},\s*\[globalGridId\]\)/,
   )
 })
 
