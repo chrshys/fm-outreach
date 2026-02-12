@@ -45,38 +45,20 @@ test("discoveryGrids neLng is optional for legacy records", () => {
 });
 
 // ============================================================
-// generateGrid mutation still does NOT persist bounds on grid record
+// generateGrid mutation has been removed (replaced by virtual grid)
 // ============================================================
 
 const mutationSource = fs.readFileSync("convex/discovery/gridCells.ts", "utf8");
-const insertMatch = mutationSource.match(
-  /ctx\.db\.insert\("discoveryGrids",\s*\{([\s\S]*?)\}\)/,
-);
-const insertBody = insertMatch ? insertMatch[1] : "";
 
-test("generateGrid insert does not write swLat to grid record", () => {
-  assert.doesNotMatch(insertBody, /\bswLat\b/);
-});
-
-test("generateGrid insert does not write neLng to grid record", () => {
-  assert.doesNotMatch(insertBody, /\bneLng\b/);
+test("generateGrid mutation no longer exists", () => {
+  assert.doesNotMatch(mutationSource, /export\s+const\s+generateGrid/);
 });
 
 // ============================================================
-// generateGrid mutation always sets boundsKey on new cells
+// subdivideCell still sets boundsKey on new cells
 // ============================================================
-
-test("generateGrid sets boundsKey on every new cell insert", () => {
-  // The cell insert in generateGrid must include boundsKey
-  const cellInsertMatch = mutationSource.match(
-    /ctx\.db\.insert\("discoveryCells",\s*\{([\s\S]*?)\}\)/,
-  );
-  assert.ok(cellInsertMatch, "discoveryCells insert block must exist");
-  assert.match(cellInsertMatch[1], /boundsKey:/);
-});
 
 test("subdivideCell sets boundsKey on child cell inserts", () => {
-  // Find the subdivide handler section
   const subdivideSection = mutationSource.slice(
     mutationSource.indexOf("export const subdivideCell"),
   );

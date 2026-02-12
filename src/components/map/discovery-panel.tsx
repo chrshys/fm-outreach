@@ -47,12 +47,8 @@ const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
   { status: "saturated", color: "#f97316", label: "Saturated" },
 ]
 
-export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
+export function DiscoveryPanel({ selectedGridId, onGridSelect, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
   const [open, setOpen] = useState(true)
-  const [showNewGridForm, setShowNewGridForm] = useState(false)
-  const [gridName, setGridName] = useState("")
-  const [region, setRegion] = useState("")
-  const [province, setProvince] = useState("")
   const [newQuery, setNewQuery] = useState("")
   const [showGridSelector, setShowGridSelector] = useState(false)
   const [editingQuery, setEditingQuery] = useState<string | null>(null)
@@ -61,7 +57,6 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect, cells,
 
   // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
   const grids = useQuery(api.discovery.gridCells.listGrids) as GridWithStats[] | undefined
-  const generateGrid = useMutation(api.discovery.gridCells.generateGrid)
   const updateGridQueries = useMutation(api.discovery.gridCells.updateGridQueries)
 
   const selectedGrid = grids?.find((g) => g._id === selectedGridId) ?? grids?.[0] ?? null
@@ -73,29 +68,6 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect, cells,
       onGridSelect(grids[0]._id)
     }
   }, [selectedGridId, grids, onGridSelect])
-
-  const handleCreateGrid = useCallback(async () => {
-    if (!gridName.trim() || !region.trim() || !province.trim() || !mapBounds) return
-    try {
-      const result = await generateGrid({
-        name: gridName.trim(),
-        region: region.trim(),
-        province: province.trim(),
-        swLat: mapBounds.swLat,
-        swLng: mapBounds.swLng,
-        neLat: mapBounds.neLat,
-        neLng: mapBounds.neLng,
-      })
-      onGridSelect(result.gridId as Id<"discoveryGrids">)
-      setShowNewGridForm(false)
-      setGridName("")
-      setRegion("")
-      setProvince("")
-      toast.success(`Grid created with ${result.cellCount} cells`)
-    } catch {
-      toast.error("Failed to create grid")
-    }
-  }, [gridName, region, province, mapBounds, generateGrid, onGridSelect])
 
   const handleAddQuery = useCallback(async () => {
     if (!newQuery.trim() || !selectedGrid) return
@@ -214,110 +186,19 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect, cells,
                         onClick={() => {
                           onGridSelect(grid._id)
                           setShowGridSelector(false)
-                          setShowNewGridForm(false)
                         }}
                       >
                         <span className="truncate">{grid.name}</span>
                       </button>
                     ))}
-                    <Separator className="my-1" />
-                    <button
-                      type="button"
-                      className="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
-                      onClick={() => {
-                        setShowNewGridForm(true)
-                        setShowGridSelector(false)
-                      }}
-                    >
-                      <Plus className="size-3.5" />
-                      New Grid
-                    </button>
                   </div>
                 )}
               </div>
             </div>
           )}
 
-          {/* New Grid Form */}
-          {(showNewGridForm || !grids || grids.length === 0) && (
-            <div className="space-y-2 rounded-md border p-2">
-              <span className="text-xs font-medium">New Grid</span>
-              <div className="space-y-1.5">
-                <Input
-                  placeholder="Grid name"
-                  value={gridName}
-                  onChange={(e) => setGridName(e.target.value)}
-                  className="h-7 text-xs"
-                />
-                <Input
-                  placeholder="Region"
-                  value={region}
-                  onChange={(e) => setRegion(e.target.value)}
-                  className="h-7 text-xs"
-                />
-                <Input
-                  placeholder="Province"
-                  value={province}
-                  onChange={(e) => setProvince(e.target.value)}
-                  className="h-7 text-xs"
-                />
-              </div>
-              <div className="space-y-1">
-                <span className="text-xs text-muted-foreground">
-                  Bounds (from current map view)
-                </span>
-                <div className="grid grid-cols-2 gap-1">
-                  <Input
-                    readOnly
-                    value={mapBounds ? mapBounds.swLat.toFixed(4) : "—"}
-                    className="h-7 text-xs"
-                    aria-label="SW Latitude"
-                  />
-                  <Input
-                    readOnly
-                    value={mapBounds ? mapBounds.swLng.toFixed(4) : "—"}
-                    className="h-7 text-xs"
-                    aria-label="SW Longitude"
-                  />
-                  <Input
-                    readOnly
-                    value={mapBounds ? mapBounds.neLat.toFixed(4) : "—"}
-                    className="h-7 text-xs"
-                    aria-label="NE Latitude"
-                  />
-                  <Input
-                    readOnly
-                    value={mapBounds ? mapBounds.neLng.toFixed(4) : "—"}
-                    className="h-7 text-xs"
-                    aria-label="NE Longitude"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-1.5">
-                {grids && grids.length > 0 && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-7 flex-1 text-xs"
-                    onClick={() => setShowNewGridForm(false)}
-                  >
-                    Cancel
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  className="h-7 flex-1 text-xs"
-                  disabled={!gridName.trim() || !region.trim() || !province.trim() || !mapBounds}
-                  onClick={handleCreateGrid}
-                >
-                  Create Grid
-                </Button>
-              </div>
-            </div>
-          )}
-
           {/* Progress Stats */}
-          {selectedGrid && !showNewGridForm && (
+          {selectedGrid && (
             <>
               <Separator />
               <div className="space-y-1.5">
@@ -365,7 +246,7 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect, cells,
           )}
 
           {/* Selected Cell */}
-          {selectedCell && !showNewGridForm && (
+          {selectedCell && (
             <>
               <Separator />
               <div className="space-y-1.5">
@@ -444,7 +325,7 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect, cells,
           )}
 
           {/* Search Queries */}
-          {selectedGrid && !showNewGridForm && (
+          {selectedGrid && (
             <>
               <Separator />
               <div className="space-y-1.5">

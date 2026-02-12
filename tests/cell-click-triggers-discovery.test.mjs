@@ -129,7 +129,7 @@ test("info toast shown when cell is already searching", () => {
 
 // --- Step 7: Unsearched is the default starting state ---
 
-test("new cells created by generateGrid start as unsearched", () => {
+test("new cells created by subdivideCell start as unsearched", () => {
   assert.match(gridCellsSource, /status:\s*"unsearched"/)
 })
 

@@ -1,8 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
-import { internal } from "../_generated/api";
 import {
-  internalAction,
   internalMutation,
   internalQuery,
   mutation,
@@ -10,73 +8,6 @@ import {
 } from "../_generated/server";
 
 const MAX_DEPTH = 4;
-const DEFAULT_CELL_SIZE_KM = 20;
-
-const DEFAULT_QUERIES = [
-  "farms",
-  "farmers market",
-  "orchard",
-  "farm stand",
-  "pick your own",
-];
-
-export const generateGrid = mutation({
-  args: {
-    name: v.string(),
-    region: v.string(),
-    province: v.string(),
-    queries: v.optional(v.array(v.string())),
-    swLat: v.number(),
-    swLng: v.number(),
-    neLat: v.number(),
-    neLng: v.number(),
-    cellSizeKm: v.optional(v.number()),
-  },
-  handler: async (ctx, args) => {
-    const cellSizeKm = args.cellSizeKm ?? DEFAULT_CELL_SIZE_KM;
-    const queries = args.queries ?? DEFAULT_QUERIES;
-    const now = Date.now();
-
-    const gridId = await ctx.db.insert("discoveryGrids", {
-      name: args.name,
-      region: args.region,
-      province: args.province,
-      queries,
-      cellSizeKm,
-      totalLeadsFound: 0,
-      createdAt: now,
-    });
-
-    const midLat = (args.swLat + args.neLat) / 2;
-    const latStep = cellSizeKm / 111;
-    const lngStep = cellSizeKm / (111 * Math.cos((midLat * Math.PI) / 180));
-
-    const cellIds: string[] = [];
-
-    for (let lat = args.swLat; lat < args.neLat; lat += latStep) {
-      for (let lng = args.swLng; lng < args.neLng; lng += lngStep) {
-        const cellNeLat = Math.min(lat + latStep, args.neLat);
-        const cellNeLng = Math.min(lng + lngStep, args.neLng);
-
-        const cellId = await ctx.db.insert("discoveryCells", {
-          swLat: lat,
-          swLng: lng,
-          neLat: cellNeLat,
-          neLng: cellNeLng,
-          depth: 0,
-          isLeaf: true,
-          status: "unsearched",
-          gridId,
-          boundsKey: `${lat.toFixed(6)}_${lng.toFixed(6)}`,
-        });
-
-        cellIds.push(cellId);
-      }
-    }
-
-    return { gridId, cellCount: cellIds.length };
-  },
-});
 
 export const subdivideCell = mutation({
   args: {
@@ -401,83 +332,3 @@ export const updateCellSearchResult = internalMutation({
   },
 });
 
-const DELETE_BATCH_SIZE = 500;
-
-export const deleteCellBatch = internalMutation({
-  args: {
-    gridId: v.id("discoveryGrids"),
-  },
-  handler: async (ctx, args) => {
-    const cells = await ctx.db
-      .query("discoveryCells")
-      .withIndex("by_gridId", (q) => q.eq("gridId", args.gridId))
-      .take(DELETE_BATCH_SIZE);
-
-    for (const cell of cells) {
-      await ctx.db.delete(cell._id);
-    }
-
-    return { deleted: cells.length };
-  },
-});
-
-export const deleteGrid = internalAction({
-  args: {
-    gridId: v.id("discoveryGrids"),
-  },
-  handler: async (ctx, args) => {
-    let totalDeleted = 0;
-    let done = false;
-
-    while (!done) {
-      const { deleted } = await ctx.runMutation(
-        // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
-        internal.discovery.gridCells.deleteCellBatch,
-        { gridId: args.gridId },
-      );
-      totalDeleted += deleted;
-
-      if (deleted < DELETE_BATCH_SIZE) {
-        done = true;
-      }
-    }
-
-    // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
-    await ctx.runMutation(internal.discovery.gridCells.deleteGridRecord, {
-      gridId: args.gridId,
-    });
-
-    return { totalCellsDeleted: totalDeleted };
-  },
-});
-
-export const deleteGridRecord = internalMutation({
-  args: {
-    gridId: v.id("discoveryGrids"),
-  },
-  handler: async (ctx, args) => {
-    const grid = await ctx.db.get(args.gridId);
-    if (!grid) {
-      throw new ConvexError("Grid not found");
-    }
-    await ctx.db.delete(args.gridId);
-  },
-});
-
-export const requestDeleteGrid = mutation({
-  args: {
-    gridId: v.id("discoveryGrids"),
-  },
-  handler: async (ctx, args) => {
-    const grid = await ctx.db.get(args.gridId);
-    if (!grid) {
-      throw new ConvexError("Grid not found");
-    }
-
-    await ctx.scheduler.runAfter(
-      0,
-      internal.discovery.gridCells.deleteGrid,
-      { gridId: args.gridId },
-    );
-  },
-});

@@ -52,9 +52,10 @@ test("selecting a grid calls onGridSelect and closes selector", () => {
   assert.match(panelSource, /setShowGridSelector\(false\)/)
 })
 
-test("New Grid option opens the grid form and closes selector", () => {
-  assert.match(panelSource, /setShowNewGridForm\(true\)/)
-  assert.match(panelSource, /setShowGridSelector\(false\)/)
+test("no New Grid form (grid creation replaced by virtual grid)", () => {
+  assert.doesNotMatch(panelSource, /showNewGridForm/)
+  assert.doesNotMatch(panelSource, /handleCreateGrid/)
+  assert.doesNotMatch(panelSource, /generateGrid/)
 })
 
 test("auto-selects first grid when none selected", () => {
@@ -63,37 +64,7 @@ test("auto-selects first grid when none selected", () => {
 })
 
 // =============================================================================
-// 3. New Grid Form integration with mapBounds
-// =============================================================================
-
-test("grid form shows when no grids or user requests it", () => {
-  assert.match(panelSource, /showNewGridForm\s*\|\|\s*!grids\s*\|\|\s*grids\.length\s*===\s*0/)
-})
-
-test("Create Grid button disabled without all fields", () => {
-  assert.match(panelSource, /disabled=\{!gridName\.trim\(\)\s*\|\|\s*!region\.trim\(\)\s*\|\|\s*!province\.trim\(\)\s*\|\|\s*!mapBounds\}/)
-})
-
-test("handleCreateGrid passes map bounds to generateGrid mutation", () => {
-  assert.match(panelSource, /swLat:\s*mapBounds\.swLat/)
-  assert.match(panelSource, /swLng:\s*mapBounds\.swLng/)
-  assert.match(panelSource, /neLat:\s*mapBounds\.neLat/)
-  assert.match(panelSource, /neLng:\s*mapBounds\.neLng/)
-})
-
-test("handleCreateGrid resets form state on success", () => {
-  assert.match(panelSource, /setShowNewGridForm\(false\)/)
-  assert.match(panelSource, /setGridName\(""\)/)
-  assert.match(panelSource, /setRegion\(""\)/)
-  assert.match(panelSource, /setProvince\(""\)/)
-})
-
-test("handleCreateGrid selects newly created grid", () => {
-  assert.match(panelSource, /onGridSelect\(result\.gridId/)
-})
-
-// =============================================================================
-// 4. Grid Stats — frontend display matches backend computation
+// 3. Grid Stats — frontend display matches backend computation
 // =============================================================================
 
 test("listGrids counts leaf cells by status using by_gridId_isLeaf index", () => {

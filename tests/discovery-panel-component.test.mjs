@@ -26,8 +26,8 @@ test("queries listGrids from Convex", () => {
   assert.match(source, /useQuery\(api\.discovery\.gridCells\.listGrids\)/)
 })
 
-test("uses generateGrid mutation", () => {
-  assert.match(source, /useMutation\(api\.discovery\.gridCells\.generateGrid\)/)
+test("does not use removed generateGrid mutation", () => {
+  assert.doesNotMatch(source, /generateGrid/)
 })
 
 test("uses updateGridQueries mutation", () => {
@@ -64,50 +64,9 @@ test("grid selector lists all grids by name", () => {
   assert.match(source, /grid\.name/)
 })
 
-test("grid selector has New Grid option", () => {
-  assert.match(source, /New Grid/)
-  assert.match(source, /setShowNewGridForm\(true\)/)
-})
-
-// --- New Grid Form ---
-
-test("shows new grid form when no grids exist or user clicks New Grid", () => {
-  assert.match(source, /showNewGridForm\s*\|\|\s*!grids\s*\|\|\s*grids\.length\s*===\s*0/)
-})
-
-test("new grid form has name, region, and province inputs", () => {
-  assert.match(source, /placeholder="Grid name"/)
-  assert.match(source, /placeholder="Region"/)
-  assert.match(source, /placeholder="Province"/)
-})
-
-test("new grid form pre-fills bounding box from mapBounds prop", () => {
-  assert.match(source, /mapBounds\.swLat\.toFixed\(4\)/)
-  assert.match(source, /mapBounds\.swLng\.toFixed\(4\)/)
-  assert.match(source, /mapBounds\.neLat\.toFixed\(4\)/)
-  assert.match(source, /mapBounds\.neLng\.toFixed\(4\)/)
-})
-
-test("bounding box inputs are read-only", () => {
-  // Should have readOnly on bounding box inputs
-  assert.match(source, /readOnly/)
-})
-
-test("Create Grid button is disabled when fields are empty or no mapBounds", () => {
-  assert.match(source, /disabled=\{!gridName\.trim\(\)\s*\|\|\s*!region\.trim\(\)\s*\|\|\s*!province\.trim\(\)\s*\|\|\s*!mapBounds\}/)
-})
-
-test("handleCreateGrid calls generateGrid with mapBounds coordinates", () => {
-  assert.match(source, /generateGrid\(\{/)
-  assert.match(source, /swLat:\s*mapBounds\.swLat/)
-  assert.match(source, /swLng:\s*mapBounds\.swLng/)
-  assert.match(source, /neLat:\s*mapBounds\.neLat/)
-  assert.match(source, /neLng:\s*mapBounds\.neLng/)
-})
-
-test("shows toast on successful grid creation", () => {
-  assert.match(source, /toast\.success/)
-  assert.match(source, /Grid created with/)
+test("no New Grid form (grid creation replaced by virtual grid)", () => {
+  assert.doesNotMatch(source, /showNewGridForm/)
+  assert.doesNotMatch(source, /handleCreateGrid/)
 })
 
 // --- Progress Stats ---
