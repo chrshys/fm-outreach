@@ -1,7 +1,10 @@
 "use client"
 
-import { Rectangle } from "react-leaflet"
-import { getCellColor } from "./cell-colors"
+import { useState, useMemo, useCallback } from "react"
+import { Rectangle, useMap, useMapEvents } from "react-leaflet"
+import { computeVirtualGrid } from "@/lib/virtual-grid"
+import type { VirtualCell } from "@/lib/virtual-grid"
+import { getCellColor, VIRTUAL_CELL_STYLE } from "./cell-colors"
 import type { CellData } from "./discovery-grid-shared"
 
 export type { CellAction, CellData } from "./discovery-grid-shared"

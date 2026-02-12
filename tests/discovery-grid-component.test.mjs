@@ -15,8 +15,9 @@ test("does NOT import Tooltip from react-leaflet", () => {
   assert.doesNotMatch(source, /Tooltip/)
 })
 
-test("does NOT import useMap from react-leaflet", () => {
-  assert.doesNotMatch(source, /useMap/)
+test("imports useMap and useMapEvents from react-leaflet", () => {
+  assert.match(source, /import\s+\{[\s\S]*useMap[\s\S]*\}\s+from\s+"react-leaflet"/)
+  assert.match(source, /import\s+\{[\s\S]*useMapEvents[\s\S]*\}\s+from\s+"react-leaflet"/)
 })
 
 test("does NOT import leaflet L", () => {
@@ -27,15 +28,28 @@ test("does NOT import lucide-react icons", () => {
   assert.doesNotMatch(source, /from\s+["']lucide-react["']/)
 })
 
-test("does NOT import useCallback, useEffect, useRef, or useState from react", () => {
-  assert.doesNotMatch(source, /import\s+\{[^}]*useCallback[^}]*\}\s+from\s+["']react["']/)
-  assert.doesNotMatch(source, /import\s+\{[^}]*useEffect[^}]*\}\s+from\s+["']react["']/)
-  assert.doesNotMatch(source, /import\s+\{[^}]*useRef[^}]*\}\s+from\s+["']react["']/)
-  assert.doesNotMatch(source, /import\s+\{[^}]*useState[^}]*\}\s+from\s+["']react["']/)
+test("imports useState, useMemo, useCallback from react", () => {
+  assert.match(source, /import\s+\{[^}]*useState[^}]*\}\s+from\s+["']react["']/)
+  assert.match(source, /import\s+\{[^}]*useMemo[^}]*\}\s+from\s+["']react["']/)
+  assert.match(source, /import\s+\{[^}]*useCallback[^}]*\}\s+from\s+["']react["']/)
 })
 
-test("imports getCellColor from cell-colors", () => {
+test("does NOT import useEffect or useRef from react", () => {
+  assert.doesNotMatch(source, /import\s+\{[^}]*useEffect[^}]*\}\s+from\s+["']react["']/)
+  assert.doesNotMatch(source, /import\s+\{[^}]*useRef[^}]*\}\s+from\s+["']react["']/)
+})
+
+test("imports getCellColor and VIRTUAL_CELL_STYLE from cell-colors", () => {
   assert.match(source, /import\s+\{.*getCellColor.*\}\s+from\s+["']\.\/cell-colors["']/)
+  assert.match(source, /import\s+\{.*VIRTUAL_CELL_STYLE.*\}\s+from\s+["']\.\/cell-colors["']/)
+})
+
+test("imports computeVirtualGrid from @/lib/virtual-grid", () => {
+  assert.match(source, /import\s+\{\s*computeVirtualGrid\s*\}\s+from\s+["']@\/lib\/virtual-grid["']/)
+})
+
+test("imports VirtualCell type from @/lib/virtual-grid", () => {
+  assert.match(source, /import\s+type\s+\{\s*VirtualCell\s*\}\s+from\s+["']@\/lib\/virtual-grid["']/)
 })
 
 test("exports CellData type", () => {
