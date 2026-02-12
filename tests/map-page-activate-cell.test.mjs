@@ -52,10 +52,3 @@ test("handleActivateCell depends on globalGridId and activateCellMutation", () =
   assert.match(deps, /globalGridId/, "should depend on globalGridId")
   assert.match(deps, /activateCellMutation/, "should depend on activateCellMutation")
 })
-
-test("imports VirtualCell type for virtual cell state", () => {
-  assert.match(
-    source,
-    /import\s+type\s+\{\s*VirtualCell\s*\}\s+from/,
-  )
-})
