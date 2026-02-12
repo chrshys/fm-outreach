@@ -19,6 +19,13 @@ const DEFAULT_CELL_COLOR: CellColorResult = {
   fillOpacity: 0.15,
 }
 
+export const VIRTUAL_CELL_STYLE = {
+  color: "#d1d5db",
+  fillColor: "#d1d5db",
+  fillOpacity: 0.05,
+  weight: 0.5,
+}
+
 export function getCellColor(status: string): CellColorResult {
   return CELL_COLORS[status as CellStatus] ?? DEFAULT_CELL_COLOR
 }

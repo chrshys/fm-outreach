@@ -47,3 +47,20 @@ test("covers all 4 cell statuses", () => {
 test("getCellColor returns a default for unknown status", () => {
   assert.match(source, /\?\?\s*DEFAULT_CELL_COLOR/)
 })
+
+test("exports VIRTUAL_CELL_STYLE constant", () => {
+  assert.match(source, /export\s+const\s+VIRTUAL_CELL_STYLE/)
+})
+
+test("VIRTUAL_CELL_STYLE uses faint gray (#d1d5db)", () => {
+  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?color:\s*"#d1d5db"/)
+  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?fillColor:\s*"#d1d5db"/)
+})
+
+test("VIRTUAL_CELL_STYLE has low fillOpacity (0.05)", () => {
+  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?fillOpacity:\s*0\.05/)
+})
+
+test("VIRTUAL_CELL_STYLE has thin weight (0.5)", () => {
+  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?weight:\s*0\.5/)
+})
