@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from "react"
 import { Rectangle, useMap, useMapEvents } from "react-leaflet"
 import { computeVirtualGrid } from "@/lib/virtual-grid"
 import type { VirtualCell } from "@/lib/virtual-grid"
-import { getCellColor, VIRTUAL_CELL_STYLE } from "./cell-colors"
+import { getCellColor, VIRTUAL_CELL_STYLE, VIRTUAL_CELL_SELECTED_STYLE } from "./cell-colors"
 import type { CellData } from "./discovery-grid-shared"
 
 export type { CellAction, CellData } from "./discovery-grid-shared"
