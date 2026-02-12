@@ -1,6 +1,6 @@
 "use client"
 
-import { Facebook, Instagram } from "lucide-react"
+import { Facebook, Instagram, MapPin } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useMutation, useQuery } from "convex/react"
@@ -32,6 +32,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { useMapStore } from "@/lib/map-store"
 import { Textarea } from "@/components/ui/textarea"
 
 type LeadStatus = Doc<"leads">["status"]
@@ -312,13 +313,30 @@ export default function LeadDetailPage() {
     }
   }
 
+  function handleViewOnMap() {
+    if (lead?.latitude != null && lead?.longitude != null) {
+      const store = useMapStore.getState()
+      store.setViewport({ center: [lead.latitude, lead.longitude], zoom: 14 })
+      store.setSelectedLeadId(leadId)
+      router.push("/map")
+    }
+  }
+
   return (
     <AppLayout>
       <section className="space-y-6">
         <div className="space-y-4">
-          <Button variant="outline" onClick={() => router.back()}>
-            Back
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => router.back()}>
+              Back
+            </Button>
+            {lead?.latitude != null && lead?.longitude != null ? (
+              <Button variant="outline" onClick={handleViewOnMap}>
+                <MapPin className="mr-2 h-4 w-4" />
+                View on Map
+              </Button>
+            ) : null}
+          </div>
 
           {lead === undefined ? (
             <div className="rounded-xl border bg-background p-5 text-sm text-muted-foreground">Loading lead...</div>

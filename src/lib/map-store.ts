@@ -20,6 +20,7 @@ type MapState = {
   viewMode: "clusters" | "discovery"
   globalGridId: string | null
   selectedCellId: string | null
+  selectedLeadId: string | null
 }
 
 type MapActions = {
@@ -28,6 +29,7 @@ type MapActions = {
   setViewMode: (viewMode: "clusters" | "discovery") => void
   setGlobalGridId: (id: string | null) => void
   setSelectedCellId: (id: string | null) => void
+  setSelectedLeadId: (id: string | null) => void
 }
 
 export const useMapStore = create<MapState & MapActions>()(
@@ -38,12 +40,14 @@ export const useMapStore = create<MapState & MapActions>()(
       viewMode: "clusters",
       globalGridId: null,
       selectedCellId: null,
+      selectedLeadId: null,
 
       setViewport: (viewport) => set({ viewport }),
       setFilters: (filters) => set({ filters }),
       setViewMode: (viewMode) => set({ viewMode }),
       setGlobalGridId: (id) => set({ globalGridId: id }),
       setSelectedCellId: (id) => set({ selectedCellId: id }),
+      setSelectedLeadId: (id) => set({ selectedLeadId: id }),
     }),
     {
       name: "fm-map-state",

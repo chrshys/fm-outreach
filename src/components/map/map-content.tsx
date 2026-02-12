@@ -12,6 +12,7 @@ import {
   Tooltip,
 } from "react-leaflet"
 
+import { useMapStore } from "@/lib/map-store"
 import DiscoveryGrid from "./discovery-grid"
 import type { CellData } from "./discovery-grid"
 import type { VirtualCell } from "@/lib/virtual-grid"
@@ -65,6 +66,8 @@ type MapContentProps = {
 }
 
 export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon, gridCells, selectedCellId, onCellSelect, cellSizeKm, gridId, activatedBoundsKeys, selectedVirtualCell, onSelectVirtualCell, onBoundsChange }: MapContentProps) {
+  const selectedLeadId = useMapStore((s) => s.selectedLeadId)
+
   return (
     <MapContainer
       center={NIAGARA_CENTER}
@@ -133,6 +136,14 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
               weight: 2,
               opacity: 0.9,
               fillOpacity: 0.7,
+            }}
+            ref={(marker) => {
+              if (marker && lead._id === selectedLeadId) {
+                requestAnimationFrame(() => {
+                  marker.openPopup()
+                  useMapStore.getState().setSelectedLeadId(null)
+                })
+              }
             }}
           >
             <Popup pane="popupPane">
