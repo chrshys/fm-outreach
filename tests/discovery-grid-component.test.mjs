@@ -91,8 +91,8 @@ test("does NOT contain TOOLTIP_CLOSE_DELAY", () => {
   assert.doesNotMatch(source, /TOOLTIP_CLOSE_DELAY/)
 })
 
-test("does NOT contain a separate DiscoveryGridCell component", () => {
-  assert.doesNotMatch(source, /function\s+DiscoveryGridCell/)
+test("exports DiscoveryGridCell component", () => {
+  assert.match(source, /export\s+function\s+DiscoveryGridCell/)
 })
 
 test("exports DiscoveryGrid as default export", () => {

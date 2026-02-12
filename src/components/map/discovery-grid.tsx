@@ -68,30 +68,43 @@ export function getStatusBadgeColor(status: CellStatus): string {
   }
 }
 
+type DiscoveryGridCellProps = {
+  cell: CellData
+  isSelected: boolean
+  onCellSelect: (cellId: string | null) => void
+}
+
+export function DiscoveryGridCell({ cell, isSelected, onCellSelect }: DiscoveryGridCellProps) {
+  const bounds: [[number, number], [number, number]] = [
+    [cell.swLat, cell.swLng],
+    [cell.neLat, cell.neLng],
+  ]
+  const basePathOptions = getCellColor(cell.status)
+  const pathOptions = isSelected
+    ? { ...basePathOptions, weight: 3, dashArray: "6 4", color: "#2563eb", fillOpacity: (basePathOptions.fillOpacity ?? 0.15) + 0.1 }
+    : basePathOptions
+  return (
+    <Rectangle
+      bounds={bounds}
+      pathOptions={pathOptions}
+      eventHandlers={{
+        click: () => onCellSelect(isSelected ? null : cell._id),
+      }}
+    />
+  )
+}
+
 export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect }: DiscoveryGridProps) {
   return (
     <>
-      {cells.map((cell) => {
-        const bounds: [[number, number], [number, number]] = [
-          [cell.swLat, cell.swLng],
-          [cell.neLat, cell.neLng],
-        ]
-        const isSelected = cell._id === selectedCellId
-        const baseStyle = getCellColor(cell.status)
-        const pathOptions = isSelected
-          ? { ...baseStyle, weight: 3, color: "#2563eb" }
-          : baseStyle
-        return (
-          <Rectangle
-            key={cell._id}
-            bounds={bounds}
-            pathOptions={pathOptions}
-            eventHandlers={{
-              click: () => onCellSelect(isSelected ? null : cell._id),
-            }}
-          />
-        )
-      })}
+      {cells.map((cell) => (
+        <DiscoveryGridCell
+          key={cell._id}
+          cell={cell}
+          isSelected={cell._id === selectedCellId}
+          onCellSelect={onCellSelect}
+        />
+      ))}
     </>
   )
 }
