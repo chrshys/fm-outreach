@@ -45,6 +45,17 @@ function createMockDb() {
           );
           return {
             first: async () => filtered[0] ?? null,
+            filter(predicateFn) {
+              const q = {
+                eq: (a, b) => (doc) => doc[typeof a === "string" ? a : a._field] === b,
+                field: (name) => ({ _field: name }),
+              };
+              const predicate = predicateFn(q);
+              const result = filtered.filter(predicate);
+              return {
+                collect: async () => result,
+              };
+            },
             collect: async () => filtered,
           };
         },
@@ -63,19 +74,33 @@ async function listCells(ctx, args) {
     )
     .collect();
 
-  return cells.map((cell) => ({
-    _id: cell._id,
-    parentCellId: cell.parentCellId,
-    swLat: cell.swLat,
-    swLng: cell.swLng,
-    neLat: cell.neLat,
-    neLng: cell.neLng,
-    depth: cell.depth,
-    status: cell.status,
-    resultCount: cell.resultCount,
-    querySaturation: cell.querySaturation,
-    lastSearchedAt: cell.lastSearchedAt,
-  }));
+  const depth0Cells = await ctx.db
+    .query("discoveryCells")
+    .withIndex("by_gridId", (q) => q.eq("gridId", args.gridId))
+    .filter((q) => q.eq(q.field("depth"), 0))
+    .collect();
+
+  const activatedBoundsKeys = depth0Cells
+    .map((cell) => cell.boundsKey)
+    .filter((key) => key !== undefined);
+
+  return {
+    cells: cells.map((cell) => ({
+      _id: cell._id,
+      parentCellId: cell.parentCellId,
+      swLat: cell.swLat,
+      swLng: cell.swLng,
+      neLat: cell.neLat,
+      neLng: cell.neLng,
+      depth: cell.depth,
+      status: cell.status,
+      resultCount: cell.resultCount,
+      querySaturation: cell.querySaturation,
+      lastSearchedAt: cell.lastSearchedAt,
+      boundsKey: cell.boundsKey,
+    })),
+    activatedBoundsKeys,
+  };
 }
 
 // Replicate subdivideCell for integration tests
@@ -175,8 +200,8 @@ test("listCells returns all leaf cells for a grid", async () => {
 
   const result = await listCells({ db }, { gridId });
 
-  assert.equal(result.length, 4, "Must return all 4 leaf cells");
-  const returnedIds = result.map((c) => c._id);
+  assert.equal(result.cells.length, 4, "Must return all 4 leaf cells");
+  const returnedIds = result.cells.map((c) => c._id);
   for (const cellId of cellIds) {
     assert.ok(returnedIds.includes(cellId), `Must include cell ${cellId}`);
   }
@@ -191,8 +216,8 @@ test("listCells excludes non-leaf cells (isLeaf: false)", async () => {
 
   const result = await listCells({ db }, { gridId });
 
-  assert.equal(result.length, 2, "Must return only 2 leaf cells");
-  const returnedIds = result.map((c) => c._id);
+  assert.equal(result.cells.length, 2, "Must return only 2 leaf cells");
+  const returnedIds = result.cells.map((c) => c._id);
   assert.ok(!returnedIds.includes(cellIds[0]), "Non-leaf cell must be excluded");
   assert.ok(returnedIds.includes(cellIds[1]), "Leaf cell 1 must be included");
   assert.ok(returnedIds.includes(cellIds[2]), "Leaf cell 2 must be included");
@@ -207,7 +232,7 @@ test("listCells returns empty array when all cells are non-leaf", async () => {
 
   const result = await listCells({ db }, { gridId });
 
-  assert.equal(result.length, 0, "Must return empty array");
+  assert.equal(result.cells.length, 0, "Must return empty cells array");
 });
 
 // ============================================================
@@ -228,12 +253,12 @@ test("listCells only returns cells belonging to the requested grid", async () =>
   const result1 = await listCells({ db }, { gridId: grid1.gridId });
   const result2 = await listCells({ db }, { gridId: grid2.gridId });
 
-  assert.equal(result1.length, 3, "Grid A must have 3 cells");
-  assert.equal(result2.length, 2, "Grid B must have 2 cells");
+  assert.equal(result1.cells.length, 3, "Grid A must have 3 cells");
+  assert.equal(result2.cells.length, 2, "Grid B must have 2 cells");
 
   // No cross-contamination
-  const ids1 = new Set(result1.map((c) => c._id));
-  const ids2 = new Set(result2.map((c) => c._id));
+  const ids1 = new Set(result1.cells.map((c) => c._id));
+  const ids2 = new Set(result2.cells.map((c) => c._id));
   for (const id of ids1) {
     assert.ok(!ids2.has(id), "Grid A cell must not appear in Grid B results");
   }
@@ -252,16 +277,16 @@ test("after subdivision, parent disappears and 4 children appear in listCells", 
 
   // Before subdivision: 2 leaf cells
   const before = await listCells({ db }, { gridId });
-  assert.equal(before.length, 2, "Before: 2 leaf cells");
+  assert.equal(before.cells.length, 2, "Before: 2 leaf cells");
 
   // Subdivide cell 0
   const { childIds } = await subdivideCell({ db }, { cellId: cellIds[0] });
 
   // After subdivision: cell 0 gone, 4 children + cell 1 = 5 leaf cells
   const after = await listCells({ db }, { gridId });
-  assert.equal(after.length, 5, "After: 5 leaf cells (4 children + 1 original)");
+  assert.equal(after.cells.length, 5, "After: 5 leaf cells (4 children + 1 original)");
 
-  const afterIds = after.map((c) => c._id);
+  const afterIds = after.cells.map((c) => c._id);
   assert.ok(!afterIds.includes(cellIds[0]), "Subdivided parent must not appear");
   assert.ok(afterIds.includes(cellIds[1]), "Untouched cell must still appear");
   for (const childId of childIds) {
@@ -291,9 +316,9 @@ test("recursive subdivision: only deepest leaves appear", async () => {
   // depth-1 children 1-3: leaf (included) = 3
   // depth-2 grandchildren: leaf (included) = 4
   // Total = 7
-  assert.equal(result.length, 7, "Only deepest leaves appear (3 + 4 = 7)");
+  assert.equal(result.cells.length, 7, "Only deepest leaves appear (3 + 4 = 7)");
 
-  const resultIds = result.map((c) => c._id);
+  const resultIds = result.cells.map((c) => c._id);
   assert.ok(!resultIds.includes(cellIds[0]), "Depth-0 parent excluded");
   assert.ok(!resultIds.includes(childIds[0]), "Depth-1 subdivided child excluded");
 
@@ -315,8 +340,8 @@ test("returned cells contain only projected fields", async () => {
 
   const result = await listCells({ db }, { gridId });
 
-  assert.equal(result.length, 1);
-  const cell = result[0];
+  assert.equal(result.cells.length, 1);
+  const cell = result.cells[0];
   const expectedKeys = [
     "_id",
     "parentCellId",
@@ -329,6 +354,7 @@ test("returned cells contain only projected fields", async () => {
     "resultCount",
     "querySaturation",
     "lastSearchedAt",
+    "boundsKey",
   ];
 
   assert.deepStrictEqual(
@@ -344,7 +370,7 @@ test("projected fields do not include isLeaf or gridId", async () => {
 
   const result = await listCells({ db }, { gridId });
 
-  const cell = result[0];
+  const cell = result.cells[0];
   assert.ok(!("isLeaf" in cell), "isLeaf must not be exposed");
   assert.ok(!("gridId" in cell), "gridId must not be exposed");
   assert.ok(!("_creationTime" in cell), "_creationTime must not be exposed");
@@ -388,8 +414,8 @@ test("listCells returns leaf cells regardless of status", async () => {
 
   const result = await listCells({ db }, { gridId });
 
-  assert.equal(result.length, 4, "All 4 statuses returned when isLeaf: true");
-  const returnedStatuses = result.map((c) => c.status).sort();
+  assert.equal(result.cells.length, 4, "All 4 statuses returned when isLeaf: true");
+  const returnedStatuses = result.cells.map((c) => c.status).sort();
   assert.deepStrictEqual(returnedStatuses, statuses.sort());
 });
 
@@ -405,14 +431,12 @@ test("query uses index eq constraints, not post-filter", async () => {
 
   // Wrap the query method to capture index usage
   const originalQuery = db.query.bind(db);
-  let indexName = null;
-  let eqConstraints = [];
+  const indexCalls = [];
 
   db.query = (table) => {
     const result = originalQuery(table);
     const originalWithIndex = result.withIndex.bind(result);
     result.withIndex = (name, filterFn) => {
-      indexName = name;
       const eqs = [];
       const builder = {
         eq(field, value) {
@@ -421,7 +445,7 @@ test("query uses index eq constraints, not post-filter", async () => {
         },
       };
       filterFn(builder);
-      eqConstraints = eqs;
+      indexCalls.push({ name, eqs });
       return originalWithIndex(name, filterFn);
     };
     return result;
@@ -429,12 +453,18 @@ test("query uses index eq constraints, not post-filter", async () => {
 
   await listCells({ db }, { gridId });
 
-  assert.equal(indexName, "by_gridId_isLeaf", "Must use by_gridId_isLeaf index");
-  assert.equal(eqConstraints.length, 2, "Must have exactly 2 eq constraints");
-  assert.equal(eqConstraints[0].field, "gridId", "First constraint is gridId");
-  assert.equal(eqConstraints[0].value, gridId, "gridId matches requested grid");
-  assert.equal(eqConstraints[1].field, "isLeaf", "Second constraint is isLeaf");
-  assert.equal(eqConstraints[1].value, true, "isLeaf is true");
+  // First query should be the leaf cells query
+  const leafQuery = indexCalls.find((c) => c.name === "by_gridId_isLeaf");
+  assert.ok(leafQuery, "Must use by_gridId_isLeaf index");
+  assert.equal(leafQuery.eqs.length, 2, "Must have exactly 2 eq constraints");
+  assert.equal(leafQuery.eqs[0].field, "gridId", "First constraint is gridId");
+  assert.equal(leafQuery.eqs[0].value, gridId, "gridId matches requested grid");
+  assert.equal(leafQuery.eqs[1].field, "isLeaf", "Second constraint is isLeaf");
+  assert.equal(leafQuery.eqs[1].value, true, "isLeaf is true");
+
+  // Second query should be the depth-0 cells query
+  const depth0Query = indexCalls.find((c) => c.name === "by_gridId");
+  assert.ok(depth0Query, "Must use by_gridId index for depth-0 cells");
 });
 
 // ============================================================
@@ -459,7 +489,7 @@ test("listCells returns empty array for grid with no cells", async () => {
 
   const result = await listCells({ db }, { gridId });
 
-  assert.equal(result.length, 0, "Empty grid returns empty array");
+  assert.equal(result.cells.length, 0, "Empty grid returns empty cells array");
 });
 
 // ============================================================
@@ -503,13 +533,13 @@ test("listCells preserves resultCount and querySaturation on searched cells", as
 
   const result = await listCells({ db }, { gridId });
 
-  assert.equal(result.length, 1);
-  assert.equal(result[0].resultCount, 15);
-  assert.deepStrictEqual(result[0].querySaturation, [
+  assert.equal(result.cells.length, 1);
+  assert.equal(result.cells[0].resultCount, 15);
+  assert.deepStrictEqual(result.cells[0].querySaturation, [
     { query: "farms", count: 10 },
     { query: "orchard", count: 5 },
   ]);
-  assert.equal(result[0].lastSearchedAt, now);
+  assert.equal(result.cells[0].lastSearchedAt, now);
 });
 
 // ============================================================
@@ -522,8 +552,8 @@ test("listCells returns parentCellId as undefined for root cells", async () => {
 
   const result = await listCells({ db }, { gridId });
 
-  assert.equal(result.length, 1);
-  assert.equal(result[0].parentCellId, undefined, "Root cell has no parentCellId");
+  assert.equal(result.cells.length, 1);
+  assert.equal(result.cells[0].parentCellId, undefined, "Root cell has no parentCellId");
 });
 
 test("listCells returns parentCellId pointing to parent after subdivision", async () => {
@@ -535,8 +565,8 @@ test("listCells returns parentCellId pointing to parent after subdivision", asyn
 
   const result = await listCells({ db }, { gridId });
 
-  assert.equal(result.length, 4, "4 child leaves after subdivision");
-  for (const cell of result) {
+  assert.equal(result.cells.length, 4, "4 child leaves after subdivision");
+  for (const cell of result.cells) {
     assert.equal(
       cell.parentCellId,
       cellIds[0],
