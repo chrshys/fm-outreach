@@ -328,6 +328,16 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                     </div>
                   ))}
                 </div>
+                <div className="flex items-center gap-1.5 pt-1">
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors hover:bg-accent"
+                    onClick={() => onCellAction(selectedVirtualCell.key, { type: "subdivide" })}
+                  >
+                    <Grid2x2Plus className="size-3" />
+                    Split
+                  </button>
+                </div>
               </div>
             </>
           )}
