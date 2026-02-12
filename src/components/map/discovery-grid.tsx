@@ -74,7 +74,7 @@ type DiscoveryGridCellProps = {
   onCellSelect: (cellId: string | null) => void
 }
 
-export function DiscoveryGridCell({ cell, isSelected, onCellSelect }: DiscoveryGridCellProps) {
+function DiscoveryGridCell({ cell, isSelected, onCellSelect }: DiscoveryGridCellProps) {
   const bounds: [[number, number], [number, number]] = [
     [cell.swLat, cell.swLng],
     [cell.neLat, cell.neLng],

@@ -11,8 +11,9 @@ const source = fs.readFileSync(
 // DiscoveryGridCell component existence and export
 // ============================================================
 
-test("exports DiscoveryGridCell as a named export", () => {
-  assert.match(source, /export\s+function\s+DiscoveryGridCell/)
+test("DiscoveryGridCell is a file-private function (not exported)", () => {
+  assert.doesNotMatch(source, /export\s+function\s+DiscoveryGridCell/)
+  assert.match(source, /function\s+DiscoveryGridCell/)
 })
 
 // ============================================================
@@ -37,13 +38,13 @@ test("DiscoveryGridCell accepts onCellSelect: (cellId: string | null) => void pr
 
 test("DiscoveryGridCell renders a Rectangle element", () => {
   // Extract the DiscoveryGridCell function body
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch, "DiscoveryGridCell function not found")
   assert.match(cellFnMatch[0], /<Rectangle/)
 })
 
 test("DiscoveryGridCell computes bounds from cell coordinates", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch, "DiscoveryGridCell function not found")
   assert.match(cellFnMatch[0], /\[cell\.swLat,\s*cell\.swLng\]/)
   assert.match(cellFnMatch[0], /\[cell\.neLat,\s*cell\.neLng\]/)
@@ -54,7 +55,7 @@ test("DiscoveryGridCell computes bounds from cell coordinates", () => {
 // ============================================================
 
 test("DiscoveryGridCell calls getCellColor(cell.status) for base path options", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.match(cellFnMatch[0], /getCellColor\(cell\.status\)/)
 })
@@ -64,25 +65,25 @@ test("DiscoveryGridCell calls getCellColor(cell.status) for base path options", 
 // ============================================================
 
 test("selected cell has weight: 3", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.match(cellFnMatch[0], /weight:\s*3/)
 })
 
 test("selected cell has dashArray: \"6 4\"", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.match(cellFnMatch[0], /dashArray:\s*"6 4"/)
 })
 
 test("selected cell has color: \"#2563eb\"", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.match(cellFnMatch[0], /color:\s*"#2563eb"/)
 })
 
 test("selected cell increases fillOpacity by 0.1 with fallback of 0.15", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.match(cellFnMatch[0], /fillOpacity:\s*\(basePathOptions\.fillOpacity\s*\?\?\s*0\.15\)\s*\+\s*0\.1/)
 })
@@ -92,13 +93,13 @@ test("selected cell increases fillOpacity by 0.1 with fallback of 0.15", () => {
 // ============================================================
 
 test("DiscoveryGridCell click handler calls onCellSelect with toggle logic", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.match(cellFnMatch[0], /onCellSelect\(isSelected\s*\?\s*null\s*:\s*cell\._id\)/)
 })
 
 test("DiscoveryGridCell has click eventHandler", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.match(cellFnMatch[0], /eventHandlers/)
   assert.match(cellFnMatch[0], /click:/)
@@ -109,25 +110,25 @@ test("DiscoveryGridCell has click eventHandler", () => {
 // ============================================================
 
 test("DiscoveryGridCell does not use Tooltip", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.doesNotMatch(cellFnMatch[0], /Tooltip/)
 })
 
 test("DiscoveryGridCell does not have hover handlers", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.doesNotMatch(cellFnMatch[0], /mouseover|mouseout|mouseenter|mouseleave/i)
 })
 
 test("DiscoveryGridCell does not use refs", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.doesNotMatch(cellFnMatch[0], /useRef|ref=/)
 })
 
 test("DiscoveryGridCell does not use timers", () => {
-  const cellFnMatch = source.match(/export\s+function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.doesNotMatch(cellFnMatch[0], /setTimeout|setInterval|clearTimeout|clearInterval/)
 })
