@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import dynamic from "next/dynamic"
 import { useQuery, useMutation } from "convex/react"
 import { Grid3X3, PenTool } from "lucide-react"
@@ -53,6 +53,9 @@ export default function MapPage() {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
   const [selectedGridId, setSelectedGridId] = useState<Id<"discoveryGrids"> | null>(null)
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null)
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- reset derived state when grid changes
+  useEffect(() => { setSelectedCellId(null) }, [selectedGridId])
 
   const handleGridSelect = useCallback((gridId: Id<"discoveryGrids">) => {
     setSelectedGridId(gridId)

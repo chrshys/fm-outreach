@@ -70,7 +70,7 @@ test("discovery mode passes gridCells to MapContent", () => {
 test("discovery mode passes onCellSelect to MapContent", () => {
   assert.match(
     mapPageSource,
-    /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*setSelectedCellId\s*:\s*undefined\}/,
+    /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellSelect\s*:\s*undefined\}/,
   )
 })
 
