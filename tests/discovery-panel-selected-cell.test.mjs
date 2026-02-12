@@ -9,27 +9,27 @@ const panelSource = fs.readFileSync(
 const pageSource = fs.readFileSync("src/app/map/page.tsx", "utf8")
 
 // ============================================================
-// Discovery Panel imports from discovery-grid
+// Discovery Panel imports from discovery-grid-shared
 // ============================================================
 
-test("panel imports CellData and CellAction types from discovery-grid", () => {
-  assert.match(panelSource, /import\s+type\s+\{.*CellData.*CellAction.*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("panel imports CellData and CellAction types from discovery-grid-shared", () => {
+  assert.match(panelSource, /import\s+type\s+\{.*CellData.*CellAction.*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("panel imports DISCOVERY_MECHANISMS from discovery-grid", () => {
-  assert.match(panelSource, /import\s+\{.*DISCOVERY_MECHANISMS.*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("panel imports DISCOVERY_MECHANISMS from discovery-grid-shared", () => {
+  assert.match(panelSource, /import\s+\{.*DISCOVERY_MECHANISMS.*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("panel imports MAX_DEPTH from discovery-grid", () => {
-  assert.match(panelSource, /import\s+\{.*MAX_DEPTH.*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("panel imports MAX_DEPTH from discovery-grid-shared", () => {
+  assert.match(panelSource, /import\s+\{.*MAX_DEPTH.*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("panel imports getStatusBadgeColor from discovery-grid", () => {
-  assert.match(panelSource, /import\s+\{.*getStatusBadgeColor.*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("panel imports getStatusBadgeColor from discovery-grid-shared", () => {
+  assert.match(panelSource, /import\s+\{.*getStatusBadgeColor.*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("panel imports formatShortDate from discovery-grid", () => {
-  assert.match(panelSource, /import\s+\{.*formatShortDate.*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("panel imports formatShortDate from discovery-grid-shared", () => {
+  assert.match(panelSource, /import\s+\{.*formatShortDate.*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
 test("panel imports Play, Grid2x2Plus, Minimize2 icons", () => {

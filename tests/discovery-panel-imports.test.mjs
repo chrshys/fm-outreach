@@ -29,33 +29,33 @@ test("imports Minimize2 from lucide-react", () => {
 })
 
 // ============================================================
-// discovery-grid type imports
+// discovery-grid-shared type imports
 // ============================================================
 
-test("imports CellData type from ./discovery-grid", () => {
-  assert.match(source, /import\s+type\s+\{[^}]*\bCellData\b[^}]*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("imports CellData type from ./discovery-grid-shared", () => {
+  assert.match(source, /import\s+type\s+\{[^}]*\bCellData\b[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("imports CellAction type from ./discovery-grid", () => {
-  assert.match(source, /import\s+type\s+\{[^}]*\bCellAction\b[^}]*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("imports CellAction type from ./discovery-grid-shared", () => {
+  assert.match(source, /import\s+type\s+\{[^}]*\bCellAction\b[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
 // ============================================================
-// discovery-grid value imports
+// discovery-grid-shared value imports
 // ============================================================
 
-test("imports DISCOVERY_MECHANISMS from ./discovery-grid", () => {
-  assert.match(source, /import\s+\{[^}]*\bDISCOVERY_MECHANISMS\b[^}]*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("imports DISCOVERY_MECHANISMS from ./discovery-grid-shared", () => {
+  assert.match(source, /import\s+\{[^}]*\bDISCOVERY_MECHANISMS\b[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("imports MAX_DEPTH from ./discovery-grid", () => {
-  assert.match(source, /import\s+\{[^}]*\bMAX_DEPTH\b[^}]*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("imports MAX_DEPTH from ./discovery-grid-shared", () => {
+  assert.match(source, /import\s+\{[^}]*\bMAX_DEPTH\b[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("imports getStatusBadgeColor from ./discovery-grid", () => {
-  assert.match(source, /import\s+\{[^}]*\bgetStatusBadgeColor\b[^}]*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("imports getStatusBadgeColor from ./discovery-grid-shared", () => {
+  assert.match(source, /import\s+\{[^}]*\bgetStatusBadgeColor\b[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("imports formatShortDate from ./discovery-grid", () => {
-  assert.match(source, /import\s+\{[^}]*\bformatShortDate\b[^}]*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("imports formatShortDate from ./discovery-grid-shared", () => {
+  assert.match(source, /import\s+\{[^}]*\bformatShortDate\b[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
