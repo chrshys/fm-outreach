@@ -112,7 +112,7 @@ test("passes gridCells to MapContent in discovery mode", () => {
 })
 
 test("passes onCellSelect to MapContent in discovery mode", () => {
-  assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*setSelectedCellId\s*:\s*undefined\}/)
+  assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellSelect\s*:\s*undefined\}/)
 })
 
 // --- DiscoveryPanel receives selectedGridId and onGridSelect ---
