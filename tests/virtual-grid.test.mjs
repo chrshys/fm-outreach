@@ -263,6 +263,34 @@ test("computeVirtualGrid with same bounds called twice returns identical keys", 
   }
 });
 
+test("computeVirtualGrid returns cells when count equals maxCells", () => {
+  // Build bounds that produce exactly a known number of cells, then set maxCells to that count
+  const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.1, neLng: -79.9 };
+  const cellSizeKm = 1;
+  // First call without limit to learn actual count
+  const allCells = mod.computeVirtualGrid(bounds, cellSizeKm, 10000);
+  assert.ok(allCells.length > 0);
+  // Set maxCells exactly equal to cell count — should still succeed
+  const cells = mod.computeVirtualGrid(bounds, cellSizeKm, allCells.length);
+  assert.equal(cells.length, allCells.length, "should return cells when count equals maxCells");
+});
+
+test("computeVirtualGrid returns empty when count is one over maxCells", () => {
+  const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.1, neLng: -79.9 };
+  const cellSizeKm = 1;
+  const allCells = mod.computeVirtualGrid(bounds, cellSizeKm, 10000);
+  assert.ok(allCells.length > 1);
+  // Set maxCells to one less than actual count — should return empty
+  const cells = mod.computeVirtualGrid(bounds, cellSizeKm, allCells.length - 1);
+  assert.deepEqual(cells, [], "should return empty when count exceeds maxCells by one");
+});
+
+test("computeVirtualGrid returns empty array for maxCells of zero", () => {
+  const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.1, neLng: -79.9 };
+  const cells = mod.computeVirtualGrid(bounds, 1, 0);
+  assert.deepEqual(cells, []);
+});
+
 test("computeVirtualGrid uses correct midLat formula", () => {
   const bounds = { swLat: 43.0, swLng: -80.0, neLat: 43.1, neLng: -79.9 };
   const cells = mod.computeVirtualGrid(bounds, 5);
