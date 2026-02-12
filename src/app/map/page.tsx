@@ -68,12 +68,12 @@ export default function MapPage() {
   }, [])
 
   // Discovery queries & mutations
-  const gridCellsResult = useQuery(
+  const gridCellsData = useQuery(
     api.discovery.gridCells.listCells,
     globalGridId && viewMode === "discovery" ? { gridId: globalGridId } : "skip",
   )
-  const gridCells = gridCellsResult?.cells
-  const activatedBoundsKeys = gridCellsResult?.activatedBoundsKeys
+  const cells = gridCellsData?.cells
+  const activatedBoundsKeys = gridCellsData?.activatedBoundsKeys ?? []
 
   // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
   const gridsResult = useQuery(api.discovery.gridCells.listGrids) as Array<{ _id: Id<"discoveryGrids">; cellSizeKm: number }> | undefined
@@ -214,7 +214,7 @@ export default function MapPage() {
   }, [])
 
   const handleCellAction = useCallback(async (cellId: string, action: CellAction) => {
-    const cell = gridCells?.find((c) => c._id === cellId)
+    const cell = cells?.find((c) => c._id === cellId)
     if (!cell) return
 
     if (action.type === "search") {
@@ -262,7 +262,7 @@ export default function MapPage() {
       }
       return
     }
-  }, [gridCells, requestDiscoverCell, subdivideCell, undivideCell])
+  }, [cells, requestDiscoverCell, subdivideCell, undivideCell])
 
   return (
     <AppLayout>
@@ -274,7 +274,7 @@ export default function MapPage() {
           isDrawing={viewMode === "clusters" && isDrawing}
           onPolygonDrawn={handlePolygonDrawn}
           pendingPolygon={pendingPolygon}
-          gridCells={viewMode === "discovery" ? gridCells ?? undefined : undefined}
+          gridCells={viewMode === "discovery" ? cells ?? undefined : undefined}
           selectedCellId={viewMode === "discovery" ? selectedCellId : null}
           onCellSelect={viewMode === "discovery" ? handleCellSelect : undefined}
           cellSizeKm={viewMode === "discovery" ? selectedGridCellSizeKm : undefined}
@@ -291,7 +291,7 @@ export default function MapPage() {
             clusters={clusterOptions}
           />
         ) : (
-          <DiscoveryPanel mapBounds={mapBounds} selectedGridId={globalGridId} onGridSelect={handleGridSelect} cells={viewMode === "discovery" ? gridCells ?? [] : []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
+          <DiscoveryPanel mapBounds={mapBounds} selectedGridId={globalGridId} onGridSelect={handleGridSelect} cells={viewMode === "discovery" ? cells ?? [] : []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
         )}
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           <Button

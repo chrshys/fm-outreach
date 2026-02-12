@@ -74,10 +74,10 @@ test("cluster mode shows Draw Cluster button", () => {
 
 // --- Discovery mode rendering ---
 
-test("discovery mode passes gridCells to MapContent", () => {
+test("discovery mode passes cells to MapContent", () => {
   assert.match(
     mapPageSource,
-    /gridCells=\{viewMode\s*===\s*"discovery"\s*\?\s*gridCells\s*\?\?\s*undefined\s*:\s*undefined\}/,
+    /gridCells=\{viewMode\s*===\s*"discovery"\s*\?\s*cells\s*\?\?\s*undefined\s*:\s*undefined\}/,
   )
 })
 
@@ -217,7 +217,7 @@ test("grid cells are undefined (not null) when not in discovery mode", () => {
   // accidental iteration over null
   assert.match(
     mapPageSource,
-    /gridCells=\{viewMode\s*===\s*"discovery"\s*\?\s*gridCells\s*\?\?\s*undefined\s*:\s*undefined\}/,
+    /gridCells=\{viewMode\s*===\s*"discovery"\s*\?\s*cells\s*\?\?\s*undefined\s*:\s*undefined\}/,
   )
 })
 
