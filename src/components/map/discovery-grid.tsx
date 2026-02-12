@@ -33,7 +33,7 @@ export const DISCOVERY_MECHANISMS = [
   { id: "web_scraper", label: "Web Scraping", enabled: true },
 ] as const
 
-const MAX_DEPTH = 4
+export const MAX_DEPTH = 4
 
 export function getAvailableActions(cell: CellData): CellAction[] {
   const actions: CellAction[] = DISCOVERY_MECHANISMS
@@ -51,14 +51,14 @@ export function getAvailableActions(cell: CellData): CellAction[] {
   return actions
 }
 
-function formatShortDate(timestamp: number): string {
+export function formatShortDate(timestamp: number): string {
   return new Date(timestamp).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
   })
 }
 
-function getStatusBadgeColor(status: CellStatus): string {
+export function getStatusBadgeColor(status: CellStatus): string {
   switch (status) {
     case "unsearched": return "bg-gray-200 text-gray-700"
     case "searching": return "bg-blue-100 text-blue-700"
