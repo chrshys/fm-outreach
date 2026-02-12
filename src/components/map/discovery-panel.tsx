@@ -50,10 +50,14 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, onCellActi
   const [editingQuery, setEditingQuery] = useState<string | null>(null)
   const [editValue, setEditValue] = useState("")
   const editInputRef = useRef<HTMLInputElement>(null)
+  const [editingField, setEditingField] = useState<"region" | "province" | null>(null)
+  const [fieldEditValue, setFieldEditValue] = useState("")
+  const fieldEditInputRef = useRef<HTMLInputElement>(null)
 
   // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
   const grids = useQuery(api.discovery.gridCells.listGrids) as GridWithStats[] | undefined
   const updateGridQueries = useMutation(api.discovery.gridCells.updateGridQueries)
+  const updateGridMetadata = useMutation(api.discovery.gridCells.updateGridMetadata)
 
   const selectedGrid = grids?.find((g) => g._id === globalGridId) ?? null
   const selectedCell = cells.find((c) => c._id === selectedCellId) ?? null
@@ -120,6 +124,34 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, onCellActi
     setEditingQuery(null)
   }, [])
 
+  const handleStartFieldEdit = useCallback((field: "region" | "province", currentValue: string) => {
+    setEditingField(field)
+    setFieldEditValue(currentValue)
+    setTimeout(() => fieldEditInputRef.current?.focus(), 0)
+  }, [])
+
+  const handleSaveFieldEdit = useCallback(async () => {
+    if (!selectedGrid || editingField === null) return
+    const trimmed = fieldEditValue.trim()
+    if (!trimmed || trimmed === selectedGrid[editingField]) {
+      setEditingField(null)
+      return
+    }
+    try {
+      await updateGridMetadata({
+        gridId: selectedGrid._id,
+        [editingField]: trimmed,
+      })
+      setEditingField(null)
+    } catch {
+      toast.error(`Failed to update ${editingField}`)
+    }
+  }, [selectedGrid, editingField, fieldEditValue, updateGridMetadata])
+
+  const handleCancelFieldEdit = useCallback(() => {
+    setEditingField(null)
+  }, [])
+
   if (!open) {
     return (
       <div className="absolute left-3 top-3 z-10">
@@ -152,6 +184,70 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, onCellActi
         </div>
 
         <div className="space-y-3">
+          {/* Settings */}
+          {selectedGrid && (
+            <>
+              <Separator />
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Settings</Label>
+                <div className="space-y-1 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Region</span>
+                    {editingField === "region" ? (
+                      <input
+                        ref={fieldEditInputRef}
+                        className="w-28 rounded border bg-transparent px-1 py-0.5 text-xs outline-none"
+                        value={fieldEditValue}
+                        onChange={(e) => setFieldEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleSaveFieldEdit()
+                          if (e.key === "Escape") handleCancelFieldEdit()
+                        }}
+                        onBlur={handleSaveFieldEdit}
+                        aria-label="Edit region"
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        className="cursor-text font-medium hover:underline"
+                        onClick={() => handleStartFieldEdit("region", selectedGrid.region)}
+                        aria-label="Click to edit region"
+                      >
+                        {selectedGrid.region}
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Province</span>
+                    {editingField === "province" ? (
+                      <input
+                        ref={fieldEditInputRef}
+                        className="w-28 rounded border bg-transparent px-1 py-0.5 text-xs outline-none"
+                        value={fieldEditValue}
+                        onChange={(e) => setFieldEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleSaveFieldEdit()
+                          if (e.key === "Escape") handleCancelFieldEdit()
+                        }}
+                        onBlur={handleSaveFieldEdit}
+                        aria-label="Edit province"
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        className="cursor-text font-medium hover:underline"
+                        onClick={() => handleStartFieldEdit("province", selectedGrid.province)}
+                        aria-label="Click to edit province"
+                      >
+                        {selectedGrid.province}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
           {/* Progress Stats */}
           {selectedGrid && (
             <>
