@@ -36,12 +36,12 @@ test("DELETE_BATCH_SIZE constant is removed", () => {
   assert.doesNotMatch(source, /DELETE_BATCH_SIZE/);
 });
 
-test("DEFAULT_CELL_SIZE_KM constant is removed", () => {
-  assert.doesNotMatch(source, /DEFAULT_CELL_SIZE_KM/);
+test("DEFAULT_CELL_SIZE_KM constant exists for getOrCreateGlobalGrid", () => {
+  assert.match(source, /DEFAULT_CELL_SIZE_KM/);
 });
 
-test("DEFAULT_QUERIES constant is removed", () => {
-  assert.doesNotMatch(source, /DEFAULT_QUERIES/);
+test("DEFAULT_QUERIES constant exists for getOrCreateGlobalGrid", () => {
+  assert.match(source, /DEFAULT_QUERIES/);
 });
 
 // ============================================================
