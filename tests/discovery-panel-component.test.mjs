@@ -51,17 +51,11 @@ test("renders close button with aria-label", () => {
   assert.match(source, /aria-label="Close discovery panel"/)
 })
 
-// --- Grid Selector ---
+// --- Grid Selector removed ---
 
-test("renders grid selector dropdown when grids exist", () => {
-  assert.match(source, /grids && grids\.length > 0/)
-  assert.match(source, /ChevronDown/)
-  assert.match(source, /showGridSelector/)
-})
-
-test("grid selector lists all grids by name", () => {
-  assert.match(source, /grids\.map\(\(grid\)/)
-  assert.match(source, /grid\.name/)
+test("grid selector dropdown is removed", () => {
+  assert.doesNotMatch(source, /showGridSelector/)
+  assert.doesNotMatch(source, /ChevronDown/)
 })
 
 test("no New Grid form (grid creation replaced by virtual grid)", () => {

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useMutation, useQuery } from "convex/react"
-import { ChevronDown, Grid2x2Plus, Minimize2, Play, Plus, Search, X } from "lucide-react"
+import { Grid2x2Plus, Minimize2, Play, Plus, Search, X } from "lucide-react"
 import { toast } from "sonner"
 
 import { api } from "../../../convex/_generated/api"
@@ -48,7 +48,6 @@ const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
 export function DiscoveryPanel({ globalGridId, setGlobalGridId, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
   const [open, setOpen] = useState(true)
   const [newQuery, setNewQuery] = useState("")
-  const [showGridSelector, setShowGridSelector] = useState(false)
   const [editingQuery, setEditingQuery] = useState<string | null>(null)
   const [editValue, setEditValue] = useState("")
   const editInputRef = useRef<HTMLInputElement>(null)
@@ -161,40 +160,6 @@ export function DiscoveryPanel({ globalGridId, setGlobalGridId, cells, selectedC
         </div>
 
         <div className="space-y-3">
-          {/* Grid Selector */}
-          {grids && grids.length > 0 && (
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Grid</Label>
-              <div className="relative">
-                <button
-                  type="button"
-                  className="flex h-8 w-full items-center justify-between rounded-md border bg-background px-2 text-sm"
-                  onClick={() => setShowGridSelector(!showGridSelector)}
-                >
-                  <span className="truncate">{selectedGrid?.name ?? "Select grid"}</span>
-                  <ChevronDown className="size-4 text-muted-foreground" />
-                </button>
-                {showGridSelector && (
-                  <div className="absolute top-9 left-0 z-20 w-full rounded-md border bg-popover p-1 shadow-md">
-                    {grids.map((grid) => (
-                      <button
-                        key={grid._id}
-                        type="button"
-                        className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
-                        onClick={() => {
-                          setGlobalGridId(grid._id)
-                          setShowGridSelector(false)
-                        }}
-                      >
-                        <span className="truncate">{grid.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Progress Stats */}
           {selectedGrid && (
             <>
