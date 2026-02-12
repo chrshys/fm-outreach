@@ -106,9 +106,9 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
           }}
         />
       )}
-      {gridCells && onCellSelect && cellSizeKm && gridId && activatedBoundsKeys && onActivateCell && (
+      {gridCells && onCellSelect && (
         <Pane name="discovery-grid" style={{ zIndex: 450 }}>
-          <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} cellSizeKm={cellSizeKm} gridId={gridId} activatedBoundsKeys={activatedBoundsKeys} onActivateCell={onActivateCell} />
+          <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} cellSizeKm={cellSizeKm ?? 20} gridId={gridId ?? ""} activatedBoundsKeys={activatedBoundsKeys ?? []} onActivateCell={onActivateCell ?? (async () => "")} />
         </Pane>
       )}
       {leads.map((lead) => {

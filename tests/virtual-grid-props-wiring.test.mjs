@@ -25,20 +25,20 @@ test("MapContentProps includes onActivateCell", () => {
 
 // ── MapContent passes virtual grid props to DiscoveryGrid ──
 
-test("MapContent passes cellSizeKm to DiscoveryGrid", () => {
-  assert.match(mapContentSource, /DiscoveryGrid[\s\S]*cellSizeKm=\{cellSizeKm\}/)
+test("MapContent passes cellSizeKm to DiscoveryGrid with default", () => {
+  assert.match(mapContentSource, /DiscoveryGrid[\s\S]*cellSizeKm=\{cellSizeKm\s*\?\?\s*20\}/)
 })
 
-test("MapContent passes gridId to DiscoveryGrid", () => {
-  assert.match(mapContentSource, /DiscoveryGrid[\s\S]*gridId=\{gridId\}/)
+test("MapContent passes gridId to DiscoveryGrid with default", () => {
+  assert.match(mapContentSource, /DiscoveryGrid[\s\S]*gridId=\{gridId\s*\?\?\s*""\}/)
 })
 
-test("MapContent passes activatedBoundsKeys to DiscoveryGrid", () => {
-  assert.match(mapContentSource, /DiscoveryGrid[\s\S]*activatedBoundsKeys=\{activatedBoundsKeys\}/)
+test("MapContent passes activatedBoundsKeys to DiscoveryGrid with default", () => {
+  assert.match(mapContentSource, /DiscoveryGrid[\s\S]*activatedBoundsKeys=\{activatedBoundsKeys\s*\?\?\s*\[\]\}/)
 })
 
-test("MapContent passes onActivateCell to DiscoveryGrid", () => {
-  assert.match(mapContentSource, /DiscoveryGrid[\s\S]*onActivateCell=\{onActivateCell\}/)
+test("MapContent passes onActivateCell to DiscoveryGrid with default", () => {
+  assert.match(mapContentSource, /DiscoveryGrid[\s\S]*onActivateCell=\{onActivateCell\s*\?\?/)
 })
 
 // ── Map page passes virtual grid props to MapContent ──
