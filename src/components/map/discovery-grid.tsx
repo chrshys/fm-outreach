@@ -17,7 +17,8 @@ type DiscoveryGridProps = {
   cellSizeKm: number
   gridId: string
   activatedBoundsKeys: string[]
-  onActivateCell: (cell: VirtualCell) => Promise<string>
+  selectedVirtualCell: VirtualCell | null
+  onSelectVirtual: (cell: VirtualCell | null) => void
 }
 
 type DiscoveryGridCellProps = {
@@ -28,32 +29,21 @@ type DiscoveryGridCellProps = {
 
 type VirtualGridCellProps = {
   cell: VirtualCell
-  onActivateCell: (cell: VirtualCell) => Promise<string>
-  onCellSelect: (cellId: string | null) => void
+  isSelected: boolean
+  onSelectVirtual: (cell: VirtualCell | null) => void
 }
 
-function VirtualGridCell({ cell, onActivateCell, onCellSelect }: VirtualGridCellProps) {
-  const [activating, setActivating] = useState(false)
+function VirtualGridCell({ cell, isSelected, onSelectVirtual }: VirtualGridCellProps) {
   const bounds: [[number, number], [number, number]] = [
     [cell.swLat, cell.swLng],
     [cell.neLat, cell.neLng],
   ]
-  const handleClick = async () => {
-    if (activating) return
-    setActivating(true)
-    try {
-      const cellId = await onActivateCell(cell)
-      onCellSelect(cellId)
-    } finally {
-      setActivating(false)
-    }
-  }
   return (
     <Rectangle
       bounds={bounds}
-      pathOptions={VIRTUAL_CELL_STYLE}
+      pathOptions={isSelected ? VIRTUAL_CELL_SELECTED_STYLE : VIRTUAL_CELL_STYLE}
       eventHandlers={{
-        click: handleClick,
+        click: () => onSelectVirtual(isSelected ? null : cell),
       }}
     />
   )
@@ -89,7 +79,7 @@ function getMapBounds(map: ReturnType<typeof useMap>) {
   }
 }
 
-export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cellSizeKm, activatedBoundsKeys, onActivateCell }: DiscoveryGridProps) {
+export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cellSizeKm, activatedBoundsKeys, selectedVirtualCell, onSelectVirtual }: DiscoveryGridProps) {
   const map = useMap()
   const [mapBounds, setMapBounds] = useState<{ swLat: number; swLng: number; neLat: number; neLng: number }>(() => getMapBounds(map))
   const [zoom, setZoom] = useState(() => map.getZoom())
@@ -135,8 +125,8 @@ export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cel
         <VirtualGridCell
           key={vc.key}
           cell={vc}
-          onActivateCell={onActivateCell}
-          onCellSelect={onCellSelect}
+          isSelected={selectedVirtualCell?.key === vc.key}
+          onSelectVirtual={onSelectVirtual}
         />
       ))}
       {cells.map((cell) => (

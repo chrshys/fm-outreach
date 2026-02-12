@@ -7,6 +7,7 @@ import { Grid3X3, PenTool } from "lucide-react"
 import { toast } from "sonner"
 
 import type { CellAction } from "@/components/map/discovery-grid-shared"
+import type { VirtualCell } from "@/lib/virtual-grid"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import { AppLayout } from "@/components/layout/app-layout"
@@ -51,12 +52,19 @@ export default function MapPage() {
   const [viewMode, setViewMode] = useState<"clusters" | "discovery">("clusters")
   const [globalGridId, setGlobalGridId] = useState<Id<"discoveryGrids"> | null>(null)
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null)
+  const [selectedVirtualCell, setSelectedVirtualCell] = useState<VirtualCell | null>(null)
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- reset derived state when grid changes
-  useEffect(() => { setSelectedCellId(null) }, [globalGridId])
+  useEffect(() => { setSelectedCellId(null); setSelectedVirtualCell(null) }, [globalGridId])
 
   const handleCellSelect = useCallback((cellId: string | null) => {
     setSelectedCellId(cellId)
+    setSelectedVirtualCell(null)
+  }, [])
+
+  const handleSelectVirtual = useCallback((cell: VirtualCell | null) => {
+    setSelectedVirtualCell(cell)
+    setSelectedCellId(null)
   }, [])
 
   // Discovery queries & mutations – keep the subscription active across mode
@@ -72,30 +80,16 @@ export default function MapPage() {
   const gridsResult = useQuery(api.discovery.gridCells.listGrids) as Array<{ _id: Id<"discoveryGrids">; cellSizeKm: number }> | undefined
   const cellSizeKm = gridsResult?.find((g) => g._id === globalGridId)?.cellSizeKm
 
-  const activateCellMutation = useMutation(api.discovery.gridCells.activateCell)
   const getOrCreateGlobalGrid = useMutation(api.discovery.gridCells.getOrCreateGlobalGrid)
 
-  // Auto-create global grid on first discovery mode entry
+  // Auto-create global grid on mount so the virtual grid overlay is always visible
   useEffect(() => {
-    if (viewMode === "discovery" && globalGridId === null) {
+    if (globalGridId === null) {
       getOrCreateGlobalGrid({}).then((result) => {
         setGlobalGridId(result.gridId)
       })
     }
-  }, [viewMode, globalGridId, getOrCreateGlobalGrid])
-
-  const handleActivateCell = useCallback(async (cell: { key: string, swLat: number, swLng: number, neLat: number, neLng: number }) => {
-    if (!globalGridId) return ""
-    const result = await activateCellMutation({
-      gridId: globalGridId,
-      swLat: cell.swLat,
-      swLng: cell.swLng,
-      neLat: cell.neLat,
-      neLng: cell.neLng,
-      boundsKey: cell.key,
-    })
-    return result.cellId
-  }, [globalGridId, activateCellMutation])
+  }, [globalGridId, getOrCreateGlobalGrid])
 
   const requestDiscoverCell = useMutation(api.discovery.discoverCell.requestDiscoverCell)
   const subdivideCell = useMutation(api.discovery.gridCells.subdivideCell)
@@ -269,7 +263,8 @@ export default function MapPage() {
           cellSizeKm={cellSizeKm}
           gridId={globalGridId ?? undefined}
           activatedBoundsKeys={activatedBoundsKeys}
-          onActivateCell={viewMode === "discovery" ? handleActivateCell : undefined}
+          selectedVirtualCell={viewMode === "discovery" ? selectedVirtualCell : null}
+          onSelectVirtual={viewMode === "discovery" ? handleSelectVirtual : undefined}
 
         />
         </div>
@@ -293,6 +288,7 @@ export default function MapPage() {
               setShowNamingDialog(false)
               setDrawnPolygon(null)
               setSelectedCellId(null)
+              setSelectedVirtualCell(null)
             }}
           >
             <Grid3X3 className="mr-1.5 size-4" />

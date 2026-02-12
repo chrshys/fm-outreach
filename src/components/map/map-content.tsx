@@ -58,11 +58,12 @@ type MapContentProps = {
   cellSizeKm?: number
   gridId?: string
   activatedBoundsKeys?: string[]
-  onActivateCell?: (cell: VirtualCell) => Promise<string>
+  selectedVirtualCell?: VirtualCell | null
+  onSelectVirtual?: (cell: VirtualCell | null) => void
   onBoundsChange?: (bounds: MapBounds) => void
 }
 
-export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon, gridCells, selectedCellId, onCellSelect, cellSizeKm, gridId, activatedBoundsKeys, onActivateCell, onBoundsChange }: MapContentProps) {
+export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon, gridCells, selectedCellId, onCellSelect, cellSizeKm, gridId, activatedBoundsKeys, selectedVirtualCell, onSelectVirtual, onBoundsChange }: MapContentProps) {
   return (
     <MapContainer
       center={NIAGARA_CENTER}
@@ -106,11 +107,15 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
           }}
         />
       )}
-      {gridCells && onCellSelect && (
+      {gridCells && onCellSelect ? (
         <Pane name="discovery-grid" style={{ zIndex: 450 }}>
-          <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} cellSizeKm={cellSizeKm ?? 20} gridId={gridId ?? ""} activatedBoundsKeys={activatedBoundsKeys ?? []} onActivateCell={onActivateCell ?? (async () => "")} />
+          <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} cellSizeKm={cellSizeKm ?? 20} gridId={gridId ?? ""} activatedBoundsKeys={activatedBoundsKeys ?? []} selectedVirtualCell={selectedVirtualCell ?? null} onSelectVirtual={onSelectVirtual ?? (() => {})} />
         </Pane>
-      )}
+      ) : cellSizeKm != null && gridId ? (
+        <Pane name="virtual-grid-overlay" style={{ zIndex: 350 }}>
+          <DiscoveryGrid cells={[]} selectedCellId={null} onCellSelect={() => {}} cellSizeKm={cellSizeKm} gridId={gridId} activatedBoundsKeys={activatedBoundsKeys ?? []} selectedVirtualCell={null} onSelectVirtual={() => {}} />
+        </Pane>
+      ) : null}
       {leads.map((lead) => {
         const color = getStatusColor(lead.status)
         return (
