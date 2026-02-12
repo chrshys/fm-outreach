@@ -85,6 +85,60 @@ test("cellKey produces different keys for different coordinates", () => {
   assert.notEqual(a, b);
 });
 
+// --- computeBoundsKey runtime tests ---
+
+test("exports computeBoundsKey function", () => {
+  assert.equal(typeof mod.computeBoundsKey, "function");
+});
+
+test("computeBoundsKey snaps coordinates to grid-aligned position", () => {
+  const latStep = 1 / 111;
+  const lngStep = 1 / (111 * Math.cos(43.05 * Math.PI / 180));
+  // 43.007 should snap down to nearest latStep multiple
+  const key = mod.computeBoundsKey(43.007, -80.003, latStep, lngStep);
+  const expectedLat = Math.floor(43.007 / latStep) * latStep;
+  const expectedLng = Math.floor(-80.003 / lngStep) * lngStep;
+  assert.equal(key, `${expectedLat.toFixed(6)}_${expectedLng.toFixed(6)}`);
+});
+
+test("computeBoundsKey returns deterministic key for same inputs", () => {
+  const a = mod.computeBoundsKey(43.5, -80.25, 0.01, 0.01);
+  const b = mod.computeBoundsKey(43.5, -80.25, 0.01, 0.01);
+  assert.equal(a, b);
+});
+
+test("computeBoundsKey produces different keys for different coordinates", () => {
+  const a = mod.computeBoundsKey(43.5, -80.25, 0.01, 0.01);
+  const b = mod.computeBoundsKey(43.6, -80.25, 0.01, 0.01);
+  assert.notEqual(a, b);
+});
+
+test("computeBoundsKey formats to 6 decimal places", () => {
+  const key = mod.computeBoundsKey(0, 0, 1, 1);
+  assert.equal(key, "0.000000_0.000000");
+});
+
+test("computeBoundsKey snaps down with Math.floor", () => {
+  // With step=1, 43.9 should snap to 43, not 44
+  const key = mod.computeBoundsKey(43.9, -80.1, 1, 1);
+  assert.equal(key, "43.000000_-81.000000");
+});
+
+test("computeBoundsKey handles negative coordinates correctly", () => {
+  // Math.floor(-80.1 / 1) * 1 = -81
+  const key = mod.computeBoundsKey(-33.5, -80.5, 1, 1);
+  assert.equal(key, "-34.000000_-81.000000");
+});
+
+test("computeBoundsKey matches cellKey when coordinates are already grid-aligned", () => {
+  const latStep = 0.5;
+  const lngStep = 0.5;
+  // 43.0 is already aligned to 0.5 step grid
+  const boundsKey = mod.computeBoundsKey(43.0, -80.0, latStep, lngStep);
+  const cKey = mod.cellKey(43.0, -80.0);
+  assert.equal(boundsKey, cKey);
+});
+
 // --- computeVirtualGrid runtime tests ---
 
 test("exports computeVirtualGrid function", () => {

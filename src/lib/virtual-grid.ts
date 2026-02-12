@@ -10,6 +10,17 @@ export function cellKey(swLat: number, swLng: number): string {
   return `${swLat.toFixed(6)}_${swLng.toFixed(6)}`;
 }
 
+export function computeBoundsKey(
+  swLat: number,
+  swLng: number,
+  latStep: number,
+  lngStep: number,
+): string {
+  const snappedLat = Math.floor(swLat / latStep) * latStep;
+  const snappedLng = Math.floor(swLng / lngStep) * lngStep;
+  return `${snappedLat.toFixed(6)}_${snappedLng.toFixed(6)}`;
+}
+
 export function computeVirtualGrid(
   bounds: { swLat: number; swLng: number; neLat: number; neLng: number },
   cellSizeKm: number,
