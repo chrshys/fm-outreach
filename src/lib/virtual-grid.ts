@@ -33,8 +33,13 @@ export function computeVirtualGrid(
   const midLat = Math.round(((bounds.swLat + bounds.neLat) / 2) / LAT_BAND) * LAT_BAND;
   const lngStep = cellSizeKm / (111 * Math.cos(midLat * Math.PI / 180));
 
-  const startLat = Math.floor(bounds.swLat / latStep) * latStep;
-  const startLng = Math.floor(bounds.swLng / lngStep) * lngStep;
+  // Use index-based multiplication instead of iterative addition to avoid
+  // floating-point accumulation drift.  This ensures that cell coordinates
+  // are identical regardless of the viewport's starting position.
+  const startLatIdx = Math.floor(bounds.swLat / latStep);
+  const startLngIdx = Math.floor(bounds.swLng / lngStep);
+  const startLat = startLatIdx * latStep;
+  const startLng = startLngIdx * lngStep;
 
   const rows = Math.ceil((bounds.neLat - startLat) / latStep);
   const cols = Math.ceil((bounds.neLng - startLng) / lngStep);
@@ -44,14 +49,16 @@ export function computeVirtualGrid(
   }
 
   const cells: VirtualCell[] = [];
-  for (let lat = startLat; lat < bounds.neLat; lat += latStep) {
-    for (let lng = startLng; lng < bounds.neLng; lng += lngStep) {
+  for (let r = 0; r < rows; r++) {
+    const lat = (startLatIdx + r) * latStep;
+    for (let c = 0; c < cols; c++) {
+      const lng = (startLngIdx + c) * lngStep;
       cells.push({
         key: cellKey(lat, lng),
         swLat: lat,
         swLng: lng,
-        neLat: lat + latStep,
-        neLng: lng + lngStep,
+        neLat: (startLatIdx + r + 1) * latStep,
+        neLng: (startLngIdx + c + 1) * lngStep,
       });
     }
   }
