@@ -20,10 +20,6 @@ test("discoveryGrids has all required fields", () => {
     ["region", "v.string()"],
     ["province", "v.string()"],
     ["queries", "v.array(v.string())"],
-    ["swLat", "v.number()"],
-    ["swLng", "v.number()"],
-    ["neLat", "v.number()"],
-    ["neLng", "v.number()"],
     ["cellSizeKm", "v.number()"],
     ["totalLeadsFound", "v.number()"],
     ["createdAt", "v.number()"],
@@ -47,7 +43,7 @@ test("discoveryGrids does not have a separate gridId field", () => {
   assert.doesNotMatch(body, /\bgridId\b/, "Should use Convex _id, not a separate gridId field");
 });
 
-test("discoveryGrids has exactly 11 fields", () => {
+test("discoveryGrids has exactly 7 fields", () => {
   const tableMatch = schemaSource.match(
     /discoveryGrids:\s*defineTable\(\{([\s\S]*?)\}\)/,
   );
@@ -55,5 +51,5 @@ test("discoveryGrids has exactly 11 fields", () => {
   const body = tableMatch[1];
   // Count top-level field definitions (word followed by colon and v.)
   const fieldMatches = body.match(/\w+:\s*v\./g);
-  assert.equal(fieldMatches.length, 11, `Expected 11 fields, found ${fieldMatches.length}`);
+  assert.equal(fieldMatches.length, 7, `Expected 7 fields, found ${fieldMatches.length}`);
 });

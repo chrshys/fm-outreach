@@ -240,27 +240,7 @@ test("shows error toast on grid creation failure", () => {
 })
 
 // ============================================================
-// 12. Grid record stores bounds for later reference
-// ============================================================
-
-test("generateGrid stores swLat on grid record", () => {
-  assert.match(mutationSource, /swLat:\s*args\.swLat/)
-})
-
-test("generateGrid stores swLng on grid record", () => {
-  assert.match(mutationSource, /swLng:\s*args\.swLng/)
-})
-
-test("generateGrid stores neLat on grid record", () => {
-  assert.match(mutationSource, /neLat:\s*args\.neLat/)
-})
-
-test("generateGrid stores neLng on grid record", () => {
-  assert.match(mutationSource, /neLng:\s*args\.neLng/)
-})
-
-// ============================================================
-// 13. New grid is auto-selected after creation
+// 12. New grid is auto-selected after creation
 // ============================================================
 
 test("onGridSelect called with new grid ID after creation", () => {
