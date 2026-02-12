@@ -12,7 +12,6 @@ import type { Id } from "../../../convex/_generated/dataModel"
 import { BulkActions } from "@/components/leads/bulk-actions"
 import {
   LeadFilters,
-  type LeadFiltersValue,
   type LeadSource,
   type LeadStatus,
   type LeadType,
@@ -129,11 +128,6 @@ export default function LeadsPage() {
   const [reloadToken, setReloadToken] = useState(0)
   const [isLoadingLeads, setIsLoadingLeads] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
-  const defaultFilters: Pick<LeadFiltersValue, "hasFacebook" | "hasInstagram"> = {
-    hasFacebook: false,
-    hasInstagram: false,
-  }
-
   const listArgs = useMemo(
     () => ({
       status: filters.status === "all" ? undefined : filters.status,
@@ -142,8 +136,8 @@ export default function LeadsPage() {
       clusterId: filters.clusterId !== "all" ? (filters.clusterId as Id<"clusters">) : undefined,
       hasEmail: filters.hasEmail ? true : undefined,
       hasSocial: filters.hasSocial ? true : undefined,
-      hasFacebook: filters.hasFacebook ?? defaultFilters.hasFacebook,
-      hasInstagram: filters.hasInstagram ?? defaultFilters.hasInstagram,
+      hasFacebook: filters.hasFacebook ?? false,
+      hasInstagram: filters.hasInstagram ?? false,
       needsFollowUp: filters.needsFollowUp ? true : undefined,
       sortBy,
       sortOrder,
