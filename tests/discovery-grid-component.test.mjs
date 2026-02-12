@@ -25,8 +25,8 @@ test("imports useMap and useMapEvents from react-leaflet", () => {
   assert.match(source, /import\s+\{[\s\S]*useMapEvents[\s\S]*\}\s+from\s+"react-leaflet"/)
 })
 
-test("does NOT import leaflet L", () => {
-  assert.doesNotMatch(source, /import\s+L\s+from\s+["']leaflet["']/)
+test("imports leaflet L for DomEvent.stopPropagation", () => {
+  assert.match(source, /import\s+L\s+from\s+["']leaflet["']/)
 })
 
 test("does NOT import lucide-react icons", () => {

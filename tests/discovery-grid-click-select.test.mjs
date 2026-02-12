@@ -40,7 +40,8 @@ test("DiscoveryGrid applies distinct style to selected cell", () => {
 
 test("DiscoveryGrid attaches click eventHandler calling onCellSelect", () => {
   assert.match(gridSource, /eventHandlers/)
-  assert.match(gridSource, /click:\s*\(\)\s*=>\s*onCellSelect\(/)
+  assert.match(gridSource, /click:\s*\(e\)\s*=>\s*\{/)
+  assert.match(gridSource, /onCellSelect\(isSelected\s*\?\s*null\s*:\s*cell\._id\)/)
 })
 
 test("clicking selected cell deselects (passes null)", () => {

@@ -59,10 +59,11 @@ test("VirtualGridCell toggles pathOptions between selected and unselected styles
   assert.match(virtualCellSection, /isSelected\s*\?\s*VIRTUAL_CELL_SELECTED_STYLE\s*:\s*VIRTUAL_CELL_STYLE/)
 })
 
-test("VirtualGridCell click handler is a simple toggle via onSelectVirtual", () => {
+test("VirtualGridCell click handler toggles via onSelectVirtual with stopPropagation", () => {
   const virtualCellSection = source.split("function VirtualGridCell")[1].split("function DiscoveryGridCell")[0]
   assert.match(virtualCellSection, /eventHandlers=\{\{/)
-  assert.match(virtualCellSection, /click:\s*\(\)\s*=>\s*onSelectVirtual\(isSelected\s*\?\s*null\s*:\s*cell\)/)
+  assert.match(virtualCellSection, /click:\s*\(e\)\s*=>\s*\{/)
+  assert.match(virtualCellSection, /onSelectVirtual\(isSelected\s*\?\s*null\s*:\s*cell\)/)
 })
 
 test("VirtualGridCell does not have async click handler", () => {

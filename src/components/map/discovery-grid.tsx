@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useCallback } from "react"
+import L from "leaflet"
 import { Rectangle, useMap, useMapEvents } from "react-leaflet"
 import { computeVirtualGrid } from "@/lib/virtual-grid"
 import type { VirtualCell } from "@/lib/virtual-grid"
@@ -98,7 +99,10 @@ function VirtualGridCell({ cell, isSelected, onSelectVirtual }: VirtualGridCellP
       bounds={bounds}
       pathOptions={isSelected ? VIRTUAL_CELL_SELECTED_STYLE : VIRTUAL_CELL_STYLE}
       eventHandlers={{
-        click: () => onSelectVirtual(isSelected ? null : cell),
+        click: (e) => {
+          L.DomEvent.stopPropagation(e)
+          onSelectVirtual(isSelected ? null : cell)
+        },
       }}
     />
   )
@@ -118,7 +122,10 @@ function DiscoveryGridCell({ cell, isSelected, onCellSelect }: DiscoveryGridCell
       bounds={bounds}
       pathOptions={pathOptions}
       eventHandlers={{
-        click: () => onCellSelect(isSelected ? null : cell._id),
+        click: (e) => {
+          L.DomEvent.stopPropagation(e)
+          onCellSelect(isSelected ? null : cell._id)
+        },
       }}
     />
   )
@@ -147,6 +154,10 @@ export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cel
   useMapEvents({
     moveend: () => updateBounds(),
     zoomend: () => updateBounds(),
+    click: () => {
+      onCellSelect(null)
+      onSelectVirtualCell(null)
+    },
   })
 
   const virtualCells = useMemo(() => {

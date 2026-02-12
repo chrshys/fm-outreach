@@ -14,15 +14,14 @@ const pageSource = fs.readFileSync("src/app/map/page.tsx", "utf8")
 
 // --- DiscoveryGridCell toggle logic ---
 
-test("DiscoveryGridCell click handler is a ternary toggling between null and cell._id", () => {
+test("DiscoveryGridCell click handler toggles between null and cell._id with stopPropagation", () => {
   const cellFnMatch = gridSource.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch, "DiscoveryGridCell function not found")
-  // When isSelected is true the handler passes null (deselect),
-  // otherwise it passes cell._id (select)
-  assert.match(
-    cellFnMatch[0],
-    /click:\s*\(\)\s*=>\s*onCellSelect\(isSelected\s*\?\s*null\s*:\s*cell\._id\)/,
-  )
+  // Click handler stops propagation to prevent map-level deselect,
+  // then toggles: null (deselect) when isSelected, cell._id (select) otherwise
+  assert.match(cellFnMatch[0], /click:\s*\(e\)\s*=>\s*\{/)
+  assert.match(cellFnMatch[0], /L\.DomEvent\.stopPropagation\(e\)/)
+  assert.match(cellFnMatch[0], /onCellSelect\(isSelected\s*\?\s*null\s*:\s*cell\._id\)/)
 })
 
 test("DiscoveryGridCell derives isSelected from props (not internal state)", () => {

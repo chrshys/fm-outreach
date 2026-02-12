@@ -14,17 +14,16 @@ const pageSource = fs.readFileSync("src/app/map/page.tsx", "utf8")
 
 // --- VirtualGridCell toggle logic ---
 
-test("VirtualGridCell click handler is a ternary toggling between null and cell", () => {
+test("VirtualGridCell click handler toggles between null and cell with stopPropagation", () => {
   const virtualFn = gridSource.slice(
     gridSource.indexOf("function VirtualGridCell"),
     gridSource.indexOf("function DiscoveryGridCell"),
   )
   // When isSelected is true the handler passes null (deselect),
   // otherwise it passes the cell object (select)
-  assert.match(
-    virtualFn,
-    /click:\s*\(\)\s*=>\s*onSelectVirtual\(isSelected\s*\?\s*null\s*:\s*cell\)/,
-  )
+  assert.match(virtualFn, /click:\s*\(e\)\s*=>\s*\{/)
+  assert.match(virtualFn, /L\.DomEvent\.stopPropagation\(e\)/)
+  assert.match(virtualFn, /onSelectVirtual\(isSelected\s*\?\s*null\s*:\s*cell\)/)
 })
 
 test("VirtualGridCell derives isSelected from props (not internal state)", () => {
