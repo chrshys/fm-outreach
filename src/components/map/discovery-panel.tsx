@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { useMutation, useQuery } from "convex/react"
 import { Grid2x2Plus, Minimize2, Play, Plus, Search, X } from "lucide-react"
 import { toast } from "sonner"
@@ -17,7 +17,6 @@ import { Separator } from "@/components/ui/separator"
 
 type DiscoveryPanelProps = {
   globalGridId: Id<"discoveryGrids"> | null
-  setGlobalGridId: (gridId: Id<"discoveryGrids">) => void
   cells: CellData[]
   selectedCellId: string | null
   onCellAction: (cellId: string, action: CellAction) => void
@@ -45,7 +44,7 @@ const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
   { status: "saturated", color: "#f97316", label: "Saturated" },
 ]
 
-export function DiscoveryPanel({ globalGridId, setGlobalGridId, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
+export function DiscoveryPanel({ globalGridId, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
   const [open, setOpen] = useState(true)
   const [newQuery, setNewQuery] = useState("")
   const [editingQuery, setEditingQuery] = useState<string | null>(null)
@@ -58,13 +57,6 @@ export function DiscoveryPanel({ globalGridId, setGlobalGridId, cells, selectedC
 
   const selectedGrid = grids?.find((g) => g._id === globalGridId) ?? null
   const selectedCell = cells.find((c) => c._id === selectedCellId) ?? null
-
-  // Auto-select first grid if none selected
-  useEffect(() => {
-    if (!globalGridId && grids && grids.length > 0) {
-      setGlobalGridId(grids[0]._id)
-    }
-  }, [globalGridId, grids, setGlobalGridId])
 
   const handleAddQuery = useCallback(async () => {
     if (!newQuery.trim() || !selectedGrid) return

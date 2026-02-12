@@ -91,7 +91,6 @@ test("discovery mode passes onCellSelect to MapContent", () => {
 test("discovery mode shows DiscoveryPanel sidebar", () => {
   assert.match(mapPageSource, /<DiscoveryPanel/)
   assert.match(mapPageSource, /globalGridId=\{globalGridId\}/)
-  assert.match(mapPageSource, /setGlobalGridId=\{setGlobalGridId\}/)
 })
 
 test("discovery mode queries gridCells only when grid selected and in discovery mode", () => {
@@ -161,9 +160,9 @@ test("DiscoveryGrid does not use Tooltip", () => {
 
 // --- DiscoveryPanel component ---
 
-test("DiscoveryPanel accepts globalGridId and setGlobalGridId props", () => {
+test("DiscoveryPanel accepts globalGridId prop (setGlobalGridId removed)", () => {
   assert.match(discoveryPanelSource, /globalGridId:\s*Id<"discoveryGrids">\s*\|\s*null/)
-  assert.match(discoveryPanelSource, /setGlobalGridId:\s*\(gridId:\s*Id<"discoveryGrids">\)\s*=>\s*void/)
+  assert.doesNotMatch(discoveryPanelSource, /setGlobalGridId/)
 })
 
 test("DiscoveryPanel queries listGrids", () => {

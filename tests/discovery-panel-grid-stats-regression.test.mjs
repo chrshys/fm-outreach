@@ -18,9 +18,9 @@ test("DiscoveryPanel is rendered only in discovery viewMode", () => {
   assert.match(pageSource, /<DiscoveryPanel\s+globalGridId/)
 })
 
-test("DiscoveryPanel receives globalGridId and setGlobalGridId props from map page", () => {
+test("DiscoveryPanel receives globalGridId prop from map page (setGlobalGridId removed)", () => {
   assert.match(pageSource, /globalGridId=\{globalGridId\}/)
-  assert.match(pageSource, /setGlobalGridId=\{setGlobalGridId\}/)
+  assert.doesNotMatch(pageSource, /setGlobalGridId=\{setGlobalGridId\}/)
 })
 
 test("panel defaults to open state", () => {
@@ -42,13 +42,9 @@ test("panel close button sets open to false", () => {
 // 2. Grid Selector integration
 // =============================================================================
 
-test("grid selector only renders when grids exist", () => {
-  assert.match(panelSource, /grids && grids\.length > 0/)
-})
-
-test("selecting a grid calls setGlobalGridId and closes selector", () => {
-  assert.match(panelSource, /setGlobalGridId\(grid\._id\)/)
-  assert.match(panelSource, /setShowGridSelector\(false\)/)
+test("grid selector dropdown is removed", () => {
+  assert.doesNotMatch(panelSource, /showGridSelector/)
+  assert.doesNotMatch(panelSource, /ChevronDown/)
 })
 
 test("no New Grid form (grid creation replaced by virtual grid)", () => {
@@ -57,9 +53,9 @@ test("no New Grid form (grid creation replaced by virtual grid)", () => {
   assert.doesNotMatch(panelSource, /generateGrid/)
 })
 
-test("auto-selects first grid when none selected", () => {
-  assert.match(panelSource, /!globalGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0/)
-  assert.match(panelSource, /setGlobalGridId\(grids\[0\]\._id\)/)
+test("auto-select useEffect is removed (page component handles via getOrCreateGlobalGrid)", () => {
+  assert.doesNotMatch(panelSource, /!globalGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0/)
+  assert.doesNotMatch(panelSource, /setGlobalGridId\(grids\[0\]\._id\)/)
 })
 
 // =============================================================================

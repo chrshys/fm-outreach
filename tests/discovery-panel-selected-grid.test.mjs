@@ -23,8 +23,8 @@ test("selectedGrid does not fall back to grids[0]", () => {
   assert.doesNotMatch(selectedGridLine[0], /grids\?\.\[0\]/)
 })
 
-test("auto-select useEffect still sets globalGridId to first grid", () => {
-  // The useEffect handles auto-selection, so the derivation doesn't need the fallback
-  assert.match(source, /!globalGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0/)
-  assert.match(source, /setGlobalGridId\(grids\[0\]\._id\)/)
+test("auto-select useEffect is removed (page component handles via getOrCreateGlobalGrid)", () => {
+  // The page component now handles grid selection, so the panel should not auto-select
+  assert.doesNotMatch(source, /!globalGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0/)
+  assert.doesNotMatch(source, /setGlobalGridId\(grids\[0\]\._id\)/)
 })

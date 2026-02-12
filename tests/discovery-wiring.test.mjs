@@ -115,14 +115,14 @@ test("passes onCellSelect to MapContent in discovery mode", () => {
   assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellSelect\s*:\s*undefined\}/)
 })
 
-// --- DiscoveryPanel receives globalGridId and setGlobalGridId ---
+// --- DiscoveryPanel receives globalGridId (setGlobalGridId removed) ---
 
 test("passes globalGridId to DiscoveryPanel as globalGridId prop", () => {
   assert.match(pageSource, /globalGridId=\{globalGridId\}/)
 })
 
-test("passes setGlobalGridId directly to DiscoveryPanel as setGlobalGridId prop", () => {
-  assert.match(pageSource, /setGlobalGridId=\{setGlobalGridId\}/)
+test("does not pass setGlobalGridId to DiscoveryPanel (auto-select removed)", () => {
+  assert.doesNotMatch(pageSource, /setGlobalGridId=\{setGlobalGridId\}/)
 })
 
 // --- DiscoveryPanel prop types ---
@@ -131,18 +131,14 @@ test("DiscoveryPanel accepts globalGridId prop", () => {
   assert.match(panelSource, /globalGridId:\s*Id<"discoveryGrids">\s*\|\s*null/)
 })
 
-test("DiscoveryPanel accepts setGlobalGridId prop", () => {
-  assert.match(panelSource, /setGlobalGridId:\s*\(gridId:\s*Id<"discoveryGrids">\)\s*=>\s*void/)
+test("DiscoveryPanel does not accept setGlobalGridId prop (auto-select removed)", () => {
+  assert.doesNotMatch(panelSource, /setGlobalGridId/)
 })
 
-test("DiscoveryPanel destructures globalGridId and setGlobalGridId", () => {
-  assert.match(panelSource, /\{\s*globalGridId,\s*setGlobalGridId,\s*cells,\s*selectedCellId,\s*onCellAction\s*\}/)
+test("DiscoveryPanel destructures globalGridId without setGlobalGridId", () => {
+  assert.match(panelSource, /\{\s*globalGridId,\s*cells,\s*selectedCellId,\s*onCellAction\s*\}/)
 })
 
-test("DiscoveryPanel calls setGlobalGridId on auto-select", () => {
-  assert.match(panelSource, /if\s*\(!globalGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0\)\s*\{\s*\n\s*setGlobalGridId\(grids\[0\]\._id\)/)
-})
-
-test("DiscoveryPanel calls setGlobalGridId on grid selector click", () => {
-  assert.match(panelSource, /setGlobalGridId\(grid\._id\)/)
+test("DiscoveryPanel does not call setGlobalGridId (auto-select removed)", () => {
+  assert.doesNotMatch(panelSource, /setGlobalGridId/)
 })
