@@ -394,6 +394,17 @@ export const getOrCreateGlobalGrid = mutation({
   },
 });
 
+export const purgeDiscoveryCells = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const cells = await ctx.db.query("discoveryCells").collect();
+    for (const cell of cells) {
+      await ctx.db.delete(cell._id);
+    }
+    return { deletedCount: cells.length };
+  },
+});
+
 export const updateCellSearchResult = internalMutation({
   args: {
     cellId: v.id("discoveryCells"),
