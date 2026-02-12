@@ -30,10 +30,10 @@ test("passes activatedBoundsKeys directly without viewMode guard", () => {
   )
 })
 
-test("passes onActivateCell gated by viewMode discovery", () => {
+test("passes onSelectVirtual gated by viewMode discovery", () => {
   assert.match(
     source,
-    /onActivateCell=\{viewMode\s*===\s*"discovery"\s*\?\s*handleActivateCell\s*:\s*undefined\}/,
+    /onSelectVirtual=\{viewMode\s*===\s*"discovery"\s*\?\s*handleSelectVirtual\s*:\s*undefined\}/,
   )
 })
 

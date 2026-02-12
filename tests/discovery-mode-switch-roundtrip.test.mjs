@@ -63,10 +63,10 @@ test("onCellSelect prop to MapContent is gated on discovery viewMode", () => {
   )
 })
 
-test("onActivateCell prop to MapContent is gated on discovery viewMode", () => {
+test("onSelectVirtual prop to MapContent is gated on discovery viewMode", () => {
   assert.match(
     pageSource,
-    /onActivateCell=\{viewMode\s*===\s*"discovery"\s*\?\s*handleActivateCell\s*:\s*undefined\}/,
+    /onSelectVirtual=\{viewMode\s*===\s*"discovery"\s*\?\s*handleSelectVirtual\s*:\s*undefined\}/,
   )
 })
 

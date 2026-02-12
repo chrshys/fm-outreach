@@ -7,7 +7,7 @@ const source = fs.readFileSync("src/components/map/map-content.tsx", "utf8")
 test("DiscoveryGrid conditional only requires gridCells and onCellSelect", () => {
   // The conditional should be `{gridCells && onCellSelect && (` — not requiring cellSizeKm, gridId, etc.
   assert.match(source, /\{gridCells\s*&&\s*onCellSelect\s*&&\s*\(/)
-  // Should NOT have cellSizeKm, gridId, activatedBoundsKeys, or onActivateCell in the conditional guard
+  // Should NOT have cellSizeKm, gridId, activatedBoundsKeys, or onSelectVirtual in the conditional guard
   assert.doesNotMatch(source, /gridCells\s*&&\s*onCellSelect\s*&&\s*cellSizeKm/)
   assert.doesNotMatch(source, /gridCells\s*&&\s*onCellSelect\s*&&\s*gridId/)
 })
@@ -24,6 +24,6 @@ test("activatedBoundsKeys defaults to empty array via nullish coalescing", () =>
   assert.match(source, /activatedBoundsKeys=\{activatedBoundsKeys\s*\?\?\s*\[\]\}/)
 })
 
-test("onActivateCell defaults to no-op async function via nullish coalescing", () => {
-  assert.match(source, /onActivateCell=\{onActivateCell\s*\?\?\s*\(async\s*\(\)\s*=>\s*""\)\}/)
+test("onSelectVirtual defaults to no-op function via nullish coalescing", () => {
+  assert.match(source, /onSelectVirtual=\{onSelectVirtual\s*\?\?\s*\(\(\)\s*=>\s*\{\}\)\}/)
 })

@@ -20,19 +20,17 @@ const mutationSource = fs.readFileSync(
 // Virtual cell click → activate → select end-to-end flow
 // ============================================================
 
-test("VirtualGridCell click handler awaits onActivateCell before calling onCellSelect", () => {
+test("VirtualGridCell click handler calls onSelectVirtual to toggle selection", () => {
   const virtualSection = gridSource
     .split("function VirtualGridCell")[1]
     .split("function DiscoveryGridCell")[0]
 
-  // onActivateCell is awaited and its result stored
-  assert.match(virtualSection, /const\s+cellId\s*=\s*await\s+onActivateCell\(cell\)/)
-  // onCellSelect is called with that cellId (after the await, not before)
-  assert.match(virtualSection, /onCellSelect\(cellId\)/)
+  // click handler toggles selection via onSelectVirtual
+  assert.match(virtualSection, /onSelectVirtual\(isSelected\s*\?\s*null\s*:\s*cell\)/)
 })
 
-test("handleActivateCell in page.tsx calls activateCell mutation with boundsKey from cell.key", () => {
-  assert.match(pageSource, /boundsKey:\s*cell\.key/)
+test("page.tsx defines handleSelectVirtual callback", () => {
+  assert.match(pageSource, /handleSelectVirtual/)
 })
 
 test("activateCell mutation inserts cell with status 'unsearched' for newly activated cells", () => {
@@ -177,7 +175,7 @@ test("simulated flow: virtual cell click creates unsearched cell and returns its
     neLng: -78.87,
   }
 
-  // Step 1: activateCell mutation (simulates onActivateCell)
+  // Step 1: activateCell mutation (simulates cell activation)
   const result = await activateCellHandler({ db }, {
     gridId: "discoveryGrids:1",
     swLat: virtualCell.swLat,
