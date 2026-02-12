@@ -80,6 +80,7 @@ export default function MapPage() {
   const selectedGridCellSizeKm = gridsResult?.find((g) => g._id === selectedGridId)?.cellSizeKm
 
   const activateCell = useMutation(api.discovery.gridCells.activateCell)
+  const getOrCreateGlobalGrid = useMutation(api.discovery.gridCells.getOrCreateGlobalGrid)
   const handleActivateCell = useCallback(async (cell: VirtualCell): Promise<string> => {
     if (!selectedGridId) throw new Error("No grid selected")
     const result = await activateCell({
