@@ -18,6 +18,7 @@ import {
   type LeadType,
 } from "@/components/leads/lead-filters"
 import { LeadSearch } from "@/components/leads/lead-search"
+import { useLeadsStore, type LeadSortField } from "@/lib/leads-store"
 import { AppLayout } from "@/components/layout/app-layout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -48,9 +49,6 @@ type Lead = {
   nextFollowUpAt?: number
 }
 
-type LeadSortField = "name" | "city" | "status"
-type LeadSortOrder = "asc" | "desc"
-
 const statusClassNames: Record<LeadStatus, string> = {
   new_lead: "bg-blue-100 text-blue-800",
   enriched: "bg-indigo-100 text-indigo-800",
@@ -63,18 +61,6 @@ const statusClassNames: Record<LeadStatus, string> = {
   bounced: "bg-red-100 text-red-800",
   no_response: "bg-orange-100 text-orange-800",
   no_email: "bg-stone-200 text-stone-800",
-}
-
-const defaultFilters: LeadFiltersValue = {
-  status: "all",
-  type: "all",
-  source: "all",
-  clusterId: "all",
-  hasEmail: false,
-  hasSocial: false,
-  hasFacebook: false,
-  hasInstagram: false,
-  needsFollowUp: false,
 }
 
 function formatDate(value: number) {
@@ -129,11 +115,15 @@ export default function LeadsPage() {
     () => (clusterData ?? []).map((c) => ({ id: c._id, name: c.name })),
     [clusterData],
   )
+  const filters = useLeadsStore((s) => s.filters)
+  const setFilters = useLeadsStore((s) => s.setFilters)
+  const searchTerm = useLeadsStore((s) => s.searchTerm)
+  const setSearchTerm = useLeadsStore((s) => s.setSearchTerm)
+  const sortBy = useLeadsStore((s) => s.sortBy)
+  const setSortBy = useLeadsStore((s) => s.setSortBy)
+  const sortOrder = useLeadsStore((s) => s.sortOrder)
+  const setSortOrder = useLeadsStore((s) => s.setSortOrder)
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([])
-  const [filters, setFilters] = useState<LeadFiltersValue>(defaultFilters)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState<LeadSortField>("name")
-  const [sortOrder, setSortOrder] = useState<LeadSortOrder>("asc")
   const [allLeads, setAllLeads] = useState<Lead[]>([])
   const [reloadToken, setReloadToken] = useState(0)
   const [isLoadingLeads, setIsLoadingLeads] = useState(true)
@@ -276,7 +266,7 @@ export default function LeadsPage() {
 
   function toggleSort(field: LeadSortField) {
     if (sortBy === field) {
-      setSortOrder((previous) => (previous === "asc" ? "desc" : "asc"))
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
       return
     }
 

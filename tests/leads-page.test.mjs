@@ -37,12 +37,12 @@ test("renders the leads data table columns", () => {
 })
 
 test("supports sorting by name, city, and status and passes sort args to list query", () => {
-  assert.match(source, /type LeadSortField = "name" \| "city" \| "status"/)
-  assert.match(source, /const \[sortBy, setSortBy\] = useState<LeadSortField>\("name"\)/)
-  assert.match(source, /const \[sortOrder, setSortOrder\] = useState<LeadSortOrder>\("asc"\)/)
+  assert.match(source, /import\s+\{[^}]*LeadSortField[^}]*\}\s+from\s+"@\/lib\/leads-store"/)
+  assert.match(source, /const sortBy = useLeadsStore/)
+  assert.match(source, /const sortOrder = useLeadsStore/)
   assert.match(source, /sortBy,/)
   assert.match(source, /sortOrder,/)
-  assert.match(source, /if \(sortBy === field\) \{\s*setSortOrder\(\(previous\) => \(previous === "asc" \? "desc" : "asc"\)\)/s)
+  assert.match(source, /if \(sortBy === field\) \{\s*setSortOrder\(sortOrder === "asc" \? "desc" : "asc"\)/s)
   assert.match(source, /setSortBy\(field\)/)
   assert.match(source, /setSortOrder\("asc"\)/)
   assert.match(source, /onClick=\{\(\) => toggleSort\("name"\)\}/)

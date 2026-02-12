@@ -2,7 +2,7 @@
 
 import { Facebook, Instagram } from "lucide-react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useMutation, useQuery } from "convex/react"
 import type { KeyboardEvent } from "react"
 import { useEffect, useState } from "react"
@@ -232,6 +232,7 @@ function StructuredProductsDisplay({
 }
 
 export default function LeadDetailPage() {
+  const router = useRouter()
   const params = useParams<{ id: string }>()
   const leadId = params.id as Id<"leads">
   // @ts-expect-error — Convex FilterApi causes TS2589 with large module count
@@ -315,8 +316,8 @@ export default function LeadDetailPage() {
     <AppLayout>
       <section className="space-y-6">
         <div className="space-y-4">
-          <Button asChild variant="outline">
-            <Link href="/leads">Back to Leads</Link>
+          <Button variant="outline" onClick={() => router.back()}>
+            Back
           </Button>
 
           {lead === undefined ? (
