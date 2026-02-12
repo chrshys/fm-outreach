@@ -56,7 +56,7 @@ export function DiscoveryPanel({ globalGridId, setGlobalGridId, cells, selectedC
   const grids = useQuery(api.discovery.gridCells.listGrids) as GridWithStats[] | undefined
   const updateGridQueries = useMutation(api.discovery.gridCells.updateGridQueries)
 
-  const selectedGrid = grids?.find((g) => g._id === globalGridId) ?? grids?.[0] ?? null
+  const selectedGrid = grids?.find((g) => g._id === globalGridId) ?? null
   const selectedCell = cells.find((c) => c._id === selectedCellId) ?? null
 
   // Auto-select first grid if none selected
