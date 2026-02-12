@@ -52,15 +52,39 @@ test("exports VIRTUAL_CELL_STYLE constant", () => {
   assert.match(source, /export\s+const\s+VIRTUAL_CELL_STYLE/)
 })
 
-test("VIRTUAL_CELL_STYLE uses faint gray (#d1d5db)", () => {
-  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?color:\s*"#d1d5db"/)
-  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?fillColor:\s*"#d1d5db"/)
+test("VIRTUAL_CELL_STYLE uses gray (#9ca3af)", () => {
+  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?color:\s*"#9ca3af"/)
+  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?fillColor:\s*"#9ca3af"/)
 })
 
-test("VIRTUAL_CELL_STYLE has low fillOpacity (0.05)", () => {
-  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?fillOpacity:\s*0\.05/)
+test("VIRTUAL_CELL_STYLE has low fillOpacity (0.08)", () => {
+  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?fillOpacity:\s*0\.08/)
 })
 
-test("VIRTUAL_CELL_STYLE has thin weight (0.5)", () => {
-  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?weight:\s*0\.5/)
+test("VIRTUAL_CELL_STYLE has weight 1", () => {
+  assert.match(source, /VIRTUAL_CELL_STYLE[\s\S]*?weight:\s*1/)
+})
+
+test("exports VIRTUAL_CELL_SELECTED_STYLE constant", () => {
+  assert.match(source, /export\s+const\s+VIRTUAL_CELL_SELECTED_STYLE/)
+})
+
+test("VIRTUAL_CELL_SELECTED_STYLE has blue border (#2563eb)", () => {
+  assert.match(source, /VIRTUAL_CELL_SELECTED_STYLE[\s\S]*?color:\s*"#2563eb"/)
+})
+
+test("VIRTUAL_CELL_SELECTED_STYLE has gray fill (#9ca3af)", () => {
+  assert.match(source, /VIRTUAL_CELL_SELECTED_STYLE[\s\S]*?fillColor:\s*"#9ca3af"/)
+})
+
+test("VIRTUAL_CELL_SELECTED_STYLE has elevated fillOpacity (0.12)", () => {
+  assert.match(source, /VIRTUAL_CELL_SELECTED_STYLE[\s\S]*?fillOpacity:\s*0\.12/)
+})
+
+test("VIRTUAL_CELL_SELECTED_STYLE has weight 3", () => {
+  assert.match(source, /VIRTUAL_CELL_SELECTED_STYLE[\s\S]*?weight:\s*3/)
+})
+
+test("VIRTUAL_CELL_SELECTED_STYLE has dashed line (dashArray '6 4')", () => {
+  assert.match(source, /VIRTUAL_CELL_SELECTED_STYLE[\s\S]*?dashArray:\s*"6 4"/)
 })

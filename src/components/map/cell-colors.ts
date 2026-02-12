@@ -20,10 +20,18 @@ const DEFAULT_CELL_COLOR: CellColorResult = {
 }
 
 export const VIRTUAL_CELL_STYLE = {
-  color: "#d1d5db",
-  fillColor: "#d1d5db",
-  fillOpacity: 0.05,
-  weight: 0.5,
+  color: "#9ca3af",
+  fillColor: "#9ca3af",
+  fillOpacity: 0.08,
+  weight: 1,
+}
+
+export const VIRTUAL_CELL_SELECTED_STYLE = {
+  color: "#2563eb",
+  fillColor: "#9ca3af",
+  fillOpacity: 0.12,
+  weight: 3,
+  dashArray: "6 4",
 }
 
 export function getCellColor(status: string): CellColorResult {
