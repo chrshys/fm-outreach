@@ -113,3 +113,26 @@ test("exports DiscoveryGrid as default export", () => {
 test("uses use client directive", () => {
   assert.match(source, /^["']use client["']/)
 })
+
+test("DiscoveryGridProps includes cellSizeKm: number", () => {
+  assert.match(source, /cellSizeKm:\s*number/)
+})
+
+test("DiscoveryGridProps includes gridId: string", () => {
+  assert.match(source, /gridId:\s*string/)
+})
+
+test("DiscoveryGridProps includes activatedBoundsKeys: string[]", () => {
+  assert.match(source, /activatedBoundsKeys:\s*string\[\]/)
+})
+
+test("DiscoveryGridProps includes onActivateCell returning Promise<string>", () => {
+  assert.match(source, /onActivateCell:\s*\(cell:\s*VirtualCell\)\s*=>\s*Promise<string>/)
+})
+
+test("DiscoveryGrid destructures new props", () => {
+  assert.match(source, /cellSizeKm/)
+  assert.match(source, /gridId/)
+  assert.match(source, /activatedBoundsKeys/)
+  assert.match(source, /onActivateCell/)
+})

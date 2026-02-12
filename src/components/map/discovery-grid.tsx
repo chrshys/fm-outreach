@@ -14,6 +14,10 @@ type DiscoveryGridProps = {
   cells: CellData[]
   selectedCellId: string | null
   onCellSelect: (cellId: string | null) => void
+  cellSizeKm: number
+  gridId: string
+  activatedBoundsKeys: string[]
+  onActivateCell: (cell: VirtualCell) => Promise<string>
 }
 
 type DiscoveryGridCellProps = {
@@ -42,7 +46,7 @@ function DiscoveryGridCell({ cell, isSelected, onCellSelect }: DiscoveryGridCell
   )
 }
 
-export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect }: DiscoveryGridProps) {
+export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cellSizeKm, gridId, activatedBoundsKeys, onActivateCell }: DiscoveryGridProps) {
   return (
     <>
       {cells.map((cell) => (
