@@ -19,35 +19,15 @@ const gridCellsSource = fs.readFileSync(
 
 // --- UI: Split button dispatches subdivide action on click ---
 
-test("Split button onClick dispatches subdivide action", () => {
-  const tooltipBlock = gridSource.slice(
-    gridSource.indexOf("function CellTooltipContent"),
-    gridSource.indexOf("/** Delay in ms"),
+test("getAvailableActions includes subdivide for non-searching cells below max depth", () => {
+  const fnBlock = gridSource.slice(
+    gridSource.indexOf("function getAvailableActions"),
+    gridSource.indexOf("function formatShortDate"),
   )
-  assert.match(
-    tooltipBlock,
-    /onCellAction\(cell\._id,\s*\{\s*type:\s*"subdivide"\s*\}\)/,
-  )
-})
-
-test("Split button is enabled for non-searching cells below max depth", () => {
-  const tooltipBlock = gridSource.slice(
-    gridSource.indexOf("function CellTooltipContent"),
-    gridSource.indexOf("/** Delay in ms"),
-  )
-  // disabled only when at max depth OR searching — not for other statuses
-  assert.match(
-    tooltipBlock,
-    /disabled=\{cell\.depth\s*>=\s*MAX_DEPTH\s*\|\|\s*isSearching\}/,
-  )
-})
-
-test("isSearching is derived from cell.status === searching", () => {
-  const tooltipBlock = gridSource.slice(
-    gridSource.indexOf("function CellTooltipContent"),
-    gridSource.indexOf("/** Delay in ms"),
-  )
-  assert.match(tooltipBlock, /isSearching\s*=\s*cell\.status\s*===\s*"searching"/)
+  assert.match(fnBlock, /cell\.depth\s*<\s*MAX_DEPTH/)
+  assert.match(fnBlock, /type:\s*"subdivide"/)
+  // No status check prevents non-searching cells from subdividing
+  assert.doesNotMatch(fnBlock, /cell\.status/)
 })
 
 // --- Page handler: dispatches subdivideCell mutation ---

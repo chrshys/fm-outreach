@@ -11,7 +11,6 @@ const discoveryGridSource = fs.readFileSync("src/components/map/discovery-grid.t
 // ============================================================
 
 test("discoverCell passes lastSearchedAt: now to updateCellSearchResult", () => {
-  // The action captures Date.now() and includes it in the update call
   assert.match(discoverCellSource, /const now = Date\.now\(\)/)
   assert.match(discoverCellSource, /lastSearchedAt:\s*now/)
 })
@@ -55,7 +54,7 @@ test("CellData type includes lastSearchedAt as optional number", () => {
 })
 
 // ============================================================
-// Frontend: formatShortDate helper
+// Frontend: formatShortDate helper still exists
 // ============================================================
 
 test("formatShortDate formats timestamp using en-US month short and day numeric", () => {
@@ -63,28 +62,4 @@ test("formatShortDate formats timestamp using en-US month short and day numeric"
   assert.match(discoveryGridSource, /toLocaleDateString\("en-US"/)
   assert.match(discoveryGridSource, /month:\s*"short"/)
   assert.match(discoveryGridSource, /day:\s*"numeric"/)
-})
-
-// ============================================================
-// Frontend: Google Places row renders lastSearchedAt date
-// ============================================================
-
-test("Google Places row checks mechanism.id === google_places and cell.lastSearchedAt", () => {
-  assert.match(
-    discoveryGridSource,
-    /mechanism\.id\s*===\s*"google_places"\s*&&\s*cell\.lastSearchedAt/,
-  )
-})
-
-test("Google Places row calls formatShortDate with cell.lastSearchedAt", () => {
-  assert.match(discoveryGridSource, /formatShortDate\(cell\.lastSearchedAt\)/)
-})
-
-test("last-run date is rendered in a span with muted-foreground styling", () => {
-  // The date value is shown in a muted span next to the run button
-  assert.match(discoveryGridSource, /className="text-muted-foreground">\{lastRun\}/)
-})
-
-test("non-google_places mechanisms show dash for last-run date", () => {
-  assert.match(discoveryGridSource, /:\s*"—"/)
 })

@@ -7,9 +7,31 @@ const source = fs.readFileSync(
   "utf8",
 )
 
-test("imports Rectangle and Tooltip from react-leaflet", () => {
+test("imports Rectangle from react-leaflet", () => {
   assert.match(source, /import\s+\{[\s\S]*Rectangle[\s\S]*\}\s+from\s+"react-leaflet"/)
-  assert.match(source, /import\s+\{[\s\S]*Tooltip[\s\S]*\}\s+from\s+"react-leaflet"/)
+})
+
+test("does NOT import Tooltip from react-leaflet", () => {
+  assert.doesNotMatch(source, /Tooltip/)
+})
+
+test("does NOT import useMap from react-leaflet", () => {
+  assert.doesNotMatch(source, /useMap/)
+})
+
+test("does NOT import leaflet L", () => {
+  assert.doesNotMatch(source, /import\s+L\s+from\s+["']leaflet["']/)
+})
+
+test("does NOT import lucide-react icons", () => {
+  assert.doesNotMatch(source, /from\s+["']lucide-react["']/)
+})
+
+test("does NOT import useCallback, useEffect, useRef, or useState from react", () => {
+  assert.doesNotMatch(source, /import\s+\{[^}]*useCallback[^}]*\}\s+from\s+["']react["']/)
+  assert.doesNotMatch(source, /import\s+\{[^}]*useEffect[^}]*\}\s+from\s+["']react["']/)
+  assert.doesNotMatch(source, /import\s+\{[^}]*useRef[^}]*\}\s+from\s+["']react["']/)
+  assert.doesNotMatch(source, /import\s+\{[^}]*useState[^}]*\}\s+from\s+["']react["']/)
 })
 
 test("imports getCellColor from cell-colors", () => {
@@ -57,54 +79,19 @@ test("Rectangle receives bounds from cell coordinates", () => {
 
 test("Rectangle receives pathOptions from getCellColor", () => {
   assert.match(source, /getCellColor\(cell\.status\)/)
-  assert.match(source, /pathOptions=\{pathOptions\}/)
+  assert.match(source, /pathOptions=\{/)
 })
 
-test("Rectangle uses hover eventHandlers (not click) for tooltip management", () => {
-  assert.match(source, /eventHandlers=\{/)
-  assert.match(source, /mouseover:\s*handleEnter/)
-  assert.match(source, /mouseout:\s*scheduleClose/)
-  // No click handler on the Rectangle
-  assert.doesNotMatch(source, /click:\s*\(\)\s*=>\s*onCellAction/)
+test("does NOT contain CellTooltipContent", () => {
+  assert.doesNotMatch(source, /CellTooltipContent/)
 })
 
-test("Tooltip is interactive with custom className, direction, and offset", () => {
-  assert.match(source, /<Tooltip/)
-  assert.match(source, /interactive/)
-  assert.match(source, /className="!bg-card !border !border-border !rounded-lg !shadow-md !px-2\.5 !py-2 !text-foreground"/)
-  assert.match(source, /direction="top"/)
-  assert.match(source, /offset=\{\[0,\s*-10\]\}/)
+test("does NOT contain TOOLTIP_CLOSE_DELAY", () => {
+  assert.doesNotMatch(source, /TOOLTIP_CLOSE_DELAY/)
 })
 
-test("Tooltip renders CellTooltipContent component", () => {
-  assert.match(source, /<CellTooltipContent\s+cell=\{cell\}\s+onCellAction=\{onCellAction\}/)
-})
-
-test("CellTooltipContent shows status badge with label", () => {
-  assert.match(source, /cell\.status\.charAt\(0\)\.toUpperCase\(\)/)
-})
-
-test("CellTooltipContent shows result count", () => {
-  assert.match(source, /resultCount/)
-  assert.match(source, /results/)
-})
-
-test("CellTooltipContent renders DISCOVERY_MECHANISMS rows", () => {
-  assert.match(source, /DISCOVERY_MECHANISMS\.map\(/)
-  assert.match(source, /mechanism\.label/)
-})
-
-test("mechanism Run button calls onCellAction with search action", () => {
-  assert.match(source, /onCellAction\(cell\._id,\s*\{\s*type:\s*"search",\s*mechanism:\s*mechanism\.id\s*\}\)/)
-})
-
-test("Run button is disabled when mechanism not enabled or cell is searching", () => {
-  assert.match(source, /!mechanism\.enabled\s*\|\|\s*isSearching/)
-  assert.match(source, /pointer-events-none/)
-})
-
-test("disabled mechanism row gets opacity-50 on row container", () => {
-  assert.match(source, /!mechanism\.enabled\s*\?\s*"\s*opacity-50"/)
+test("does NOT contain a separate DiscoveryGridCell component", () => {
+  assert.doesNotMatch(source, /function\s+DiscoveryGridCell/)
 })
 
 test("exports DiscoveryGrid as default export", () => {

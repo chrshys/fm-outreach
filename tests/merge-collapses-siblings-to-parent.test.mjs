@@ -372,16 +372,13 @@ test("handleCellAction shows error toast on merge failure", () => {
   assert.match(pageSource, /toast\.error\(/);
 });
 
-test("Merge button dispatches undivide action on click", () => {
-  assert.match(gridSource, /onCellAction\(cell\._id,\s*\{\s*type:\s*"undivide"\s*\}\)/);
-});
-
-test("Merge button shown for child cells (depth > 0)", () => {
-  const tooltipBlock = gridSource.slice(
-    gridSource.indexOf("function CellTooltipContent"),
-    gridSource.indexOf("function DiscoveryGridCell"),
+test("getAvailableActions includes undivide for depth > 0", () => {
+  const fnBlock = gridSource.slice(
+    gridSource.indexOf("export function getAvailableActions"),
+    gridSource.indexOf("function formatShortDate"),
   );
-  assert.match(tooltipBlock, /cell\.depth\s*>\s*0\s*&&/);
+  assert.match(fnBlock, /cell\.depth\s*>\s*0/);
+  assert.match(fnBlock, /type:\s*"undivide"/);
 });
 
 test("undivideCell mutation is wired up in map page", () => {

@@ -9,7 +9,7 @@ const gridSource = fs.readFileSync(
 )
 
 // ============================================================
-// Web Scraping mechanism is enabled in the UI (button is clickable)
+// Web Scraping mechanism is enabled in the UI
 // ============================================================
 
 test("web_scraper mechanism is enabled so button is clickable", () => {
@@ -36,7 +36,6 @@ test("handleCellAction guards non-google_places mechanisms with Coming soon toas
 })
 
 test("Coming soon guard returns early before calling requestDiscoverCell", () => {
-  // Extract handleCellAction body to check ordering within the handler
   const handlerStart = pageSource.indexOf("handleCellAction")
   const handlerSource = pageSource.slice(handlerStart)
   const comingSoonIdx = handlerSource.indexOf('toast.info("Coming soon")')
@@ -50,23 +49,10 @@ test("Coming soon guard returns early before calling requestDiscoverCell", () =>
 })
 
 // ============================================================
-// Web Scraping button dispatches search action with web_scraper mechanism
-// ============================================================
-
-test("tooltip button dispatches search action with mechanism id on click", () => {
-  assert.match(
-    gridSource,
-    /onCellAction\(cell\._id,\s*\{\s*type:\s*"search",\s*mechanism:\s*mechanism\.id\s*\}\)/,
-    "button onClick should dispatch search action with the mechanism id",
-  )
-})
-
-// ============================================================
 // Both mechanisms are enabled so getAvailableActions includes both
 // ============================================================
 
 test("getAvailableActions includes web_scraper search action (both mechanisms enabled)", () => {
-  // Since both mechanisms are enabled, filter(m => m.enabled) returns both
   const mechanisms = gridSource.match(
     /\{\s*id:\s*"[^"]+",\s*label:\s*"[^"]+",\s*enabled:\s*true\s*\}/g,
   )

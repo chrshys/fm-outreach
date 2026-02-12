@@ -51,13 +51,7 @@ test("DiscoveryGridProps uses onCellAction instead of onCellClick", () => {
 })
 
 test("DiscoveryGrid destructures onCellAction in function params", () => {
-  assert.match(gridSource, /\{\s*cells,\s*onCellAction\s*\}/)
-})
-
-test("Rectangle uses hover handlers, not click — interaction via tooltip only", () => {
-  assert.match(gridSource, /eventHandlers=\{/)
-  assert.match(gridSource, /mouseover:\s*handleEnter/)
-  assert.doesNotMatch(gridSource, /click:\s*\(\)\s*=>\s*onCellAction/)
+  assert.match(gridSource, /\{\s*cells,\s*onCellAction/)
 })
 
 // ============================================================

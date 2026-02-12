@@ -98,8 +98,9 @@ test("MapContent accepts optional gridCells and onCellAction props", () => {
 test("MapContent conditionally renders DiscoveryGrid when gridCells and onCellAction provided", () => {
   assert.match(
     mapContentSource,
-    /\{gridCells\s*&&\s*onCellAction\s*&&\s*\(\s*<DiscoveryGrid/,
+    /\{gridCells\s*&&\s*onCellAction\s*&&\s*\(/,
   )
+  assert.match(mapContentSource, /<DiscoveryGrid\s+cells=\{gridCells\}/)
 })
 
 test("MapContent accepts optional clusters prop with default empty array", () => {
@@ -135,14 +136,13 @@ test("DiscoveryGrid uses getCellColor for path options", () => {
   assert.match(discoveryGridSource, /getCellColor\(cell\.status\)/)
 })
 
-test("DiscoveryGrid uses hover handlers instead of click for cell interaction", () => {
-  assert.match(discoveryGridSource, /mouseover:\s*handleEnter/)
-  assert.match(discoveryGridSource, /mouseout:\s*scheduleClose/)
+test("DiscoveryGrid renders Rectangle with pathOptions from getCellColor", () => {
+  assert.match(discoveryGridSource, /getCellColor\(cell\.status\)/)
+  assert.match(discoveryGridSource, /pathOptions=\{/)
 })
 
-test("DiscoveryGrid shows interactive tooltip with CellTooltipContent", () => {
-  assert.match(discoveryGridSource, /<Tooltip[\s\S]*?interactive/)
-  assert.match(discoveryGridSource, /<CellTooltipContent\s+cell=\{cell\}/)
+test("DiscoveryGrid does not use Tooltip", () => {
+  assert.doesNotMatch(discoveryGridSource, /Tooltip/)
 })
 
 // --- DiscoveryPanel component ---

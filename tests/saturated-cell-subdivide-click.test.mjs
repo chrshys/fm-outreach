@@ -113,14 +113,13 @@ test("listCells filters by isLeaf: true via index", () => {
 })
 
 // ============================================================
-// Tooltip structure: CellTooltipContent renders status and result count
+// Discovery grid component structure
 // ============================================================
 
-test("CellTooltipContent shows result count for cells", () => {
-  assert.match(gridSource, /cell\.resultCount\s*\?\?\s*0/)
+test("CellData type includes optional resultCount field", () => {
+  assert.match(gridSource, /resultCount\?:\s*number/)
 })
 
-test("CellTooltipContent renders mechanism rows with Run buttons", () => {
-  assert.match(gridSource, /DISCOVERY_MECHANISMS\.map\(/)
-  assert.match(gridSource, /<Play/)
+test("DISCOVERY_MECHANISMS constant is defined and exported", () => {
+  assert.match(gridSource, /export\s+const\s+DISCOVERY_MECHANISMS/)
 })

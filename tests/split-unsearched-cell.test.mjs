@@ -19,24 +19,17 @@ const gridCellsSource = fs.readFileSync(
 
 // --- UI: Split button is enabled for unsearched cells ---
 
-test("Split button is not disabled for unsearched cells", () => {
-  const tooltipBlock = gridSource.slice(
-    gridSource.indexOf("function CellTooltipContent"),
-    gridSource.indexOf("/** Delay in ms"),
+test("getAvailableActions does not gate subdivide on unsearched status", () => {
+  const fnBlock = gridSource.slice(
+    gridSource.indexOf("function getAvailableActions"),
+    gridSource.indexOf("function formatShortDate"),
   )
-
-  // The disabled condition only checks depth and isSearching
-  // isSearching = cell.status === "searching", so unsearched cells pass
-  assert.match(
-    tooltipBlock,
-    /disabled=\{cell\.depth\s*>=\s*MAX_DEPTH\s*\|\|\s*isSearching\}/,
-  )
-
-  // No guard that checks for "unsearched" status specifically
+  // subdivide is gated only on depth, not status
+  assert.match(fnBlock, /cell\.depth\s*<\s*MAX_DEPTH/)
   assert.doesNotMatch(
-    tooltipBlock,
+    fnBlock,
     /cell\.status\s*===\s*"unsearched"/,
-    "Split button should not have a guard against unsearched status",
+    "getAvailableActions should not check for unsearched status",
   )
 })
 

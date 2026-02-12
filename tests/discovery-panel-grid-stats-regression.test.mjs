@@ -277,12 +277,7 @@ test("DiscoveryGrid maps cells to individual cell components", () => {
 
 test("each cell gets pathOptions from getCellColor with its status", () => {
   assert.match(gridSource, /getCellColor\(cell\.status\)/)
-  assert.match(gridSource, /pathOptions=\{pathOptions\}/)
-})
-
-test("cell tooltip shows status badge and result count", () => {
-  assert.match(gridSource, /cell\.status\.charAt\(0\)\.toUpperCase\(\)/)
-  assert.match(gridSource, /cell\.resultCount\s*\?\?\s*0/)
+  assert.match(gridSource, /pathOptions=\{/)
 })
 
 test("cell bounds calculated from sw/ne coordinates", () => {
