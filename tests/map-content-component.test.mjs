@@ -66,3 +66,28 @@ test("accepts leads prop with typed LeadMarker array", () => {
 test("LeadMarker type includes contactEmail as optional", () => {
   assert.match(source, /contactEmail\?:\s*string/)
 })
+
+test("MapContentProps includes selectedCellId optional prop", () => {
+  assert.match(source, /selectedCellId\?:\s*string\s*\|\s*null/)
+})
+
+test("MapContentProps includes onCellSelect optional callback", () => {
+  assert.match(source, /onCellSelect\?:\s*\(cellId:\s*string\s*\|\s*null\)\s*=>\s*void/)
+})
+
+test("does not import CellAction from discovery-grid", () => {
+  assert.doesNotMatch(source, /CellAction/)
+})
+
+test("imports only CellData type from discovery-grid", () => {
+  assert.match(source, /import\s+type\s+\{\s*CellData\s*\}\s+from\s+["']\.\/discovery-grid["']/)
+})
+
+test("passes selectedCellId and onCellSelect to DiscoveryGrid", () => {
+  assert.match(source, /selectedCellId=\{/)
+  assert.match(source, /onCellSelect=\{onCellSelect\}/)
+})
+
+test("does not have onCellAction prop in MapContentProps", () => {
+  assert.doesNotMatch(source, /onCellAction/)
+})
