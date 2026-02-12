@@ -12,10 +12,10 @@ test("finds selected grid from grids result using globalGridId", () => {
   assert.match(source, /\.find\(\(?g\)?\s*=>\s*g\._id\s*===\s*globalGridId\)/)
 })
 
-test("extracts cellSizeKm from the matched grid", () => {
-  assert.match(source, /\.cellSizeKm/)
+test("derives cellSizeKm variable from the matched grid", () => {
+  assert.match(source, /const\s+cellSizeKm\s*=\s*gridsResult\?\.find/)
 })
 
-test("passes cellSizeKm to MapContent in discovery mode", () => {
-  assert.match(source, /cellSizeKm=\{viewMode\s*===\s*"discovery"\s*\?\s*selectedGridCellSizeKm/)
+test("passes cellSizeKm directly to MapContent", () => {
+  assert.match(source, /cellSizeKm=\{cellSizeKm\}/)
 })

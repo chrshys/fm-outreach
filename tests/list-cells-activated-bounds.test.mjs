@@ -226,5 +226,5 @@ test("activatedBoundsKeys only includes cells from the requested grid", async ()
 
 test("map page destructures cells from listCells result", () => {
   const mapSource = fs.readFileSync("src/app/map/page.tsx", "utf8");
-  assert.match(mapSource, /gridCellsResult\?\.cells/);
+  assert.match(mapSource, /gridCellsData\?\.cells/);
 });

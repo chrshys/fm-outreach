@@ -65,6 +65,6 @@ test("Map page uses activateCell mutation", () => {
   assert.match(mapPageSource, /useMutation\(api\.discovery\.gridCells\.activateCell\)/)
 })
 
-test("Map page extracts activatedBoundsKeys from gridCellsResult", () => {
-  assert.match(mapPageSource, /gridCellsResult\?\.activatedBoundsKeys/)
+test("Map page extracts activatedBoundsKeys from gridCellsData", () => {
+  assert.match(mapPageSource, /gridCellsData\?\.activatedBoundsKeys/)
 })

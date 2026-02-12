@@ -76,7 +76,7 @@ export default function MapPage() {
 
   // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
   const gridsResult = useQuery(api.discovery.gridCells.listGrids) as Array<{ _id: Id<"discoveryGrids">; cellSizeKm: number }> | undefined
-  const selectedGridCellSizeKm = gridsResult?.find((g) => g._id === globalGridId)?.cellSizeKm
+  const cellSizeKm = gridsResult?.find((g) => g._id === globalGridId)?.cellSizeKm
 
   const activateCellMutation = useMutation(api.discovery.gridCells.activateCell)
   const getOrCreateGlobalGrid = useMutation(api.discovery.gridCells.getOrCreateGlobalGrid)
@@ -276,9 +276,9 @@ export default function MapPage() {
           gridCells={viewMode === "discovery" ? cells ?? undefined : undefined}
           selectedCellId={viewMode === "discovery" ? selectedCellId : null}
           onCellSelect={viewMode === "discovery" ? handleCellSelect : undefined}
-          cellSizeKm={viewMode === "discovery" ? selectedGridCellSizeKm : undefined}
-          gridId={viewMode === "discovery" && globalGridId ? globalGridId : undefined}
-          activatedBoundsKeys={viewMode === "discovery" ? activatedBoundsKeys : undefined}
+          cellSizeKm={cellSizeKm}
+          gridId={globalGridId ?? undefined}
+          activatedBoundsKeys={activatedBoundsKeys}
           onActivateCell={viewMode === "discovery" ? handleActivateCell : undefined}
           onBoundsChange={handleBoundsChange}
         />

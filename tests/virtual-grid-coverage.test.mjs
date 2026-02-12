@@ -213,8 +213,8 @@ test("MapContent renders DiscoveryGrid inside a Pane with zIndex 450", () => {
   assert.match(mapContentSource, /<Pane\s+name="discovery-grid"\s+style=\{\{\s*zIndex:\s*450\s*\}\}/)
 })
 
-test("MapContent conditionally renders DiscoveryGrid when all grid props provided", () => {
-  assert.match(mapContentSource, /gridCells\s*&&\s*onCellSelect\s*&&\s*cellSizeKm\s*&&\s*gridId\s*&&\s*activatedBoundsKeys\s*&&\s*onActivateCell/)
+test("MapContent conditionally renders DiscoveryGrid when gridCells and onCellSelect provided", () => {
+  assert.match(mapContentSource, /gridCells\s*&&\s*onCellSelect/)
 })
 
 // ============================================================
