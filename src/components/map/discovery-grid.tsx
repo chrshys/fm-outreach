@@ -79,7 +79,7 @@ function getMapBounds(map: ReturnType<typeof useMap>) {
   }
 }
 
-export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cellSizeKm, activatedBoundsKeys, onSelectVirtualCell }: DiscoveryGridProps) {
+export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cellSizeKm, activatedBoundsKeys, selectedVirtualCell, onSelectVirtualCell }: DiscoveryGridProps) {
   const map = useMap()
   const [mapBounds, setMapBounds] = useState<{ swLat: number; swLng: number; neLat: number; neLng: number }>(() => getMapBounds(map))
   const [zoom, setZoom] = useState(() => map.getZoom())
@@ -125,7 +125,7 @@ export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cel
         <VirtualGridCell
           key={vc.key}
           cell={vc}
-          isSelected={vc.key === selectedCellId}
+          isSelected={vc.key === selectedVirtualCell?.key}
           onSelectVirtual={onSelectVirtualCell}
         />
       ))}

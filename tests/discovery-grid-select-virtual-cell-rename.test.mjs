@@ -27,15 +27,11 @@ test("DiscoveryGrid destructures onSelectVirtualCell from props", () => {
 })
 
 // ============================================================
-// DiscoveryGrid render passes isSelected={vc.key === selectedCellId}
+// DiscoveryGrid render passes isSelected={vc.key === selectedVirtualCell?.key}
 // ============================================================
 
-test("VirtualGridCell isSelected uses vc.key === selectedCellId", () => {
-  assert.match(gridSource, /isSelected=\{vc\.key\s*===\s*selectedCellId\}/)
-})
-
-test("VirtualGridCell isSelected does NOT use selectedVirtualCell?.key", () => {
-  assert.doesNotMatch(gridSource, /isSelected=\{selectedVirtualCell\?\.key/)
+test("VirtualGridCell isSelected uses selectedVirtualCell?.key", () => {
+  assert.match(gridSource, /isSelected=\{vc\.key\s*===\s*selectedVirtualCell\?\.key\}/)
 })
 
 // ============================================================
