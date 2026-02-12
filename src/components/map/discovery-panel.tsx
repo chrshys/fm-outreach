@@ -273,45 +273,73 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
             <>
               <Separator />
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Progress</Label>
-                <div className="space-y-1 text-xs">
-                  <div className="flex justify-between">
-                    <span>Searched</span>
-                    <span className="font-medium">
-                      {selectedGrid.searchedCount + selectedGrid.saturatedCount} / {selectedGrid.totalLeafCells}
-                    </span>
-                  </div>
-                  {selectedGrid.searchingCount > 0 && (
-                    <div className="flex justify-between">
-                      <span>Searching</span>
-                      <span className="font-medium text-blue-500">
-                        {selectedGrid.searchingCount}
-                      </span>
+                {selectedCell && selectedCell.status !== "unsearched" ? (
+                  <>
+                    <Label className="text-xs text-muted-foreground">Cell Progress</Label>
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span>Status</span>
+                        <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${getStatusBadgeColor(selectedCell.status)}`}>
+                          {selectedCell.status}
+                        </span>
+                      </div>
+                      {selectedCell.resultCount !== undefined && (
+                        <div className="flex justify-between">
+                          <span>Results</span>
+                          <span className="font-medium">{selectedCell.resultCount}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span>Leads Found</span>
+                        <span className="font-medium text-green-500">
+                          {selectedCell.leadsFound ?? 0}
+                        </span>
+                      </div>
                     </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span>Saturated</span>
-                    <span className="font-medium text-orange-500">
-                      {selectedGrid.saturatedCount}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Leads Found</span>
-                    <span className="font-medium text-green-500">
-                      {selectedGrid.totalLeadsFound}
-                    </span>
-                  </div>
-                  {selectedGrid.totalLeafCells > 0 && (
-                    <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-green-500 transition-all"
-                        style={{
-                          width: `${Math.round(((selectedGrid.searchedCount + selectedGrid.saturatedCount) / selectedGrid.totalLeafCells) * 100)}%`,
-                        }}
-                      />
+                  </>
+                ) : (
+                  <>
+                    <Label className="text-xs text-muted-foreground">Grid Progress</Label>
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span>Searched</span>
+                        <span className="font-medium">
+                          {selectedGrid.searchedCount + selectedGrid.saturatedCount} / {selectedGrid.totalLeafCells}
+                        </span>
+                      </div>
+                      {selectedGrid.searchingCount > 0 && (
+                        <div className="flex justify-between">
+                          <span>Searching</span>
+                          <span className="font-medium text-blue-500">
+                            {selectedGrid.searchingCount}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span>Saturated</span>
+                        <span className="font-medium text-orange-500">
+                          {selectedGrid.saturatedCount}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Leads Found</span>
+                        <span className="font-medium text-green-500">
+                          {selectedGrid.totalLeadsFound}
+                        </span>
+                      </div>
+                      {selectedGrid.totalLeafCells > 0 && (
+                        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-green-500 transition-all"
+                            style={{
+                              width: `${Math.round(((selectedGrid.searchedCount + selectedGrid.saturatedCount) / selectedGrid.totalLeafCells) * 100)}%`,
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </>
+                )}
               </div>
             </>
           )}
