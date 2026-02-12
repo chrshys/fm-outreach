@@ -8,8 +8,8 @@ test("imports useMutation from convex/react", () => {
   assert.match(source, /import\s+\{.*useMutation.*\}\s+from\s+"convex\/react"/)
 })
 
-test("declares activateCell mutation from api.discovery.gridCells", () => {
-  assert.match(source, /const\s+activateCell\s*=\s*useMutation\(api\.discovery\.gridCells\.activateCell\)/)
+test("declares activateCellMutation from api.discovery.gridCells", () => {
+  assert.match(source, /const\s+activateCellMutation\s*=\s*useMutation\(api\.discovery\.gridCells\.activateCell\)/)
 })
 
 test("declares getOrCreateGlobalGrid mutation from api.discovery.gridCells", () => {

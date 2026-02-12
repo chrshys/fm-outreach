@@ -8,7 +8,6 @@ import { toast } from "sonner"
 
 import type { MapBounds } from "@/components/map/map-bounds-emitter"
 import type { CellAction } from "@/components/map/discovery-grid-shared"
-import type { VirtualCell } from "@/lib/virtual-grid"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import { AppLayout } from "@/components/layout/app-layout"
@@ -79,7 +78,7 @@ export default function MapPage() {
   const gridsResult = useQuery(api.discovery.gridCells.listGrids) as Array<{ _id: Id<"discoveryGrids">; cellSizeKm: number }> | undefined
   const selectedGridCellSizeKm = gridsResult?.find((g) => g._id === globalGridId)?.cellSizeKm
 
-  const activateCell = useMutation(api.discovery.gridCells.activateCell)
+  const activateCellMutation = useMutation(api.discovery.gridCells.activateCell)
   const getOrCreateGlobalGrid = useMutation(api.discovery.gridCells.getOrCreateGlobalGrid)
 
   // Auto-create global grid on first discovery mode entry
@@ -91,9 +90,9 @@ export default function MapPage() {
     }
   }, [viewMode, globalGridId, getOrCreateGlobalGrid])
 
-  const handleActivateCell = useCallback(async (cell: VirtualCell): Promise<string> => {
-    if (!globalGridId) throw new Error("No grid selected")
-    const result = await activateCell({
+  const handleActivateCell = useCallback(async (cell: { key: string, swLat: number, swLng: number, neLat: number, neLng: number }) => {
+    if (!globalGridId) return ""
+    const result = await activateCellMutation({
       gridId: globalGridId,
       swLat: cell.swLat,
       swLng: cell.swLng,
@@ -102,7 +101,7 @@ export default function MapPage() {
       boundsKey: cell.key,
     })
     return result.cellId
-  }, [globalGridId, activateCell])
+  }, [globalGridId, activateCellMutation])
 
   const requestDiscoverCell = useMutation(api.discovery.discoverCell.requestDiscoverCell)
   const subdivideCell = useMutation(api.discovery.gridCells.subdivideCell)
