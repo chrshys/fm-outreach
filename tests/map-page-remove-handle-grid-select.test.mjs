@@ -22,8 +22,8 @@ test("does not reference handleGridSelect anywhere", () => {
   )
 })
 
-test("passes setGlobalGridId directly to DiscoveryPanel onGridSelect", () => {
-  assert.match(source, /onGridSelect=\{setGlobalGridId\}/)
+test("passes setGlobalGridId directly to DiscoveryPanel as setGlobalGridId prop", () => {
+  assert.match(source, /setGlobalGridId=\{setGlobalGridId\}/)
 })
 
 test("useEffect clears selectedCellId when globalGridId changes", () => {

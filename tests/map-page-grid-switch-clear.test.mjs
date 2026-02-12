@@ -26,8 +26,8 @@ test("does not have a handleGridSelect callback (removed in favor of setGlobalGr
   )
 })
 
-test("passes setGlobalGridId directly to DiscoveryPanel as onGridSelect", () => {
-  assert.match(source, /onGridSelect=\{setGlobalGridId\}/)
+test("passes setGlobalGridId directly to DiscoveryPanel as setGlobalGridId prop", () => {
+  assert.match(source, /setGlobalGridId=\{setGlobalGridId\}/)
 })
 
 // ============================================================

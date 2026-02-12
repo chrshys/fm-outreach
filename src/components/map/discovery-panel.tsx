@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator"
 
 type DiscoveryPanelProps = {
   globalGridId: Id<"discoveryGrids"> | null
-  onGridSelect: (gridId: Id<"discoveryGrids">) => void
+  setGlobalGridId: (gridId: Id<"discoveryGrids">) => void
   cells: CellData[]
   selectedCellId: string | null
   onCellAction: (cellId: string, action: CellAction) => void
@@ -45,7 +45,7 @@ const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
   { status: "saturated", color: "#f97316", label: "Saturated" },
 ]
 
-export function DiscoveryPanel({ globalGridId, onGridSelect, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
+export function DiscoveryPanel({ globalGridId, setGlobalGridId, cells, selectedCellId, onCellAction }: DiscoveryPanelProps) {
   const [open, setOpen] = useState(true)
   const [newQuery, setNewQuery] = useState("")
   const [showGridSelector, setShowGridSelector] = useState(false)
@@ -63,9 +63,9 @@ export function DiscoveryPanel({ globalGridId, onGridSelect, cells, selectedCell
   // Auto-select first grid if none selected
   useEffect(() => {
     if (!globalGridId && grids && grids.length > 0) {
-      onGridSelect(grids[0]._id)
+      setGlobalGridId(grids[0]._id)
     }
-  }, [globalGridId, grids, onGridSelect])
+  }, [globalGridId, grids, setGlobalGridId])
 
   const handleAddQuery = useCallback(async () => {
     if (!newQuery.trim() || !selectedGrid) return
@@ -182,7 +182,7 @@ export function DiscoveryPanel({ globalGridId, onGridSelect, cells, selectedCell
                         type="button"
                         className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
                         onClick={() => {
-                          onGridSelect(grid._id)
+                          setGlobalGridId(grid._id)
                           setShowGridSelector(false)
                         }}
                       >

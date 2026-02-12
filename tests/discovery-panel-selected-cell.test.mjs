@@ -174,8 +174,8 @@ test("map page clears selectedCellId via useEffect when globalGridId changes", (
   )
 })
 
-test("map page passes setGlobalGridId to DiscoveryPanel onGridSelect", () => {
-  assert.match(pageSource, /onGridSelect=\{setGlobalGridId\}/)
+test("map page passes setGlobalGridId to DiscoveryPanel as setGlobalGridId prop", () => {
+  assert.match(pageSource, /setGlobalGridId=\{setGlobalGridId\}/)
 })
 
 // ============================================================

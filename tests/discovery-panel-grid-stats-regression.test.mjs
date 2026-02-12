@@ -18,9 +18,9 @@ test("DiscoveryPanel is rendered only in discovery viewMode", () => {
   assert.match(pageSource, /<DiscoveryPanel\s+globalGridId/)
 })
 
-test("DiscoveryPanel receives globalGridId and onGridSelect props from map page", () => {
+test("DiscoveryPanel receives globalGridId and setGlobalGridId props from map page", () => {
   assert.match(pageSource, /globalGridId=\{globalGridId\}/)
-  assert.match(pageSource, /onGridSelect=\{setGlobalGridId\}/)
+  assert.match(pageSource, /setGlobalGridId=\{setGlobalGridId\}/)
 })
 
 test("panel defaults to open state", () => {
@@ -46,8 +46,8 @@ test("grid selector only renders when grids exist", () => {
   assert.match(panelSource, /grids && grids\.length > 0/)
 })
 
-test("selecting a grid calls onGridSelect and closes selector", () => {
-  assert.match(panelSource, /onGridSelect\(grid\._id\)/)
+test("selecting a grid calls setGlobalGridId and closes selector", () => {
+  assert.match(panelSource, /setGlobalGridId\(grid\._id\)/)
   assert.match(panelSource, /setShowGridSelector\(false\)/)
 })
 
@@ -59,7 +59,7 @@ test("no New Grid form (grid creation replaced by virtual grid)", () => {
 
 test("auto-selects first grid when none selected", () => {
   assert.match(panelSource, /!globalGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0/)
-  assert.match(panelSource, /onGridSelect\(grids\[0\]\._id\)/)
+  assert.match(panelSource, /setGlobalGridId\(grids\[0\]\._id\)/)
 })
 
 // =============================================================================

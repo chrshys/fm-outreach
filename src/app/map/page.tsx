@@ -279,7 +279,7 @@ export default function MapPage() {
             clusters={clusterOptions}
           />
         ) : (
-          <DiscoveryPanel globalGridId={globalGridId} onGridSelect={setGlobalGridId} cells={cells ?? []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
+          <DiscoveryPanel globalGridId={globalGridId} setGlobalGridId={setGlobalGridId} cells={cells ?? []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
         )}
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           <Button
