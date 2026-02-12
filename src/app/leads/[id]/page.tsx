@@ -20,6 +20,8 @@ import { LogActivity } from "@/components/leads/log-activity"
 import { LogSocialActivity } from "@/components/leads/log-social-activity"
 import { LogSocialResponse } from "@/components/leads/log-social-response"
 import { StatusSelector } from "@/components/leads/status-selector"
+import { TypeSelector } from "@/components/leads/type-selector"
+import type { LeadType } from "@/components/leads/type-selector"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -232,9 +234,10 @@ function StructuredProductsDisplay({
 export default function LeadDetailPage() {
   const params = useParams<{ id: string }>()
   const leadId = params.id as Id<"leads">
+  // @ts-expect-error — Convex FilterApi causes TS2589 with large module count
   const lead = useQuery(api.leads.get, {
     leadId,
-  })
+  }) as Doc<"leads"> | null | undefined
   const cluster = useQuery(
     api.clusters.get,
     lead?.clusterId ? { clusterId: lead.clusterId } : "skip"
@@ -245,6 +248,7 @@ export default function LeadDetailPage() {
     leadId,
   })
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
+  const [isUpdatingType, setIsUpdatingType] = useState(false)
   const followUpStatus = lead !== undefined && lead !== null ? getFollowUpStatus(lead.nextFollowUpAt) : null
 
   async function updateField(field: EditableField, value: string) {
@@ -289,6 +293,24 @@ export default function LeadDetailPage() {
     }
   }
 
+  async function updateType(type: LeadType) {
+    if (lead === undefined || lead === null || lead.type === type) {
+      return
+    }
+
+    setIsUpdatingType(true)
+    try {
+      await updateLead({
+        leadId,
+        type,
+      })
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update type")
+    } finally {
+      setIsUpdatingType(false)
+    }
+  }
+
   return (
     <AppLayout>
       <section className="space-y-6">
@@ -319,9 +341,11 @@ export default function LeadDetailPage() {
                   </Link>
                 ) : null}
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {lead.city} • {formatLabel(lead.type)}
-              </p>
+              <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                <span>{lead.city}</span>
+                <span>•</span>
+                <TypeSelector value={lead.type} disabled={isUpdatingType} onChange={updateType} />
+              </div>
             </div>
           )}
         </div>
