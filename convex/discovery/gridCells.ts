@@ -445,6 +445,7 @@ export const updateCellSearchResult = internalMutation({
       resultCount: args.resultCount,
       querySaturation: args.querySaturation,
       lastSearchedAt: args.lastSearchedAt,
+      leadsFound: args.newLeadsCount,
     });
 
     const grid = await ctx.db.get(cell.gridId);

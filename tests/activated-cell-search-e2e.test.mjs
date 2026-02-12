@@ -101,6 +101,7 @@ async function updateCellSearchResult(db, args) {
     resultCount: args.resultCount,
     querySaturation: args.querySaturation,
     lastSearchedAt: args.lastSearchedAt,
+    leadsFound: args.newLeadsCount,
   });
 
   const grid = await db.get(cell.gridId);

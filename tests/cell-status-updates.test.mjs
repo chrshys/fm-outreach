@@ -58,6 +58,7 @@ async function updateCellSearchResult(db, args) {
     resultCount: args.resultCount,
     querySaturation: args.querySaturation,
     lastSearchedAt: args.lastSearchedAt,
+    leadsFound: args.newLeadsCount,
   });
 
   const grid = await db.get(cell.gridId);
@@ -522,4 +523,53 @@ test("updateCellSearchResult source accepts status as union of all valid states"
   const block = source.slice(source.indexOf("export const updateCellSearchResult"));
   assert.match(block, /v\.literal\("searched"\)/);
   assert.match(block, /v\.literal\("saturated"\)/);
+});
+
+// ============================================================
+// Cell leadsFound tracking
+// ============================================================
+
+test("updateCellSearchResult sets leadsFound on the cell", async () => {
+  const db = createMockDb();
+  const { cellId } = await seedGridAndCell(db);
+
+  await claimCellForSearch(db, cellId, ["unsearched", "searched"]);
+
+  await updateCellSearchResult(db, {
+    cellId,
+    status: "searched",
+    resultCount: 12,
+    querySaturation: [{ query: "farms", count: 12 }],
+    lastSearchedAt: Date.now(),
+    newLeadsCount: 12,
+  });
+
+  const cell = await db.get(cellId);
+  assert.equal(cell.leadsFound, 12);
+});
+
+test("updateCellSearchResult sets leadsFound to 0 when all leads are duplicates", async () => {
+  const db = createMockDb();
+  const { cellId } = await seedGridAndCell(db);
+
+  await claimCellForSearch(db, cellId, ["unsearched", "searched"]);
+
+  await updateCellSearchResult(db, {
+    cellId,
+    status: "searched",
+    resultCount: 5,
+    querySaturation: [{ query: "farms", count: 5 }],
+    lastSearchedAt: Date.now(),
+    newLeadsCount: 0,
+  });
+
+  const cell = await db.get(cellId);
+  assert.equal(cell.leadsFound, 0);
+});
+
+test("updateCellSearchResult source patches leadsFound onto cell", async () => {
+  const { readFileSync } = await import("node:fs");
+  const source = readFileSync("convex/discovery/gridCells.ts", "utf8");
+  const block = source.slice(source.indexOf("export const updateCellSearchResult"));
+  assert.match(block, /leadsFound:\s*args\.newLeadsCount/);
 });
