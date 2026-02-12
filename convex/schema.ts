@@ -199,6 +199,7 @@ export default defineSchema({
     boundsKey: v.string(),
   })
     .index("by_gridId", ["gridId"])
+    .index("by_gridId_boundsKey", ["gridId", "boundsKey"])
     .index("by_gridId_isLeaf", ["gridId", "isLeaf"])
     .index("by_parentCellId", ["parentCellId"]),
 

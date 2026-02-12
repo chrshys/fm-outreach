@@ -90,6 +90,13 @@ test("has by_gridId index on gridId", () => {
   assert.match(cellsBlock, /\.index\("by_gridId",\s*\["gridId"\]\)/)
 })
 
+test("has by_gridId_boundsKey index on gridId and boundsKey", () => {
+  assert.match(
+    cellsBlock,
+    /\.index\("by_gridId_boundsKey",\s*\["gridId",\s*"boundsKey"\]\)/,
+  )
+})
+
 test("has by_gridId_isLeaf index on gridId and isLeaf", () => {
   assert.match(
     cellsBlock,
