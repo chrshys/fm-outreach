@@ -83,12 +83,9 @@ test("Rectangle receives pathOptions from getCellColor", () => {
   assert.match(source, /pathOptions=\{/)
 })
 
-test("does NOT contain CellTooltipContent", () => {
-  assert.doesNotMatch(source, /CellTooltipContent/)
-})
-
-test("does NOT contain TOOLTIP_CLOSE_DELAY", () => {
-  assert.doesNotMatch(source, /TOOLTIP_CLOSE_DELAY/)
+test("Rectangle has click event handler", () => {
+  assert.match(source, /eventHandlers=\{\{/)
+  assert.match(source, /click:/)
 })
 
 test("DiscoveryGridCell is not exported", () => {
