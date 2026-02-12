@@ -80,9 +80,9 @@ test("has gridId referencing discoveryGrids", () => {
   assert.match(cellsBlock, /gridId:\s*v\.id\("discoveryGrids"\)/)
 })
 
-// boundsKey
-test("has boundsKey field as v.string()", () => {
-  assert.match(cellsBlock, /boundsKey:\s*v\.string\(\)/)
+// boundsKey — optional so legacy cells without it still validate
+test("has boundsKey field as v.optional(v.string())", () => {
+  assert.match(cellsBlock, /boundsKey:\s*v\.optional\(v\.string\(\)\)/)
 })
 
 // Indexes

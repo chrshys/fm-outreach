@@ -18,23 +18,23 @@ const insertMatch = mutationSource.match(
 const insertBody = insertMatch ? insertMatch[1] : "";
 
 // ============================================================
-// 1. Schema: discoveryGrids has no bounds fields
+// 1. Schema: discoveryGrids bounds fields are optional (legacy compat)
 // ============================================================
 
-test("discoveryGrids schema does not have swLat field", () => {
-  assert.doesNotMatch(gridTableBody, /\bswLat\b/);
+test("discoveryGrids schema has swLat as optional", () => {
+  assert.match(gridTableBody, /swLat:\s*v\.optional\(v\.number\(\)\)/);
 });
 
-test("discoveryGrids schema does not have swLng field", () => {
-  assert.doesNotMatch(gridTableBody, /\bswLng\b/);
+test("discoveryGrids schema has swLng as optional", () => {
+  assert.match(gridTableBody, /swLng:\s*v\.optional\(v\.number\(\)\)/);
 });
 
-test("discoveryGrids schema does not have neLat field", () => {
-  assert.doesNotMatch(gridTableBody, /\bneLat\b/);
+test("discoveryGrids schema has neLat as optional", () => {
+  assert.match(gridTableBody, /neLat:\s*v\.optional\(v\.number\(\)\)/);
 });
 
-test("discoveryGrids schema does not have neLng field", () => {
-  assert.doesNotMatch(gridTableBody, /\bneLng\b/);
+test("discoveryGrids schema has neLng as optional", () => {
+  assert.match(gridTableBody, /neLng:\s*v\.optional\(v\.number\(\)\)/);
 });
 
 // ============================================================

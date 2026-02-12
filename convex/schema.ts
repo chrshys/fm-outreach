@@ -170,6 +170,12 @@ export default defineSchema({
     cellSizeKm: v.number(),
     totalLeadsFound: v.number(),
     createdAt: v.number(),
+    // Legacy fields — old grids stored bounds directly; new virtual-grid model
+    // computes them on the client. Kept optional so existing records validate.
+    swLat: v.optional(v.number()),
+    swLng: v.optional(v.number()),
+    neLat: v.optional(v.number()),
+    neLng: v.optional(v.number()),
   }),
 
   discoveryCells: defineTable({
@@ -192,7 +198,7 @@ export default defineSchema({
     ),
     lastSearchedAt: v.optional(v.number()),
     gridId: v.id("discoveryGrids"),
-    boundsKey: v.string(),
+    boundsKey: v.optional(v.string()),
   })
     .index("by_gridId", ["gridId"])
     .index("by_gridId_boundsKey", ["gridId", "boundsKey"])
