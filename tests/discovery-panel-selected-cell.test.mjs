@@ -167,15 +167,15 @@ test("map page passes onCellAction to DiscoveryPanel", () => {
 // Map page clears selection on grid change
 // ============================================================
 
-test("map page has handleGridSelect callback that clears cell selection", () => {
-  assert.match(pageSource, /handleGridSelect/)
-  // handleGridSelect sets the grid and clears the cell selection
-  const handlerMatch = pageSource.match(/handleGridSelect[\s\S]*?setSelectedCellId\(null\)/)
-  assert.ok(handlerMatch, "handleGridSelect should call setSelectedCellId(null)")
+test("map page clears selectedCellId via useEffect when globalGridId changes", () => {
+  assert.match(
+    pageSource,
+    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\)\s*\},\s*\[globalGridId\]\)/,
+  )
 })
 
-test("map page passes handleGridSelect to DiscoveryPanel onGridSelect", () => {
-  assert.match(pageSource, /onGridSelect=\{handleGridSelect\}/)
+test("map page passes setGlobalGridId to DiscoveryPanel onGridSelect", () => {
+  assert.match(pageSource, /onGridSelect=\{setGlobalGridId\}/)
 })
 
 // ============================================================

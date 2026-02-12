@@ -20,8 +20,8 @@ test("DiscoveryPanel is rendered only in discovery viewMode", () => {
 
 test("DiscoveryPanel receives all three required props from map page", () => {
   assert.match(pageSource, /mapBounds=\{mapBounds\}/)
-  assert.match(pageSource, /selectedGridId=\{selectedGridId\}/)
-  assert.match(pageSource, /onGridSelect=\{handleGridSelect\}/)
+  assert.match(pageSource, /selectedGridId=\{globalGridId\}/)
+  assert.match(pageSource, /onGridSelect=\{setGlobalGridId\}/)
 })
 
 test("panel defaults to open state", () => {
@@ -271,7 +271,7 @@ test("toggle resets drawing state when switching modes", () => {
 })
 
 test("grid cells query skips when not in discovery mode", () => {
-  assert.match(pageSource, /selectedGridId\s*&&\s*viewMode\s*===\s*"discovery"/)
+  assert.match(pageSource, /globalGridId\s*&&\s*viewMode\s*===\s*"discovery"/)
   assert.match(pageSource, /:\s*"skip"/)
 })
 

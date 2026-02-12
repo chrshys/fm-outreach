@@ -57,11 +57,6 @@ export default function MapPage() {
   // eslint-disable-next-line react-hooks/set-state-in-effect -- reset derived state when grid changes
   useEffect(() => { setSelectedCellId(null) }, [globalGridId])
 
-  const handleGridSelect = useCallback((gridId: Id<"discoveryGrids">) => {
-    setGlobalGridId(gridId)
-    setSelectedCellId(null)
-  }, [])
-
   const handleCellSelect = useCallback((cellId: string | null) => {
     setSelectedCellId(cellId)
   }, [])
@@ -290,7 +285,7 @@ export default function MapPage() {
             clusters={clusterOptions}
           />
         ) : (
-          <DiscoveryPanel mapBounds={mapBounds} selectedGridId={globalGridId} onGridSelect={handleGridSelect} cells={viewMode === "discovery" ? cells ?? [] : []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
+          <DiscoveryPanel mapBounds={mapBounds} selectedGridId={globalGridId} onGridSelect={setGlobalGridId} cells={viewMode === "discovery" ? cells ?? [] : []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
         )}
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           <Button

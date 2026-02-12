@@ -19,30 +19,15 @@ test("has a useEffect that clears selectedCellId when globalGridId changes", () 
   )
 })
 
-test("useEffect appears before handleGridSelect", () => {
-  const effectIndex = source.indexOf("useEffect(() => { setSelectedCellId(null) }, [globalGridId])")
-  const handleGridSelectIndex = source.indexOf("const handleGridSelect = useCallback")
-  assert.ok(effectIndex > 0, "useEffect should exist")
-  assert.ok(handleGridSelectIndex > 0, "handleGridSelect should exist")
+test("does not have a handleGridSelect callback (removed in favor of setGlobalGridId)", () => {
   assert.ok(
-    effectIndex < handleGridSelectIndex,
-    "useEffect should appear before handleGridSelect",
+    !source.includes("handleGridSelect"),
+    "handleGridSelect should be removed — useEffect on globalGridId handles cell clearing",
   )
 })
 
-// ============================================================
-// handleGridSelect explicitly clears selection
-// ============================================================
-
-test("handleGridSelect calls setSelectedCellId(null)", () => {
-  // Extract the handleGridSelect callback body
-  const handleGridSelectMatch = source.match(
-    /const handleGridSelect = useCallback\(\(gridId[^)]*\)\s*=>\s*\{([\s\S]*?)\},\s*\[/,
-  )
-  assert.ok(handleGridSelectMatch, "handleGridSelect should be a useCallback")
-  const body = handleGridSelectMatch[1]
-  assert.match(body, /setSelectedCellId\(null\)/, "handleGridSelect should clear selectedCellId")
-  assert.match(body, /setGlobalGridId\(gridId\)/, "handleGridSelect should set the new grid id")
+test("passes setGlobalGridId directly to DiscoveryPanel as onGridSelect", () => {
+  assert.match(source, /onGridSelect=\{setGlobalGridId\}/)
 })
 
 // ============================================================

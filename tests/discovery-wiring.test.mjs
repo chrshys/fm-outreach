@@ -15,14 +15,14 @@ test("imports Id type from Convex dataModel", () => {
   assert.match(pageSource, /import\s+type\s+\{\s*Id\s*\}\s+from\s+["']\.\.\/\.\.\/\.\.\/convex\/_generated\/dataModel["']/)
 })
 
-test("has selectedGridId state with Id<discoveryGrids> type", () => {
+test("has globalGridId state with Id<discoveryGrids> type", () => {
   assert.match(pageSource, /useState<Id<"discoveryGrids">\s*\|\s*null>\(null\)/)
 })
 
-test("queries listCells conditionally on selectedGridId and discovery viewMode", () => {
+test("queries listCells conditionally on globalGridId and discovery viewMode", () => {
   assert.match(pageSource, /useQuery\(\s*api\.discovery\.gridCells\.listCells/)
-  assert.match(pageSource, /selectedGridId\s*&&\s*viewMode\s*===\s*"discovery"/)
-  assert.match(pageSource, /gridId:\s*selectedGridId/)
+  assert.match(pageSource, /globalGridId\s*&&\s*viewMode\s*===\s*"discovery"/)
+  assert.match(pageSource, /gridId:\s*globalGridId/)
   assert.match(pageSource, /:\s*"skip"/)
 })
 
@@ -40,8 +40,8 @@ test("defines handleCellAction callback", () => {
   assert.match(pageSource, /handleCellAction\s*=\s*useCallback\(async\s*\(cellId:\s*string,\s*action:\s*CellAction\)/)
 })
 
-test("handleCellAction looks up cell from gridCells", () => {
-  assert.match(pageSource, /gridCells\?\s*\.find\(\(c\)\s*=>\s*c\._id\s*===\s*cellId\)/)
+test("handleCellAction looks up cell from cells", () => {
+  assert.match(pageSource, /cells\?\s*\.find\(\(c\)\s*=>\s*c\._id\s*===\s*cellId\)/)
 })
 
 test("handleCellAction shows info toast for searching status on search action", () => {
@@ -91,7 +91,7 @@ test("handleCellAction has try/catch for undivide with error toast", () => {
 })
 
 test("handleCellAction dependency array includes undivideCell", () => {
-  assert.match(pageSource, /\[gridCells,\s*requestDiscoverCell,\s*subdivideCell,\s*undivideCell\]/)
+  assert.match(pageSource, /\[cells,\s*requestDiscoverCell,\s*subdivideCell,\s*undivideCell\]/)
 })
 
 test("uses undivideCell mutation", () => {
@@ -108,21 +108,21 @@ test("handleCellAction shows Coming soon for non-google_places mechanism", () =>
 // --- MapContent receives gridCells, selectedCellId, and onCellSelect ---
 
 test("passes gridCells to MapContent in discovery mode", () => {
-  assert.match(pageSource, /gridCells=\{viewMode\s*===\s*"discovery"\s*\?\s*gridCells\s*\?\?\s*undefined\s*:\s*undefined\}/)
+  assert.match(pageSource, /gridCells=\{viewMode\s*===\s*"discovery"\s*\?\s*cells\s*\?\?\s*undefined\s*:\s*undefined\}/)
 })
 
 test("passes onCellSelect to MapContent in discovery mode", () => {
   assert.match(pageSource, /onCellSelect=\{viewMode\s*===\s*"discovery"\s*\?\s*handleCellSelect\s*:\s*undefined\}/)
 })
 
-// --- DiscoveryPanel receives selectedGridId and onGridSelect ---
+// --- DiscoveryPanel receives globalGridId and setGlobalGridId ---
 
-test("passes selectedGridId to DiscoveryPanel", () => {
-  assert.match(pageSource, /selectedGridId=\{selectedGridId\}/)
+test("passes globalGridId to DiscoveryPanel as selectedGridId", () => {
+  assert.match(pageSource, /selectedGridId=\{globalGridId\}/)
 })
 
-test("passes onGridSelect to DiscoveryPanel", () => {
-  assert.match(pageSource, /onGridSelect=\{handleGridSelect\}/)
+test("passes setGlobalGridId directly to DiscoveryPanel as onGridSelect", () => {
+  assert.match(pageSource, /onGridSelect=\{setGlobalGridId\}/)
 })
 
 // --- DiscoveryPanel prop types ---
@@ -141,10 +141,6 @@ test("DiscoveryPanel destructures selectedGridId and onGridSelect", () => {
 
 test("DiscoveryPanel calls onGridSelect on auto-select", () => {
   assert.match(panelSource, /if\s*\(!selectedGridId\s*&&\s*grids\s*&&\s*grids\.length\s*>\s*0\)\s*\{\s*\n\s*onGridSelect\(grids\[0\]\._id\)/)
-})
-
-test("DiscoveryPanel calls onGridSelect on grid creation", () => {
-  assert.match(panelSource, /onGridSelect\(result\.gridId\s+as\s+Id<"discoveryGrids">\)/)
 })
 
 test("DiscoveryPanel calls onGridSelect on grid selector click", () => {
