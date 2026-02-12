@@ -216,7 +216,7 @@ export default function MapPage() {
         setSelectedVirtualCell(null)
         setSelectedCellId(newCellId)
         cellId = newCellId
-        cell = { _id: newCellId as Id<"discoveryCells">, parentCellId: undefined, swLat: selectedVirtualCell.swLat, swLng: selectedVirtualCell.swLng, neLat: selectedVirtualCell.neLat, neLng: selectedVirtualCell.neLng, depth: 0, status: "unsearched" as const, resultCount: undefined, querySaturation: undefined, lastSearchedAt: undefined, boundsKey: selectedVirtualCell.key }
+        cell = { _id: newCellId as Id<"discoveryCells">, parentCellId: undefined, swLat: selectedVirtualCell.swLat, swLng: selectedVirtualCell.swLng, neLat: selectedVirtualCell.neLat, neLng: selectedVirtualCell.neLng, depth: 0, status: "unsearched" as const, resultCount: undefined, querySaturation: undefined, lastSearchedAt: undefined, boundsKey: selectedVirtualCell.key, leadsFound: undefined }
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Failed to activate cell")
         return
