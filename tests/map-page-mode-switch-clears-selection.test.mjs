@@ -55,3 +55,16 @@ test("toggle handler clears drawing state alongside selection", () => {
   assert.match(body, /setShowNamingDialog\(false\)/, "should close naming dialog")
   assert.match(body, /setSelectedCellId\(null\)/, "should clear cell selection")
 })
+
+test("view mode toggle clears selectedVirtualCell", () => {
+  const toggleMatch = source.match(
+    /onClick=\{\(\)\s*=>\s*\{([\s\S]*?)\}\}/,
+  )
+  assert.ok(toggleMatch, "toggle onClick should exist")
+  const body = toggleMatch[1]
+  assert.match(
+    body,
+    /setSelectedVirtualCell\(null\)/,
+    "toggle handler must clear selectedVirtualCell",
+  )
+})
