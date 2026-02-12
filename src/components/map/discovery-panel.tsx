@@ -388,7 +388,7 @@ export function DiscoveryPanel({ mapBounds, selectedGridId, onGridSelect, cells,
                       ? formatShortDate(selectedCell.lastSearchedAt)
                       : "\u2014"
                     return (
-                      <div key={mechanism.id} className={`flex items-center justify-between text-xs ${isDisabled ? "opacity-50" : ""}`}>
+                      <div key={mechanism.id} className="flex items-center justify-between text-xs">
                         <span>{mechanism.label}</span>
                         <div className="flex items-center gap-1.5">
                           <span className="text-muted-foreground">{lastRun}</span>
