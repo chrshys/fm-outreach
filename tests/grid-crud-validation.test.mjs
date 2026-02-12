@@ -120,10 +120,11 @@ test("listCells uses by_gridId_isLeaf index to return only leaf cells", () => {
   assert.match(block, /\.withIndex\("by_gridId_isLeaf"/);
   // Filters for isLeaf: true directly in the index (not post-filtering)
   assert.match(block, /\.eq\("isLeaf",\s*true\)/);
-  // Does not do any JS-level isLeaf filtering after collect
+  // The leaf-cell query does not do any JS-level isLeaf filtering after collect
+  // (the depth-0 query uses a Convex .filter() which is server-side, not post-filtering)
   assert.ok(
-    !block.includes(".filter("),
-    "listCells should not post-filter; the index handles isLeaf filtering",
+    !block.includes("cells.filter("),
+    "listCells should not post-filter leaf cells; the index handles isLeaf filtering",
   );
 });
 

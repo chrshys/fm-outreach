@@ -213,19 +213,33 @@ export const listCells = query({
       )
       .collect();
 
-    return cells.map((cell) => ({
-      _id: cell._id,
-      parentCellId: cell.parentCellId,
-      swLat: cell.swLat,
-      swLng: cell.swLng,
-      neLat: cell.neLat,
-      neLng: cell.neLng,
-      depth: cell.depth,
-      status: cell.status,
-      resultCount: cell.resultCount,
-      querySaturation: cell.querySaturation,
-      lastSearchedAt: cell.lastSearchedAt,
-    }));
+    const depth0Cells = await ctx.db
+      .query("discoveryCells")
+      .withIndex("by_gridId", (q) => q.eq("gridId", args.gridId))
+      .filter((q) => q.eq(q.field("depth"), 0))
+      .collect();
+
+    const activatedBoundsKeys = depth0Cells
+      .map((cell) => cell.boundsKey)
+      .filter((key): key is string => key !== undefined);
+
+    return {
+      cells: cells.map((cell) => ({
+        _id: cell._id,
+        parentCellId: cell.parentCellId,
+        swLat: cell.swLat,
+        swLng: cell.swLng,
+        neLat: cell.neLat,
+        neLng: cell.neLng,
+        depth: cell.depth,
+        status: cell.status,
+        resultCount: cell.resultCount,
+        querySaturation: cell.querySaturation,
+        lastSearchedAt: cell.lastSearchedAt,
+        boundsKey: cell.boundsKey,
+      })),
+      activatedBoundsKeys,
+    };
   },
 });
 

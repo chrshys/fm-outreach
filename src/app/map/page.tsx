@@ -67,10 +67,11 @@ export default function MapPage() {
   }, [])
 
   // Discovery queries & mutations
-  const gridCells = useQuery(
+  const gridCellsResult = useQuery(
     api.discovery.gridCells.listCells,
     selectedGridId && viewMode === "discovery" ? { gridId: selectedGridId } : "skip",
   )
+  const gridCells = gridCellsResult?.cells
   const requestDiscoverCell = useMutation(api.discovery.discoverCell.requestDiscoverCell)
   const subdivideCell = useMutation(api.discovery.gridCells.subdivideCell)
   const undivideCell = useMutation(api.discovery.gridCells.undivideCell)
