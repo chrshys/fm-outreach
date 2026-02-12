@@ -80,6 +80,11 @@ test("has gridId referencing discoveryGrids", () => {
   assert.match(cellsBlock, /gridId:\s*v\.id\("discoveryGrids"\)/)
 })
 
+// boundsKey
+test("has boundsKey field as v.string()", () => {
+  assert.match(cellsBlock, /boundsKey:\s*v\.string\(\)/)
+})
+
 // Indexes
 test("has by_gridId index on gridId", () => {
   assert.match(cellsBlock, /\.index\("by_gridId",\s*\["gridId"\]\)/)

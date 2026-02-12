@@ -115,6 +115,7 @@ test("cell resets to unsearched when getCell fails after claim", async () => {
 
   const cellId = await db.insert("discoveryCells", {
     status: "unsearched",
+    boundsKey: "test-bounds-key",
     gridId,
   });
 
@@ -147,6 +148,7 @@ test("cell resets to searched when API call fails during re-search", async () =>
 
   const cellId = await db.insert("discoveryCells", {
     status: "searched",
+    boundsKey: "test-bounds-key",
     gridId,
   });
 
@@ -176,6 +178,7 @@ test("cell resets to unsearched when lead insertion fails", async () => {
 
   const cellId = await db.insert("discoveryCells", {
     status: "unsearched",
+    boundsKey: "test-bounds-key",
     gridId,
   });
 
@@ -207,6 +210,7 @@ test("cell does NOT stay on searching after any mid-flight error", async () => {
 
   const cellId = await db.insert("discoveryCells", {
     status: "unsearched",
+    boundsKey: "test-bounds-key",
     gridId,
   });
 

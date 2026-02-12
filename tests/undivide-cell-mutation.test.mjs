@@ -144,6 +144,7 @@ async function seedSubdividedCell(db, overrides = {}) {
     swLng: -79.9,
     neLat: 43.03,
     neLng: -79.65,
+    boundsKey: "42.850000_-79.900000",
     depth: 0,
     isLeaf: false,
     status: "saturated",
@@ -167,6 +168,7 @@ async function seedSubdividedCell(db, overrides = {}) {
   for (const q of quadrants) {
     const childId = await db.insert("discoveryCells", {
       ...q,
+      boundsKey: `${q.swLat.toFixed(6)}_${q.swLng.toFixed(6)}`,
       depth: 1,
       parentCellId: parentId,
       isLeaf: true,
@@ -284,6 +286,7 @@ test("throws when root cell has no children to undivide", async () => {
     swLng: -79.9,
     neLat: 43.03,
     neLng: -79.65,
+    boundsKey: "42.850000_-79.900000",
     depth: 0,
     isLeaf: true,
     status: "unsearched",
@@ -358,6 +361,7 @@ test("undivideCell on root cell with grandchildren deletes all descendants", asy
   for (const q of quadrants) {
     const gcId = await db.insert("discoveryCells", {
       ...q,
+      boundsKey: `${q.swLat.toFixed(6)}_${q.swLng.toFixed(6)}`,
       depth: 2,
       parentCellId: childIds[0],
       isLeaf: true,
@@ -407,6 +411,7 @@ test("throws when parent cell does not exist", async () => {
     swLng: -79.9,
     neLat: 43.03,
     neLng: -79.65,
+    boundsKey: "42.850000_-79.900000",
     depth: 1,
     parentCellId: "discoveryCells:nonexistent",
     isLeaf: true,
@@ -463,6 +468,7 @@ test("throws when a grandchild cell has status searching", async () => {
     swLng: firstChild.swLng,
     neLat: midLat,
     neLng: midLng,
+    boundsKey: `${firstChild.swLat.toFixed(6)}_${firstChild.swLng.toFixed(6)}`,
     depth: 2,
     parentCellId: childIds[0],
     isLeaf: true,
@@ -510,6 +516,7 @@ test("undivide deletes grandchildren (multi-level descendants)", async () => {
   for (const q of quadrants) {
     const gcId = await db.insert("discoveryCells", {
       ...q,
+      boundsKey: `${q.swLat.toFixed(6)}_${q.swLng.toFixed(6)}`,
       depth: 2,
       parentCellId: childIds[0],
       isLeaf: true,

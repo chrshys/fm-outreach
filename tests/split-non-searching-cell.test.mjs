@@ -234,6 +234,7 @@ async function subdivideCell(ctx, args) {
   for (const q of quadrants) {
     const childId = await ctx.db.insert("discoveryCells", {
       ...q,
+      boundsKey: `${q.swLat.toFixed(6)}_${q.swLng.toFixed(6)}`,
       depth: childDepth,
       parentCellId: args.cellId,
       isLeaf: true,
@@ -267,6 +268,7 @@ async function seedCell(db, overrides = {}) {
     swLng: -80.0,
     neLat: 44.0,
     neLng: -78.0,
+    boundsKey: "42.000000_-80.000000",
     depth: 0,
     isLeaf: true,
     status: "unsearched",

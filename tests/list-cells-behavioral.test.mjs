@@ -113,6 +113,7 @@ async function subdivideCell(ctx, args) {
   for (const q of quadrants) {
     const childId = await ctx.db.insert("discoveryCells", {
       ...q,
+      boundsKey: `${q.swLat.toFixed(6)}_${q.swLng.toFixed(6)}`,
       depth: childDepth,
       parentCellId: args.cellId,
       isLeaf: true,
@@ -146,11 +147,13 @@ async function seedGrid(db, { cellCount = 3, gridOverrides = {} } = {}) {
 
   const cellIds = [];
   for (let i = 0; i < cellCount; i++) {
+    const swLat = 42.85 + i * 0.18;
     const cellId = await db.insert("discoveryCells", {
-      swLat: 42.85 + i * 0.18,
+      swLat,
       swLng: -79.9,
       neLat: 42.85 + (i + 1) * 0.18,
       neLng: -79.65,
+      boundsKey: `${swLat.toFixed(6)}_${(-79.9).toFixed(6)}`,
       depth: 0,
       isLeaf: true,
       status: "unsearched",
@@ -369,11 +372,13 @@ test("listCells returns leaf cells regardless of status", async () => {
 
   const statuses = ["unsearched", "searched", "saturated", "searching"];
   for (let i = 0; i < statuses.length; i++) {
+    const swLat = 42.0 + i * 0.25;
     await db.insert("discoveryCells", {
-      swLat: 42.0 + i * 0.25,
+      swLat,
       swLng: -80.0,
       neLat: 42.0 + (i + 1) * 0.25,
       neLng: -79.5,
+      boundsKey: `${swLat.toFixed(6)}_${(-80.0).toFixed(6)}`,
       depth: 0,
       isLeaf: true,
       status: statuses[i],
@@ -483,6 +488,7 @@ test("listCells preserves resultCount and querySaturation on searched cells", as
     swLng: -80.0,
     neLat: 42.5,
     neLng: -79.5,
+    boundsKey: "42.000000_-80.000000",
     depth: 0,
     isLeaf: true,
     status: "searched",

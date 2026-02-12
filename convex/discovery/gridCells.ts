@@ -71,6 +71,7 @@ export const generateGrid = mutation({
           isLeaf: true,
           status: "unsearched",
           gridId,
+          boundsKey: `${lat.toFixed(6)}_${lng.toFixed(6)}`,
         });
 
         cellIds.push(cellId);
@@ -128,6 +129,7 @@ export const subdivideCell = mutation({
         isLeaf: true,
         status: "unsearched",
         gridId: cell.gridId,
+        boundsKey: `${q.swLat.toFixed(6)}_${q.swLng.toFixed(6)}`,
       });
       childIds.push(childId);
     }

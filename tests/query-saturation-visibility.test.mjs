@@ -143,6 +143,7 @@ async function seedGridAndCell(db, overrides = {}) {
     swLng: -79.9,
     neLat: 43.03,
     neLng: -79.65,
+    boundsKey: "42.850000_-79.900000",
     depth: 0,
     isLeaf: true,
     status: "unsearched",
@@ -368,10 +369,12 @@ test("each cell in a grid has its own independent querySaturation", async () => 
 
   const cellA = await db.insert("discoveryCells", {
     swLat: 42.85, swLng: -79.9, neLat: 43.1, neLng: -79.35,
+    boundsKey: "42.850000_-79.900000",
     depth: 0, isLeaf: true, status: "unsearched", gridId,
   });
   const cellB = await db.insert("discoveryCells", {
     swLat: 43.1, swLng: -79.9, neLat: 43.35, neLng: -79.35,
+    boundsKey: "43.100000_-79.900000",
     depth: 0, isLeaf: true, status: "unsearched", gridId,
   });
 

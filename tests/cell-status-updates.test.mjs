@@ -106,6 +106,7 @@ async function seedGridAndCell(db, overrides = {}) {
     swLng: -79.9,
     neLat: 43.03,
     neLng: -79.65,
+    boundsKey: "42.850000_-79.900000",
     depth: 0,
     isLeaf: true,
     status: "unsearched",

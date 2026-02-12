@@ -196,6 +196,7 @@ export default defineSchema({
     ),
     lastSearchedAt: v.optional(v.number()),
     gridId: v.id("discoveryGrids"),
+    boundsKey: v.string(),
   })
     .index("by_gridId", ["gridId"])
     .index("by_gridId_isLeaf", ["gridId", "isLeaf"])
