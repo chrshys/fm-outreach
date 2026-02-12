@@ -24,6 +24,6 @@ test("activatedBoundsKeys defaults to empty array via nullish coalescing", () =>
   assert.match(source, /activatedBoundsKeys=\{activatedBoundsKeys\s*\?\?\s*\[\]\}/)
 })
 
-test("onSelectVirtual defaults to no-op function via nullish coalescing", () => {
-  assert.match(source, /onSelectVirtual=\{onSelectVirtual\s*\?\?\s*\(\(\)\s*=>\s*\{\}\)\}/)
+test("onSelectVirtualCell defaults to no-op function via nullish coalescing", () => {
+  assert.match(source, /onSelectVirtualCell=\{onSelectVirtualCell\s*\?\?\s*\(\(\)\s*=>\s*\{\}\)\}/)
 })

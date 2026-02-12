@@ -71,10 +71,10 @@ test("discovery mode passes handleCellSelect to MapContent as onCellSelect", () 
   )
 })
 
-test("discovery mode passes onSelectVirtual to MapContent", () => {
+test("discovery mode passes onSelectVirtualCell to MapContent", () => {
   assert.match(
     mapPageSource,
-    /onSelectVirtual=\{viewMode\s*===\s*"discovery"\s*\?\s*handleSelectVirtual\s*:\s*undefined\}/,
+    /onSelectVirtualCell=\{viewMode\s*===\s*"discovery"\s*\?\s*handleSelectVirtual\s*:\s*undefined\}/,
   )
 })
 

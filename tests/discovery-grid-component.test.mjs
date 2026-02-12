@@ -145,7 +145,7 @@ test("DiscoveryGrid destructures new props", () => {
   assert.match(source, /cellSizeKm/)
   assert.match(source, /gridId/)
   assert.match(source, /activatedBoundsKeys/)
-  assert.match(source, /onSelectVirtual/)
+  assert.match(source, /onSelectVirtualCell/)
 })
 
 // --- Virtual grid integration tests ---

@@ -37,8 +37,8 @@ test("DiscoveryGridProps has selectedVirtualCell field", () => {
   assert.match(source, /type DiscoveryGridProps\s*=\s*\{[^}]*selectedVirtualCell:\s*VirtualCell\s*\|\s*null/)
 })
 
-test("DiscoveryGridProps has onSelectVirtual callback", () => {
-  assert.match(source, /type DiscoveryGridProps\s*=\s*\{[^}]*onSelectVirtual:\s*\(cell:\s*VirtualCell\s*\|\s*null\)\s*=>\s*void/)
+test("DiscoveryGridProps has onSelectVirtualCell callback", () => {
+  assert.match(source, /type DiscoveryGridProps\s*=\s*\{[^}]*onSelectVirtualCell:\s*\(cell:\s*VirtualCell\s*\|\s*null\)\s*=>\s*void/)
 })
 
 test("DiscoveryGridProps does not have onActivateCell", () => {
@@ -47,10 +47,10 @@ test("DiscoveryGridProps does not have onActivateCell", () => {
   assert.ok(!match[0].includes("onActivateCell"), "DiscoveryGridProps should not contain onActivateCell")
 })
 
-test("DiscoveryGrid passes isSelected to VirtualGridCell via selectedVirtualCell", () => {
-  assert.match(source, /isSelected=\{selectedVirtualCell\?\.key\s*===\s*vc\.key\}/)
+test("DiscoveryGrid passes isSelected to VirtualGridCell via selectedCellId", () => {
+  assert.match(source, /isSelected=\{vc\.key\s*===\s*selectedCellId\}/)
 })
 
-test("DiscoveryGrid passes onSelectVirtual to VirtualGridCell", () => {
-  assert.match(source, /<VirtualGridCell[\s\S]*?onSelectVirtual=\{onSelectVirtual\}/)
+test("DiscoveryGrid passes onSelectVirtual to VirtualGridCell from onSelectVirtualCell", () => {
+  assert.match(source, /<VirtualGridCell[\s\S]*?onSelectVirtual=\{onSelectVirtualCell\}/)
 })

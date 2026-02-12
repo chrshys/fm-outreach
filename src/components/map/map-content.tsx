@@ -59,11 +59,11 @@ type MapContentProps = {
   gridId?: string
   activatedBoundsKeys?: string[]
   selectedVirtualCell?: VirtualCell | null
-  onSelectVirtual?: (cell: VirtualCell | null) => void
+  onSelectVirtualCell?: (cell: VirtualCell | null) => void
   onBoundsChange?: (bounds: MapBounds) => void
 }
 
-export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon, gridCells, selectedCellId, onCellSelect, cellSizeKm, gridId, activatedBoundsKeys, selectedVirtualCell, onSelectVirtual, onBoundsChange }: MapContentProps) {
+export default function MapContent({ leads, clusters = [], isDrawing = false, onPolygonDrawn, pendingPolygon, gridCells, selectedCellId, onCellSelect, cellSizeKm, gridId, activatedBoundsKeys, selectedVirtualCell, onSelectVirtualCell, onBoundsChange }: MapContentProps) {
   return (
     <MapContainer
       center={NIAGARA_CENTER}
@@ -109,11 +109,11 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
       )}
       {gridCells && onCellSelect ? (
         <Pane name="discovery-grid" style={{ zIndex: 450 }}>
-          <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} cellSizeKm={cellSizeKm ?? 20} gridId={gridId ?? ""} activatedBoundsKeys={activatedBoundsKeys ?? []} selectedVirtualCell={selectedVirtualCell ?? null} onSelectVirtual={onSelectVirtual ?? (() => {})} />
+          <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} cellSizeKm={cellSizeKm ?? 20} gridId={gridId ?? ""} activatedBoundsKeys={activatedBoundsKeys ?? []} selectedVirtualCell={selectedVirtualCell ?? null} onSelectVirtualCell={onSelectVirtualCell ?? (() => {})} />
         </Pane>
       ) : cellSizeKm != null && gridId ? (
         <Pane name="virtual-grid-overlay" style={{ zIndex: 350 }}>
-          <DiscoveryGrid cells={[]} selectedCellId={null} onCellSelect={() => {}} cellSizeKm={cellSizeKm} gridId={gridId} activatedBoundsKeys={activatedBoundsKeys ?? []} selectedVirtualCell={null} onSelectVirtual={() => {}} />
+          <DiscoveryGrid cells={[]} selectedCellId={null} onCellSelect={() => {}} cellSizeKm={cellSizeKm} gridId={gridId} activatedBoundsKeys={activatedBoundsKeys ?? []} selectedVirtualCell={null} onSelectVirtualCell={() => {}} />
         </Pane>
       ) : null}
       {leads.map((lead) => {

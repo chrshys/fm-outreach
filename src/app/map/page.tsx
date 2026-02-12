@@ -264,7 +264,7 @@ export default function MapPage() {
           gridId={globalGridId ?? undefined}
           activatedBoundsKeys={activatedBoundsKeys}
           selectedVirtualCell={viewMode === "discovery" ? selectedVirtualCell : null}
-          onSelectVirtual={viewMode === "discovery" ? handleSelectVirtual : undefined}
+          onSelectVirtualCell={viewMode === "discovery" ? handleSelectVirtual : undefined}
 
         />
         </div>
