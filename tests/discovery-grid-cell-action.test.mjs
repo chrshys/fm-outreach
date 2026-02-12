@@ -6,6 +6,10 @@ const gridSource = fs.readFileSync(
   "src/components/map/discovery-grid.tsx",
   "utf8",
 )
+const sharedSource = fs.readFileSync(
+  "src/components/map/discovery-grid-shared.ts",
+  "utf8",
+)
 const mapContentSource = fs.readFileSync(
   "src/components/map/map-content.tsx",
   "utf8",
@@ -13,32 +17,36 @@ const mapContentSource = fs.readFileSync(
 const pageSource = fs.readFileSync("src/app/map/page.tsx", "utf8")
 
 // ============================================================
-// CellAction type definition (still exported for page-level use)
+// CellAction type definition (defined in discovery-grid-shared, re-exported from discovery-grid)
 // ============================================================
 
 test("exports CellAction type", () => {
-  assert.match(gridSource, /export\s+type\s+CellAction/)
+  assert.match(sharedSource, /export\s+type\s+CellAction/)
 })
 
 test("CellAction includes search variant with mechanism field", () => {
-  assert.match(gridSource, /\{\s*type:\s*"search";\s*mechanism:\s*string\s*\}/)
+  assert.match(sharedSource, /\{\s*type:\s*"search";\s*mechanism:\s*string\s*\}/)
 })
 
 test("CellAction includes subdivide variant", () => {
-  assert.match(gridSource, /\{\s*type:\s*"subdivide"\s*\}/)
+  assert.match(sharedSource, /\{\s*type:\s*"subdivide"\s*\}/)
 })
 
 test("CellAction includes undivide variant", () => {
-  assert.match(gridSource, /\{\s*type:\s*"undivide"\s*\}/)
+  assert.match(sharedSource, /\{\s*type:\s*"undivide"\s*\}/)
 })
 
 test("CellAction is a discriminated union with three variants", () => {
-  const actionBlock = gridSource.slice(
-    gridSource.indexOf("export type CellAction"),
-    gridSource.indexOf("export type CellData"),
+  const actionBlock = sharedSource.slice(
+    sharedSource.indexOf("export type CellAction"),
+    sharedSource.indexOf("export type CellData"),
   )
   const pipeCount = (actionBlock.match(/\|/g) || []).length
   assert.equal(pipeCount, 3, "should have 3 union pipes for 3 variants")
+})
+
+test("discovery-grid re-exports CellAction from discovery-grid-shared", () => {
+  assert.match(gridSource, /export\s+type\s+\{[^}]*CellAction[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
 // ============================================================
@@ -52,7 +60,7 @@ test("DiscoveryGridProps uses selectedCellId and onCellSelect", () => {
 })
 
 test("DiscoveryGrid destructures selectedCellId and onCellSelect in function params", () => {
-  assert.match(gridSource, /\{\s*cells,\s*selectedCellId,\s*onCellSelect\s*\}/)
+  assert.match(gridSource, /\{\s*cells,\s*selectedCellId,\s*onCellSelect/)
 })
 
 // ============================================================
@@ -77,8 +85,8 @@ test("MapContent passes selectedCellId and onCellSelect to DiscoveryGrid", () =>
 // Map page uses selectedCellId state and passes onCellSelect
 // ============================================================
 
-test("map page imports CellAction type", () => {
-  assert.match(pageSource, /import\s+type\s+\{.*CellAction.*\}\s+from\s+["']@\/components\/map\/discovery-grid["']/)
+test("map page imports CellAction type from discovery-grid-shared", () => {
+  assert.match(pageSource, /import\s+type\s+\{.*CellAction.*\}\s+from\s+["']@\/components\/map\/discovery-grid-shared["']/)
 })
 
 test("map page has selectedCellId state", () => {

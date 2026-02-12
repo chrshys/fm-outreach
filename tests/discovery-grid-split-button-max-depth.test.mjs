@@ -2,8 +2,8 @@ import test from "node:test"
 import assert from "node:assert/strict"
 import fs from "node:fs"
 
-const source = fs.readFileSync(
-  "src/components/map/discovery-grid.tsx",
+const sharedSource = fs.readFileSync(
+  "src/components/map/discovery-grid-shared.ts",
   "utf8",
 )
 
@@ -17,7 +17,7 @@ const panelSource = fs.readFileSync(
 // ============================================================
 
 test("MAX_DEPTH is defined as 4", () => {
-  assert.match(source, /const\s+MAX_DEPTH\s*=\s*4/)
+  assert.match(sharedSource, /const\s+MAX_DEPTH\s*=\s*4/)
 })
 
 // ============================================================
@@ -25,9 +25,9 @@ test("MAX_DEPTH is defined as 4", () => {
 // ============================================================
 
 test("getAvailableActions guards subdivide with depth < MAX_DEPTH", () => {
-  const fnBlock = source.slice(
-    source.indexOf("export function getAvailableActions"),
-    source.indexOf("function formatShortDate"),
+  const fnBlock = sharedSource.slice(
+    sharedSource.indexOf("export function getAvailableActions"),
+    sharedSource.indexOf("export function formatShortDate"),
   )
   assert.match(fnBlock, /cell\.depth\s*<\s*MAX_DEPTH/)
   assert.match(fnBlock, /\{\s*type:\s*"subdivide"\s*\}/)
@@ -37,8 +37,8 @@ test("getAvailableActions guards subdivide with depth < MAX_DEPTH", () => {
 // Panel split button disables at MAX_DEPTH
 // ============================================================
 
-test("panel imports MAX_DEPTH from discovery-grid", () => {
-  assert.match(panelSource, /import\s+\{[^}]*MAX_DEPTH[^}]*\}\s+from\s+["']\.\/discovery-grid["']/)
+test("panel imports MAX_DEPTH from discovery-grid-shared", () => {
+  assert.match(panelSource, /import\s+\{[^}]*MAX_DEPTH[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
 test("panel split button disabled when depth >= MAX_DEPTH", () => {

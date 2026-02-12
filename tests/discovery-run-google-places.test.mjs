@@ -15,6 +15,10 @@ const gridSource = fs.readFileSync(
   "src/components/map/discovery-grid.tsx",
   "utf8",
 )
+const sharedSource = fs.readFileSync(
+  "src/components/map/discovery-grid-shared.ts",
+  "utf8",
+)
 
 // ============================================================
 // Panel: Run button dispatches search action for google_places
@@ -37,7 +41,7 @@ test("panel Run button is wrapped in DISCOVERY_MECHANISMS.map", () => {
 
 test("google_places mechanism is enabled in DISCOVERY_MECHANISMS", () => {
   assert.match(
-    gridSource,
+    sharedSource,
     /\{\s*id:\s*"google_places",\s*label:\s*"Google Places",\s*enabled:\s*true\s*\}/,
   )
 })

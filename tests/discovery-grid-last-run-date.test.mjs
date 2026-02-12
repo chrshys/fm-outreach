@@ -4,7 +4,7 @@ import fs from "node:fs"
 
 const gridCellsSource = fs.readFileSync("convex/discovery/gridCells.ts", "utf8")
 const discoverCellSource = fs.readFileSync("convex/discovery/discoverCell.ts", "utf8")
-const discoveryGridSource = fs.readFileSync("src/components/map/discovery-grid.tsx", "utf8")
+const discoveryGridSource = fs.readFileSync("src/components/map/discovery-grid-shared.ts", "utf8")
 
 // ============================================================
 // Backend: discoverCell sets lastSearchedAt timestamp

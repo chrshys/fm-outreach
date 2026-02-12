@@ -3,7 +3,7 @@ import assert from "node:assert/strict"
 import fs from "node:fs"
 
 const source = fs.readFileSync(
-  "src/components/map/discovery-grid.tsx",
+  "src/components/map/discovery-grid-shared.ts",
   "utf8",
 )
 

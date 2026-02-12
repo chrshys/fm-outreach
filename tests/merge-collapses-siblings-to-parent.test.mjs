@@ -356,7 +356,7 @@ test("merge from last child collapses all siblings", async () => {
 // ============================================================
 
 const pageSource = fs.readFileSync("src/app/map/page.tsx", "utf8");
-const gridSource = fs.readFileSync("src/components/map/discovery-grid.tsx", "utf8");
+const sharedSource = fs.readFileSync("src/components/map/discovery-grid-shared.ts", "utf8");
 
 test("handleCellAction dispatches undivide action type", () => {
   assert.match(pageSource, /action\.type\s*===\s*"undivide"/);
@@ -375,9 +375,9 @@ test("handleCellAction shows error toast on merge failure", () => {
 });
 
 test("getAvailableActions includes undivide for depth > 0", () => {
-  const fnBlock = gridSource.slice(
-    gridSource.indexOf("export function getAvailableActions"),
-    gridSource.indexOf("function formatShortDate"),
+  const fnBlock = sharedSource.slice(
+    sharedSource.indexOf("export function getAvailableActions"),
+    sharedSource.indexOf("export function formatShortDate"),
   );
   assert.match(fnBlock, /cell\.depth\s*>\s*0/);
   assert.match(fnBlock, /type:\s*"undivide"/);

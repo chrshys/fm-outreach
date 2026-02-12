@@ -3,7 +3,7 @@ import assert from "node:assert/strict"
 import fs from "node:fs"
 
 const pageSource = fs.readFileSync("src/app/map/page.tsx", "utf8")
-const gridSource = fs.readFileSync("src/components/map/discovery-grid.tsx", "utf8")
+const gridSource = fs.readFileSync("src/components/map/discovery-grid-shared.ts", "utf8")
 const gridCellsSource = fs.readFileSync("convex/discovery/gridCells.ts", "utf8")
 
 // ============================================================
