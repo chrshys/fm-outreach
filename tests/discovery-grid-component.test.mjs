@@ -177,7 +177,7 @@ test("DiscoveryGrid initializes mapBounds eagerly via useState initializer", () 
 
 test("DiscoveryGrid computes virtualCells with useMemo", () => {
   assert.match(source, /const\s+virtualCells\s*=\s*useMemo\(/)
-  assert.match(source, /map\.getZoom\(\)\s*<\s*8/)
+  assert.match(source, /zoom\s*<\s*8/)
   assert.match(source, /computeVirtualGrid\(mapBounds,\s*cellSizeKm\)/)
 })
 
@@ -192,8 +192,8 @@ test("DiscoveryGrid builds persistedBoundsKeySet from cells", () => {
 
 test("DiscoveryGrid filters virtual cells against both sets", () => {
   assert.match(source, /const\s+filteredVirtualCells\s*=\s*useMemo\(/)
-  assert.match(source, /!activatedSet\.has\(vc\.key\)/)
-  assert.match(source, /!persistedBoundsKeySet\.has\(vc\.key\)/)
+  assert.match(source, /activatedSet\.has\(vc\.key\)/)
+  assert.match(source, /persistedBoundsKeySet\.has\(vc\.key\)/)
 })
 
 test("DiscoveryGrid renders VirtualGridCell for filtered virtual cells", () => {

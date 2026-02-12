@@ -73,12 +73,12 @@ test("VIRTUAL_CELL_STYLE has thin border weight (0.5)", () => {
 // ============================================================
 
 test("DiscoveryGrid returns empty virtual cells when zoom < 8", () => {
-  assert.match(discoveryGridSource, /map\.getZoom\(\)\s*<\s*8/)
+  assert.match(discoveryGridSource, /zoom\s*<\s*8/)
 })
 
 test("DiscoveryGrid computes virtual grid when zoom >= 8 (not skipped)", () => {
-  // The condition `map.getZoom() < 8` returns [] — meaning zoom >= 8 computes normally
-  assert.match(discoveryGridSource, /if\s*\(!mapBounds\s*\|\|\s*map\.getZoom\(\)\s*<\s*8\)\s*return\s*\[\]/)
+  // The condition `zoom < 8` returns [] — meaning zoom >= 8 computes normally
+  assert.match(discoveryGridSource, /if\s*\(!mapBounds\s*\|\|\s*zoom\s*<\s*8\)\s*return\s*\[\]/)
 })
 
 // ============================================================

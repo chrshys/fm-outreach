@@ -92,9 +92,11 @@ function getMapBounds(map: ReturnType<typeof useMap>) {
 export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cellSizeKm, activatedBoundsKeys, onActivateCell }: DiscoveryGridProps) {
   const map = useMap()
   const [mapBounds, setMapBounds] = useState<{ swLat: number; swLng: number; neLat: number; neLng: number }>(() => getMapBounds(map))
+  const [zoom, setZoom] = useState(() => map.getZoom())
 
   const updateBounds = useCallback(() => {
     setMapBounds(getMapBounds(map))
+    setZoom(map.getZoom())
   }, [map])
 
   useMapEvents({
@@ -103,9 +105,9 @@ export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cel
   })
 
   const virtualCells = useMemo(() => {
-    if (!mapBounds || map.getZoom() < 8) return []
+    if (!mapBounds || zoom < 8) return []
     return computeVirtualGrid(mapBounds, cellSizeKm)
-  }, [mapBounds, cellSizeKm, map])
+  }, [mapBounds, cellSizeKm, zoom])
 
   const activatedSet = useMemo(() => new Set(activatedBoundsKeys), [activatedBoundsKeys])
 
@@ -137,7 +139,7 @@ export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cel
           onCellSelect={onCellSelect}
         />
       ))}
-      {cells.map((cell) => (
+      {zoom >= 8 && cells.map((cell) => (
         <DiscoveryGridCell
           key={cell._id}
           cell={cell}
