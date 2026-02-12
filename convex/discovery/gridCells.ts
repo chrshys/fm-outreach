@@ -405,6 +405,23 @@ export const purgeDiscoveryCells = mutation({
   },
 });
 
+export const purgeDiscoveryGrids = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const cells = await ctx.db.query("discoveryCells").collect();
+    for (const cell of cells) {
+      await ctx.db.delete(cell._id);
+    }
+
+    const grids = await ctx.db.query("discoveryGrids").collect();
+    for (const grid of grids) {
+      await ctx.db.delete(grid._id);
+    }
+
+    return { deletedCells: cells.length, deletedGrids: grids.length };
+  },
+});
+
 export const updateCellSearchResult = internalMutation({
   args: {
     cellId: v.id("discoveryCells"),
