@@ -5,22 +5,22 @@ import fs from "node:fs"
 const source = fs.readFileSync("src/app/map/page.tsx", "utf8")
 
 // ============================================================
-// useEffect clears selection when selectedGridId changes
+// useEffect clears selection when globalGridId changes
 // ============================================================
 
 test("imports useEffect from react", () => {
   assert.match(source, /import\s+\{[^}]*useEffect[^}]*\}\s+from\s+"react"/)
 })
 
-test("has a useEffect that clears selectedCellId when selectedGridId changes", () => {
+test("has a useEffect that clears selectedCellId when globalGridId changes", () => {
   assert.match(
     source,
-    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\)\s*\},\s*\[selectedGridId\]\)/,
+    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\)\s*\},\s*\[globalGridId\]\)/,
   )
 })
 
 test("useEffect appears before handleGridSelect", () => {
-  const effectIndex = source.indexOf("useEffect(() => { setSelectedCellId(null) }, [selectedGridId])")
+  const effectIndex = source.indexOf("useEffect(() => { setSelectedCellId(null) }, [globalGridId])")
   const handleGridSelectIndex = source.indexOf("const handleGridSelect = useCallback")
   assert.ok(effectIndex > 0, "useEffect should exist")
   assert.ok(handleGridSelectIndex > 0, "handleGridSelect should exist")
@@ -42,7 +42,7 @@ test("handleGridSelect calls setSelectedCellId(null)", () => {
   assert.ok(handleGridSelectMatch, "handleGridSelect should be a useCallback")
   const body = handleGridSelectMatch[1]
   assert.match(body, /setSelectedCellId\(null\)/, "handleGridSelect should clear selectedCellId")
-  assert.match(body, /setSelectedGridId\(gridId\)/, "handleGridSelect should set the new grid id")
+  assert.match(body, /setGlobalGridId\(gridId\)/, "handleGridSelect should set the new grid id")
 })
 
 // ============================================================

@@ -91,14 +91,14 @@ test("discovery mode passes onCellSelect to MapContent", () => {
 test("discovery mode shows DiscoveryPanel sidebar", () => {
   assert.match(mapPageSource, /<DiscoveryPanel/)
   assert.match(mapPageSource, /mapBounds=\{mapBounds\}/)
-  assert.match(mapPageSource, /selectedGridId=\{selectedGridId\}/)
+  assert.match(mapPageSource, /selectedGridId=\{globalGridId\}/)
   assert.match(mapPageSource, /onGridSelect=\{handleGridSelect\}/)
 })
 
 test("discovery mode queries gridCells only when grid selected and in discovery mode", () => {
   assert.match(
     mapPageSource,
-    /selectedGridId\s*&&\s*viewMode\s*===\s*"discovery"\s*\?\s*\{\s*gridId:\s*selectedGridId\s*\}\s*:\s*"skip"/,
+    /globalGridId\s*&&\s*viewMode\s*===\s*"discovery"\s*\?\s*\{\s*gridId:\s*globalGridId\s*\}\s*:\s*"skip"/,
   )
 })
 

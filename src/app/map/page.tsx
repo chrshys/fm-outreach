@@ -52,14 +52,14 @@ export default function MapPage() {
   const [filters, setFilters] = useState<MapFiltersValue>(defaultMapFilters)
   const [viewMode, setViewMode] = useState<"clusters" | "discovery">("clusters")
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
-  const [selectedGridId, setSelectedGridId] = useState<Id<"discoveryGrids"> | null>(null)
+  const [globalGridId, setGlobalGridId] = useState<Id<"discoveryGrids"> | null>(null)
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null)
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- reset derived state when grid changes
-  useEffect(() => { setSelectedCellId(null) }, [selectedGridId])
+  useEffect(() => { setSelectedCellId(null) }, [globalGridId])
 
   const handleGridSelect = useCallback((gridId: Id<"discoveryGrids">) => {
-    setSelectedGridId(gridId)
+    setGlobalGridId(gridId)
     setSelectedCellId(null)
   }, [])
 
@@ -70,21 +70,31 @@ export default function MapPage() {
   // Discovery queries & mutations
   const gridCellsResult = useQuery(
     api.discovery.gridCells.listCells,
-    selectedGridId && viewMode === "discovery" ? { gridId: selectedGridId } : "skip",
+    globalGridId && viewMode === "discovery" ? { gridId: globalGridId } : "skip",
   )
   const gridCells = gridCellsResult?.cells
   const activatedBoundsKeys = gridCellsResult?.activatedBoundsKeys
 
   // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
   const gridsResult = useQuery(api.discovery.gridCells.listGrids) as Array<{ _id: Id<"discoveryGrids">; cellSizeKm: number }> | undefined
-  const selectedGridCellSizeKm = gridsResult?.find((g) => g._id === selectedGridId)?.cellSizeKm
+  const selectedGridCellSizeKm = gridsResult?.find((g) => g._id === globalGridId)?.cellSizeKm
 
   const activateCell = useMutation(api.discovery.gridCells.activateCell)
   const getOrCreateGlobalGrid = useMutation(api.discovery.gridCells.getOrCreateGlobalGrid)
+
+  // Auto-create global grid on first discovery mode entry
+  useEffect(() => {
+    if (viewMode === "discovery" && globalGridId === null) {
+      getOrCreateGlobalGrid({}).then((result) => {
+        setGlobalGridId(result.gridId)
+      })
+    }
+  }, [viewMode, globalGridId, getOrCreateGlobalGrid])
+
   const handleActivateCell = useCallback(async (cell: VirtualCell): Promise<string> => {
-    if (!selectedGridId) throw new Error("No grid selected")
+    if (!globalGridId) throw new Error("No grid selected")
     const result = await activateCell({
-      gridId: selectedGridId,
+      gridId: globalGridId,
       swLat: cell.swLat,
       swLng: cell.swLng,
       neLat: cell.neLat,
@@ -92,7 +102,7 @@ export default function MapPage() {
       boundsKey: cell.key,
     })
     return result.cellId
-  }, [selectedGridId, activateCell])
+  }, [globalGridId, activateCell])
 
   const requestDiscoverCell = useMutation(api.discovery.discoverCell.requestDiscoverCell)
   const subdivideCell = useMutation(api.discovery.gridCells.subdivideCell)
@@ -268,7 +278,7 @@ export default function MapPage() {
           selectedCellId={viewMode === "discovery" ? selectedCellId : null}
           onCellSelect={viewMode === "discovery" ? handleCellSelect : undefined}
           cellSizeKm={viewMode === "discovery" ? selectedGridCellSizeKm : undefined}
-          gridId={viewMode === "discovery" && selectedGridId ? selectedGridId : undefined}
+          gridId={viewMode === "discovery" && globalGridId ? globalGridId : undefined}
           activatedBoundsKeys={viewMode === "discovery" ? activatedBoundsKeys : undefined}
           onActivateCell={viewMode === "discovery" ? handleActivateCell : undefined}
           onBoundsChange={handleBoundsChange}
@@ -281,7 +291,7 @@ export default function MapPage() {
             clusters={clusterOptions}
           />
         ) : (
-          <DiscoveryPanel mapBounds={mapBounds} selectedGridId={selectedGridId} onGridSelect={handleGridSelect} cells={viewMode === "discovery" ? gridCells ?? [] : []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
+          <DiscoveryPanel mapBounds={mapBounds} selectedGridId={globalGridId} onGridSelect={handleGridSelect} cells={viewMode === "discovery" ? gridCells ?? [] : []} selectedCellId={selectedCellId} onCellAction={handleCellAction} />
         )}
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           <Button
