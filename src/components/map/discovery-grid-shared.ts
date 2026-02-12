@@ -17,6 +17,7 @@ export type CellData = {
   resultCount?: number
   querySaturation?: Array<{ query: string; count: number }>
   lastSearchedAt?: number
+  boundsKey?: string
 }
 
 export const DISCOVERY_MECHANISMS = [

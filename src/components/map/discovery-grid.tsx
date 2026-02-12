@@ -79,7 +79,46 @@ function DiscoveryGridCell({ cell, isSelected, onCellSelect }: DiscoveryGridCell
   )
 }
 
-export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cellSizeKm, gridId, activatedBoundsKeys, onActivateCell }: DiscoveryGridProps) {
+function getMapBounds(map: ReturnType<typeof useMap>) {
+  const b = map.getBounds()
+  return {
+    swLat: b.getSouth(),
+    swLng: b.getWest(),
+    neLat: b.getNorth(),
+    neLng: b.getEast(),
+  }
+}
+
+export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cellSizeKm, activatedBoundsKeys, onActivateCell }: DiscoveryGridProps) {
+  const map = useMap()
+  const [mapBounds, setMapBounds] = useState<{ swLat: number; swLng: number; neLat: number; neLng: number }>(() => getMapBounds(map))
+
+  const updateBounds = useCallback(() => {
+    setMapBounds(getMapBounds(map))
+  }, [map])
+
+  useMapEvents({
+    moveend: () => updateBounds(),
+    zoomend: () => updateBounds(),
+  })
+
+  const virtualCells = useMemo(() => {
+    if (!mapBounds || map.getZoom() < 8) return []
+    return computeVirtualGrid(mapBounds, cellSizeKm)
+  }, [mapBounds, cellSizeKm, map])
+
+  const activatedSet = useMemo(() => new Set(activatedBoundsKeys), [activatedBoundsKeys])
+
+  const persistedBoundsKeySet = useMemo(
+    () => new Set(cells.map((c) => c.boundsKey).filter((k): k is string => k !== undefined)),
+    [cells],
+  )
+
+  const filteredVirtualCells = useMemo(
+    () => virtualCells.filter((vc) => !activatedSet.has(vc.key) && !persistedBoundsKeySet.has(vc.key)),
+    [virtualCells, activatedSet, persistedBoundsKeySet],
+  )
+
   return (
     <>
       {cells.map((cell) => (
@@ -87,6 +126,14 @@ export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cel
           key={cell._id}
           cell={cell}
           isSelected={cell._id === selectedCellId}
+          onCellSelect={onCellSelect}
+        />
+      ))}
+      {filteredVirtualCells.map((vc) => (
+        <VirtualGridCell
+          key={vc.key}
+          cell={vc}
+          onActivateCell={onActivateCell}
           onCellSelect={onCellSelect}
         />
       ))}

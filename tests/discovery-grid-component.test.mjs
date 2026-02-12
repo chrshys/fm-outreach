@@ -7,6 +7,11 @@ const source = fs.readFileSync(
   "utf8",
 )
 
+const sharedSource = fs.readFileSync(
+  "src/components/map/discovery-grid-shared.ts",
+  "utf8",
+)
+
 test("imports Rectangle from react-leaflet", () => {
   assert.match(source, /import\s+\{[\s\S]*Rectangle[\s\S]*\}\s+from\s+"react-leaflet"/)
 })
@@ -52,27 +57,31 @@ test("imports VirtualCell type from @/lib/virtual-grid", () => {
   assert.match(source, /import\s+type\s+\{\s*VirtualCell\s*\}\s+from\s+["']@\/lib\/virtual-grid["']/)
 })
 
-test("exports CellData type", () => {
-  assert.match(source, /export\s+type\s+CellData/)
+test("re-exports CellData type from discovery-grid-shared", () => {
+  assert.match(source, /export\s+type\s+\{[^}]*CellData[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("CellData includes bounds fields", () => {
-  assert.match(source, /swLat:\s*number/)
-  assert.match(source, /swLng:\s*number/)
-  assert.match(source, /neLat:\s*number/)
-  assert.match(source, /neLng:\s*number/)
+test("CellData includes bounds fields (in shared module)", () => {
+  assert.match(sharedSource, /swLat:\s*number/)
+  assert.match(sharedSource, /swLng:\s*number/)
+  assert.match(sharedSource, /neLat:\s*number/)
+  assert.match(sharedSource, /neLng:\s*number/)
 })
 
-test("CellData includes status field with CellStatus type", () => {
-  assert.match(source, /status:\s*CellStatus/)
+test("CellData includes status field with CellStatus type (in shared module)", () => {
+  assert.match(sharedSource, /status:\s*CellStatus/)
 })
 
-test("CellData includes optional resultCount", () => {
-  assert.match(source, /resultCount\?:\s*number/)
+test("CellData includes optional resultCount (in shared module)", () => {
+  assert.match(sharedSource, /resultCount\?:\s*number/)
 })
 
-test("CellData includes optional querySaturation array", () => {
-  assert.match(source, /querySaturation\?:\s*Array<\{\s*query:\s*string;\s*count:\s*number\s*\}>/)
+test("CellData includes optional querySaturation array (in shared module)", () => {
+  assert.match(sharedSource, /querySaturation\?:\s*Array<\{\s*query:\s*string;\s*count:\s*number\s*\}>/)
+})
+
+test("CellData includes optional boundsKey (in shared module)", () => {
+  assert.match(sharedSource, /boundsKey\?:\s*string/)
 })
 
 test("accepts cells, selectedCellId, and onCellSelect props", () => {
@@ -135,4 +144,59 @@ test("DiscoveryGrid destructures new props", () => {
   assert.match(source, /gridId/)
   assert.match(source, /activatedBoundsKeys/)
   assert.match(source, /onActivateCell/)
+})
+
+// --- Virtual grid integration tests ---
+
+test("DiscoveryGrid calls useMap()", () => {
+  assert.match(source, /const\s+map\s*=\s*useMap\(\)/)
+})
+
+test("DiscoveryGrid has mapBounds state", () => {
+  assert.match(source, /useState<\{\s*swLat:\s*number;\s*swLng:\s*number;\s*neLat:\s*number;\s*neLng:\s*number\s*\}>/)
+})
+
+test("DiscoveryGrid defines updateBounds with useCallback", () => {
+  assert.match(source, /const\s+updateBounds\s*=\s*useCallback\(/)
+  assert.match(source, /map\.getBounds\(\)/)
+  assert.match(source, /getSouth\(\)/)
+  assert.match(source, /getWest\(\)/)
+  assert.match(source, /getNorth\(\)/)
+  assert.match(source, /getEast\(\)/)
+})
+
+test("DiscoveryGrid uses useMapEvents for moveend and zoomend", () => {
+  assert.match(source, /useMapEvents\(\{/)
+  assert.match(source, /moveend:\s*\(\)\s*=>\s*updateBounds\(\)/)
+  assert.match(source, /zoomend:\s*\(\)\s*=>\s*updateBounds\(\)/)
+})
+
+test("DiscoveryGrid initializes mapBounds eagerly via useState initializer", () => {
+  assert.match(source, /useState.*\(\(\)\s*=>\s*getMapBounds\(map\)\)/)
+})
+
+test("DiscoveryGrid computes virtualCells with useMemo", () => {
+  assert.match(source, /const\s+virtualCells\s*=\s*useMemo\(/)
+  assert.match(source, /map\.getZoom\(\)\s*<\s*8/)
+  assert.match(source, /computeVirtualGrid\(mapBounds,\s*cellSizeKm\)/)
+})
+
+test("DiscoveryGrid builds activatedSet from activatedBoundsKeys", () => {
+  assert.match(source, /const\s+activatedSet\s*=\s*useMemo\(\(\)\s*=>\s*new\s+Set\(activatedBoundsKeys\)/)
+})
+
+test("DiscoveryGrid builds persistedBoundsKeySet from cells", () => {
+  assert.match(source, /const\s+persistedBoundsKeySet\s*=\s*useMemo\(/)
+  assert.match(source, /cells\.map\(.*boundsKey/)
+})
+
+test("DiscoveryGrid filters virtual cells against both sets", () => {
+  assert.match(source, /const\s+filteredVirtualCells\s*=\s*useMemo\(/)
+  assert.match(source, /!activatedSet\.has\(vc\.key\)/)
+  assert.match(source, /!persistedBoundsKeySet\.has\(vc\.key\)/)
+})
+
+test("DiscoveryGrid renders VirtualGridCell for filtered virtual cells", () => {
+  assert.match(source, /filteredVirtualCells\.map\(/)
+  assert.match(source, /<VirtualGridCell/)
 })
