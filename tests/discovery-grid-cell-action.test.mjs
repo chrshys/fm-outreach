@@ -90,7 +90,7 @@ test("map page imports CellAction type from discovery-grid-shared", () => {
 })
 
 test("map page has selectedCellId state", () => {
-  assert.match(pageSource, /useState<string\s*\|\s*null>\(null\)/)
+  assert.match(pageSource, /useMapStore\(\(s\)\s*=>\s*s\.selectedCellId\)/)
 })
 
 test("map page passes selectedCellId to MapContent", () => {

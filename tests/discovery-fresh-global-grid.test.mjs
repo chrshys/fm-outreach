@@ -178,7 +178,7 @@ test("page sets globalGridId from getOrCreateGlobalGrid result", () => {
 test("globalGridId starts as null ensuring fresh creation on first entry", () => {
   assert.match(
     pageSource,
-    /useState<Id<"discoveryGrids">\s*\|\s*null>\(null\)/,
-    "globalGridId must initialize as null",
+    /useMapStore\(\(s\)\s*=>\s*s\.globalGridId\)/,
+    "globalGridId must come from zustand store",
   );
 });

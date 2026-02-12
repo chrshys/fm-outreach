@@ -140,8 +140,8 @@ test("map page queries clusters from convex", () => {
   assert.match(pageSource, /useQuery\(api\.clusters\.list\)/)
 })
 
-test("map page uses useState for filter state", () => {
-  assert.match(pageSource, /useState<MapFiltersValue>\(defaultMapFilters\)/)
+test("map page uses zustand store for filter state", () => {
+  assert.match(pageSource, /useMapStore\(\(s\)\s*=>\s*s\.filters\)/)
 })
 
 test("map page computes filteredLeads with useMemo", () => {

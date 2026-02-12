@@ -76,7 +76,7 @@ test("MapContent passes onCellSelect to DiscoveryGrid", () => {
 // ============================================================
 
 test("map page has selectedCellId state initialized to null", () => {
-  assert.match(pageSource, /const\s+\[selectedCellId,\s*setSelectedCellId\]\s*=\s*useState<string\s*\|\s*null>\(null\)/)
+  assert.match(pageSource, /useMapStore\(\(s\)\s*=>\s*s\.selectedCellId\)/)
 })
 
 test("map page passes selectedCellId to MapContent conditionally on discovery mode", () => {

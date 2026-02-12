@@ -11,7 +11,7 @@ const source = fs.readFileSync("src/app/map/page.tsx", "utf8")
 test("declares globalGridId state with correct type", () => {
   assert.match(
     source,
-    /const\s+\[globalGridId,\s*setGlobalGridId\]\s*=\s*useState<Id<"discoveryGrids">\s*\|\s*null>\(null\)/,
+    /useMapStore\(\(s\)\s*=>\s*s\.globalGridId\)/,
   )
 })
 

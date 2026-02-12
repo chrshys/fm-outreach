@@ -21,7 +21,7 @@ const discoveryGridSource = fs.readFileSync(
 test("map page initializes viewMode state as clusters", () => {
   assert.match(
     mapPageSource,
-    /useState<"clusters"\s*\|\s*"discovery">\("clusters"\)/,
+    /useMapStore\(\(s\)\s*=>\s*s\.viewMode\)/,
   )
 })
 
@@ -29,7 +29,7 @@ test("map page has a toggle button switching between clusters and discovery", ()
   assert.match(mapPageSource, /setViewMode\(/)
   assert.match(
     mapPageSource,
-    /prev\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"/,
+    /viewMode\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"/,
   )
 })
 
@@ -44,7 +44,7 @@ test("view mode toggle clears selectedCellId", () => {
   // The onClick handler for the view toggle button should call setSelectedCellId(null)
   // to clear any cell selection when switching between clusters and discovery modes
   const toggleMatch = mapPageSource.match(
-    /setViewMode\(\(prev\)\s*=>\s*prev\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
+    /setViewMode\(viewMode\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
   )
   assert.ok(toggleMatch, "view mode toggle onClick handler should exist")
   assert.match(

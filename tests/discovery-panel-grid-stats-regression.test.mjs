@@ -256,7 +256,7 @@ test("cell bounds calculated from sw/ne coordinates", () => {
 // =============================================================================
 
 test("view mode toggle cycles between clusters and discovery", () => {
-  assert.match(pageSource, /setViewMode\(\(prev\)\s*=>\s*prev\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)/)
+  assert.match(pageSource, /setViewMode\(viewMode\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)/)
 })
 
 test("toggle resets drawing state when switching modes", () => {

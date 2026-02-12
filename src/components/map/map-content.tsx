@@ -17,6 +17,7 @@ import type { CellData } from "./discovery-grid"
 import type { VirtualCell } from "@/lib/virtual-grid"
 import { MapBoundsEmitter } from "./map-bounds-emitter"
 import type { MapBounds } from "./map-bounds-emitter"
+import { MapViewportSync } from "./map-viewport-sync"
 import { MarkerPopup } from "./marker-popup"
 import { PolygonDraw } from "./polygon-draw"
 import { getStatusColor } from "./status-colors"
@@ -74,6 +75,7 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <MapViewportSync />
       {clusters.filter((c) => c.boundary).map((cluster, index) => {
         const color = getClusterColor(index)
         const positions: [number, number][] = cluster.boundary.map((p) => [p.lat, p.lng])

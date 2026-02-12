@@ -36,7 +36,7 @@ test("listCells query uses useQuery with api.discovery.gridCells.listCells", () 
 test("mode toggle does NOT reset globalGridId", () => {
   // Extract the mode toggle onClick block: from setViewMode through the closing }}
   const toggleMatch = pageSource.match(
-    /setViewMode\(\(prev\)\s*=>\s*prev\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
+    /setViewMode\(viewMode\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
   )
   assert.ok(toggleMatch, "expected to find viewMode toggle handler")
   const toggleBody = toggleMatch[1]
@@ -121,7 +121,7 @@ test("clusters array is empty in discovery mode (clusters hidden)", () => {
 
 test("mode toggle clears selectedCellId", () => {
   const toggleHandler = pageSource.match(
-    /setViewMode\(\(prev\)\s*=>\s*prev\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
+    /setViewMode\(viewMode\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
   )
   assert.ok(toggleHandler)
   assert.match(toggleHandler[1], /setSelectedCellId\(null\)/)
@@ -129,7 +129,7 @@ test("mode toggle clears selectedCellId", () => {
 
 test("mode toggle clears isDrawing", () => {
   const toggleHandler = pageSource.match(
-    /setViewMode\(\(prev\)\s*=>\s*prev\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
+    /setViewMode\(viewMode\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
   )
   assert.ok(toggleHandler)
   assert.match(toggleHandler[1], /setIsDrawing\(false\)/)
@@ -137,7 +137,7 @@ test("mode toggle clears isDrawing", () => {
 
 test("mode toggle clears drawnPolygon", () => {
   const toggleHandler = pageSource.match(
-    /setViewMode\(\(prev\)\s*=>\s*prev\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
+    /setViewMode\(viewMode\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
   )
   assert.ok(toggleHandler)
   assert.match(toggleHandler[1], /setDrawnPolygon\(null\)/)

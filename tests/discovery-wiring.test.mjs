@@ -16,7 +16,7 @@ test("imports Id type from Convex dataModel", () => {
 })
 
 test("has globalGridId state with Id<discoveryGrids> type", () => {
-  assert.match(pageSource, /useState<Id<"discoveryGrids">\s*\|\s*null>\(null\)/)
+  assert.match(pageSource, /useMapStore\(\(s\)\s*=>\s*s\.globalGridId\)/)
 })
 
 test("queries listCells unconditionally on globalGridId (stays warm across mode switches)", () => {

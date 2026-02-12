@@ -16,7 +16,7 @@ const mapContentSource = fs.readFileSync("src/components/map/map-content.tsx", "
 test("viewMode defaults to clusters", () => {
   assert.match(
     pageSource,
-    /useState<"clusters"\s*\|\s*"discovery">\("clusters"\)/,
+    /useMapStore\(\(s\)\s*=>\s*s\.viewMode\)/,
   )
 })
 
@@ -25,7 +25,7 @@ test("viewMode defaults to clusters", () => {
 test("toggle button sets viewMode to discovery when in clusters mode", () => {
   assert.match(
     pageSource,
-    /setViewMode\(\(prev\)\s*=>\s*prev\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)/,
+    /setViewMode\(viewMode\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)/,
   )
 })
 
@@ -34,7 +34,7 @@ test("toggle button sets viewMode to discovery when in clusters mode", () => {
 test("globalGridId initializes as null", () => {
   assert.match(
     pageSource,
-    /const\s+\[globalGridId,\s*setGlobalGridId\]\s*=\s*useState<Id<"discoveryGrids">\s*\|\s*null>\(null\)/,
+    /useMapStore\(\(s\)\s*=>\s*s\.globalGridId\)/,
   )
 })
 

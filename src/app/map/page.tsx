@@ -8,15 +8,14 @@ import { toast } from "sonner"
 
 import type { CellAction } from "@/components/map/discovery-grid-shared"
 import type { VirtualCell } from "@/lib/virtual-grid"
+import { useMapStore } from "@/lib/map-store"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import { AppLayout } from "@/components/layout/app-layout"
 import {
   MapFilters,
-  defaultMapFilters,
   filterLeads,
 } from "@/components/map/map-filters"
-import type { MapFiltersValue } from "@/components/map/map-filters"
 import { DiscoveryPanel } from "@/components/map/discovery-panel"
 import { Button } from "@/components/ui/button"
 import {
@@ -48,10 +47,14 @@ export default function MapPage() {
   const leads = useQuery(api.leads.listWithCoords)
   const clusters = useQuery(api.clusters.list)
   const createCluster = useMutation(api.clusters.createPolygonCluster)
-  const [filters, setFilters] = useState<MapFiltersValue>(defaultMapFilters)
-  const [viewMode, setViewMode] = useState<"clusters" | "discovery">("clusters")
-  const [globalGridId, setGlobalGridId] = useState<Id<"discoveryGrids"> | null>(null)
-  const [selectedCellId, setSelectedCellId] = useState<string | null>(null)
+  const filters = useMapStore((s) => s.filters)
+  const setFilters = useMapStore((s) => s.setFilters)
+  const viewMode = useMapStore((s) => s.viewMode)
+  const setViewMode = useMapStore((s) => s.setViewMode)
+  const globalGridId = useMapStore((s) => s.globalGridId) as Id<"discoveryGrids"> | null
+  const setGlobalGridId = useMapStore((s) => s.setGlobalGridId)
+  const selectedCellId = useMapStore((s) => s.selectedCellId)
+  const setSelectedCellId = useMapStore((s) => s.setSelectedCellId)
   const [selectedVirtualCell, setSelectedVirtualCell] = useState<VirtualCell | null>(null)
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- reset derived state when grid changes
@@ -306,7 +309,7 @@ export default function MapPage() {
             variant="outline"
             className="bg-card shadow-md"
             onClick={() => {
-              setViewMode((prev) => prev === "clusters" ? "discovery" : "clusters")
+              setViewMode(viewMode === "clusters" ? "discovery" : "clusters")
               setIsDrawing(false)
               setShowNamingDialog(false)
               setDrawnPolygon(null)

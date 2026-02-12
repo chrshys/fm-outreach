@@ -5,7 +5,7 @@ import fs from "node:fs"
 const source = fs.readFileSync("src/app/map/page.tsx", "utf8")
 
 test("declares viewMode state with clusters | discovery type, defaulting to clusters", () => {
-  assert.match(source, /useState<"clusters"\s*\|\s*"discovery">\("clusters"\)/)
+  assert.match(source, /useMapStore\(\(s\)\s*=>\s*s\.viewMode\)/)
 })
 
 test("imports Grid3X3 icon from lucide-react", () => {
@@ -22,7 +22,7 @@ test("toggle button label shows Discovery when in clusters mode and Clusters whe
 
 test("toggle button calls setViewMode toggling between clusters and discovery", () => {
   assert.match(source, /setViewMode\(/)
-  assert.match(source, /prev\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"/)
+  assert.match(source, /viewMode\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"/)
 })
 
 test("Draw Cluster button is conditionally rendered only in clusters mode", () => {
