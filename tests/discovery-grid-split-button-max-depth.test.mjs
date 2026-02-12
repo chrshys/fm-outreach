@@ -7,6 +7,11 @@ const source = fs.readFileSync(
   "utf8",
 )
 
+const panelSource = fs.readFileSync(
+  "src/components/map/discovery-panel.tsx",
+  "utf8",
+)
+
 // ============================================================
 // MAX_DEPTH constant is defined
 // ============================================================
@@ -29,9 +34,17 @@ test("getAvailableActions guards subdivide with depth < MAX_DEPTH", () => {
 })
 
 // ============================================================
-// Tooltip/CellTooltipContent are removed (split button UI moved to panel)
+// Panel split button disables at MAX_DEPTH
 // ============================================================
 
-test("no CellTooltipContent component exists", () => {
-  assert.doesNotMatch(source, /function\s+CellTooltipContent/)
+test("panel imports MAX_DEPTH from discovery-grid", () => {
+  assert.match(panelSource, /import\s+\{[^}]*MAX_DEPTH[^}]*\}\s+from\s+["']\.\/discovery-grid["']/)
+})
+
+test("panel split button disabled when depth >= MAX_DEPTH", () => {
+  assert.match(panelSource, /selectedCell\.depth\s*>=\s*MAX_DEPTH/)
+})
+
+test("panel split button dispatches subdivide action", () => {
+  assert.match(panelSource, /onCellAction\(selectedCell\._id,\s*\{\s*type:\s*"subdivide"\s*\}\)/)
 })
