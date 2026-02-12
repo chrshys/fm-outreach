@@ -167,11 +167,11 @@ test("DiscoveryGrid initializes bounds eagerly from map state", () => {
 // ============================================================
 
 test("DiscoveryGrid filters virtual cells against activatedBoundsKeys set", () => {
-  assert.match(discoveryGridSource, /!activatedSet\.has\(vc\.key\)/)
+  assert.match(discoveryGridSource, /activatedSet\.has\(vc\.key\)/)
 })
 
 test("DiscoveryGrid filters virtual cells against persistedBoundsKeySet", () => {
-  assert.match(discoveryGridSource, /!persistedBoundsKeySet\.has\(vc\.key\)/)
+  assert.match(discoveryGridSource, /persistedBoundsKeySet\.has\(vc\.key\)/)
 })
 
 test("DiscoveryGrid builds activatedSet from props", () => {
@@ -186,12 +186,12 @@ test("DiscoveryGrid builds persistedBoundsKeySet from cells boundsKey field", ()
 // 6. Persisted cells render on top of / instead of virtual cells
 // ============================================================
 
-test("DiscoveryGrid renders persisted cells before virtual cells in JSX", () => {
+test("DiscoveryGrid renders persisted cells after virtual cells in JSX (on top in SVG)", () => {
   const persistedIdx = discoveryGridSource.indexOf("cells.map((cell)")
   const virtualIdx = discoveryGridSource.indexOf("filteredVirtualCells.map")
   assert.ok(persistedIdx > 0, "persisted cells render block exists")
   assert.ok(virtualIdx > 0, "virtual cells render block exists")
-  assert.ok(persistedIdx < virtualIdx, "persisted cells rendered before virtual cells")
+  assert.ok(virtualIdx < persistedIdx, "virtual cells rendered first so persisted cells appear on top")
 })
 
 // ============================================================

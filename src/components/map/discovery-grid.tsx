@@ -115,25 +115,33 @@ export default function DiscoveryGrid({ cells, selectedCellId, onCellSelect, cel
   )
 
   const filteredVirtualCells = useMemo(
-    () => virtualCells.filter((vc) => !activatedSet.has(vc.key) && !persistedBoundsKeySet.has(vc.key)),
-    [virtualCells, activatedSet, persistedBoundsKeySet],
+    () => virtualCells.filter((vc) => {
+      if (activatedSet.has(vc.key) || persistedBoundsKeySet.has(vc.key)) return false
+      // Spatial overlap check: exclude virtual cells that overlap any persisted cell
+      // (handles cells without boundsKey or subdivided children with different keys)
+      return !cells.some((c) =>
+        c.swLat < vc.neLat && c.neLat > vc.swLat &&
+        c.swLng < vc.neLng && c.neLng > vc.swLng,
+      )
+    }),
+    [virtualCells, activatedSet, persistedBoundsKeySet, cells],
   )
 
   return (
     <>
-      {cells.map((cell) => (
-        <DiscoveryGridCell
-          key={cell._id}
-          cell={cell}
-          isSelected={cell._id === selectedCellId}
-          onCellSelect={onCellSelect}
-        />
-      ))}
       {filteredVirtualCells.map((vc) => (
         <VirtualGridCell
           key={vc.key}
           cell={vc}
           onActivateCell={onActivateCell}
+          onCellSelect={onCellSelect}
+        />
+      ))}
+      {cells.map((cell) => (
+        <DiscoveryGridCell
+          key={cell._id}
+          cell={cell}
+          isSelected={cell._id === selectedCellId}
           onCellSelect={onCellSelect}
         />
       ))}
