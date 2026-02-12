@@ -29,12 +29,12 @@ test("does not pass setGlobalGridId to DiscoveryPanel (auto-select removed)", ()
 test("useEffect clears selectedCellId when globalGridId changes", () => {
   assert.match(
     source,
-    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\)\s*\},\s*\[globalGridId\]\)/,
+    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\);\s*setSelectedVirtualCell\(null\)\s*\},\s*\[globalGridId,\s*setSelectedCellId\]\)/,
   )
 })
 
 test("useEffect on globalGridId appears before handleCellSelect", () => {
-  const effectIndex = source.indexOf("useEffect(() => { setSelectedCellId(null) }, [globalGridId])")
+  const effectIndex = source.indexOf("useEffect(() => { setSelectedCellId(null); setSelectedVirtualCell(null) }, [globalGridId, setSelectedCellId])")
   const cellSelectIndex = source.indexOf("const handleCellSelect")
   assert.ok(effectIndex > 0, "useEffect should exist")
   assert.ok(cellSelectIndex > 0, "handleCellSelect should exist")

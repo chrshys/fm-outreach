@@ -170,7 +170,7 @@ test("map page passes onCellAction to DiscoveryPanel", () => {
 test("map page clears selectedCellId and selectedVirtualCell via useEffect when globalGridId changes", () => {
   assert.match(
     pageSource,
-    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\);\s*setSelectedVirtualCell\(null\)\s*\},\s*\[globalGridId\]\)/,
+    /useEffect\(\(\)\s*=>\s*\{\s*setSelectedCellId\(null\);\s*setSelectedVirtualCell\(null\)\s*\},\s*\[globalGridId,\s*setSelectedCellId\]\)/,
   )
 })
 

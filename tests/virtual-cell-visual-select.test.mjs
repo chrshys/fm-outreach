@@ -33,7 +33,7 @@ test("VirtualGridCell click handler contains no useMutation", () => {
 test("handleSelectVirtualCell body contains no mutation calls or awaits", () => {
   // Extract just the callback body (up to the closing }, [])
   const fnMatch = pageSource.match(
-    /handleSelectVirtualCell\s*=\s*useCallback\(\(cell:\s*VirtualCell\s*\|\s*null\)\s*=>\s*\{([\s\S]*?)\},\s*\[\]/,
+    /handleSelectVirtualCell\s*=\s*useCallback\(\(cell:\s*VirtualCell\s*\|\s*null\)\s*=>\s*\{([\s\S]*?)\},\s*\[setSelectedCellId\]/,
   )
   assert.ok(fnMatch, "handleSelectVirtualCell should exist")
   const body = fnMatch[1]
@@ -76,7 +76,7 @@ test("page uses useState for selectedVirtualCell (not a DB query)", () => {
 
 test("handleSelectVirtualCell only calls two setters (no side effects)", () => {
   const fnMatch = pageSource.match(
-    /handleSelectVirtualCell\s*=\s*useCallback\(\(cell:\s*VirtualCell\s*\|\s*null\)\s*=>\s*\{([\s\S]*?)\},\s*\[\]/,
+    /handleSelectVirtualCell\s*=\s*useCallback\(\(cell:\s*VirtualCell\s*\|\s*null\)\s*=>\s*\{([\s\S]*?)\},\s*\[setSelectedCellId\]/,
   )
   assert.ok(fnMatch)
   const body = fnMatch[1]

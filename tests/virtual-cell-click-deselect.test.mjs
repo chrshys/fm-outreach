@@ -83,6 +83,6 @@ test("DiscoveryGrid computes VirtualGridCell isSelected from selectedVirtualCell
 test("selectedVirtualCell resets to null when globalGridId changes", () => {
   assert.match(
     pageSource,
-    /useEffect\(\(\)\s*=>\s*\{[^}]*setSelectedVirtualCell\(null\)[^}]*\},\s*\[globalGridId\]\)/,
+    /useEffect\(\(\)\s*=>\s*\{[^}]*setSelectedVirtualCell\(null\)[^}]*\},\s*\[globalGridId,\s*setSelectedCellId\]\)/,
   )
 })

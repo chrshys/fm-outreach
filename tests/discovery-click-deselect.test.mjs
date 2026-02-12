@@ -69,6 +69,6 @@ test("discovery panel only renders selected cell section when selectedCell exist
 test("selectedCellId resets to null when globalGridId changes", () => {
   assert.match(
     pageSource,
-    /useEffect\(\(\)\s*=>\s*\{[^}]*setSelectedCellId\(null\)[^}]*\},\s*\[globalGridId\]\)/,
+    /useEffect\(\(\)\s*=>\s*\{[^}]*setSelectedCellId\(null\)[^}]*\},\s*\[globalGridId,\s*setSelectedCellId\]\)/,
   )
 })

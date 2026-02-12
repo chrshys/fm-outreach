@@ -182,8 +182,8 @@ test("listLeadsPage hasFacebook ignores whitespace-only values", () => {
 // --- Default filters include new fields ---
 
 test("leads page defaultFilters includes hasFacebook and hasInstagram as false", () => {
-  assert.match(pageSource, /hasFacebook:\s*false/)
-  assert.match(pageSource, /hasInstagram:\s*false/)
+  assert.match(pageSource, /hasFacebook:\s*filters\.hasFacebook\s*\?\?\s*false/)
+  assert.match(pageSource, /hasInstagram:\s*filters\.hasInstagram\s*\?\?\s*false/)
 })
 
 test("leads page passes hasFacebook and hasInstagram to query args", () => {
