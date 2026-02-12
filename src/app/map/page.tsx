@@ -7,7 +7,7 @@ import { Grid3X3, PenTool } from "lucide-react"
 import { toast } from "sonner"
 
 import type { MapBounds } from "@/components/map/map-bounds-emitter"
-import type { CellAction } from "@/components/map/discovery-grid"
+import type { CellAction } from "@/components/map/discovery-grid-shared"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import { AppLayout } from "@/components/layout/app-layout"
