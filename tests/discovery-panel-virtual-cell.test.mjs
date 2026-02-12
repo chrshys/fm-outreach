@@ -12,8 +12,8 @@ const pageSource = fs.readFileSync("src/app/map/page.tsx", "utf8")
 // DiscoveryPanel accepts selectedVirtualCell prop
 // ============================================================
 
-test("DiscoveryPanelProps includes selectedVirtualCell: VirtualCell | null", () => {
-  assert.match(panelSource, /selectedVirtualCell:\s*VirtualCell\s*\|\s*null/)
+test("DiscoveryPanelProps includes selectedVirtualCell as optional VirtualCell | null", () => {
+  assert.match(panelSource, /selectedVirtualCell\?:\s*VirtualCell\s*\|\s*null/)
 })
 
 test("panel imports VirtualCell type from virtual-grid", () => {

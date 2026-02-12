@@ -20,7 +20,7 @@ type DiscoveryPanelProps = {
   globalGridId: Id<"discoveryGrids"> | null
   cells: CellData[]
   selectedCellId: string | null
-  selectedVirtualCell: VirtualCell | null
+  selectedVirtualCell?: VirtualCell | null
   onCellAction: (cellId: string, action: CellAction) => void
 }
 
