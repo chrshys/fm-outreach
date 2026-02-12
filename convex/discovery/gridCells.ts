@@ -9,13 +9,6 @@ import {
 
 const MAX_DEPTH = 4;
 
-const DEFAULT_QUERIES = [
-  "farm market",
-  "fruit stand",
-  "farmers market",
-];
-const DEFAULT_CELL_SIZE_KM = 10;
-
 export const subdivideCell = mutation({
   args: {
     cellId: v.id("discoveryCells"),
@@ -369,6 +362,9 @@ export const activateCell = mutation({
     return { cellId, alreadyExisted: false };
   },
 });
+
+const DEFAULT_QUERIES = ["farm market", "fruit stand", "farmers market"];
+const DEFAULT_CELL_SIZE_KM = 10;
 
 export const getOrCreateGlobalGrid = mutation({
   args: {},

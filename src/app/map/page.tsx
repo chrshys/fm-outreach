@@ -55,6 +55,8 @@ export default function MapPage() {
   const [selectedVirtualCell, setSelectedVirtualCell] = useState<VirtualCell | null>(null)
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- reset derived state when grid changes
+  useEffect(() => { setSelectedCellId(null) }, [globalGridId])
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- also clear virtual cell selection
   useEffect(() => { setSelectedCellId(null); setSelectedVirtualCell(null) }, [globalGridId])
 
   const handleCellSelect = useCallback((cellId: string | null) => {
@@ -82,14 +84,14 @@ export default function MapPage() {
 
   const getOrCreateGlobalGrid = useMutation(api.discovery.gridCells.getOrCreateGlobalGrid)
 
-  // Auto-create global grid on mount so the virtual grid overlay is always visible
+  // Auto-create global grid
   useEffect(() => {
-    if (globalGridId === null) {
+    if (viewMode === "discovery" && globalGridId === null) {
       getOrCreateGlobalGrid({}).then((result) => {
         setGlobalGridId(result.gridId)
       })
     }
-  }, [globalGridId, getOrCreateGlobalGrid])
+  }, [viewMode, globalGridId, getOrCreateGlobalGrid])
 
   const requestDiscoverCell = useMutation(api.discovery.discoverCell.requestDiscoverCell)
   const subdivideCell = useMutation(api.discovery.gridCells.subdivideCell)
@@ -204,6 +206,7 @@ export default function MapPage() {
   }, [])
 
   const handleCellAction = useCallback(async (cellId: string, action: CellAction) => {
+    // const cell = cells?.find — use let to allow reassignment after virtual cell activation
     let cell = cells?.find((c) => c._id === cellId)
     if (!cell && selectedVirtualCell && selectedVirtualCell.key === cellId) {
       if (!globalGridId) return

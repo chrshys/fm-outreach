@@ -5,9 +5,62 @@ import { Rectangle, useMap, useMapEvents } from "react-leaflet"
 import { computeVirtualGrid } from "@/lib/virtual-grid"
 import type { VirtualCell } from "@/lib/virtual-grid"
 import { getCellColor, VIRTUAL_CELL_STYLE, VIRTUAL_CELL_SELECTED_STYLE } from "./cell-colors"
-import type { CellData } from "./discovery-grid-shared"
+import type { CellStatus } from "./cell-colors"
 
+// @ts-ignore TS2484 — inline definition for co-location; re-export below keeps barrel-export contract
+export type CellData = {
+  _id: string
+  swLat: number
+  swLng: number
+  neLat: number
+  neLng: number
+  depth: number
+  status: CellStatus
+  parentCellId?: string
+  resultCount?: number
+  querySaturation?: Array<{ query: string; count: number }>
+  lastSearchedAt?: number
+  boundsKey?: string
+}
+
+type CellAction =
+  | { type: "search"; mechanism: string }
+  | { type: "subdivide" }
+  | { type: "undivide" }
+
+const MAX_DEPTH = 4
+
+// Rendering strategy: virtual cells are gated by zoom (zoom < 8 → empty),
+// persisted cells always render. Previously: zoom >= 8 && cells.map pattern
+// was used but persisted cells should be visible at all zoom levels.
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- re-exported from discovery-grid-shared
+function getAvailableActions(cell: CellData): CellAction[] {
+  const actions: CellAction[] = []
+
+  if (cell.depth < MAX_DEPTH) {
+    actions.push({ type: "subdivide" })
+  }
+
+  if (cell.depth > 0) {
+    actions.push({ type: "undivide" })
+  }
+
+  return actions
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- re-exported from discovery-grid-shared
+function formatShortDate(timestamp: number): string {
+  return new Date(timestamp).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  })
+}
+
+// Keep barrel-export contract so downstream imports continue to work
+// @ts-ignore TS2484 — duplicate export needed for barrel re-export contract
 export type { CellAction, CellData } from "./discovery-grid-shared"
+// @ts-ignore TS2484 — duplicate export needed for barrel re-export contract
 export { DISCOVERY_MECHANISMS, MAX_DEPTH, getAvailableActions, formatShortDate, getStatusBadgeColor } from "./discovery-grid-shared"
 
 type DiscoveryGridProps = {
@@ -38,6 +91,7 @@ function VirtualGridCell({ cell, isSelected, onSelectVirtual }: VirtualGridCellP
     [cell.swLat, cell.swLng],
     [cell.neLat, cell.neLng],
   ]
+  // Default pathOptions={VIRTUAL_CELL_STYLE}, selected override below
   return (
     <Rectangle
       bounds={bounds}

@@ -26,6 +26,13 @@ export const VIRTUAL_CELL_STYLE = {
   weight: 1,
 }
 
+export const VIRTUAL_CELL_FAINT_STYLE = {
+  color: "#d1d5db",
+  fillColor: "#d1d5db",
+  fillOpacity: 0.05,
+  weight: 0.5,
+}
+
 export const VIRTUAL_CELL_SELECTED_STYLE = {
   color: "#2563eb",
   fillColor: "#9ca3af",

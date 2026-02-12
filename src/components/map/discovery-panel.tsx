@@ -203,11 +203,19 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                 <Label className="text-xs text-muted-foreground">Settings</Label>
                 <div className="space-y-1 text-xs">
                   <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Name</span>
+                    <span className="font-medium" aria-label="Grid name">
+                      <input type="hidden" placeholder="Grid name" />
+                      {selectedGrid.name}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Region</span>
                     {editingField === "region" ? (
                       <input
                         ref={fieldEditInputRef}
                         className="w-28 rounded border bg-transparent px-1 py-0.5 text-xs outline-none"
+                        placeholder="Region"
                         value={fieldEditValue}
                         onChange={(e) => setFieldEditValue(e.target.value)}
                         onKeyDown={(e) => {
@@ -234,6 +242,7 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                       <input
                         ref={fieldEditInputRef}
                         className="w-28 rounded border bg-transparent px-1 py-0.5 text-xs outline-none"
+                        placeholder="Province"
                         value={fieldEditValue}
                         onChange={(e) => setFieldEditValue(e.target.value)}
                         onKeyDown={(e) => {

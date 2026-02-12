@@ -33,13 +33,11 @@ export function computeVirtualGrid(
   const midLat = Math.round(((bounds.swLat + bounds.neLat) / 2) / LAT_BAND) * LAT_BAND;
   const lngStep = cellSizeKm / (111 * Math.cos(midLat * Math.PI / 180));
 
-  // Use index-based multiplication instead of iterative addition to avoid
-  // floating-point accumulation drift.  This ensures that cell coordinates
-  // are identical regardless of the viewport's starting position.
-  const startLatIdx = Math.floor(bounds.swLat / latStep);
-  const startLngIdx = Math.floor(bounds.swLng / lngStep);
-  const startLat = startLatIdx * latStep;
-  const startLng = startLngIdx * lngStep;
+  // Snap start coordinates to grid alignment to avoid floating-point drift.
+  const startLat = Math.floor(bounds.swLat / latStep) * latStep;
+  const startLng = Math.floor(bounds.swLng / lngStep) * lngStep;
+  const startLatIdx = Math.round(startLat / latStep);
+  const startLngIdx = Math.round(startLng / lngStep);
 
   const rows = Math.ceil((bounds.neLat - startLat) / latStep);
   const cols = Math.ceil((bounds.neLng - startLng) / lngStep);

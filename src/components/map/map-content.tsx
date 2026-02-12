@@ -107,13 +107,14 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
           }}
         />
       )}
+      {/* Render DiscoveryGrid: {gridCells && onCellSelect && ( <DiscoveryGrid /> )} */}
       {gridCells && onCellSelect ? (
         <Pane name="discovery-grid" style={{ zIndex: 450 }}>
           <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} cellSizeKm={cellSizeKm ?? 20} gridId={gridId ?? ""} activatedBoundsKeys={activatedBoundsKeys ?? []} selectedVirtualCell={selectedVirtualCell ?? null} onSelectVirtualCell={onSelectVirtualCell ?? (() => {})} />
         </Pane>
       ) : cellSizeKm != null && gridId ? (
-        <Pane name="virtual-grid-overlay" style={{ zIndex: 350 }}>
-          <DiscoveryGrid cells={[]} selectedCellId={null} onCellSelect={() => {}} cellSizeKm={cellSizeKm} gridId={gridId} activatedBoundsKeys={activatedBoundsKeys ?? []} selectedVirtualCell={null} onSelectVirtualCell={() => {}} />
+        <Pane name="virtual-grid-overlay" style={{ zIndex: 440 }}>
+          <DiscoveryGrid cells={[]} selectedCellId={null} onCellSelect={() => {}} cellSizeKm={cellSizeKm ?? 20} gridId={gridId ?? ""} activatedBoundsKeys={[]} selectedVirtualCell={null} onSelectVirtualCell={(() => {})} />
         </Pane>
       ) : null}
       {leads.map((lead) => {
