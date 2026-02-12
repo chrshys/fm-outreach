@@ -87,18 +87,11 @@ test("handleSelectVirtualCell only calls two setters (no side effects)", () => {
 
 // --- Panel displays virtual cell info without DB lookup ---
 
-test("DiscoveryPanel shows virtual cell section without querying for cell data", () => {
-  // The virtual cell section condition checks !selectedCell (no DB lookup for virtual cells)
-  assert.match(panelSource, /!selectedCell\s*&&\s*selectedVirtualCell/)
-})
-
-test("virtual cell section does not reference _id (no database identity)", () => {
-  const virtualSection = panelSource.slice(
-    panelSource.indexOf("Selected Virtual Cell"),
-    panelSource.indexOf("Selected Cell */"),
-  )
-  // The virtual cell section should not use _id - it uses .key instead
-  assert.doesNotMatch(virtualSection, /selectedVirtualCell\._id/)
+test("DiscoveryPanel unifies virtual cell into selectedCell derivation (no separate section)", () => {
+  // Virtual cells are synthesized into CellData via the persistedCell ?? fallback
+  assert.match(panelSource, /persistedCell\s*\?\?\s*\(selectedVirtualCell\s*\?/)
+  // The _id for a virtual cell comes from its key
+  assert.match(panelSource, /_id:\s*selectedVirtualCell\.key/)
 })
 
 // --- Mutual exclusivity: selecting persisted cell clears virtual ---

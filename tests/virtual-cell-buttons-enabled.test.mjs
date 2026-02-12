@@ -134,6 +134,18 @@ test("simulated: Merge button is hidden for a virtual cell (depth 0)", () => {
   assert.equal(showMerge, false, "Merge button should be hidden for virtual cell (depth 0)")
 })
 
+test("source: Merge button render guard (depth > 0) prevents display for virtual cells (depth 0)", () => {
+  // Virtual cell fallback sets depth: 0
+  assert.match(panelSource, /depth:\s*0/, "virtual cell fallback must set depth to 0")
+  // Merge button only renders when depth > 0
+  const mergeIdx = panelSource.indexOf("Merge")
+  assert.ok(mergeIdx !== -1, "Merge button text must exist in panel source")
+  const mergeBlock = panelSource.slice(Math.max(0, mergeIdx - 600), mergeIdx)
+  assert.match(mergeBlock, /selectedCell\.depth\s*>\s*0/, "Merge button must be guarded by depth > 0")
+  // getAvailableActions also excludes undivide for depth 0
+  assert.match(sharedSource, /cell\.depth\s*>\s*0[\s\S]*undivide/, "getAvailableActions must gate undivide on depth > 0")
+})
+
 test("simulated: Run button IS disabled when cell is searching", () => {
   const searchingCell = { depth: 0, status: "searching" }
   const mechanism = { enabled: true }

@@ -52,20 +52,20 @@ const mod = loadVirtualGrid()
 // 1. VIRTUAL_CELL_STYLE defines faint gray appearance
 // ============================================================
 
-test("VIRTUAL_CELL_STYLE uses gray border color #d1d5db", () => {
-  assert.match(cellColorsSource, /VIRTUAL_CELL_STYLE[\s\S]*color:\s*["']#d1d5db["']/)
+test("VIRTUAL_CELL_STYLE uses gray border color #9ca3af", () => {
+  assert.match(cellColorsSource, /VIRTUAL_CELL_STYLE[\s\S]*color:\s*["']#9ca3af["']/)
 })
 
-test("VIRTUAL_CELL_STYLE uses gray fill color #d1d5db", () => {
-  assert.match(cellColorsSource, /VIRTUAL_CELL_STYLE[\s\S]*fillColor:\s*["']#d1d5db["']/)
+test("VIRTUAL_CELL_STYLE uses gray fill color #9ca3af", () => {
+  assert.match(cellColorsSource, /VIRTUAL_CELL_STYLE[\s\S]*fillColor:\s*["']#9ca3af["']/)
 })
 
-test("VIRTUAL_CELL_STYLE has very low fill opacity (0.05)", () => {
-  assert.match(cellColorsSource, /VIRTUAL_CELL_STYLE[\s\S]*fillOpacity:\s*0\.05/)
+test("VIRTUAL_CELL_STYLE has low fill opacity (0.08)", () => {
+  assert.match(cellColorsSource, /VIRTUAL_CELL_STYLE[\s\S]*fillOpacity:\s*0\.08/)
 })
 
-test("VIRTUAL_CELL_STYLE has thin border weight (0.5)", () => {
-  assert.match(cellColorsSource, /VIRTUAL_CELL_STYLE[\s\S]*weight:\s*0\.5/)
+test("VIRTUAL_CELL_STYLE has thin border weight (1)", () => {
+  assert.match(cellColorsSource, /VIRTUAL_CELL_STYLE[\s\S]*weight:\s*1/)
 })
 
 // ============================================================
@@ -198,11 +198,11 @@ test("DiscoveryGrid renders persisted cells after virtual cells in JSX (on top i
 // 7. VirtualGridCell uses VIRTUAL_CELL_STYLE (faint gray)
 // ============================================================
 
-test("VirtualGridCell renders Rectangle with VIRTUAL_CELL_STYLE", () => {
+test("VirtualGridCell renders Rectangle with VIRTUAL_CELL_STYLE or selection-aware ternary", () => {
   const virtualCellSection = discoveryGridSource
     .split("function VirtualGridCell")[1]
     .split("function DiscoveryGridCell")[0]
-  assert.match(virtualCellSection, /pathOptions=\{VIRTUAL_CELL_STYLE\}/)
+  assert.match(virtualCellSection, /pathOptions=\{isSelected\s*\?\s*VIRTUAL_CELL_SELECTED_STYLE\s*:\s*VIRTUAL_CELL_STYLE\}/)
 })
 
 // ============================================================
