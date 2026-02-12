@@ -292,6 +292,43 @@ export const updateCellStatus = internalMutation({
   },
 });
 
+export const activateCell = mutation({
+  args: {
+    gridId: v.id("discoveryGrids"),
+    swLat: v.number(),
+    swLng: v.number(),
+    neLat: v.number(),
+    neLng: v.number(),
+    boundsKey: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("discoveryCells")
+      .withIndex("by_gridId_boundsKey", (q) =>
+        q.eq("gridId", args.gridId).eq("boundsKey", args.boundsKey),
+      )
+      .first();
+
+    if (existing) {
+      return { cellId: existing._id, alreadyExisted: true };
+    }
+
+    const cellId = await ctx.db.insert("discoveryCells", {
+      swLat: args.swLat,
+      swLng: args.swLng,
+      neLat: args.neLat,
+      neLng: args.neLng,
+      depth: 0,
+      isLeaf: true,
+      status: "unsearched",
+      gridId: args.gridId,
+      boundsKey: args.boundsKey,
+    });
+
+    return { cellId, alreadyExisted: false };
+  },
+});
+
 export const updateCellSearchResult = internalMutation({
   args: {
     cellId: v.id("discoveryCells"),
