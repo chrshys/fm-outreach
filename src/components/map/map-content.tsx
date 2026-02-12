@@ -109,14 +109,15 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
       )}
       {/* Render DiscoveryGrid: {gridCells && onCellSelect && ( <DiscoveryGrid /> )} */}
       {gridCells && onCellSelect ? (
-        <Pane name="discovery-grid" style={{ zIndex: 450 }}>
+        <Pane name="discovery-grid" style={{ zIndex: 350 }}>
           <DiscoveryGrid cells={gridCells} selectedCellId={selectedCellId ?? null} onCellSelect={onCellSelect} cellSizeKm={cellSizeKm ?? 20} gridId={gridId ?? ""} activatedBoundsKeys={activatedBoundsKeys ?? []} selectedVirtualCell={selectedVirtualCell ?? null} onSelectVirtualCell={onSelectVirtualCell ?? (() => {})} />
         </Pane>
       ) : cellSizeKm != null && gridId ? (
-        <Pane name="virtual-grid-overlay" style={{ zIndex: 440 }}>
+        <Pane name="virtual-grid-overlay" style={{ zIndex: 340 }}>
           <DiscoveryGrid cells={[]} selectedCellId={null} onCellSelect={() => {}} cellSizeKm={cellSizeKm ?? 20} gridId={gridId ?? ""} activatedBoundsKeys={[]} selectedVirtualCell={null} onSelectVirtualCell={(() => {})} />
         </Pane>
       ) : null}
+      <Pane name="lead-markers" style={{ zIndex: 450 }}>
       {leads.map((lead) => {
         const color = getStatusColor(lead.status)
         return (
@@ -145,6 +146,7 @@ export default function MapContent({ leads, clusters = [], isDrawing = false, on
           </CircleMarker>
         )
       })}
+      </Pane>
       {onBoundsChange && (
         <MapBoundsEmitter onBoundsChange={onBoundsChange} />
       )}
