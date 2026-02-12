@@ -40,6 +40,20 @@ test("toggle button shows opposite mode label", () => {
   )
 })
 
+test("view mode toggle clears selectedCellId", () => {
+  // The onClick handler for the view toggle button should call setSelectedCellId(null)
+  // to clear any cell selection when switching between clusters and discovery modes
+  const toggleMatch = mapPageSource.match(
+    /setViewMode\(\(prev\)\s*=>\s*prev\s*===\s*"clusters"\s*\?\s*"discovery"\s*:\s*"clusters"\)([\s\S]*?)\}\}/,
+  )
+  assert.ok(toggleMatch, "view mode toggle onClick handler should exist")
+  assert.match(
+    toggleMatch[1],
+    /setSelectedCellId\(null\)/,
+    "view mode toggle should clear selectedCellId",
+  )
+})
+
 // --- Cluster mode rendering ---
 
 test("cluster mode passes filteredClusters to MapContent", () => {
