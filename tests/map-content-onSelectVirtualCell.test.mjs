@@ -8,8 +8,8 @@ test("MapContentProps includes onSelectVirtualCell with correct signature", () =
   assert.match(source, /onSelectVirtualCell\?:\s*\(cell:\s*VirtualCell\s*\|\s*null\)\s*=>\s*void/)
 })
 
-test("MapContentProps does not include onActivateCell", () => {
-  assert.doesNotMatch(source, /onActivateCell/)
+test("MapContentProps includes onSelectVirtualCell", () => {
+  assert.match(source, /onSelectVirtualCell/)
 })
 
 test("onSelectVirtualCell is destructured in function params", () => {
@@ -19,7 +19,7 @@ test("onSelectVirtualCell is destructured in function params", () => {
 })
 
 test("onSelectVirtualCell does not return Promise<string>", () => {
-  // The old onActivateCell returned Promise<string>; the new prop returns void
+  // onSelectVirtualCell returns void (not Promise<string>)
   assert.doesNotMatch(source, /onSelectVirtualCell\?:.*Promise/)
 })
 
@@ -45,13 +45,12 @@ test("imports VirtualCell type from @/lib/virtual-grid", () => {
   assert.match(source, /import\s+type\s+\{\s*VirtualCell\s*\}\s+from\s+["']@\/lib\/virtual-grid["']/)
 })
 
-test("fallback DiscoveryGrid (virtual-grid-overlay pane) uses onSelectVirtualCell no-op, not onActivateCell", () => {
+test("fallback DiscoveryGrid (virtual-grid-overlay pane) uses onSelectVirtualCell no-op", () => {
   // Extract the virtual-grid-overlay branch (the `: cellSizeKm != null && gridId ?` branch)
   const fallbackMatch = source.match(/virtual-grid-overlay[\s\S]*?<DiscoveryGrid([^/]+)\/>/)
   assert.ok(fallbackMatch, "should have a DiscoveryGrid inside virtual-grid-overlay pane")
   const fallbackProps = fallbackMatch[1]
   assert.ok(fallbackProps.includes("onSelectVirtualCell"), "fallback DiscoveryGrid should pass onSelectVirtualCell")
-  assert.ok(!fallbackProps.includes("onActivateCell"), "fallback DiscoveryGrid must not use onActivateCell")
   assert.match(fallbackProps, /onSelectVirtualCell=\{.*\(\)\s*=>\s*\{\}.*\}/, "onSelectVirtualCell should be a no-op arrow function")
   assert.match(fallbackProps, /selectedVirtualCell=\{null\}/, "fallback DiscoveryGrid should pass selectedVirtualCell={null}")
 })

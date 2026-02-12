@@ -24,10 +24,10 @@ test("VirtualGridCellProps has onSelectVirtual prop", () => {
   assert.match(match[0], /onSelectVirtual:\s*\(cell:\s*VirtualCell\s*\|\s*null\)\s*=>\s*void/)
 })
 
-test("VirtualGridCellProps does not have onActivateCell or onCellSelect", () => {
+test("VirtualGridCellProps uses onSelectVirtual, not onCellSelect", () => {
   const match = source.match(/type VirtualGridCellProps\s*=\s*\{[^}]*\}/)
   assert.ok(match, "VirtualGridCellProps type should exist")
-  assert.ok(!match[0].includes("onActivateCell"), "should not contain onActivateCell")
+  assert.ok(match[0].includes("onSelectVirtual"), "should contain onSelectVirtual")
   assert.ok(!match[0].includes("onCellSelect"), "should not contain onCellSelect")
 })
 

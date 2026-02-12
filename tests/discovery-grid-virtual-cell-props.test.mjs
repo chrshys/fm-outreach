@@ -12,11 +12,10 @@ test("VirtualGridCellProps has onSelectVirtual callback", () => {
   assert.match(source, /type VirtualGridCellProps\s*=\s*\{[^}]*onSelectVirtual:\s*\(cell:\s*VirtualCell\s*\|\s*null\)\s*=>\s*void/)
 })
 
-test("VirtualGridCellProps does not have onActivateCell", () => {
-  // Extract the VirtualGridCellProps type block
+test("VirtualGridCellProps includes onSelectVirtual", () => {
   const match = source.match(/type VirtualGridCellProps\s*=\s*\{[^}]*\}/)
   assert.ok(match, "VirtualGridCellProps type should exist")
-  assert.ok(!match[0].includes("onActivateCell"), "VirtualGridCellProps should not contain onActivateCell")
+  assert.ok(match[0].includes("onSelectVirtual"), "VirtualGridCellProps should contain onSelectVirtual")
 })
 
 test("VirtualGridCellProps does not have onCellSelect", () => {
@@ -41,10 +40,10 @@ test("DiscoveryGridProps has onSelectVirtualCell callback", () => {
   assert.match(source, /type DiscoveryGridProps\s*=\s*\{[^}]*onSelectVirtualCell:\s*\(cell:\s*VirtualCell\s*\|\s*null\)\s*=>\s*void/)
 })
 
-test("DiscoveryGridProps does not have onActivateCell", () => {
+test("DiscoveryGridProps includes onSelectVirtualCell", () => {
   const match = source.match(/type DiscoveryGridProps\s*=\s*\{[^}]*\}/)
   assert.ok(match, "DiscoveryGridProps type should exist")
-  assert.ok(!match[0].includes("onActivateCell"), "DiscoveryGridProps should not contain onActivateCell")
+  assert.ok(match[0].includes("onSelectVirtualCell"), "DiscoveryGridProps should contain onSelectVirtualCell")
 })
 
 test("DiscoveryGrid passes isSelected to VirtualGridCell via selectedVirtualCell", () => {
