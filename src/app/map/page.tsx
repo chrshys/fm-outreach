@@ -94,6 +94,13 @@ export default function MapPage() {
   const requestDiscoverCell = useMutation(api.discovery.discoverCell.requestDiscoverCell)
   const subdivideCell = useMutation(api.discovery.gridCells.subdivideCell)
   const undivideCell = useMutation(api.discovery.gridCells.undivideCell)
+  const activateCellMutation = useMutation(api.discovery.gridCells.activateCell)
+
+  const handleActivateCell = useCallback(async (cell: { key: string; swLat: number; swLng: number; neLat: number; neLng: number }) => {
+    if (!globalGridId) return ""
+    const result = await activateCellMutation({ gridId: globalGridId, swLat: cell.swLat, swLng: cell.swLng, neLat: cell.neLat, neLng: cell.neLng, boundsKey: cell.key })
+    return result.cellId
+  }, [globalGridId, activateCellMutation])
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [drawnPolygon, setDrawnPolygon] = useState<
@@ -197,7 +204,19 @@ export default function MapPage() {
   }, [])
 
   const handleCellAction = useCallback(async (cellId: string, action: CellAction) => {
-    const cell = cells?.find((c) => c._id === cellId)
+    let cell = cells?.find((c) => c._id === cellId)
+    if (!cell && selectedVirtualCell && selectedVirtualCell.key === cellId) {
+      try {
+        const newCellId = await handleActivateCell(selectedVirtualCell)
+        setSelectedVirtualCell(null)
+        setSelectedCellId(newCellId)
+        cellId = newCellId
+        cell = { _id: newCellId as Id<"discoveryCells">, parentCellId: undefined, swLat: selectedVirtualCell.swLat, swLng: selectedVirtualCell.swLng, neLat: selectedVirtualCell.neLat, neLng: selectedVirtualCell.neLng, depth: 0, status: "unsearched" as const, resultCount: undefined, querySaturation: undefined, lastSearchedAt: undefined, boundsKey: selectedVirtualCell.key }
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to activate cell")
+        return
+      }
+    }
     if (!cell) return
 
     if (action.type === "search") {
@@ -245,7 +264,7 @@ export default function MapPage() {
       }
       return
     }
-  }, [cells, requestDiscoverCell, subdivideCell, undivideCell])
+  }, [cells, requestDiscoverCell, subdivideCell, undivideCell, selectedVirtualCell, handleActivateCell])
 
   return (
     <AppLayout>

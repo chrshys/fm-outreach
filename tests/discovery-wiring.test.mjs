@@ -89,7 +89,7 @@ test("handleCellAction has try/catch for undivide with error toast", () => {
 })
 
 test("handleCellAction dependency array includes undivideCell", () => {
-  assert.match(pageSource, /\[cells,\s*requestDiscoverCell,\s*subdivideCell,\s*undivideCell\]/)
+  assert.match(pageSource, /\[cells,\s*requestDiscoverCell,\s*subdivideCell,\s*undivideCell,\s*selectedVirtualCell,\s*handleActivateCell\]/)
 })
 
 test("uses undivideCell mutation", () => {
