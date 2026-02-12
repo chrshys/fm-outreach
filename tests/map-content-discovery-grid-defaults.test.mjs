@@ -5,11 +5,11 @@ import fs from "node:fs"
 const source = fs.readFileSync("src/components/map/map-content.tsx", "utf8")
 
 test("DiscoveryGrid conditional only requires gridCells and onCellSelect", () => {
-  // The conditional should be `{gridCells && onCellSelect && (` — not requiring cellSizeKm, gridId, etc.
-  assert.match(source, /\{gridCells\s*&&\s*onCellSelect\s*&&\s*\(/)
+  // The conditional should be `{gridCells && onCellSelect ? (` — ternary for virtual grid overlay fallback
+  assert.match(source, /\{gridCells\s*&&\s*onCellSelect\s*\?\s*\(/)
   // Should NOT have cellSizeKm, gridId, activatedBoundsKeys, or onSelectVirtual in the conditional guard
-  assert.doesNotMatch(source, /gridCells\s*&&\s*onCellSelect\s*&&\s*cellSizeKm/)
-  assert.doesNotMatch(source, /gridCells\s*&&\s*onCellSelect\s*&&\s*gridId/)
+  assert.doesNotMatch(source, /gridCells\s*&&\s*onCellSelect\s*\?\s*cellSizeKm/)
+  assert.doesNotMatch(source, /gridCells\s*&&\s*onCellSelect\s*\?\s*gridId/)
 })
 
 test("cellSizeKm defaults to 20 via nullish coalescing", () => {

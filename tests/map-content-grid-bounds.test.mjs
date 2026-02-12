@@ -52,7 +52,7 @@ test("destructures gridCells, selectedCellId, onCellSelect, onBoundsChange in fu
 })
 
 test("renders DiscoveryGrid conditionally when gridCells and onCellSelect provided", () => {
-  assert.match(source, /gridCells\s*&&\s*onCellSelect\s*&&/)
+  assert.match(source, /gridCells\s*&&\s*onCellSelect\s*\?/)
   assert.match(source, /<DiscoveryGrid\s+cells=\{gridCells\}\s+selectedCellId=/)
 })
 
