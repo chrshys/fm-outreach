@@ -63,6 +63,12 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
 
   const selectedGrid = grids?.find((g) => g._id === globalGridId) ?? null
   const persistedCell = cells.find((c) => c._id === selectedCellId) ?? null
+  const cellLeadStats = useQuery(
+    api.discovery.gridCells.getCellLeadStats,
+    persistedCell
+      ? { cellId: persistedCell._id as Id<"discoveryCells"> }
+      : "skip",
+  )
   const selectedCell: CellData | null = persistedCell ?? (selectedVirtualCell ? {
     _id: selectedVirtualCell.key,
     swLat: selectedVirtualCell.swLat,
