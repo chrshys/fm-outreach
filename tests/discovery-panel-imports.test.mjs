@@ -28,6 +28,30 @@ test("imports Minimize2 from lucide-react", () => {
   assert.match(importLine, /\bMinimize2\b/)
 })
 
+test("imports Sparkles from lucide-react", () => {
+  const importLine = source.split("\n").find((l) => l.includes("lucide-react"))
+  assert.ok(importLine)
+  assert.match(importLine, /\bSparkles\b/)
+})
+
+// ============================================================
+// convex/react imports
+// ============================================================
+
+test("imports useAction from convex/react", () => {
+  const importLine = source.split("\n").find((l) => l.includes("convex/react"))
+  assert.ok(importLine)
+  assert.match(importLine, /\buseAction\b/)
+})
+
+// ============================================================
+// EnrichmentProgress import
+// ============================================================
+
+test("imports EnrichmentProgress from @/components/leads/enrichment-progress", () => {
+  assert.match(source, /import\s+\{[^}]*\bEnrichmentProgress\b[^}]*\}\s+from\s+["']@\/components\/leads\/enrichment-progress["']/)
+})
+
 // ============================================================
 // discovery-grid-shared type imports
 // ============================================================

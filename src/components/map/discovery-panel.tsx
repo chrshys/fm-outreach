@@ -1,8 +1,8 @@
 "use client"
 
 import { useCallback, useRef, useState } from "react"
-import { useMutation, useQuery } from "convex/react"
-import { Grid2x2Plus, Minimize2, Play, Plus, Search, X } from "lucide-react"
+import { useAction, useMutation, useQuery } from "convex/react"
+import { Grid2x2Plus, Minimize2, Play, Plus, Search, Sparkles, X } from "lucide-react"
 import { toast } from "sonner"
 
 import { api } from "../../../convex/_generated/api"
@@ -10,6 +10,7 @@ import type { Id } from "../../../convex/_generated/dataModel"
 import type { CellData, CellAction } from "./discovery-grid-shared"
 import type { VirtualCell } from "@/lib/virtual-grid"
 import { DISCOVERY_MECHANISMS, MAX_DEPTH, getStatusBadgeColor, formatRelativeTime } from "./discovery-grid-shared"
+import { EnrichmentProgress } from "@/components/leads/enrichment-progress"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
