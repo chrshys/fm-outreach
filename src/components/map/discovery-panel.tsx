@@ -60,6 +60,11 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
   const [editingField, setEditingField] = useState<"region" | "province" | null>(null)
   const [fieldEditValue, setFieldEditValue] = useState("")
   const fieldEditInputRef = useRef<HTMLInputElement>(null)
+  const [isEnriching, setIsEnriching] = useState(false)
+  const [enrichingLeadIds, setEnrichingLeadIds] = useState<Id<"leads">[]>([])
+  const enrichmentSinceRef = useRef(0)
+
+  const enrichCellLeads = useAction(api.enrichment.batchEnrichPublic.enrichCellLeads)
 
   // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
   const grids = useQuery(api.discovery.gridCells.listGrids) as GridWithStats[] | undefined
