@@ -146,11 +146,11 @@ test("DiscoveryGrid renders Rectangle for each cell", () => {
 })
 
 test("DiscoveryGrid uses getCellColor for path options", () => {
-  assert.match(discoveryGridSource, /getCellColor\(cell\.status\)/)
+  assert.match(discoveryGridSource, /getCellColor\(cell\.status,\s*cell\.lastSearchedAt\)/)
 })
 
 test("DiscoveryGrid renders Rectangle with pathOptions from getCellColor", () => {
-  assert.match(discoveryGridSource, /getCellColor\(cell\.status\)/)
+  assert.match(discoveryGridSource, /getCellColor\(cell\.status,\s*cell\.lastSearchedAt\)/)
   assert.match(discoveryGridSource, /pathOptions=\{/)
 })
 

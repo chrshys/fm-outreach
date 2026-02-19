@@ -95,7 +95,7 @@ test("cell-colors defines searching status with blue fillColor #3b82f6", () => {
 })
 
 test("discovery-grid uses getCellColor to set pathOptions from cell.status", () => {
-  assert.match(gridSource, /getCellColor\(cell\.status\)/)
+  assert.match(gridSource, /getCellColor\(cell\.status,\s*cell\.lastSearchedAt\)/)
 })
 
 // ============================================================

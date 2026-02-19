@@ -102,7 +102,7 @@ test("Rectangle receives bounds from cell coordinates", () => {
 })
 
 test("Rectangle receives pathOptions from getCellColor", () => {
-  assert.match(source, /getCellColor\(cell\.status\)/)
+  assert.match(source, /getCellColor\(cell\.status,\s*cell\.lastSearchedAt\)/)
   assert.match(source, /pathOptions=\{/)
 })
 

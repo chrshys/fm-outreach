@@ -246,7 +246,7 @@ test("DiscoveryGrid maps cells to individual cell components", () => {
 })
 
 test("each cell gets pathOptions from getCellColor with its status", () => {
-  assert.match(gridSource, /getCellColor\(cell\.status\)/)
+  assert.match(gridSource, /getCellColor\(cell\.status,\s*cell\.lastSearchedAt\)/)
   assert.match(gridSource, /pathOptions=\{/)
 })
 
