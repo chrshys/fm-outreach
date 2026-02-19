@@ -86,6 +86,7 @@ export default defineSchema({
       v.literal("no_email"),
     ),
     clusterId: v.optional(v.id("clusters")),
+    discoveryCellId: v.optional(v.id("discoveryCells")),
     smartleadLeadId: v.optional(v.string()),
     smartleadCampaignId: v.optional(v.string()),
     enrichedAt: v.optional(v.number()),
