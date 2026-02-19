@@ -80,7 +80,7 @@ function hasInstagram(lead: LeadListItem): boolean {
   return typeof lead.socialLinks?.instagram === "string" && lead.socialLinks.instagram.trim().length > 0;
 }
 
-function matchesFilters(lead: LeadListItem, filters: LeadListFilters): boolean {
+export function matchesFilters(lead: LeadListItem, filters: LeadListFilters): boolean {
   if (filters.status !== undefined && lead.status !== filters.status) {
     return false;
   }
