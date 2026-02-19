@@ -46,7 +46,20 @@ test("cellLeadStats query is called with persistedCell._id", () => {
 // (positive case — all disabling conditions are false)
 // ============================================================
 
-test("Enrich button disabled attribute uses exactly three conditions", () => {
+test("Enrich button is not rendered for virtual cells (persistedCell guard)", () => {
+  // The Enrich button is wrapped in {persistedCell && (...)} so it's completely hidden for virtual cells
+  const selectedCellStart = source.indexOf("{/* Selected Cell */}")
+  const selectedCellEnd = source.indexOf("{/* Search Queries */}")
+  const section = source.slice(selectedCellStart, selectedCellEnd)
+
+  const persistedGuard = section.indexOf("persistedCell && (")
+  const enrichClick = section.indexOf("onClick={handleEnrichCell}")
+  assert.ok(persistedGuard !== -1, "persistedCell guard should exist around Enrich button")
+  assert.ok(enrichClick !== -1, "Enrich button should exist")
+  assert.ok(persistedGuard < enrichClick, "persistedCell guard should wrap the Enrich button")
+})
+
+test("Enrich button disabled attribute uses exactly two conditions", () => {
   // Extract the button's disabled attribute
   const selectedCellStart = source.indexOf("{/* Selected Cell */}")
   const selectedCellEnd = source.indexOf("{/* Search Queries */}")
@@ -57,14 +70,13 @@ test("Enrich button disabled attribute uses exactly three conditions", () => {
   const enrichBtnEnd = section.indexOf("</button>", enrichBtnStart)
   const enrichBtn = section.slice(enrichBtnStart, enrichBtnEnd)
 
-  // The disabled condition should be exactly these three ORed conditions:
-  // isEnriching || !persistedCell || (cellLeadStats?.total ?? 0) === 0
-  // When a discovered cell (persistedCell exists) with leads (total > 0) is selected
-  // and isEnriching is false, all three are false → button is enabled
+  // The disabled condition should be exactly these two ORed conditions:
+  // isEnriching || (cellLeadStats?.total ?? 0) === 0
+  // !persistedCell is no longer needed because the button is hidden entirely for virtual cells
   assert.match(
     enrichBtn,
-    /disabled=\{isEnriching \|\| !persistedCell \|\| \(cellLeadStats\?\.total \?\? 0\) === 0\}/,
-    "Button disabled only by isEnriching, !persistedCell, or zero leads",
+    /disabled=\{isEnriching \|\| \(cellLeadStats\?\.total \?\? 0\) === 0\}/,
+    "Button disabled only by isEnriching or zero leads",
   )
 })
 

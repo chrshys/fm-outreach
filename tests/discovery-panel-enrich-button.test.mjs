@@ -62,9 +62,13 @@ test("Enrich button is disabled when isEnriching", () => {
   assert.ok(enrichBtn.includes("isEnriching"), "Enrich button disabled condition should include isEnriching")
 })
 
-test("Enrich button is disabled when !persistedCell (virtual cells)", () => {
-  assert.ok(enrichBtn, "Should find Enrich button")
-  assert.ok(enrichBtn.includes("!persistedCell"), "Enrich button disabled condition should include !persistedCell")
+test("Enrich button is hidden (not rendered) when !persistedCell (virtual cells)", () => {
+  // The Enrich button is wrapped in {persistedCell && (...)} so it doesn't render at all for virtual cells
+  const enrichDiv = selectedCellSection.indexOf("persistedCell && (")
+  const enrichClick = selectedCellSection.indexOf("onClick={handleEnrichCell}")
+  assert.ok(enrichDiv !== -1, "persistedCell guard should exist")
+  assert.ok(enrichClick !== -1, "Enrich button should exist")
+  assert.ok(enrichDiv < enrichClick, "persistedCell guard should wrap the Enrich button")
 })
 
 test("Enrich button is disabled when no leads in cell", () => {
@@ -75,11 +79,11 @@ test("Enrich button is disabled when no leads in cell", () => {
   )
 })
 
-test("Enrich button disabled attribute includes all three conditions", () => {
+test("Enrich button disabled attribute includes two conditions (isEnriching and zero leads)", () => {
   assert.ok(enrichBtn, "Should find Enrich button")
   assert.match(
     enrichBtn,
-    /disabled=\{isEnriching \|\| !persistedCell \|\| \(cellLeadStats\?\.total \?\? 0\) === 0\}/,
+    /disabled=\{isEnriching \|\| \(cellLeadStats\?\.total \?\? 0\) === 0\}/,
   )
 })
 
