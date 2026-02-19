@@ -70,7 +70,7 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
   );
 });
 
-test("leadsToCSV uses empty strings for null/undefined fields", () => {
+test("leadsToCSV uses empty strings for undefined (missing) fields", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([
     {
@@ -80,6 +80,52 @@ test("leadsToCSV uses empty strings for null/undefined fields", () => {
   ]);
   const lines = csv.split("\n");
   assert.equal(lines[1], "Bare Farm,farm,,,,,,,,,,,");
+});
+
+test("leadsToCSV uses empty strings for explicit null fields", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    {
+      name: "Null Farm",
+      type: "farm",
+      farmDescription: null,
+      contactPhone: null,
+      address: null,
+      city: null,
+      latitude: null,
+      longitude: null,
+      placeId: null,
+      website: null,
+      socialLinks: null,
+      products: null,
+    },
+  ]);
+  const lines = csv.split("\n");
+  assert.equal(lines[1], "Null Farm,farm,,,,,,,,,,,");
+});
+
+test("leadsToCSV never outputs literal 'undefined' or 'null' strings", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "Minimal", type: "farm" },
+    {
+      name: "Nulls",
+      type: "farm",
+      farmDescription: null,
+      latitude: null,
+      socialLinks: null,
+      products: null,
+    },
+    {
+      name: "Partial Social",
+      type: "farm",
+      socialLinks: { instagram: null, facebook: null },
+    },
+  ]);
+  // Skip the header row, check only data rows
+  const dataRows = csv.split("\n").slice(1).join("\n");
+  assert.ok(!dataRows.includes("undefined"), "CSV should not contain literal 'undefined'");
+  assert.ok(!dataRows.includes("null"), "CSV should not contain literal 'null'");
 });
 
 test("leadsToCSV escapes fields containing commas", () => {
