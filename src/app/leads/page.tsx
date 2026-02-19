@@ -293,7 +293,8 @@ export default function LeadsPage() {
       const csv = leadsToCSV(results)
       downloadCSV(csv, `fm-leads-export-${new Date().toISOString().slice(0, 10)}.csv`)
       toast.success(`Exported ${results.length} leads`)
-    } catch {
+    } catch (error) {
+      console.error("Export failed:", error)
       toast.error("Export failed")
     } finally {
       setIsExporting(false)

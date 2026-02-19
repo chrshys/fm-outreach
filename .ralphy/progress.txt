@@ -906,3 +906,30 @@ Foundation work is complete. See `docs/26-02-05-fruitland-market-ui-tasklist.md`
 - [✓] 2026-02-12 17:17 - `pnpm test` passes with all tests green
 - [✓] 2026-02-12 17:18 - `pnpm typecheck` passes
 - [✓] 2026-02-12 17:18 - `pnpm lint` passes
+- [✓] 2026-02-12 21:54 - Add `leadsFound: v.optional(v.number())` to `discoveryCells` table in `convex/schema.ts`
+- [✓] 2026-02-12 21:56 - In `convex/discovery/gridCells.ts` `updateCellSearchResult` mutation (~line 443), add `leadsFound: args.newLeadsCount` to the `ctx.db.patch(args.cellId, {...})` call so each cell tracks its own lead count
+- [✓] 2026-02-12 21:57 - In `convex/discovery/gridCells.ts` `listCells` query (~line 240), add `leadsFound: cell.leadsFound` to the returned cell projection
+- [✓] 2026-02-12 21:58 - Add `leadsFound?: number` to the `CellData` type in `src/components/map/discovery-grid-shared.ts`
+- [✓] 2026-02-12 22:01 - In `src/components/map/discovery-panel.tsx`, make the Progress section (lines 271-317) contextual: when `selectedCell` exists and has been searched (`status !== "unsearched"`), show cell-level stats (status, result count, leads found) instead of grid-level stats. When no cell is selected or cell is unsearched, show grid-level stats as today. Use label "Cell Progress" vs "Grid Progress" to indicate scope.
+- [✓] 2026-02-12 22:03 - `pnpm typecheck` passes
+- [✓] 2026-02-12 22:03 - `pnpm lint` passes
+- [✓] 2026-02-12 22:07 - `node --test tests/` passes (update pattern-matching tests if needed)
+- [✓] 2026-02-12 22:09 - Selecting a searched cell shows per-cell stats in the Progress section
+- [✓] 2026-02-12 22:15 - Deselecting the cell reverts to grid-level aggregate stats
+- [✓] 2026-02-19 01:19 - In `convex/lib/leadsList.ts`, add `export` keyword to the `matchesFilters` function (line 83)
+- [✓] 2026-02-19 01:19 - `pnpm typecheck` passes
+- [✓] 2026-02-19 01:21 - In `convex/leads.ts`, add a `listForExport` query. Args: same filter fields as `list` (all optional). Handler: fetch all leads via `ctx.db.query("leads").collect()`, filter with `matchesFilters` (imported from `./lib/leadsList`), then `.map()` to project only CSV fields: `name`, `type`, `farmDescription`, `contactPhone`, `address`, `city`, `latitude`, `longitude`, `placeId`, `website`, `socialLinks` (object with optional `instagram`/`facebook`), `products` (string array)
+- [✓] 2026-02-19 01:22 - `pnpm typecheck` passes
+- [✓] 2026-02-19 01:25 - Create `src/lib/csv-export.ts` with two exported functions:
+- [✓] 2026-02-19 01:25 - `pnpm typecheck` passes
+- [✓] 2026-02-19 01:26 - In `src/app/leads/page.tsx`, add imports: `Download` and `Loader2` from `lucide-react`, `toast` from `sonner`, `leadsToCSV` and `downloadCSV` from `@/lib/csv-export`
+- [✓] 2026-02-19 01:26 - In `src/app/leads/page.tsx`, add state: `const [isExporting, setIsExporting] = useState(false)`
+- [✓] 2026-02-19 01:28 - In `src/app/leads/page.tsx`, add an `handleExportCSV` async function: set `isExporting(true)`, call `convex.query(api.leads.listForExport, { ...listArgs without sortBy/sortOrder/cursor })` to fetch leads, call `leadsToCSV(results)` to generate CSV, call `downloadCSV(csv, `fm-leads-export-${new Date().toISOString().slice(0, 10)}.csv`)`, show `toast.success(`Exported ${results.length} leads`)`, catch errors with `toast.error("Export failed")`, finally set `isExporting(false)`
+- [✓] 2026-02-19 01:29 - In `src/app/leads/page.tsx`, add a `<Button>` between `<LeadFilters>` and `<BulkActions>` in the JSX. Props: `variant="outline"`, `size="sm"`, `onClick={handleExportCSV}`, `disabled={isExporting}`. Content: when `isExporting` show `<Loader2 className="size-4 animate-spin" />` and "Exporting...", otherwise show `<Download className="size-4" />` and "Export CSV"
+- [✓] 2026-02-19 01:29 - `pnpm typecheck` passes
+- [✓] 2026-02-19 01:30 - `pnpm lint` passes
+- [✓] 2026-02-19 01:31 - `node --test tests/` passes (update pattern-matching tests if any reference the toolbar area)
+- [✓] 2026-02-19 01:33 - On the leads page, the "Export CSV" button is visible between filters and the table
+- [✓] 2026-02-19 01:35 - Clicking "Export CSV" downloads a `.csv` file with 13 columns and correct headers
+- [✓] 2026-02-19 01:40 - CSV contains empty strings for missing fields, not "undefined" or "null"
+- [✓] 2026-02-19 01:42 - Products arrays are comma-joined, socialLinks are flattened to top-level columns
