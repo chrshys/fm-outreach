@@ -478,6 +478,26 @@ export const listSocialOutreach = query({
   },
 });
 
+export const bulkStampExported = mutation({
+  args: {
+    leadIds: v.array(v.id("leads")),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const uniqueLeadIds = [...new Set(args.leadIds)];
+
+    for (const leadId of uniqueLeadIds) {
+      await ctx.db.patch(leadId, {
+        exportedAt: now,
+      });
+    }
+
+    return {
+      updatedCount: uniqueLeadIds.length,
+    };
+  },
+});
+
 export const bulkAssignCluster = mutation({
   args: {
     leadIds: v.array(v.id("leads")),
