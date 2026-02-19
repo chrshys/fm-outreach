@@ -102,6 +102,7 @@ export default defineSchema({
       ),
     ),
     enrichmentData: v.optional(v.any()),
+    exportedAt: v.optional(v.number()),
     nextFollowUpAt: v.optional(v.number()),
     followUpCount: v.number(),
     createdAt: v.number(),
