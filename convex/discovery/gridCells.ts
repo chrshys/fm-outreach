@@ -576,6 +576,31 @@ export const getCellLeadStats = query({
   },
 });
 
+export const getCellLeadIdsForEnrichment = internalQuery({
+  args: {
+    cellId: v.id("discoveryCells"),
+  },
+  handler: async (ctx, args) => {
+    const leads = await ctx.db
+      .query("leads")
+      .withIndex("by_discoveryCellId", (q) =>
+        q.eq("discoveryCellId", args.cellId),
+      )
+      .collect();
+
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
+    return leads
+      .filter(
+        (lead) =>
+          lead.enrichedAt === undefined ||
+          now - lead.enrichedAt > thirtyDaysMs,
+      )
+      .map((lead) => lead._id);
+  },
+});
+
 export const getGridEnrichmentStats = query({
   args: {
     gridId: v.id("discoveryGrids"),
