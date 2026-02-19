@@ -38,6 +38,7 @@ export type DiscoveredLead = {
   followUpCount: 0;
   createdAt: number;
   updatedAt: number;
+  discoveryCellId?: string;
 };
 
 export function normalizeDedupValue(value: string): string {
@@ -267,4 +268,5 @@ export const discoveredLeadValidator = v.object({
   followUpCount: v.literal(0),
   createdAt: v.number(),
   updatedAt: v.number(),
+  discoveryCellId: v.optional(v.string()),
 });

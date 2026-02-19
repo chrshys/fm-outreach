@@ -123,3 +123,11 @@ test("discoveredLeadValidator includes all required lead fields", () => {
   assert.match(source, /source:\s*v\.literal\("google_places"\)/);
   assert.match(source, /status:\s*v\.literal\("new_lead"\)/);
 });
+
+test("DiscoveredLead type includes optional discoveryCellId field", () => {
+  assert.match(source, /discoveryCellId\?:\s*string/);
+});
+
+test("discoveredLeadValidator includes optional discoveryCellId", () => {
+  assert.match(source, /discoveryCellId:\s*v\.optional\(v\.string\(\)\)/);
+});
