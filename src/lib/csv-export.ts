@@ -5,6 +5,10 @@ type ExportLead = {
   contactPhone?: string;
   address?: string;
   city?: string;
+  region?: string;
+  province?: string;
+  postalCode?: string;
+  countryCode?: string;
   latitude?: number;
   longitude?: number;
   placeId?: string;
@@ -20,6 +24,9 @@ const CSV_COLUMNS = [
   "contactPhone",
   "address",
   "city",
+  "state",
+  "postalCode",
+  "countryCode",
   "latitude",
   "longitude",
   "placeId",
@@ -47,6 +54,9 @@ export function leadsToCSV(leads: ExportLead[]): string {
       lead.contactPhone ?? "",
       lead.address ?? "",
       lead.city ?? "",
+      lead.province ?? lead.region ?? "",
+      lead.postalCode ?? "",
+      lead.countryCode ?? "",
       lead.latitude != null ? String(lead.latitude) : "",
       lead.longitude != null ? String(lead.longitude) : "",
       lead.placeId ?? "",

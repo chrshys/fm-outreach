@@ -37,7 +37,7 @@ test("leadsToCSV produces correct header row", () => {
   const header = csv.split("\n")[0];
   assert.equal(
     header,
-    "name,type,farmDescription,contactPhone,address,city,latitude,longitude,placeId,website,instagram,facebook,products"
+    "name,type,farmDescription,contactPhone,address,city,state,postalCode,countryCode,latitude,longitude,placeId,website,instagram,facebook,products"
   );
 });
 
@@ -51,6 +51,9 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
       contactPhone: "555-0100",
       address: "123 Farm Rd",
       city: "Guelph",
+      province: "ON",
+      postalCode: "N1G 2W1",
+      countryCode: "CA",
       latitude: 43.55,
       longitude: -80.25,
       placeId: "ChIJ123",
@@ -66,7 +69,7 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
   assert.equal(lines.length, 2);
   assert.equal(
     lines[1],
-    'Green Acres,farm,Organic produce,555-0100,123 Farm Rd,Guelph,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears"'
+    'Green Acres,farm,Organic produce,555-0100,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears"'
   );
 });
 
@@ -79,7 +82,7 @@ test("leadsToCSV uses empty strings for undefined (missing) fields", () => {
     },
   ]);
   const lines = csv.split("\n");
-  assert.equal(lines[1], "Bare Farm,farm,,,,,,,,,,,");
+  assert.equal(lines[1], "Bare Farm,farm,,,,,,,,,,,,,,");
 });
 
 test("leadsToCSV uses empty strings for explicit null fields", () => {
@@ -92,6 +95,10 @@ test("leadsToCSV uses empty strings for explicit null fields", () => {
       contactPhone: null,
       address: null,
       city: null,
+      region: null,
+      province: null,
+      postalCode: null,
+      countryCode: null,
       latitude: null,
       longitude: null,
       placeId: null,
@@ -101,7 +108,7 @@ test("leadsToCSV uses empty strings for explicit null fields", () => {
     },
   ]);
   const lines = csv.split("\n");
-  assert.equal(lines[1], "Null Farm,farm,,,,,,,,,,,");
+  assert.equal(lines[1], "Null Farm,farm,,,,,,,,,,,,,,");
 });
 
 test("leadsToCSV never outputs literal 'undefined' or 'null' strings", () => {
@@ -230,9 +237,9 @@ test("leadsToCSV handles socialLinks with only instagram", () => {
   assert.ok(lines[1].includes("ig_only"), "should include instagram value");
   // facebook column should be empty but row should still have 13 columns
   const cols = lines[1].split(",");
-  assert.equal(cols.length, 13, "should still have 13 columns");
-  assert.equal(cols[10], "ig_only", "instagram column should have value");
-  assert.equal(cols[11], "", "facebook column should be empty");
+  assert.equal(cols.length, 16, "should still have 16 columns");
+  assert.equal(cols[13], "ig_only", "instagram column should have value");
+  assert.equal(cols[14], "", "facebook column should be empty");
 });
 
 test("leadsToCSV handles socialLinks with only facebook", () => {
@@ -246,8 +253,8 @@ test("leadsToCSV handles socialLinks with only facebook", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[10], "", "instagram column should be empty");
-  assert.equal(cols[11], "fb_only", "facebook column should have value");
+  assert.equal(cols[13], "", "instagram column should be empty");
+  assert.equal(cols[14], "fb_only", "facebook column should have value");
 });
 
 test("leadsToCSV handles product names containing commas", () => {
@@ -365,15 +372,15 @@ test("Export CSV button appears between LeadFilters and Table in JSX", () => {
   );
 });
 
-test("CSV header has exactly 13 columns", () => {
+test("CSV header has exactly 16 columns", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([]);
   const header = csv.split("\n")[0];
   const columns = header.split(",");
-  assert.equal(columns.length, 13, "should have exactly 13 columns");
+  assert.equal(columns.length, 16, "should have exactly 16 columns");
 });
 
-test("CSV data rows have exactly 13 columns for a complete lead", () => {
+test("CSV data rows have exactly 16 columns for a complete lead", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([
     {
@@ -383,6 +390,9 @@ test("CSV data rows have exactly 13 columns for a complete lead", () => {
       contactPhone: "555-0000",
       address: "1 Main St",
       city: "Toronto",
+      province: "ON",
+      postalCode: "M5V 2T6",
+      countryCode: "CA",
       latitude: 43.65,
       longitude: -79.38,
       placeId: "ChIJ456",
@@ -393,15 +403,15 @@ test("CSV data rows have exactly 13 columns for a complete lead", () => {
   ]);
   const lines = csv.split("\n");
   const dataColumns = lines[1].split(",");
-  assert.equal(dataColumns.length, 13, "data row should have exactly 13 columns");
+  assert.equal(dataColumns.length, 16, "data row should have exactly 16 columns");
 });
 
-test("CSV data rows have exactly 13 columns for a minimal lead", () => {
+test("CSV data rows have exactly 16 columns for a minimal lead", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([{ name: "Minimal", type: "farm" }]);
   const lines = csv.split("\n");
   const dataColumns = lines[1].split(",");
-  assert.equal(dataColumns.length, 13, "minimal lead should still have 13 columns");
+  assert.equal(dataColumns.length, 16, "minimal lead should still have 16 columns");
 });
 
 test("downloadCSV creates a text/csv blob", () => {
@@ -410,6 +420,65 @@ test("downloadCSV creates a text/csv blob", () => {
     source.includes('text/csv'),
     "downloadCSV should create blob with text/csv MIME type"
   );
+});
+
+test("leadsToCSV maps province to state column", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    {
+      name: "Ontario Farm",
+      type: "farm",
+      province: "ON",
+    },
+  ]);
+  const lines = csv.split("\n");
+  const cols = lines[1].split(",");
+  assert.equal(cols[6], "ON", "state column should contain province value");
+});
+
+test("leadsToCSV falls back to region when province is missing", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    {
+      name: "Region Farm",
+      type: "farm",
+      region: "Southern Ontario",
+    },
+  ]);
+  const lines = csv.split("\n");
+  const cols = lines[1].split(",");
+  assert.equal(cols[6], "Southern Ontario", "state column should fall back to region value");
+});
+
+test("leadsToCSV prefers province over region for state column", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    {
+      name: "Both Farm",
+      type: "farm",
+      province: "ON",
+      region: "Southern Ontario",
+    },
+  ]);
+  const lines = csv.split("\n");
+  const cols = lines[1].split(",");
+  assert.equal(cols[6], "ON", "state column should prefer province over region");
+});
+
+test("leadsToCSV includes postalCode and countryCode columns", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    {
+      name: "Postal Farm",
+      type: "farm",
+      postalCode: "N1G 2W1",
+      countryCode: "CA",
+    },
+  ]);
+  const lines = csv.split("\n");
+  const cols = lines[1].split(",");
+  assert.equal(cols[7], "N1G 2W1", "postalCode column should have correct value");
+  assert.equal(cols[8], "CA", "countryCode column should have correct value");
 });
 
 test("handleExportCSV sets isExporting in try/finally", () => {
