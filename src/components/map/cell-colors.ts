@@ -1,3 +1,5 @@
+import type { StalenessLevel } from "@/lib/enrichment"
+
 export type CellStatus = "unsearched" | "searching" | "searched" | "saturated"
 
 interface CellColorResult {
@@ -39,6 +41,18 @@ export const VIRTUAL_CELL_SELECTED_STYLE = {
   fillOpacity: 0.12,
   weight: 3,
   dashArray: "6 4",
+}
+
+export const SEARCHED_FRESHNESS: Record<StalenessLevel, CellColorResult> = {
+  fresh: { color: "#22c55e", fillColor: "#22c55e", fillOpacity: 0.2 },
+  aging: { color: "#a3e635", fillColor: "#a3e635", fillOpacity: 0.2 },
+  stale: { color: "#ca8a04", fillColor: "#ca8a04", fillOpacity: 0.2 },
+}
+
+export const SATURATED_FRESHNESS: Record<StalenessLevel, CellColorResult> = {
+  fresh: { color: "#f97316", fillColor: "#f97316", fillOpacity: 0.3 },
+  aging: { color: "#d97706", fillColor: "#d97706", fillOpacity: 0.25 },
+  stale: { color: "#92400e", fillColor: "#92400e", fillOpacity: 0.2 },
 }
 
 export function getCellColor(status: string): CellColorResult {
