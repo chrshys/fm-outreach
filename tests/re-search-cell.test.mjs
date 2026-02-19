@@ -104,7 +104,7 @@ test("insertDiscoveredLeads deduplicates by name+city as fallback", () => {
 test("insertDiscoveredLeads tracks inserted vs skipped counts", () => {
   assert.match(discoverLeadsSource, /inserted\s*\+=/);
   assert.match(discoverLeadsSource, /skipped\s*\+=/);
-  assert.match(discoverLeadsSource, /return\s*\{\s*inserted,\s*skipped\s*\}/);
+  assert.match(discoverLeadsSource, /return\s*\{\s*inserted,\s*skipped,\s*linked\s*\}/);
 });
 
 // ============================================================

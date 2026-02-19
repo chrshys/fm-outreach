@@ -104,8 +104,8 @@ test("insertDiscoveredLeads tracks both placeId and name+city for in-batch dedup
   assert.match(actionSource, /seenNameCity/);
 });
 
-test("insertDiscoveredLeads returns { inserted, skipped } shape", () => {
-  assert.match(actionSource, /return\s*\{\s*inserted,\s*skipped\s*\}/);
+test("insertDiscoveredLeads returns { inserted, skipped, linked } shape", () => {
+  assert.match(actionSource, /return\s*\{\s*inserted,\s*skipped,\s*linked\s*\}/);
 });
 
 // ============================================================

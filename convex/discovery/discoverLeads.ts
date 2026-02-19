@@ -30,6 +30,7 @@ export const insertDiscoveredLeads = internalMutation({
 
     let inserted = 0;
     let skipped = 0;
+    let linked = 0;
 
     for (const lead of args.leads) {
       const nameCityKey = `${normalizeDedupName(lead.name)}::${normalizeDedupValue(lead.city)}`;
@@ -48,6 +49,11 @@ export const insertDiscoveredLeads = internalMutation({
           .first();
 
         if (existingByPlaceId) {
+          // Link existing lead to this discovery cell if not already linked
+          if (lead.discoveryCellId && !existingByPlaceId.discoveryCellId) {
+            await ctx.db.patch(existingByPlaceId._id, { discoveryCellId: lead.discoveryCellId });
+            linked += 1;
+          }
           skipped += 1;
           seenPlaceIds.add(lead.placeId);
           seenNameCity.add(nameCityKey);
@@ -63,6 +69,11 @@ export const insertDiscoveredLeads = internalMutation({
         .first();
 
       if (existingByName) {
+        // Link existing lead to this discovery cell if not already linked
+        if (lead.discoveryCellId && !existingByName.discoveryCellId) {
+          await ctx.db.patch(existingByName._id, { discoveryCellId: lead.discoveryCellId });
+          linked += 1;
+        }
         skipped += 1;
         seenPlaceIds.add(lead.placeId);
         seenNameCity.add(nameCityKey);
@@ -75,7 +86,7 @@ export const insertDiscoveredLeads = internalMutation({
       inserted += 1;
     }
 
-    return { inserted, skipped };
+    return { inserted, skipped, linked };
   },
 });
 

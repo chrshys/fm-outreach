@@ -19,6 +19,7 @@ type DiscoverCellResult = {
   totalApiResults: number;
   inBoundsResults: number;
   newLeads: number;
+  linkedLeads: number;
   duplicatesSkipped: number;
   saturated: boolean;
   querySaturation: { query: string; count: number }[];
@@ -50,6 +51,7 @@ export const discoverCell = internalAction({
         totalApiResults: 0,
         inBoundsResults: 0,
         newLeads: 0,
+        linkedLeads: 0,
         duplicatesSkipped: 0,
         saturated: false,
         querySaturation: [],
@@ -161,6 +163,7 @@ export const discoverCell = internalAction({
       );
 
       const newLeads: number = insertResult.inserted;
+      const linkedLeads: number = insertResult.linked;
       const duplicatesSkipped: number = insertResult.skipped;
 
       // Step 10: Determine saturation — only if ALL queries returned 60 API
@@ -181,7 +184,7 @@ export const discoverCell = internalAction({
           resultCount: inBounds.length,
           querySaturation,
           lastSearchedAt: now,
-          newLeadsCount: newLeads,
+          newLeadsCount: newLeads + linkedLeads,
         },
       );
 
@@ -190,6 +193,7 @@ export const discoverCell = internalAction({
         totalApiResults,
         inBoundsResults: inBounds.length,
         newLeads,
+        linkedLeads,
         duplicatesSkipped,
         saturated,
         querySaturation,
