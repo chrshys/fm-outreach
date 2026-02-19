@@ -61,6 +61,7 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
   const [fieldEditValue, setFieldEditValue] = useState("")
   const fieldEditInputRef = useRef<HTMLInputElement>(null)
   const [isEnriching, setIsEnriching] = useState(false)
+  const isEnrichingRef = useRef(false)
   const [enrichingLeadIds, setEnrichingLeadIds] = useState<Id<"leads">[]>([])
   const enrichmentSinceRef = useRef(0)
 
@@ -192,6 +193,8 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
 
   const handleEnrichCell = useCallback(async () => {
     if (!persistedCell || !cellLeadIdsForEnrichment?.length) return
+    if (isEnrichingRef.current) return
+    isEnrichingRef.current = true
     setIsEnriching(true)
     setEnrichingLeadIds(cellLeadIdsForEnrichment)
     enrichmentSinceRef.current = Date.now()
@@ -216,6 +219,7 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
     } catch {
       toast.error("Enrichment failed. Please try again.")
     } finally {
+      isEnrichingRef.current = false
       setIsEnriching(false)
       setTimeout(() => setEnrichingLeadIds([]), 2000)
     }
