@@ -458,6 +458,51 @@ export const backfillDiscoveryCellIds = internalMutation({
   },
 });
 
+export const spotCheckBackfillDiscoveryCellIds = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    const leads = await ctx.db
+      .query("leads")
+      .filter((q) => q.eq(q.field("source"), "google_places"))
+      .collect();
+
+    const cellIdRegex = /cell\s+([a-z0-9]+)\s+\[depth=/;
+
+    let withCellId = 0;
+    let missingCellId = 0;
+    const missingExamples: Array<{
+      id: string;
+      name: string;
+      sourceDetail: string | undefined;
+    }> = [];
+
+    for (const lead of leads) {
+      const hasCell = cellIdRegex.test(lead.sourceDetail ?? "");
+
+      if (lead.discoveryCellId) {
+        withCellId++;
+      } else if (hasCell) {
+        missingCellId++;
+        if (missingExamples.length < 5) {
+          missingExamples.push({
+            id: lead._id,
+            name: lead.name,
+            sourceDetail: lead.sourceDetail,
+          });
+        }
+      }
+    }
+
+    return {
+      totalGooglePlacesLeads: leads.length,
+      withDiscoveryCellId: withCellId,
+      missingDiscoveryCellId: missingCellId,
+      backfillComplete: missingCellId === 0,
+      missingExamples,
+    };
+  },
+});
+
 export const updateCellSearchResult = internalMutation({
   args: {
     cellId: v.id("discoveryCells"),
