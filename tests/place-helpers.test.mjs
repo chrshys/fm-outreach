@@ -125,7 +125,7 @@ test("discoveredLeadValidator includes all required lead fields", () => {
 });
 
 test("DiscoveredLead type includes optional discoveryCellId field", () => {
-  assert.match(source, /discoveryCellId\?:\s*string/);
+  assert.match(source, /discoveryCellId\?:\s*Id<"discoveryCells">/);
 });
 
 test("discoveredLeadValidator includes optional discoveryCellId as id reference", () => {

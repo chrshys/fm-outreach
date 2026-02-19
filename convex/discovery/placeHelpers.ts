@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import type { Id } from "../_generated/dataModel";
 
 const PLACES_TEXT_SEARCH_URL =
   "https://maps.googleapis.com/maps/api/place/textsearch/json";
@@ -38,7 +39,7 @@ export type DiscoveredLead = {
   followUpCount: 0;
   createdAt: number;
   updatedAt: number;
-  discoveryCellId?: string;
+  discoveryCellId?: Id<"discoveryCells">;
 };
 
 export function normalizeDedupValue(value: string): string {
