@@ -18,6 +18,8 @@ export default defineSchema({
     latitude: v.optional(v.number()),
     longitude: v.optional(v.number()),
     placeId: v.optional(v.string()),
+    postalCode: v.optional(v.string()),
+    countryCode: v.optional(v.string()),
     contactName: v.optional(v.string()),
     contactEmail: v.optional(v.string()),
     contactPhone: v.optional(v.string()),
