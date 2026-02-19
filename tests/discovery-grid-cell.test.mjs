@@ -54,10 +54,10 @@ test("DiscoveryGridCell computes bounds from cell coordinates", () => {
 // DiscoveryGridCell styling — base uses getCellColor
 // ============================================================
 
-test("DiscoveryGridCell calls getCellColor(cell.status) for base path options", () => {
+test("DiscoveryGridCell calls getCellColor(cell.status, cell.lastSearchedAt) for base path options", () => {
   const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
-  assert.match(cellFnMatch[0], /getCellColor\(cell\.status\)/)
+  assert.match(cellFnMatch[0], /getCellColor\(cell\.status,\s*cell\.lastSearchedAt\)/)
 })
 
 // ============================================================

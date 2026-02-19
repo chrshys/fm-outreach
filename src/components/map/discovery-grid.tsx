@@ -113,7 +113,7 @@ function DiscoveryGridCell({ cell, isSelected, onCellSelect }: DiscoveryGridCell
     [cell.swLat, cell.swLng],
     [cell.neLat, cell.neLng],
   ]
-  const basePathOptions = getCellColor(cell.status)
+  const basePathOptions = getCellColor(cell.status, cell.lastSearchedAt)
   const pathOptions = isSelected
     ? { ...basePathOptions, weight: 3, dashArray: "6 4", color: "#2563eb", fillOpacity: (basePathOptions.fillOpacity ?? 0.15) + 0.1 }
     : basePathOptions
