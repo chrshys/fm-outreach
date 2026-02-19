@@ -7,6 +7,8 @@ import {
   type PlaceTextResult,
   type DiscoveredLead,
   extractCity,
+  extractPostalCode,
+  extractCountryCode,
   inferLeadType,
   searchPlacesWithLocation,
 } from "./placeHelpers";
@@ -135,6 +137,8 @@ export const discoverCell = internalAction({
         type: inferLeadType(place.name, place.types ?? []),
         address: place.formatted_address ?? "",
         city: extractCity(place.formatted_address ?? ""),
+        postalCode: extractPostalCode(place.address_components),
+        countryCode: extractCountryCode(place.address_components),
         region,
         province,
         placeId: place.place_id,

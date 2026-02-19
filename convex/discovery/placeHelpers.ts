@@ -3,10 +3,17 @@ import { v } from "convex/values";
 const PLACES_TEXT_SEARCH_URL =
   "https://maps.googleapis.com/maps/api/place/textsearch/json";
 
+export type AddressComponent = {
+  long_name: string;
+  short_name: string;
+  types: string[];
+};
+
 export type PlaceTextResult = {
   place_id: string;
   name: string;
   formatted_address?: string;
+  address_components?: AddressComponent[];
   geometry?: {
     location?: { lat: number; lng: number };
   };
@@ -18,6 +25,8 @@ export type DiscoveredLead = {
   type: "farm" | "farmers_market" | "retail_store" | "roadside_stand" | "other";
   address: string;
   city: string;
+  postalCode: string;
+  countryCode: string;
   region: string;
   province: string;
   placeId: string;
@@ -56,6 +65,26 @@ export function extractCity(formattedAddress: string): string {
     return parts[0];
   }
   return formattedAddress;
+}
+
+export function extractPostalCode(
+  addressComponents: AddressComponent[] | undefined,
+): string {
+  if (!addressComponents) return "";
+  const component = addressComponents.find((c) =>
+    c.types.includes("postal_code"),
+  );
+  return component?.short_name ?? "";
+}
+
+export function extractCountryCode(
+  addressComponents: AddressComponent[] | undefined,
+): string {
+  if (!addressComponents) return "";
+  const component = addressComponents.find((c) =>
+    c.types.includes("country"),
+  );
+  return component?.short_name ?? "";
 }
 
 export function inferLeadType(
@@ -225,6 +254,8 @@ export const discoveredLeadValidator = v.object({
   ),
   address: v.string(),
   city: v.string(),
+  postalCode: v.string(),
+  countryCode: v.string(),
   region: v.string(),
   province: v.string(),
   placeId: v.string(),
