@@ -415,7 +415,7 @@ test("downloadCSV creates a text/csv blob", () => {
 test("handleExportCSV sets isExporting in try/finally", () => {
   const source = fs.readFileSync("src/app/leads/page.tsx", "utf8");
   const fnStart = source.indexOf("async function handleExportCSV");
-  const fnChunk = source.slice(fnStart, fnStart + 800);
+  const fnChunk = source.slice(fnStart, fnStart + 1200);
   assert.ok(
     fnChunk.includes("setIsExporting(true)"),
     "should set isExporting true at start"
