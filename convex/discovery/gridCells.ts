@@ -592,6 +592,7 @@ export const getGridEnrichmentStats = query({
     let locationComplete = 0;
     let hasWebPresence = 0;
     let directoryReady = 0;
+    let exported = 0;
 
     for (const cell of leafCells) {
       const leads = await ctx.db
@@ -608,6 +609,7 @@ export const getGridEnrichmentStats = query({
         if (result.isLocationComplete) locationComplete++;
         if (result.isWebPresence) hasWebPresence++;
         if (result.isDirectoryReady) directoryReady++;
+        if (lead.exportedAt) exported++;
       }
     }
 
@@ -616,6 +618,7 @@ export const getGridEnrichmentStats = query({
       locationComplete,
       hasWebPresence,
       directoryReady,
+      exported,
     };
   },
 });

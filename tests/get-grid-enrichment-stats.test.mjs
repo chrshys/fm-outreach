@@ -14,7 +14,7 @@ const gridCellsSource = fs.readFileSync(
 const fnStart = gridCellsSource.indexOf("export const getGridEnrichmentStats");
 const fnBody = gridCellsSource.slice(
   fnStart,
-  gridCellsSource.indexOf("export", fnStart + 1),
+  gridCellsSource.indexOf("\nexport ", fnStart + 1),
 );
 
 // -- Export & shape tests -------------------------------------
@@ -105,6 +105,14 @@ test("getGridEnrichmentStats returns directoryReady", () => {
   );
 });
 
+test("getGridEnrichmentStats returns exported", () => {
+  assert.match(
+    fnBody,
+    /exported/,
+    "Should return exported",
+  );
+});
+
 // -- Aggregation logic ----------------------------------------
 
 test("getGridEnrichmentStats aggregates totalLeads from leads.length", () => {
@@ -122,5 +130,13 @@ test("getGridEnrichmentStats uses evaluateLeadEnrichment for enrichment logic", 
     fnBody,
     /evaluateLeadEnrichment\(lead\)/,
     "Should call evaluateLeadEnrichment(lead) for each lead",
+  );
+});
+
+test("getGridEnrichmentStats counts exported leads via lead.exportedAt", () => {
+  assert.match(
+    fnBody,
+    /lead\.exportedAt/,
+    "Should check lead.exportedAt to count exported leads",
   );
 });

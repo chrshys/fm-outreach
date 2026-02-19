@@ -19,7 +19,7 @@ const gridCellsSource = fs.readFileSync(
 const helperStart = gridCellsSource.indexOf("export function evaluateLeadEnrichment");
 const cellStart = gridCellsSource.indexOf("export const getCellLeadStats");
 const gridStart = gridCellsSource.indexOf("export const getGridEnrichmentStats");
-const afterGridStart = gridCellsSource.indexOf("export", gridStart + 1);
+const afterGridStart = gridCellsSource.indexOf("\nexport ", gridStart + 1);
 
 const helperBody = gridCellsSource.slice(helperStart, cellStart);
 const cellFnBody = gridCellsSource.slice(cellStart, gridStart);
@@ -121,7 +121,7 @@ test("evaluateLeadEnrichment requires both conditions for directoryReady", () =>
 // The enrichment fields (locationComplete, hasWebPresence, directoryReady) must match.
 
 test("both queries return the same enrichment fields", () => {
-  for (const field of ["locationComplete", "hasWebPresence", "directoryReady"]) {
+  for (const field of ["locationComplete", "hasWebPresence", "directoryReady", "exported"]) {
     assert.match(cellFnBody, new RegExp(field), `getCellLeadStats must return ${field}`);
     assert.match(gridFnBody, new RegExp(field), `getGridEnrichmentStats must return ${field}`);
   }
