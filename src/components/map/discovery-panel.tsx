@@ -84,6 +84,12 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
       ? { cellId: persistedCell._id as Id<"discoveryCells"> }
       : "skip",
   )
+  const cellLeadIdsForEnrichment = useQuery(
+    api.discovery.gridCells.getLeadIdsForEnrichment,
+    persistedCell
+      ? { cellId: persistedCell._id as Id<"discoveryCells"> }
+      : "skip",
+  )
   const selectedCell: CellData | null = persistedCell ?? (selectedVirtualCell ? {
     _id: selectedVirtualCell.key,
     swLat: selectedVirtualCell.swLat,
@@ -185,8 +191,9 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
   }, [])
 
   const handleEnrichCell = useCallback(async () => {
-    if (!persistedCell) return
+    if (!persistedCell || !cellLeadIdsForEnrichment?.length) return
     setIsEnriching(true)
+    setEnrichingLeadIds(cellLeadIdsForEnrichment)
     enrichmentSinceRef.current = Date.now()
     toast.info("Enriching leads in cell...")
 
@@ -194,13 +201,12 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
       const result = await enrichCellLeads({
         cellId: persistedCell._id as Id<"discoveryCells">,
       })
-      const { leadIds, succeeded, failed, skipped } = result as {
+      const { succeeded, failed, skipped } = result as {
         leadIds: string[]
         succeeded: number
         failed: number
         skipped: number
       }
-      setEnrichingLeadIds(leadIds as Id<"leads">[])
 
       if (failed === 0) {
         toast.success(`Enrichment complete: ${succeeded} enriched, ${skipped} skipped`)
@@ -213,7 +219,7 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
       setIsEnriching(false)
       setTimeout(() => setEnrichingLeadIds([]), 2000)
     }
-  }, [persistedCell, enrichCellLeads])
+  }, [persistedCell, cellLeadIdsForEnrichment, enrichCellLeads])
 
   if (!open) {
     return (

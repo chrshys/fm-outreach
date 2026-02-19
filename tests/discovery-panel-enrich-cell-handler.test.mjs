@@ -16,8 +16,8 @@ test("defines handleEnrichCell as an async useCallback", () => {
 // Guard: returns early if no persistedCell
 // ============================================================
 
-test("handleEnrichCell returns early if no persistedCell", () => {
-  assert.match(source, /if\s*\(\s*!persistedCell\s*\)\s*return/)
+test("handleEnrichCell returns early if no persistedCell or no enrichment-eligible leads", () => {
+  assert.match(source, /if\s*\(\s*!persistedCell\s*\|\|\s*!cellLeadIdsForEnrichment\?\.length\s*\)\s*return/)
 })
 
 // ============================================================
@@ -60,9 +60,9 @@ test("handleEnrichCell calls enrichCellLeads with cellId from persistedCell._id"
 // Sets enrichingLeadIds from result.leadIds
 // ============================================================
 
-test("handleEnrichCell sets enrichingLeadIds from result leadIds", () => {
+test("handleEnrichCell sets enrichingLeadIds from pre-fetched cellLeadIdsForEnrichment before action", () => {
   const fnBody = source.slice(source.indexOf("handleEnrichCell"))
-  assert.match(fnBody, /setEnrichingLeadIds\(leadIds\s+as\s+Id<"leads">\[\]\)/)
+  assert.match(fnBody, /setEnrichingLeadIds\(cellLeadIdsForEnrichment\)/)
 })
 
 // ============================================================
@@ -117,10 +117,10 @@ test("handleEnrichCell clears enrichingLeadIds with setTimeout delay", () => {
 // useCallback dependencies include persistedCell and enrichCellLeads
 // ============================================================
 
-test("handleEnrichCell useCallback depends on persistedCell and enrichCellLeads", () => {
+test("handleEnrichCell useCallback depends on persistedCell, cellLeadIdsForEnrichment, and enrichCellLeads", () => {
   // Find the closing of handleEnrichCell's useCallback
   const fnStart = source.indexOf("const handleEnrichCell")
   const afterFn = source.slice(fnStart)
   // Match the dependency array at the end of the useCallback
-  assert.match(afterFn, /\[persistedCell,\s*enrichCellLeads\]/)
+  assert.match(afterFn, /\[persistedCell,\s*cellLeadIdsForEnrichment,\s*enrichCellLeads\]/)
 })
