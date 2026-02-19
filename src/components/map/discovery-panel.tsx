@@ -62,6 +62,10 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
 
   // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
   const grids = useQuery(api.discovery.gridCells.listGrids) as GridWithStats[] | undefined
+  const gridEnrichmentStats = useQuery(
+    api.discovery.gridCells.getGridEnrichmentStats,
+    globalGridId ? { gridId: globalGridId } : "skip",
+  )
   const updateGridQueries = useMutation(api.discovery.gridCells.updateGridQueries)
   const updateGridMetadata = useMutation(api.discovery.gridCells.updateGridMetadata)
 
