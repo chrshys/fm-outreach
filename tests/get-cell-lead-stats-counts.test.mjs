@@ -35,6 +35,7 @@ test("counters initialise to 0", () => {
   assert.match(fnBody, /let locationComplete\s*=\s*0/);
   assert.match(fnBody, /let hasWebPresence\s*=\s*0/);
   assert.match(fnBody, /let directoryReady\s*=\s*0/);
+  assert.match(fnBody, /let exported\s*=\s*0/);
 });
 
 // -- Counting logic: uses shared helper ----------------------
@@ -68,6 +69,14 @@ test("directoryReady increments from helper result", () => {
     fnBody,
     /result\.isDirectoryReady.*directoryReady\+\+/s,
     "Should increment directoryReady from evaluateLeadEnrichment result",
+  );
+});
+
+test("exported increments when lead.exportedAt is truthy", () => {
+  assert.match(
+    fnBody,
+    /lead\.exportedAt.*exported\+\+/s,
+    "Should increment exported when lead.exportedAt is truthy",
   );
 });
 
@@ -291,11 +300,11 @@ test("mixed leads produce correct aggregate counts", () => {
 
 // -- Verify return shape matches mock structure ---------------
 
-test("return object has exactly four keys", () => {
+test("return object has exactly five keys", () => {
   assert.match(
     fnBody,
-    /return\s*\{\s*total:\s*leads\.length,\s*locationComplete,\s*hasWebPresence,\s*directoryReady,?\s*\}/,
-    "Return statement should have total, locationComplete, hasWebPresence, directoryReady",
+    /return\s*\{\s*total:\s*leads\.length,\s*locationComplete,\s*hasWebPresence,\s*directoryReady,\s*exported,?\s*\}/,
+    "Return statement should have total, locationComplete, hasWebPresence, directoryReady, exported",
   );
 });
 

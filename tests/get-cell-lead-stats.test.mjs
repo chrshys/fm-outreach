@@ -85,6 +85,14 @@ test("getCellLeadStats returns directoryReady count", () => {
   );
 });
 
+test("getCellLeadStats returns exported count", () => {
+  assert.match(
+    fnBody,
+    /exported/,
+    "Should return exported",
+  );
+});
+
 // -- Uses shared enrichment helper ----------------------------
 
 test("getCellLeadStats uses evaluateLeadEnrichment for enrichment logic", () => {

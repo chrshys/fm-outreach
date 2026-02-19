@@ -556,12 +556,14 @@ export const getCellLeadStats = query({
     let locationComplete = 0;
     let hasWebPresence = 0;
     let directoryReady = 0;
+    let exported = 0;
 
     for (const lead of leads) {
       const result = evaluateLeadEnrichment(lead);
       if (result.isLocationComplete) locationComplete++;
       if (result.isWebPresence) hasWebPresence++;
       if (result.isDirectoryReady) directoryReady++;
+      if (lead.exportedAt) exported++;
     }
 
     return {
@@ -569,6 +571,7 @@ export const getCellLeadStats = query({
       locationComplete,
       hasWebPresence,
       directoryReady,
+      exported,
     };
   },
 });
