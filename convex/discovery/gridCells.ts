@@ -550,6 +550,65 @@ export const getCellLeadStats = query({
   },
 });
 
+export const getGridEnrichmentStats = query({
+  args: {
+    gridId: v.id("discoveryGrids"),
+  },
+  handler: async (ctx, args) => {
+    const leafCells = await ctx.db
+      .query("discoveryCells")
+      .withIndex("by_gridId_isLeaf", (q) =>
+        q.eq("gridId", args.gridId).eq("isLeaf", true),
+      )
+      .collect();
+
+    let totalLeads = 0;
+    let locationComplete = 0;
+    let hasWebPresence = 0;
+    let directoryReady = 0;
+
+    for (const cell of leafCells) {
+      const leads = await ctx.db
+        .query("leads")
+        .withIndex("by_discoveryCellId", (q) =>
+          q.eq("discoveryCellId", cell._id),
+        )
+        .collect();
+
+      totalLeads += leads.length;
+
+      for (const lead of leads) {
+        const isLocationComplete = !!(
+          lead.address &&
+          lead.city &&
+          (lead.province || lead.region) &&
+          lead.postalCode &&
+          lead.countryCode &&
+          lead.latitude &&
+          lead.longitude
+        );
+
+        const isWebPresence = !!(
+          lead.website ||
+          lead.socialLinks?.instagram ||
+          lead.socialLinks?.facebook
+        );
+
+        if (isLocationComplete) locationComplete++;
+        if (isWebPresence) hasWebPresence++;
+        if (isLocationComplete && isWebPresence) directoryReady++;
+      }
+    }
+
+    return {
+      totalLeads,
+      locationComplete,
+      hasWebPresence,
+      directoryReady,
+    };
+  },
+});
+
 export const updateCellSearchResult = internalMutation({
   args: {
     cellId: v.id("discoveryCells"),
