@@ -16,8 +16,8 @@ test("imports Rectangle from react-leaflet", () => {
   assert.match(source, /import\s+\{[\s\S]*Rectangle[\s\S]*\}\s+from\s+"react-leaflet"/)
 })
 
-test("does NOT import Tooltip from react-leaflet", () => {
-  assert.doesNotMatch(source, /Tooltip/)
+test("imports Tooltip from react-leaflet", () => {
+  assert.match(source, /import\s+\{[\s\S]*Tooltip[\s\S]*\}\s+from\s+"react-leaflet"/)
 })
 
 test("imports useMap and useMapEvents from react-leaflet", () => {

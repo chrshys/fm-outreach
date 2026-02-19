@@ -154,8 +154,8 @@ test("DiscoveryGrid renders Rectangle with pathOptions from getCellColor", () =>
   assert.match(discoveryGridSource, /pathOptions=\{/)
 })
 
-test("DiscoveryGrid does not use Tooltip", () => {
-  assert.doesNotMatch(discoveryGridSource, /Tooltip/)
+test("DiscoveryGrid uses Tooltip for cell hover", () => {
+  assert.match(discoveryGridSource, /Tooltip/)
 })
 
 // --- DiscoveryPanel component ---

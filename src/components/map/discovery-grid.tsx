@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react"
 import L from "leaflet"
-import { Rectangle, useMap, useMapEvents } from "react-leaflet"
+import { Rectangle, Tooltip, useMap, useMapEvents } from "react-leaflet"
 import { computeVirtualGrid } from "@/lib/virtual-grid"
 import type { VirtualCell } from "@/lib/virtual-grid"
 import { getCellColor, VIRTUAL_CELL_STYLE, VIRTUAL_CELL_SELECTED_STYLE } from "./cell-colors"
@@ -51,7 +51,6 @@ function getAvailableActions(cell: CellData): CellAction[] {
   return actions
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- re-exported from discovery-grid-shared
 function formatRelativeTime(timestamp: number): string {
   const now = Date.now()
   const diffMs = now - timestamp
@@ -122,6 +121,11 @@ function DiscoveryGridCell({ cell, isSelected, onCellSelect }: DiscoveryGridCell
   const pathOptions = isSelected
     ? { ...basePathOptions, weight: 3, dashArray: "6 4", color: "#2563eb", fillOpacity: (basePathOptions.fillOpacity ?? 0.15) + 0.1 }
     : basePathOptions
+
+  const tooltipContent = cell.lastSearchedAt
+    ? `${cell.status} · ${formatRelativeTime(cell.lastSearchedAt)}`
+    : cell.status
+
   return (
     <Rectangle
       bounds={bounds}
@@ -132,7 +136,11 @@ function DiscoveryGridCell({ cell, isSelected, onCellSelect }: DiscoveryGridCell
           onCellSelect(isSelected ? null : cell._id)
         },
       }}
-    />
+    >
+      <Tooltip direction="top" sticky>
+        {tooltipContent}
+      </Tooltip>
+    </Rectangle>
   )
 }
 

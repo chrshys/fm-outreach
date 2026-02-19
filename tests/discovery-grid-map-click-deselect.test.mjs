@@ -56,7 +56,7 @@ test("cell click handlers take event parameter (e)", () => {
   const virtualIdx = gridSource.indexOf("function VirtualGridCell")
   const persistedIdx = gridSource.indexOf("function DiscoveryGridCell")
   const virtualFn = gridSource.slice(virtualIdx, virtualIdx + 600)
-  const persistedFn = gridSource.slice(persistedIdx, persistedIdx + 600)
+  const persistedFn = gridSource.slice(persistedIdx, persistedIdx + 800)
   assert.match(virtualFn, /click:\s*\(e\)\s*=>\s*\{/)
   assert.match(persistedFn, /click:\s*\(e\)\s*=>\s*\{/)
 })

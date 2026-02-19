@@ -106,16 +106,34 @@ test("DiscoveryGridCell has click eventHandler", () => {
 })
 
 // ============================================================
-// DiscoveryGridCell has NO tooltip, hover, refs, or timers
+// DiscoveryGridCell tooltip shows relative time on hover
 // ============================================================
 
-test("DiscoveryGridCell does not use Tooltip", () => {
+test("DiscoveryGridCell renders a Tooltip child inside Rectangle", () => {
   const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
-  assert.doesNotMatch(cellFnMatch[0], /Tooltip/)
+  assert.match(cellFnMatch[0], /<Tooltip/)
 })
 
-test("DiscoveryGridCell does not have hover handlers", () => {
+test("DiscoveryGridCell tooltip uses sticky direction", () => {
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  assert.ok(cellFnMatch)
+  assert.match(cellFnMatch[0], /<Tooltip\s[^>]*sticky/)
+})
+
+test("DiscoveryGridCell tooltip content uses formatRelativeTime when lastSearchedAt exists", () => {
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  assert.ok(cellFnMatch)
+  assert.match(cellFnMatch[0], /formatRelativeTime\(cell\.lastSearchedAt\)/)
+})
+
+test("DiscoveryGridCell tooltip falls back to cell.status when no lastSearchedAt", () => {
+  const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
+  assert.ok(cellFnMatch)
+  assert.match(cellFnMatch[0], /cell\.lastSearchedAt[\s\S]*?:\s*cell\.status/)
+})
+
+test("DiscoveryGridCell does not have custom hover handlers", () => {
   const cellFnMatch = source.match(/^function\s+DiscoveryGridCell[\s\S]*?^}/m)
   assert.ok(cellFnMatch)
   assert.doesNotMatch(cellFnMatch[0], /mouseover|mouseout|mouseenter|mouseleave/i)
