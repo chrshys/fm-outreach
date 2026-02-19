@@ -933,3 +933,79 @@ Foundation work is complete. See `docs/26-02-05-fruitland-market-ui-tasklist.md`
 - [✓] 2026-02-19 01:35 - Clicking "Export CSV" downloads a `.csv` file with 13 columns and correct headers
 - [✓] 2026-02-19 01:40 - CSV contains empty strings for missing fields, not "undefined" or "null"
 - [✓] 2026-02-19 01:42 - Products arrays are comma-joined, socialLinks are flattened to top-level columns
+- [✓] 2026-02-19 15:05 - In `convex/schema.ts`, add `discoveryCellId: v.optional(v.id("discoveryCells"))` to the `leads` table (after `clusterId` ~line 88)
+- [✓] 2026-02-19 15:06 - In `convex/schema.ts`, add a new index `.index("by_discoveryCellId", ["discoveryCellId"])` to the `leads` table
+- [✓] 2026-02-19 15:07 - In `convex/discovery/placeHelpers.ts`, add `discoveryCellId?: string` to the `DiscoveredLead` type (~line 23-41)
+- [✓] 2026-02-19 15:09 - In `convex/discovery/placeHelpers.ts`, add `discoveryCellId: v.optional(v.id("discoveryCells"))` to `discoveredLeadValidator` (~line 246-270)
+- [✓] 2026-02-19 15:11 - `pnpm typecheck` passes
+- [✓] 2026-02-19 15:12 - `node --test tests/` passes (update pattern-matching tests if validator shape assertions break)
+- [✓] 2026-02-19 15:14 - In `convex/discovery/discoverCell.ts`, in the `discoverCell` action (~line 135), add `discoveryCellId: args.cellId` to each lead object in the `inBounds.map(...)` call that builds the `leads` array
+- [✓] 2026-02-19 15:16 - In `convex/discovery/discoverLeads.ts`, in `insertDiscoveredLeads` handler (~line 72), the `ctx.db.insert("leads", lead)` call already inserts the full lead object — verify `discoveryCellId` passes through (it should, since it's in the validator now). No code change expected here, just verify.
+- [✓] 2026-02-19 15:16 - `pnpm typecheck` passes
+- [✓] 2026-02-19 15:20 - Run discovery on a test cell, then verify the newly created lead has `discoveryCellId` set (check via Convex dashboard or a quick query)
+- [✓] 2026-02-19 15:23 - In `convex/discovery/gridCells.ts`, add a new exported mutation `backfillDiscoveryCellIds` that: (a) queries all leads with `source === "google_places"`, (b) skips any that already have `discoveryCellId`, (c) uses regex `/cell\s+([a-z0-9]+)\s+\[depth=/` to extract the cell ID from `sourceDetail`, (d) patches each matching lead with `{ discoveryCellId: extractedId }`, (e) returns `{ updated: number, skipped: number }`. Use `internalMutation` so it can be called from the dashboard or a one-off script. Handle leads with no `sourceDetail` or non-matching format gracefully (skip them).
+- [✓] 2026-02-19 15:23 - `pnpm typecheck` passes
+- [✓] 2026-02-19 15:26 - After running the backfill via Convex dashboard, spot-check that leads with `source: "google_places"` and a cell reference in `sourceDetail` now have `discoveryCellId` set
+- [✓] 2026-02-19 15:28 - In `convex/discovery/gridCells.ts`, add a new exported `query` called `getCellLeadStats` with args `{ cellId: v.id("discoveryCells") }`. The handler should: (a) query all leads with `withIndex("by_discoveryCellId", q => q.eq("discoveryCellId", args.cellId))` and `.collect()`, (b) compute and return an object: `{ total: number, locationComplete: number, hasWebPresence: number, directoryReady: number }`. A lead has **locationComplete** when all of these are truthy: `address`, `city`, `province` (OR `region`), `postalCode`, `countryCode`, `latitude`, `longitude`. A lead has **hasWebPresence** when at least one of: `website`, `socialLinks?.instagram`, `socialLinks?.facebook` is truthy. A lead is **directoryReady** when both `locationComplete` AND `hasWebPresence` are true.
+- [✓] 2026-02-19 15:28 - `pnpm typecheck` passes
+- [✓] 2026-02-19 15:31 - Query returns correct counts when called with a cell ID that has linked leads
+- [✓] 2026-02-19 15:33 - In `src/components/map/discovery-panel.tsx`, add a `useQuery` call for `api.discovery.gridCells.getCellLeadStats`, passing `{ cellId: persistedCell._id as Id<"discoveryCells"> }` when `persistedCell` exists, otherwise `"skip"`
+- [✓] 2026-02-19 15:35 - In the "Cell Progress" section (~lines 276-298), replace the "Leads Found" row (lines 292-296) with: (a) "Total Leads" showing `cellLeadStats?.total ?? "—"`, (b) "Directory Ready" showing `cellLeadStats?.directoryReady ?? "—"` out of total, (c) "Location Complete" showing `cellLeadStats?.locationComplete` out of total, (d) "Has Web/Social" showing `cellLeadStats?.hasWebPresence` out of total. Only show enrichment detail rows when `cellLeadStats?.total > 0`.
+- [✓] 2026-02-19 15:37 - Add a small progress bar below the stats (same style as the grid progress bar but using `bg-indigo-500`) showing `directoryReady / total` percentage. Only render when `total > 0`.
+- [✓] 2026-02-19 15:37 - `pnpm typecheck` passes
+- [✓] 2026-02-19 15:38 - `pnpm lint` passes
+- [✓] 2026-02-19 15:40 - `node --test tests/` passes (update pattern-matching tests if they reference "Leads Found" or the cell progress section)
+- [✓] 2026-02-19 15:49 - Selecting a previously-discovered cell shows "Total Leads: N" with the actual count (not 0)
+- [✓] 2026-02-19 15:54 - Directory-readiness breakdown appears with correct counts
+- [✓] 2026-02-19 15:56 - Progress bar reflects the directory-ready percentage
+- [✓] 2026-02-19 15:57 - In `src/components/map/cell-colors.ts`, import `getStaleness` from `@/lib/enrichment`. Add two new color maps: `SEARCHED_FRESHNESS` and `SATURATED_FRESHNESS`, each keyed by `StalenessLevel` ("fresh" | "aging" | "stale"). Colors: searched fresh = `#22c55e` (current green), searched aging = `#a3e635` (lime/yellow-green), searched stale = `#ca8a04` (amber). Saturated fresh = `#f97316` (current orange), saturated aging = `#d97706` (dark amber), saturated stale = `#92400e` (brown). Keep fillOpacity similar to current values (0.15-0.3).
+- [✓] 2026-02-19 16:00 - In `src/components/map/cell-colors.ts`, change the `getCellColor` signature from `getCellColor(status: string)` to `getCellColor(status: string, lastSearchedAt?: number)`. When `status` is "searched" or "saturated" and `lastSearchedAt` is provided, call `getStaleness(lastSearchedAt)` to pick the right color from the freshness map. Fall through to current behavior otherwise.
+- [✓] 2026-02-19 16:00 - In `src/components/map/discovery-grid.tsx`, find where `getCellColor(cell.status)` is called for persisted cells and change to `getCellColor(cell.status, cell.lastSearchedAt)`. The `CellData` type already includes `lastSearchedAt?: number`.
+- [✓] 2026-02-19 16:04 - In `src/components/map/discovery-grid-shared.ts`, replace `formatShortDate` (~line 47-52) with a `formatRelativeTime` function that returns relative strings: "today", "yesterday", "N days ago", "N weeks ago", "N months ago". Use this in the discovery panel where `lastSearchedAt` is displayed.
+- [✓] 2026-02-19 16:05 - In `src/components/map/discovery-panel.tsx`, update the `lastRun` display (~line 367-369) to use the new `formatRelativeTime` instead of `formatShortDate`.
+- [✓] 2026-02-19 16:08 - In `src/components/map/discovery-panel.tsx`, update `CELL_STATUS_LEGEND` (~lines 42-47) to show freshness variants: replace the single "Searched" entry with "Searched (fresh)" (green `#22c55e`) and "Searched (stale)" (amber `#ca8a04`). Keep "Unsearched", "Searching", and "Saturated" as-is. The legend grid may need to be `grid-cols-2` with 5 items (last row wraps).
+- [✓] 2026-02-19 16:08 - `pnpm typecheck` passes
+- [✓] 2026-02-19 16:09 - `pnpm lint` passes
+- [✓] 2026-02-19 16:12 - `node --test tests/` passes (update tests if they regex-match `getCellColor` signature or `formatShortDate`)
+- [✓] 2026-02-19 16:15 - On the map, cells discovered within the last 30 days appear bright green
+- [✓] 2026-02-19 16:18 - Cells discovered 30-90 days ago appear yellow-green/lime
+- [✓] 2026-02-19 16:20 - Cells discovered >90 days ago appear amber
+- [✓] 2026-02-19 16:25 - Hovering/clicking a cell shows relative time ("3 days ago", "2 months ago") instead of absolute date
+- [✓] 2026-02-19 16:28 - Legend reflects fresh vs stale distinction
+- [✓] 2026-02-19 16:29 - In `convex/discovery/gridCells.ts`, add a new exported `query` called `getGridEnrichmentStats` with args `{ gridId: v.id("discoveryGrids") }`. Handler: (a) fetch all leaf cells for the grid using `by_gridId_isLeaf` index, (b) for each cell, query leads using `by_discoveryCellId` index, (c) aggregate across all cells: `totalLeads`, `locationComplete`, `hasWebPresence`, `directoryReady` (using same logic as `getCellLeadStats`), (d) return the aggregated object.
+- [✓] 2026-02-19 16:31 - In `src/components/map/discovery-panel.tsx`, add a `useQuery` call for `api.discovery.gridCells.getGridEnrichmentStats`, passing `{ gridId: globalGridId }` when `globalGridId` exists, otherwise `"skip"`
+- [✓] 2026-02-19 16:33 - In the "Grid Progress" section (~lines 302-342), after the existing "Leads Found" row and progress bar, add a new section: (a) replace "Leads Found" label with "Total Leads" showing `gridEnrichmentStats?.totalLeads ?? selectedGrid.totalLeadsFound`, (b) add "Directory Ready" row showing `gridEnrichmentStats?.directoryReady` / `gridEnrichmentStats?.totalLeads` with percentage, (c) add "Needs Attention" row showing `totalLeads - directoryReady` count. Only show these rows when `gridEnrichmentStats` is loaded and `totalLeads > 0`.
+- [✓] 2026-02-19 16:34 - `pnpm typecheck` passes
+- [✓] 2026-02-19 16:34 - `pnpm lint` passes
+- [✓] 2026-02-19 16:42 - `node --test tests/` passes
+- [✓] 2026-02-19 16:46 - With no cell selected, grid progress shows total leads and directory-readiness percentage
+- [✓] 2026-02-19 16:54 - Numbers are consistent — grid-level totals match sum of individual cell stats
+- [✓] 2026-02-19 16:55 - In `convex/schema.ts`, add `exportedAt: v.optional(v.number())` to the `leads` table
+- [✓] 2026-02-19 16:56 - In `convex/leads.ts`, add a new exported `mutation` called `bulkStampExported` with args `{ leadIds: v.array(v.id("leads")) }`. Handler: patch each lead with `{ exportedAt: Date.now() }`.
+- [✓] 2026-02-19 16:58 - In `src/app/leads/page.tsx`, after a successful CSV download (where `toast.success` is called), call the `bulkStampExported` mutation with the IDs of all exported leads. Extract IDs from the export query result before generating CSV.
+- [✓] 2026-02-19 17:00 - In `convex/discovery/gridCells.ts`, update `getCellLeadStats` to also return `exported: number` (count of leads where `exportedAt` is truthy)
+- [✓] 2026-02-19 17:02 - In `convex/discovery/gridCells.ts`, update `getGridEnrichmentStats` to also return `exported: number`
+- [✓] 2026-02-19 17:04 - In `src/components/map/discovery-panel.tsx`, add an "Exported" row to both the cell progress and grid progress sections, showing `exported / total`
+- [✓] 2026-02-19 17:04 - `pnpm typecheck` passes
+- [✓] 2026-02-19 17:05 - `pnpm lint` passes
+- [✓] 2026-02-19 17:08 - `node --test tests/` passes
+- [✓] 2026-02-19 17:11 - Export CSV from leads page, then check that exported leads have `exportedAt` set
+- [✓] 2026-02-19 17:12 - Cell and grid stats show export counts after an export has been performed
+- [✓] 2026-02-19 19:34 - In `convex/discovery/gridCells.ts`, add a new `internalQuery` called `getCellLeadIdsForEnrichment` with args `{ cellId: v.id("discoveryCells") }`. The handler should: (a) query leads using `withIndex("by_discoveryCellId", q => q.eq("discoveryCellId", args.cellId))` and `.collect()`, (b) filter to leads where `enrichedAt` is undefined OR `enrichedAt` is older than 30 days (`Date.now() - lead.enrichedAt > 30 * 24 * 60 * 60 * 1000`), (c) return an array of just the `_id` values. Import `internalQuery` from `../_generated/server` if not already imported.
+- [✓] 2026-02-19 19:34 - `pnpm typecheck` passes
+- [✓] 2026-02-19 19:36 - In `convex/enrichment/batchEnrichPublic.ts`, add a new exported `action` called `enrichCellLeads` with args `{ cellId: v.id("discoveryCells") }`. The handler should: (a) call `ctx.runQuery(internal.discovery.gridCells.getCellLeadIdsForEnrichment, { cellId: args.cellId })` to get unenriched lead IDs, (b) if the array is empty, return `{ leadIds: [], total: 0, succeeded: 0, failed: 0, skipped: 0 }`, (c) chunk the IDs into batches of 25, (d) for each chunk call `ctx.runAction(internal.enrichment.batchEnrich.batchEnrichLeads, { leadIds: chunk })`, (e) aggregate the results across all chunks (sum `succeeded`, `failed`, `skipped`), (f) return `{ leadIds: allLeadIds, total, succeeded, failed, skipped }`. Make sure to import `internal` from `../_generated/api` and the `v` validator for `cellId`.
+- [✓] 2026-02-19 19:45 - `pnpm typecheck` passes
+- [✓] 2026-02-19 19:46 - In `src/components/map/discovery-panel.tsx`, add imports: `useAction` from `convex/react`, `Sparkles` from `lucide-react`, `EnrichmentProgress` from `@/components/leads/enrichment-progress`
+- [✓] 2026-02-19 19:48 - In the `DiscoveryPanel` component, add local state: `const [isEnriching, setIsEnriching] = useState(false)`, `const [enrichingLeadIds, setEnrichingLeadIds] = useState<Id<"leads">[]>([])`, `const enrichmentSinceRef = useRef(0)`. Also add: `const enrichCellLeads = useAction(api.enrichment.batchEnrichPublic.enrichCellLeads)`
+- [✓] 2026-02-19 19:50 - Add a `handleEnrichCell` async function that: (a) sets `isEnriching(true)` and `enrichmentSinceRef.current = Date.now()`, (b) shows `toast.info(\`Enriching leads in cell...\`)`, (c) calls `enrichCellLeads({ cellId: persistedCell._id as Id<"discoveryCells"> })`, (d) on the result, sets `enrichingLeadIds` from the returned `leadIds`, (e) shows a success or warning toast with succeeded/failed/skipped counts (same format as `bulk-actions.tsx` lines 97-101), (f) in the `finally` block sets `isEnriching(false)` and clears `enrichingLeadIds` after a short delay (e.g. 2 seconds, so the progress bar can show 100% briefly before disappearing)
+- [✓] 2026-02-19 19:53 - In the "Selected Cell" section (~line 467, after the Split/Merge buttons div), add a new row with an "Enrich" button. Use the same inline button styling as the Split/Merge buttons: `inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors hover:bg-accent`. Add the `Sparkles` icon (`size-3`). Disable the button when: `isEnriching`, or `!persistedCell` (virtual cells can't be enriched), or `(cellLeadStats?.total ?? 0) === 0` (no leads to enrich). Show "Enriching..." text when `isEnriching`, otherwise "Enrich".
+- [✓] 2026-02-19 19:55 - Below the enrich button, conditionally render `<EnrichmentProgress leadIds={enrichingLeadIds} since={enrichmentSinceRef.current} />` when `isEnriching && enrichingLeadIds.length > 0`. The component will auto-hide when all leads are done (it returns null when `completed >= total`).
+- [✓] 2026-02-19 19:56 - `pnpm typecheck` passes
+- [✓] 2026-02-19 19:56 - `pnpm lint` passes
+- [✓] 2026-02-19 19:59 - `node --test tests/` passes (update pattern-matching tests if they reference the Selected Cell section structure)
+- [✓] 2026-02-19 20:03 - Select a discovered cell with leads → "Enrich" button is visible and enabled
+- [✓] 2026-02-19 20:06 - Select an unsearched/virtual cell → "Enrich" button is not shown (no persistedCell)
+- [✓] 2026-02-19 20:09 - Select a cell with 0 leads → "Enrich" button is disabled
+- [✓] 2026-02-19 20:15 - Click "Enrich" → toast shows "Enriching leads in cell...", button shows "Enriching...", progress bar appears
+- [✓] 2026-02-19 20:20 - On completion → toast shows succeeded/failed/skipped counts, cell stats update reactively
+- [✓] 2026-02-19 20:22 - While enrichment is running → button is disabled, cannot double-trigger
