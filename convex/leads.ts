@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { listLeadsPage } from "./lib/leadsList";
+import { listLeadsPage, matchesFilters } from "./lib/leadsList";
 import { searchLeads } from "./lib/searchLeads";
 
 const leadStatusValidator = v.union(
@@ -78,6 +78,53 @@ export const list = query({
       cursor: args.cursor,
       pageSize: 50,
     });
+  },
+});
+
+export const listForExport = query({
+  args: {
+    status: v.optional(leadStatusValidator),
+    type: v.optional(leadTypeValidator),
+    clusterId: v.optional(v.id("clusters")),
+    hasEmail: v.optional(v.boolean()),
+    hasSocial: v.optional(v.boolean()),
+    hasFacebook: v.optional(v.boolean()),
+    hasInstagram: v.optional(v.boolean()),
+    source: v.optional(leadSourceValidator),
+    needsFollowUp: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const allLeads = await ctx.db.query("leads").collect();
+
+    return allLeads
+      .filter((lead) =>
+        matchesFilters(lead, {
+          status: args.status,
+          type: args.type,
+          clusterId: args.clusterId,
+          hasEmail: args.hasEmail,
+          hasSocial: args.hasSocial,
+          hasFacebook: args.hasFacebook,
+          hasInstagram: args.hasInstagram,
+          source: args.source,
+          needsFollowUp: args.needsFollowUp,
+          now: Date.now(),
+        }),
+      )
+      .map((lead) => ({
+        name: lead.name,
+        type: lead.type,
+        farmDescription: lead.farmDescription,
+        contactPhone: lead.contactPhone,
+        address: lead.address,
+        city: lead.city,
+        latitude: lead.latitude,
+        longitude: lead.longitude,
+        placeId: lead.placeId,
+        website: lead.website,
+        socialLinks: lead.socialLinks,
+        products: lead.products,
+      }));
   },
 });
 
