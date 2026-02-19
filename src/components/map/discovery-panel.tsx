@@ -64,6 +64,7 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
   const [enrichingLeadIds, setEnrichingLeadIds] = useState<Id<"leads">[]>([])
   const enrichmentSinceRef = useRef(0)
 
+  // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
   const enrichCellLeads = useAction(api.enrichment.batchEnrichPublic.enrichCellLeads)
 
   // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
