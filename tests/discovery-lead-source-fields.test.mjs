@@ -84,3 +84,13 @@ test('lead source is set to "google_places"', () => {
   );
   assert.match(leadsMapBlock, /source:\s*"google_places"/);
 });
+
+// --- discoveryCellId is set on each lead ---
+
+test("lead object includes discoveryCellId set to args.cellId", () => {
+  const leadsMapBlock = discoverCellSource.slice(
+    discoverCellSource.indexOf("inBounds.map"),
+    discoverCellSource.indexOf("// Step 9"),
+  );
+  assert.match(leadsMapBlock, /discoveryCellId:\s*args\.cellId/);
+});

@@ -156,6 +156,10 @@ test("creates leads with google_places source", () => {
   assert.match(source, /followUpCount:\s*0/);
 });
 
+test("sets discoveryCellId to args.cellId on each lead", () => {
+  assert.match(source, /discoveryCellId:\s*args\.cellId/);
+});
+
 // ============================================================
 // Step 9: Insert via insertDiscoveredLeads
 // ============================================================

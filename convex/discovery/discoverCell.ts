@@ -146,6 +146,7 @@ export const discoverCell = internalAction({
         longitude: place.geometry?.location?.lng,
         source: "google_places" as const,
         sourceDetail: `Discovery grid "${gridName}" cell ${args.cellId} [depth=${depth}]`,
+        discoveryCellId: args.cellId,
         status: "new_lead" as const,
         followUpCount: 0 as const,
         createdAt: now,
