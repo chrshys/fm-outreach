@@ -234,6 +234,20 @@ test("handleExportCSV excludes sortBy, sortOrder, and cursor from export query",
   assert.ok(!exportCallChunk.includes("cursor"), "should not pass cursor to listForExport");
 });
 
+test("Export CSV button appears between LeadFilters and Table in JSX", () => {
+  const source = fs.readFileSync("src/app/leads/page.tsx", "utf8");
+  const filtersPos = source.indexOf("<LeadFilters");
+  const exportPos = source.indexOf("Export CSV");
+  const tablePos = source.indexOf("<Table>");
+  assert.ok(filtersPos !== -1, "should have LeadFilters component");
+  assert.ok(exportPos !== -1, "should have Export CSV button");
+  assert.ok(tablePos !== -1, "should have Table component");
+  assert.ok(
+    filtersPos < exportPos && exportPos < tablePos,
+    "Export CSV button should appear after LeadFilters and before Table"
+  );
+});
+
 test("handleExportCSV sets isExporting in try/finally", () => {
   const source = fs.readFileSync("src/app/leads/page.tsx", "utf8");
   const fnStart = source.indexOf("async function handleExportCSV");
