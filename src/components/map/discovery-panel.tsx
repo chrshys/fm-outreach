@@ -45,7 +45,9 @@ const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
   { status: "searched-fresh", color: "#4ade80", label: "Searched (fresh)" },
   { status: "searched-aging", color: "#a3e635", label: "Searched (aging)" },
   { status: "searched-stale", color: "#f59e0b", label: "Searched (stale)" },
-  { status: "saturated", color: "#f97316", label: "Saturated" },
+  { status: "saturated-fresh", color: "#f97316", label: "Saturated (fresh)" },
+  { status: "saturated-aging", color: "#d97706", label: "Saturated (aging)" },
+  { status: "saturated-stale", color: "#92400e", label: "Saturated (stale)" },
 ]
 
 export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVirtualCell, onCellAction }: DiscoveryPanelProps) {
