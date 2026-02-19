@@ -33,3 +33,55 @@ test("imports action from generated server", () => {
 test("imports internal from generated api", () => {
   assert.match(source, /import.*internal.*from.*_generated\/api/);
 });
+
+// --- enrichCellLeads tests ---
+
+test("enrichCellLeads is exported as a public action", () => {
+  assert.match(source, /export\s+const\s+enrichCellLeads\s*=\s*action\(/);
+});
+
+test("enrichCellLeads accepts cellId arg with discoveryCells validator", () => {
+  assert.match(source, /cellId:\s*v\.id\("discoveryCells"\)/);
+});
+
+test("enrichCellLeads calls getCellLeadIdsForEnrichment query", () => {
+  assert.match(
+    source,
+    /ctx\.runQuery\(\s*internal\.discovery\.gridCells\.getCellLeadIdsForEnrichment/,
+  );
+});
+
+test("enrichCellLeads returns early with zeros when no leads", () => {
+  assert.match(
+    source,
+    /if\s*\(\s*leadIds\.length\s*===\s*0\s*\)/,
+  );
+  assert.match(source, /total:\s*0/);
+  assert.match(source, /succeeded:\s*0/);
+  assert.match(source, /failed:\s*0/);
+  assert.match(source, /skipped:\s*0/);
+});
+
+test("enrichCellLeads chunks lead IDs into batches of 25", () => {
+  assert.match(source, /ENRICH_CHUNK_SIZE\s*=\s*25/);
+  assert.match(source, /i\s*\+=\s*ENRICH_CHUNK_SIZE/);
+  assert.match(source, /leadIds\.slice\(i,\s*i\s*\+\s*ENRICH_CHUNK_SIZE\)/);
+});
+
+test("enrichCellLeads calls batchEnrichLeads for each chunk", () => {
+  assert.match(
+    source,
+    /ctx\.runAction\(\s*internal\.enrichment\.batchEnrich\.batchEnrichLeads,\s*\{\s*leadIds:\s*chunk\s*\}/s,
+  );
+});
+
+test("enrichCellLeads aggregates succeeded, failed, skipped across chunks", () => {
+  assert.match(source, /succeeded\s*\+=\s*result\.succeeded/);
+  assert.match(source, /failed\s*\+=\s*result\.failed/);
+  assert.match(source, /skipped\s*\+=\s*result\.skipped/);
+});
+
+test("enrichCellLeads returns leadIds, total, succeeded, failed, skipped", () => {
+  // Check the final return shape
+  assert.match(source, /return\s*\{[^}]*leadIds[^}]*total[^}]*succeeded[^}]*failed[^}]*skipped/s);
+});
