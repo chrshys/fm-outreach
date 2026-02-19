@@ -186,7 +186,8 @@ test("DiscoveryPanel displays cell status color legend", () => {
   assert.match(discoveryPanelSource, /CELL_STATUS_LEGEND/)
   assert.match(discoveryPanelSource, /Unsearched/)
   assert.match(discoveryPanelSource, /Searching/)
-  assert.match(discoveryPanelSource, /Searched/)
+  assert.match(discoveryPanelSource, /Searched \(fresh\)/)
+  assert.match(discoveryPanelSource, /Searched \(stale\)/)
   assert.match(discoveryPanelSource, /Saturated/)
 })
 

@@ -214,16 +214,20 @@ test("panel legend colors match cell-colors.ts color values", () => {
   const searchingColor = cellColorsSource.match(/searching:\s*\{[^}]*color:\s*"(#[a-f0-9]+)"/)?.[1]
   const searchedColor = cellColorsSource.match(/searched:\s*\{[^}]*color:\s*"(#[a-f0-9]+)"/)?.[1]
   const saturatedColor = cellColorsSource.match(/saturated:\s*\{[^}]*color:\s*"(#[a-f0-9]+)"/)?.[1]
+  // Extract stale freshness color from SEARCHED_FRESHNESS
+  const staleColor = cellColorsSource.match(/stale:\s*\{[^}]*color:\s*"(#[a-f0-9]+)"/)?.[1]
 
   assert.ok(unsearchedColor)
   assert.ok(searchingColor)
   assert.ok(searchedColor)
   assert.ok(saturatedColor)
+  assert.ok(staleColor)
 
-  // Legend should use same colors
+  // Legend should use same colors (fresh = searched color, stale = stale freshness color)
   assert.match(panelSource, new RegExp(unsearchedColor.replace("#", "#")))
   assert.match(panelSource, new RegExp(searchingColor.replace("#", "#")))
   assert.match(panelSource, new RegExp(searchedColor.replace("#", "#")))
+  assert.match(panelSource, new RegExp(staleColor.replace("#", "#")))
   assert.match(panelSource, new RegExp(saturatedColor.replace("#", "#")))
 })
 

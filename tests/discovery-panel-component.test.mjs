@@ -125,17 +125,19 @@ test("renders cell status color legend", () => {
   assert.match(source, /CELL_STATUS_LEGEND/)
 })
 
-test("legend includes all four statuses", () => {
+test("legend includes all five statuses with freshness variants", () => {
   assert.match(source, /Unsearched/)
   assert.match(source, /Searching/)
-  assert.match(source, /Searched/)
+  assert.match(source, /Searched \(fresh\)/)
+  assert.match(source, /Searched \(stale\)/)
   assert.match(source, /Saturated/)
 })
 
 test("legend colors match cell-colors.ts values", () => {
   assert.match(source, /#9ca3af/)  // unsearched
   assert.match(source, /#3b82f6/)  // searching
-  assert.match(source, /#22c55e/)  // searched
+  assert.match(source, /#22c55e/)  // searched (fresh)
+  assert.match(source, /#ca8a04/)  // searched (stale)
   assert.match(source, /#f97316/)  // saturated
 })
 
