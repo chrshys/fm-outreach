@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
+import type { Id } from "../_generated/dataModel";
 import {
   internalMutation,
   internalQuery,
@@ -416,6 +417,44 @@ export const purgeDiscoveryGrids = mutation({
     }
 
     return { deletedCells: cells.length, deletedGrids: grids.length };
+  },
+});
+
+export const backfillDiscoveryCellIds = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const leads = await ctx.db
+      .query("leads")
+      .filter((q) => q.eq(q.field("source"), "google_places"))
+      .collect();
+
+    const cellIdRegex = /cell\s+([a-z0-9]+)\s+\[depth=/;
+    let updated = 0;
+    let skipped = 0;
+
+    for (const lead of leads) {
+      if (lead.discoveryCellId) {
+        skipped++;
+        continue;
+      }
+
+      if (!lead.sourceDetail) {
+        skipped++;
+        continue;
+      }
+
+      const match = cellIdRegex.exec(lead.sourceDetail);
+      if (!match) {
+        skipped++;
+        continue;
+      }
+
+      const extractedId = match[1] as Id<"discoveryCells">;
+      await ctx.db.patch(lead._id, { discoveryCellId: extractedId });
+      updated++;
+    }
+
+    return { updated, skipped };
   },
 });
 
