@@ -269,6 +269,14 @@ export const enrichLead = internalAction({
         patch.website = placesResult.website;
         fieldsUpdated.push("website");
       }
+      if ((!lead.postalCode || overwrite) && placesResult.postalCode) {
+        patch.postalCode = placesResult.postalCode;
+        fieldsUpdated.push("postalCode");
+      }
+      if ((!lead.countryCode || overwrite) && placesResult.countryCode) {
+        patch.countryCode = placesResult.countryCode;
+        fieldsUpdated.push("countryCode");
+      }
     }
 
     // From website scraper — pick best email

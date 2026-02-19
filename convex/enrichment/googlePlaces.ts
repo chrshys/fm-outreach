@@ -14,6 +14,8 @@ export type GooglePlacesResult = {
   hours: string[] | null;
   rating: number | null;
   formattedAddress: string | null;
+  postalCode: string | null;
+  countryCode: string | null;
 };
 
 type TextSearchCandidate = {
@@ -99,7 +101,7 @@ async function placeDetails(
   apiKey: string,
 ): Promise<GooglePlacesResult> {
   const fields =
-    "place_id,formatted_phone_number,website,opening_hours,rating,formatted_address";
+    "place_id,formatted_phone_number,website,opening_hours,rating,formatted_address,address_components";
   const response = await fetch(
     `${PLACE_DETAILS_URL}?place_id=${placeId}&fields=${fields}&key=${apiKey}`,
   );
@@ -117,6 +119,11 @@ async function placeDetails(
       opening_hours?: { weekday_text?: string[] };
       rating?: number;
       formatted_address?: string;
+      address_components?: Array<{
+        long_name: string;
+        short_name: string;
+        types: string[];
+      }>;
     };
     error_message?: string;
   };
@@ -128,6 +135,12 @@ async function placeDetails(
   }
 
   const r = data.result;
+  const postalCodeComponent = r.address_components?.find((c) =>
+    c.types.includes("postal_code"),
+  );
+  const countryComponent = r.address_components?.find((c) =>
+    c.types.includes("country"),
+  );
   return {
     placeId: r.place_id ?? placeId,
     phone: r.formatted_phone_number ?? null,
@@ -135,6 +148,8 @@ async function placeDetails(
     hours: r.opening_hours?.weekday_text ?? null,
     rating: r.rating ?? null,
     formattedAddress: r.formatted_address ?? null,
+    postalCode: postalCodeComponent?.short_name ?? null,
+    countryCode: countryComponent?.short_name ?? null,
   };
 }
 
