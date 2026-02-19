@@ -2,6 +2,34 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  // CSV Export Column Mapping
+  // ────────────────────────
+  // When exporting leads to CSV (see src/lib/csv-export.ts), the columns map
+  // from schema fields as follows. Fruitland Market's directory-import
+  // (CsvUploader.tsx) consumes this format via flexible header normalization.
+  //
+  //  CSV Column      │ Schema Field(s)              │ FM Import Field
+  //  ────────────────┼──────────────────────────────┼────────────────
+  //  name            │ name                         │ displayName
+  //  type            │ type                         │ profileType (remapped)
+  //  farmDescription │ farmDescription              │ bio
+  //  contactPhone    │ contactPhone                 │ phone
+  //  address         │ address                      │ address
+  //  city            │ city                         │ city
+  //  state           │ province ?? region           │ state
+  //  postalCode      │ postalCode                   │ postalCode
+  //  countryCode     │ countryCode                  │ countryCode
+  //  latitude        │ latitude                     │ latitude
+  //  longitude       │ longitude                    │ longitude
+  //  placeId         │ placeId                      │ placeId
+  //  website         │ website                      │ website
+  //  instagram       │ socialLinks.instagram         │ instagram
+  //  facebook        │ socialLinks.facebook          │ facebook
+  //  products        │ products (joined with ", ")   │ products (split back)
+  //
+  // Type mapping (fm-outreach → FM profileType):
+  //   farm → farm, farmers_market → farmersMarket,
+  //   retail_store → countryStore, roadside_stand → roadsideStand, other → other
   leads: defineTable({
     name: v.string(),
     type: v.union(
