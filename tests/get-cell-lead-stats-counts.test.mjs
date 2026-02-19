@@ -6,8 +6,11 @@ import fs from "node:fs";
 // Tests that getCellLeadStats counting logic produces correct
 // results for different lead data scenarios.
 //
-// Extracts the boolean expressions from the source code and
-// evaluates them against mock leads to verify counts are correct.
+// The enrichment evaluation is now in the shared
+// evaluateLeadEnrichment helper. These tests verify:
+// 1. getCellLeadStats calls the shared helper
+// 2. The shared helper has correct logic
+// 3. Mock counting produces correct results
 // ============================================================
 
 const gridCellsSource = fs.readFileSync(
@@ -19,6 +22,13 @@ const fnBody = gridCellsSource.slice(
   gridCellsSource.indexOf("getCellLeadStats"),
 );
 
+// Extract the shared helper body (from definition to the next export const)
+const helperStart = gridCellsSource.indexOf("export function evaluateLeadEnrichment");
+const helperBody = gridCellsSource.slice(
+  helperStart,
+  gridCellsSource.indexOf("export const", helperStart),
+);
+
 // -- Counter initialisation ----------------------------------
 
 test("counters initialise to 0", () => {
@@ -27,24 +37,43 @@ test("counters initialise to 0", () => {
   assert.match(fnBody, /let directoryReady\s*=\s*0/);
 });
 
-// -- Counting logic: locationComplete ------------------------
+// -- Counting logic: uses shared helper ----------------------
 
-test("locationComplete increments only when isLocationComplete is true", () => {
+test("getCellLeadStats calls evaluateLeadEnrichment for each lead", () => {
   assert.match(
     fnBody,
-    /if\s*\(isLocationComplete\)\s*locationComplete\+\+/,
-    "Should increment locationComplete when isLocationComplete is truthy",
+    /evaluateLeadEnrichment\(lead\)/,
+    "Should call evaluateLeadEnrichment(lead)",
   );
 });
 
-test("isLocationComplete requires all 7 location fields", () => {
-  // The expression should AND together all 7 fields
-  const expr = fnBody.match(
-    /const isLocationComplete\s*=\s*!!\(\s*([\s\S]*?)\);/,
+test("locationComplete increments from helper result", () => {
+  assert.match(
+    fnBody,
+    /result\.isLocationComplete.*locationComplete\+\+/s,
+    "Should increment locationComplete from evaluateLeadEnrichment result",
   );
-  assert.ok(expr, "Should define isLocationComplete with !! double-negation");
+});
 
-  const body = expr[1];
+test("hasWebPresence increments from helper result", () => {
+  assert.match(
+    fnBody,
+    /result\.isWebPresence.*hasWebPresence\+\+/s,
+    "Should increment hasWebPresence from evaluateLeadEnrichment result",
+  );
+});
+
+test("directoryReady increments from helper result", () => {
+  assert.match(
+    fnBody,
+    /result\.isDirectoryReady.*directoryReady\+\+/s,
+    "Should increment directoryReady from evaluateLeadEnrichment result",
+  );
+});
+
+// -- Shared helper logic: isLocationComplete -----------------
+
+test("evaluateLeadEnrichment checks all 7 location fields", () => {
   const requiredFields = [
     "lead.address",
     "lead.city",
@@ -54,53 +83,36 @@ test("isLocationComplete requires all 7 location fields", () => {
     "lead.longitude",
   ];
   for (const field of requiredFields) {
-    assert.ok(body.includes(field), `isLocationComplete must check ${field}`);
+    assert.ok(helperBody.includes(field), `evaluateLeadEnrichment must check ${field}`);
   }
-  // province OR region (disjunction inside the conjunction)
   assert.match(
-    body,
+    helperBody,
     /lead\.province\s*\|\|\s*lead\.region/,
     "Should allow province OR region",
   );
 });
 
-// -- Counting logic: hasWebPresence --------------------------
+// -- Shared helper logic: isWebPresence ----------------------
 
-test("hasWebPresence increments only when isWebPresence is true", () => {
-  assert.match(
-    fnBody,
-    /if\s*\(isWebPresence\)\s*hasWebPresence\+\+/,
-    "Should increment hasWebPresence when isWebPresence is truthy",
-  );
-});
-
-test("isWebPresence uses OR across website and social links", () => {
-  const expr = fnBody.match(
-    /const isWebPresence\s*=\s*!!\(\s*([\s\S]*?)\);/,
-  );
-  assert.ok(expr, "Should define isWebPresence with !! double-negation");
-
-  const body = expr[1];
-  assert.ok(body.includes("lead.website"), "Should check lead.website");
+test("evaluateLeadEnrichment checks website and social links", () => {
+  assert.ok(helperBody.includes("lead.website"), "Should check lead.website");
   assert.ok(
-    body.includes("lead.socialLinks?.instagram"),
+    helperBody.includes("lead.socialLinks?.instagram"),
     "Should check socialLinks?.instagram",
   );
   assert.ok(
-    body.includes("lead.socialLinks?.facebook"),
+    helperBody.includes("lead.socialLinks?.facebook"),
     "Should check socialLinks?.facebook",
   );
-  // All joined by ||
-  assert.match(body, /\|\|/, "Fields should be OR-ed together");
 });
 
-// -- Counting logic: directoryReady --------------------------
+// -- Shared helper logic: isDirectoryReady -------------------
 
-test("directoryReady increments only when both flags are true", () => {
+test("evaluateLeadEnrichment requires both location AND web presence for directoryReady", () => {
   assert.match(
-    fnBody,
-    /if\s*\(isLocationComplete\s*&&\s*isWebPresence\)\s*directoryReady\+\+/,
-    "Should increment directoryReady only when both conditions hold",
+    helperBody,
+    /isLocationComplete\s*&&\s*isWebPresence/,
+    "Should require both isLocationComplete && isWebPresence",
   );
 });
 

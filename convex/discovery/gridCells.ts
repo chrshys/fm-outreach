@@ -10,6 +10,44 @@ import {
 
 const MAX_DEPTH = 4;
 
+/**
+ * Shared enrichment evaluation for a single lead.
+ * Used by both cell-level and grid-level stats queries to ensure
+ * totals always match.
+ */
+export function evaluateLeadEnrichment(lead: {
+  address?: string;
+  city?: string;
+  province?: string;
+  region?: string;
+  postalCode?: string;
+  countryCode?: string;
+  latitude?: number;
+  longitude?: number;
+  website?: string;
+  socialLinks?: { instagram?: string; facebook?: string };
+}) {
+  const isLocationComplete = !!(
+    lead.address &&
+    lead.city &&
+    (lead.province || lead.region) &&
+    lead.postalCode &&
+    lead.countryCode &&
+    lead.latitude &&
+    lead.longitude
+  );
+
+  const isWebPresence = !!(
+    lead.website ||
+    lead.socialLinks?.instagram ||
+    lead.socialLinks?.facebook
+  );
+
+  const isDirectoryReady = isLocationComplete && isWebPresence;
+
+  return { isLocationComplete, isWebPresence, isDirectoryReady };
+}
+
 export const subdivideCell = mutation({
   args: {
     cellId: v.id("discoveryCells"),
@@ -520,25 +558,10 @@ export const getCellLeadStats = query({
     let directoryReady = 0;
 
     for (const lead of leads) {
-      const isLocationComplete = !!(
-        lead.address &&
-        lead.city &&
-        (lead.province || lead.region) &&
-        lead.postalCode &&
-        lead.countryCode &&
-        lead.latitude &&
-        lead.longitude
-      );
-
-      const isWebPresence = !!(
-        lead.website ||
-        lead.socialLinks?.instagram ||
-        lead.socialLinks?.facebook
-      );
-
-      if (isLocationComplete) locationComplete++;
-      if (isWebPresence) hasWebPresence++;
-      if (isLocationComplete && isWebPresence) directoryReady++;
+      const result = evaluateLeadEnrichment(lead);
+      if (result.isLocationComplete) locationComplete++;
+      if (result.isWebPresence) hasWebPresence++;
+      if (result.isDirectoryReady) directoryReady++;
     }
 
     return {
@@ -578,25 +601,10 @@ export const getGridEnrichmentStats = query({
       totalLeads += leads.length;
 
       for (const lead of leads) {
-        const isLocationComplete = !!(
-          lead.address &&
-          lead.city &&
-          (lead.province || lead.region) &&
-          lead.postalCode &&
-          lead.countryCode &&
-          lead.latitude &&
-          lead.longitude
-        );
-
-        const isWebPresence = !!(
-          lead.website ||
-          lead.socialLinks?.instagram ||
-          lead.socialLinks?.facebook
-        );
-
-        if (isLocationComplete) locationComplete++;
-        if (isWebPresence) hasWebPresence++;
-        if (isLocationComplete && isWebPresence) directoryReady++;
+        const result = evaluateLeadEnrichment(lead);
+        if (result.isLocationComplete) locationComplete++;
+        if (result.isWebPresence) hasWebPresence++;
+        if (result.isDirectoryReady) directoryReady++;
       }
     }
 

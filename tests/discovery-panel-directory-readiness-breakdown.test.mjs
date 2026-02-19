@@ -105,10 +105,10 @@ test("getCellLeadStats return object includes total, locationComplete, hasWebPre
 // 6. directoryReady requires BOTH locationComplete AND hasWebPresence
 // =============================================================================
 
-test("directoryReady is counted only when both isLocationComplete AND isWebPresence", () => {
+test("directoryReady is counted via shared evaluateLeadEnrichment helper", () => {
   const queryIdx = querySource.indexOf("getCellLeadStats")
   const queryBlock = querySource.slice(queryIdx, queryIdx + 1500)
-  assert.match(queryBlock, /isLocationComplete\s*&&\s*isWebPresence/)
+  assert.match(queryBlock, /evaluateLeadEnrichment\(lead\)/)
 })
 
 // =============================================================================

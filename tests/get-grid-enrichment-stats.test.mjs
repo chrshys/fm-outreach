@@ -11,9 +11,10 @@ const gridCellsSource = fs.readFileSync(
   "utf8",
 );
 
+const fnStart = gridCellsSource.indexOf("export const getGridEnrichmentStats");
 const fnBody = gridCellsSource.slice(
-  gridCellsSource.indexOf("getGridEnrichmentStats"),
-  gridCellsSource.indexOf("export", gridCellsSource.indexOf("getGridEnrichmentStats") + 1),
+  fnStart,
+  gridCellsSource.indexOf("export", fnStart + 1),
 );
 
 // -- Export & shape tests -------------------------------------
@@ -114,68 +115,12 @@ test("getGridEnrichmentStats aggregates totalLeads from leads.length", () => {
   );
 });
 
-// -- locationComplete logic (same as getCellLeadStats) --------
+// -- Uses shared enrichment helper ----------------------------
 
-test("getGridEnrichmentStats checks lead.address for locationComplete", () => {
-  assert.match(fnBody, /lead\.address/, "Should check lead.address");
-});
-
-test("getGridEnrichmentStats checks lead.city for locationComplete", () => {
-  assert.match(fnBody, /lead\.city/, "Should check lead.city");
-});
-
-test("getGridEnrichmentStats checks province OR region", () => {
+test("getGridEnrichmentStats uses evaluateLeadEnrichment for enrichment logic", () => {
   assert.match(
     fnBody,
-    /lead\.province\s*\|\|\s*lead\.region/,
-    "Should check lead.province || lead.region",
-  );
-});
-
-test("getGridEnrichmentStats checks postalCode", () => {
-  assert.match(fnBody, /lead\.postalCode/, "Should check lead.postalCode");
-});
-
-test("getGridEnrichmentStats checks countryCode", () => {
-  assert.match(fnBody, /lead\.countryCode/, "Should check lead.countryCode");
-});
-
-test("getGridEnrichmentStats checks latitude", () => {
-  assert.match(fnBody, /lead\.latitude/, "Should check lead.latitude");
-});
-
-test("getGridEnrichmentStats checks longitude", () => {
-  assert.match(fnBody, /lead\.longitude/, "Should check lead.longitude");
-});
-
-// -- hasWebPresence logic (same as getCellLeadStats) ----------
-
-test("getGridEnrichmentStats checks website", () => {
-  assert.match(fnBody, /lead\.website/, "Should check lead.website");
-});
-
-test("getGridEnrichmentStats checks socialLinks.instagram", () => {
-  assert.match(
-    fnBody,
-    /lead\.socialLinks\?\.instagram/,
-    "Should check lead.socialLinks?.instagram",
-  );
-});
-
-test("getGridEnrichmentStats checks socialLinks.facebook", () => {
-  assert.match(
-    fnBody,
-    /lead\.socialLinks\?\.facebook/,
-    "Should check lead.socialLinks?.facebook",
-  );
-});
-
-// -- directoryReady logic -------------------------------------
-
-test("getGridEnrichmentStats requires both locationComplete AND hasWebPresence for directoryReady", () => {
-  assert.match(
-    fnBody,
-    /isLocationComplete\s*&&\s*isWebPresence/,
-    "Should require both isLocationComplete && isWebPresence for directoryReady",
+    /evaluateLeadEnrichment\(lead\)/,
+    "Should call evaluateLeadEnrichment(lead) for each lead",
   );
 });
