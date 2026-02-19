@@ -54,12 +54,14 @@ test("CellData type includes lastSearchedAt as optional number", () => {
 })
 
 // ============================================================
-// Frontend: formatShortDate helper still exists
+// Frontend: formatRelativeTime helper exists
 // ============================================================
 
-test("formatShortDate formats timestamp using en-US month short and day numeric", () => {
-  assert.match(discoveryGridSource, /function\s+formatShortDate\(timestamp:\s*number\)/)
-  assert.match(discoveryGridSource, /toLocaleDateString\("en-US"/)
-  assert.match(discoveryGridSource, /month:\s*"short"/)
-  assert.match(discoveryGridSource, /day:\s*"numeric"/)
+test("formatRelativeTime returns relative time strings", () => {
+  assert.match(discoveryGridSource, /function\s+formatRelativeTime\(timestamp:\s*number\)/)
+  assert.match(discoveryGridSource, /return\s*"today"/)
+  assert.match(discoveryGridSource, /return\s*"yesterday"/)
+  assert.match(discoveryGridSource, /days ago/)
+  assert.match(discoveryGridSource, /weeks ago/)
+  assert.match(discoveryGridSource, /months ago/)
 })

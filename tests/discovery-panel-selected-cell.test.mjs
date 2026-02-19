@@ -28,8 +28,8 @@ test("panel imports getStatusBadgeColor from discovery-grid-shared", () => {
   assert.match(panelSource, /import\s+\{.*getStatusBadgeColor.*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("panel imports formatShortDate from discovery-grid-shared", () => {
-  assert.match(panelSource, /import\s+\{.*formatShortDate.*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
+test("panel imports formatRelativeTime from discovery-grid-shared", () => {
+  assert.match(panelSource, /import\s+\{.*formatRelativeTime.*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
 test("panel imports Play, Grid2x2Plus, Minimize2 icons", () => {
@@ -107,8 +107,8 @@ test("Run button is disabled when mechanism is not enabled or cell is searching"
   assert.match(panelSource, /!mechanism\.enabled\s*\|\|\s*selectedCell\.status\s*===\s*"searching"/)
 })
 
-test("panel uses formatShortDate for google_places last run", () => {
-  assert.match(panelSource, /formatShortDate\(selectedCell\.lastSearchedAt\)/)
+test("panel uses formatRelativeTime for google_places last run", () => {
+  assert.match(panelSource, /formatRelativeTime\(selectedCell\.lastSearchedAt\)/)
 })
 
 // ============================================================

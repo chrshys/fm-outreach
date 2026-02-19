@@ -22,7 +22,7 @@ const gridCellsSource = fs.readFileSync(
 test("getAvailableActions does not gate subdivide on unsearched status", () => {
   const fnBlock = gridSource.slice(
     gridSource.indexOf("function getAvailableActions"),
-    gridSource.indexOf("function formatShortDate"),
+    gridSource.indexOf("function formatRelativeTime"),
   )
   // subdivide is gated only on depth, not status
   assert.match(fnBlock, /cell\.depth\s*<\s*MAX_DEPTH/)
@@ -36,7 +36,7 @@ test("getAvailableActions does not gate subdivide on unsearched status", () => {
 test("getAvailableActions includes subdivide for unsearched cells below max depth", () => {
   const fnBlock = gridSource.slice(
     gridSource.indexOf("function getAvailableActions"),
-    gridSource.indexOf("function formatShortDate"),
+    gridSource.indexOf("function formatRelativeTime"),
   )
 
   // subdivide is gated only on depth, not status

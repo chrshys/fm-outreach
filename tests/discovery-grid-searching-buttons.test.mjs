@@ -13,7 +13,7 @@ const source = fs.readFileSync(
 
 test("getAvailableActions does not early-return empty array for searching status", () => {
   const fnStart = source.indexOf("export function getAvailableActions")
-  const fnEnd = source.indexOf("function formatShortDate")
+  const fnEnd = source.indexOf("function formatRelativeTime")
   assert.ok(fnStart !== -1, "getAvailableActions should exist")
   assert.ok(fnEnd !== -1 || fnEnd === -1, "function boundary marker may have moved")
   const fnBlock = fnEnd !== -1

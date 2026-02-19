@@ -56,6 +56,6 @@ test("imports getStatusBadgeColor from ./discovery-grid-shared", () => {
   assert.match(source, /import\s+\{[^}]*\bgetStatusBadgeColor\b[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("imports formatShortDate from ./discovery-grid-shared", () => {
-  assert.match(source, /import\s+\{[^}]*\bformatShortDate\b[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
+test("imports formatRelativeTime from ./discovery-grid-shared", () => {
+  assert.match(source, /import\s+\{[^}]*\bformatRelativeTime\b[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })

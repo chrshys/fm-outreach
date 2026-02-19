@@ -52,18 +52,23 @@ function getAvailableActions(cell: CellData): CellAction[] {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- re-exported from discovery-grid-shared
-function formatShortDate(timestamp: number): string {
-  return new Date(timestamp).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  })
+function formatRelativeTime(timestamp: number): string {
+  const now = Date.now()
+  const diffMs = now - timestamp
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return "today"
+  if (diffDays === 1) return "yesterday"
+  if (diffDays < 14) return `${diffDays} days ago`
+  if (diffDays < 60) return `${Math.floor(diffDays / 7)} weeks ago`
+  return `${Math.floor(diffDays / 30)} months ago`
 }
 
 // Keep barrel-export contract so downstream imports continue to work
 // @ts-ignore TS2484 — duplicate export needed for barrel re-export contract
 export type { CellAction, CellData } from "./discovery-grid-shared"
 // @ts-ignore TS2484 — duplicate export needed for barrel re-export contract
-export { DISCOVERY_MECHANISMS, MAX_DEPTH, getAvailableActions, formatShortDate, getStatusBadgeColor } from "./discovery-grid-shared"
+export { DISCOVERY_MECHANISMS, MAX_DEPTH, getAvailableActions, formatRelativeTime, getStatusBadgeColor } from "./discovery-grid-shared"
 
 type DiscoveryGridProps = {
   cells: CellData[]

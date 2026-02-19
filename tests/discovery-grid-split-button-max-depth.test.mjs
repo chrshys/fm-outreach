@@ -27,7 +27,7 @@ test("MAX_DEPTH is defined as 4", () => {
 test("getAvailableActions guards subdivide with depth < MAX_DEPTH", () => {
   const fnBlock = sharedSource.slice(
     sharedSource.indexOf("export function getAvailableActions"),
-    sharedSource.indexOf("export function formatShortDate"),
+    sharedSource.indexOf("export function formatRelativeTime"),
   )
   assert.match(fnBlock, /cell\.depth\s*<\s*MAX_DEPTH/)
   assert.match(fnBlock, /\{\s*type:\s*"subdivide"\s*\}/)

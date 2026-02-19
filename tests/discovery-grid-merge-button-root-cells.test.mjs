@@ -19,7 +19,7 @@ const panelSource = fs.readFileSync(
 test("getAvailableActions includes undivide for depth > 0 cells without parentCellId", () => {
   const fnBlock = gridSource.slice(
     gridSource.indexOf("export function getAvailableActions"),
-    gridSource.indexOf("function formatShortDate"),
+    gridSource.indexOf("function formatRelativeTime"),
   )
   assert.match(fnBlock, /cell\.depth\s*>\s*0/)
   assert.doesNotMatch(fnBlock, /cell\.parentCellId/)

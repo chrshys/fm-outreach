@@ -32,7 +32,7 @@ test("does not return empty array when cell status is searching", () => {
   // the UI handles disabling buttons instead of hiding them.
   const fnBlock = source.slice(
     source.indexOf("export function getAvailableActions"),
-    source.indexOf("function formatShortDate"),
+    source.indexOf("function formatRelativeTime"),
   )
   assert.doesNotMatch(fnBlock, /cell\.status\s*===\s*"searching"\)\s*return\s*\[\]/)
 })
@@ -59,7 +59,7 @@ test("includes subdivide action when cell depth is less than MAX_DEPTH", () => {
   // The function body should push subdivide
   const fnBlock = source.slice(
     source.indexOf("export function getAvailableActions"),
-    source.indexOf("function formatShortDate"),
+    source.indexOf("function formatRelativeTime"),
   )
   assert.match(fnBlock, /\{\s*type:\s*"subdivide"\s*\}/)
 })
@@ -71,7 +71,7 @@ test("includes subdivide action when cell depth is less than MAX_DEPTH", () => {
 test("includes undivide action when cell depth is greater than 0", () => {
   const fnBlock = source.slice(
     source.indexOf("export function getAvailableActions"),
-    source.indexOf("function formatShortDate"),
+    source.indexOf("function formatRelativeTime"),
   )
   assert.match(fnBlock, /cell\.depth\s*>\s*0/)
   assert.match(fnBlock, /\{\s*type:\s*"undivide"\s*\}/)
@@ -80,7 +80,7 @@ test("includes undivide action when cell depth is greater than 0", () => {
 test("does not gate undivide action on parentCellId", () => {
   const fnBlock = source.slice(
     source.indexOf("export function getAvailableActions"),
-    source.indexOf("function formatShortDate"),
+    source.indexOf("function formatRelativeTime"),
   )
   assert.doesNotMatch(fnBlock, /cell\.parentCellId/)
 })

@@ -22,7 +22,7 @@ const gridCellsSource = fs.readFileSync(
 test("getAvailableActions includes subdivide for non-searching cells below max depth", () => {
   const fnBlock = gridSource.slice(
     gridSource.indexOf("function getAvailableActions"),
-    gridSource.indexOf("function formatShortDate"),
+    gridSource.indexOf("function formatRelativeTime"),
   )
   assert.match(fnBlock, /cell\.depth\s*<\s*MAX_DEPTH/)
   assert.match(fnBlock, /type:\s*"subdivide"/)

@@ -19,8 +19,8 @@ test("re-exports CellAction and CellData types from discovery-grid-shared", () =
   assert.match(source, /export\s+type\s+\{[^}]*CellAction[^}]*CellData[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
-test("re-exports DISCOVERY_MECHANISMS, MAX_DEPTH, getAvailableActions, formatShortDate, getStatusBadgeColor from discovery-grid-shared", () => {
-  assert.match(source, /export\s+\{[^}]*DISCOVERY_MECHANISMS[^}]*MAX_DEPTH[^}]*getAvailableActions[^}]*formatShortDate[^}]*getStatusBadgeColor[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
+test("re-exports DISCOVERY_MECHANISMS, MAX_DEPTH, getAvailableActions, formatRelativeTime, getStatusBadgeColor from discovery-grid-shared", () => {
+  assert.match(source, /export\s+\{[^}]*DISCOVERY_MECHANISMS[^}]*MAX_DEPTH[^}]*getAvailableActions[^}]*formatRelativeTime[^}]*getStatusBadgeColor[^}]*\}\s+from\s+["']\.\/discovery-grid-shared["']/)
 })
 
 test("exports DiscoveryGrid as default export", () => {
@@ -55,12 +55,12 @@ test("exports getAvailableActions function", () => {
   assert.match(sharedSource, /export\s+function\s+getAvailableActions/)
 })
 
-test("exports formatShortDate function", () => {
-  assert.match(sharedSource, /export\s+function\s+formatShortDate/)
+test("exports formatRelativeTime function", () => {
+  assert.match(sharedSource, /export\s+function\s+formatRelativeTime/)
 })
 
-test("formatShortDate accepts a number and returns a string", () => {
-  assert.match(sharedSource, /formatShortDate\(timestamp:\s*number\):\s*string/)
+test("formatRelativeTime accepts a number and returns a string", () => {
+  assert.match(sharedSource, /formatRelativeTime\(timestamp:\s*number\):\s*string/)
 })
 
 test("exports getStatusBadgeColor function", () => {

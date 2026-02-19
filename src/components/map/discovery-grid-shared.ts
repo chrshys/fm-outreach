@@ -44,11 +44,16 @@ export function getAvailableActions(cell: CellData): CellAction[] {
   return actions
 }
 
-export function formatShortDate(timestamp: number): string {
-  return new Date(timestamp).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  })
+export function formatRelativeTime(timestamp: number): string {
+  const now = Date.now()
+  const diffMs = now - timestamp
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return "today"
+  if (diffDays === 1) return "yesterday"
+  if (diffDays < 14) return `${diffDays} days ago`
+  if (diffDays < 60) return `${Math.floor(diffDays / 7)} weeks ago`
+  return `${Math.floor(diffDays / 30)} months ago`
 }
 
 export function getStatusBadgeColor(status: CellStatus): string {

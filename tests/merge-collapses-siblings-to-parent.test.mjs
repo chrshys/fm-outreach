@@ -377,7 +377,7 @@ test("handleCellAction shows error toast on merge failure", () => {
 test("getAvailableActions includes undivide for depth > 0", () => {
   const fnBlock = sharedSource.slice(
     sharedSource.indexOf("export function getAvailableActions"),
-    sharedSource.indexOf("export function formatShortDate"),
+    sharedSource.indexOf("export function formatRelativeTime"),
   );
   assert.match(fnBlock, /cell\.depth\s*>\s*0/);
   assert.match(fnBlock, /type:\s*"undivide"/);

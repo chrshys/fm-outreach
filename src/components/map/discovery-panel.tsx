@@ -9,7 +9,7 @@ import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import type { CellData, CellAction } from "./discovery-grid-shared"
 import type { VirtualCell } from "@/lib/virtual-grid"
-import { DISCOVERY_MECHANISMS, MAX_DEPTH, getStatusBadgeColor, formatShortDate } from "./discovery-grid-shared"
+import { DISCOVERY_MECHANISMS, MAX_DEPTH, getStatusBadgeColor, formatRelativeTime } from "./discovery-grid-shared"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -401,7 +401,7 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                   {DISCOVERY_MECHANISMS.map((mechanism) => {
                     const isDisabled = !mechanism.enabled || selectedCell.status === "searching"
                     const lastRun = mechanism.id === "google_places" && selectedCell.lastSearchedAt
-                      ? formatShortDate(selectedCell.lastSearchedAt)
+                      ? formatRelativeTime(selectedCell.lastSearchedAt)
                       : "\u2014"
                     return (
                       <div key={mechanism.id} className="flex items-center justify-between text-xs">
