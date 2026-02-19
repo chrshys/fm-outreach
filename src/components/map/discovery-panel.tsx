@@ -534,6 +534,9 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                     {isEnriching ? "Enriching..." : "Enrich"}
                   </button>
                 </div>
+                {isEnriching && enrichingLeadIds.length > 0 && (
+                  <EnrichmentProgress leadIds={enrichingLeadIds} since={enrichmentSinceRef.current} />
+                )}
                 {selectedCell.querySaturation && selectedCell.querySaturation.length > 0 && (
                   <div className="space-y-0.5 pt-1">
                     <span className="text-[10px] text-muted-foreground">Query Saturation</span>
