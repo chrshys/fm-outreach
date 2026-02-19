@@ -91,9 +91,9 @@ test("searching indicator uses blue color", () => {
 // 5. Frontend: Leads count still displayed from totalLeadsFound
 // ============================================================
 
-test("leads found displays totalLeadsFound from grid", () => {
-  assert.match(panelSource, /selectedGrid\.totalLeadsFound/)
-  assert.match(panelSource, /Leads Found/)
+test("total leads displays gridEnrichmentStats with fallback to totalLeadsFound", () => {
+  assert.match(panelSource, /gridEnrichmentStats\?\.totalLeads\s*\?\?\s*selectedGrid\.totalLeadsFound/)
+  assert.match(panelSource, /Total Leads/)
 })
 
 // ============================================================

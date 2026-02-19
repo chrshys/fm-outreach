@@ -366,9 +366,9 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Leads Found</span>
+                        <span>Total Leads</span>
                         <span className="font-medium text-green-500">
-                          {selectedGrid.totalLeadsFound}
+                          {gridEnrichmentStats?.totalLeads ?? selectedGrid.totalLeadsFound}
                         </span>
                       </div>
                       {selectedGrid.totalLeafCells > 0 && (
@@ -380,6 +380,25 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                             }}
                           />
                         </div>
+                      )}
+                      {gridEnrichmentStats && gridEnrichmentStats.totalLeads > 0 && (
+                        <>
+                          <div className="flex justify-between">
+                            <span>Directory Ready</span>
+                            <span className="font-medium">
+                              {gridEnrichmentStats.directoryReady} / {gridEnrichmentStats.totalLeads}{" "}
+                              <span className="text-muted-foreground">
+                                ({Math.round((gridEnrichmentStats.directoryReady / gridEnrichmentStats.totalLeads) * 100)}%)
+                              </span>
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Needs Attention</span>
+                            <span className="font-medium text-amber-500">
+                              {gridEnrichmentStats.totalLeads - gridEnrichmentStats.directoryReady}
+                            </span>
+                          </div>
+                        </>
                       )}
                     </div>
                   </>
