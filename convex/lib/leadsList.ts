@@ -43,7 +43,7 @@ export type LeadListItem = {
 export type LeadListFilters = {
   status?: LeadStatus;
   type?: LeadType;
-  clusterId?: string;
+  clusterIds?: string[];
   hasEmail?: boolean;
   hasSocial?: boolean;
   hasFacebook?: boolean;
@@ -89,7 +89,7 @@ export function matchesFilters(lead: LeadListItem, filters: LeadListFilters): bo
     return false;
   }
 
-  if (filters.clusterId !== undefined && lead.clusterId !== filters.clusterId) {
+  if (filters.clusterIds !== undefined && filters.clusterIds.length > 0 && !filters.clusterIds.includes(lead.clusterId ?? "")) {
     return false;
   }
 

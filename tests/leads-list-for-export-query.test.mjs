@@ -23,7 +23,7 @@ test("listForExport accepts the same filter args as list (all optional, no curso
   // All filter args should be present and optional
   assert.match(block, /status:\s*v\.optional\(/);
   assert.match(block, /type:\s*v\.optional\(/);
-  assert.match(block, /clusterId:\s*v\.optional\(/);
+  assert.match(block, /clusterIds:\s*v\.optional\(/);
   assert.match(block, /hasEmail:\s*v\.optional\(/);
   assert.match(block, /hasSocial:\s*v\.optional\(/);
   assert.match(block, /hasFacebook:\s*v\.optional\(/);

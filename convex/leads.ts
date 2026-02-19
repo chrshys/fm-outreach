@@ -44,7 +44,7 @@ export const list = query({
   args: {
     status: v.optional(leadStatusValidator),
     type: v.optional(leadTypeValidator),
-    clusterId: v.optional(v.id("clusters")),
+    clusterIds: v.optional(v.array(v.id("clusters"))),
     hasEmail: v.optional(v.boolean()),
     hasSocial: v.optional(v.boolean()),
     hasFacebook: v.optional(v.boolean()),
@@ -64,7 +64,7 @@ export const list = query({
       filters: {
         status: args.status,
         type: args.type,
-        clusterId: args.clusterId,
+        clusterIds: args.clusterIds,
         hasEmail: args.hasEmail,
         hasSocial: args.hasSocial,
         hasFacebook: args.hasFacebook,
@@ -85,7 +85,7 @@ export const listForExport = query({
   args: {
     status: v.optional(leadStatusValidator),
     type: v.optional(leadTypeValidator),
-    clusterId: v.optional(v.id("clusters")),
+    clusterIds: v.optional(v.array(v.id("clusters"))),
     hasEmail: v.optional(v.boolean()),
     hasSocial: v.optional(v.boolean()),
     hasFacebook: v.optional(v.boolean()),
@@ -101,7 +101,7 @@ export const listForExport = query({
         matchesFilters(lead, {
           status: args.status,
           type: args.type,
-          clusterId: args.clusterId,
+          clusterIds: args.clusterIds,
           hasEmail: args.hasEmail,
           hasSocial: args.hasSocial,
           hasFacebook: args.hasFacebook,

@@ -116,7 +116,7 @@ test("listLeadsPage applies status/type/cluster/email/social/source/follow-up fi
     filters: {
       status: "enriched",
       type: "farm",
-      clusterId: "cluster-a",
+      clusterIds: ["cluster-a"],
       hasEmail: true,
       hasSocial: true,
       source: "manual",

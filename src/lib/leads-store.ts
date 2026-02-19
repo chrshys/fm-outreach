@@ -10,7 +10,7 @@ export const defaultFilters: LeadFiltersValue = {
   status: "all",
   type: "all",
   source: "all",
-  clusterId: "all",
+  clusterIds: [],
   hasEmail: false,
   hasSocial: false,
   hasFacebook: false,
@@ -62,6 +62,16 @@ export const useLeadsStore = create<LeadsState & LeadsActions>()(
           sessionStorage.removeItem(name)
         },
       },
+      migrate: (persisted: unknown) => {
+        const state = persisted as Record<string, unknown>
+        const filters = state.filters as Record<string, unknown> | undefined
+        if (filters && !Array.isArray(filters.clusterIds)) {
+          delete filters.clusterId
+          filters.clusterIds = []
+        }
+        return state as LeadsState & LeadsActions
+      },
+      version: 1,
       partialize: (state) =>
         ({
           filters: state.filters,

@@ -1,9 +1,11 @@
 "use client"
 
-import { X } from "lucide-react"
+import { ChevronDown, X } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
@@ -44,7 +46,7 @@ export type LeadFiltersValue = {
   status: LeadStatus | "all"
   type: LeadType | "all"
   source: LeadSource | "all"
-  clusterId: string | "all"
+  clusterIds: string[]
   hasEmail: boolean
   hasSocial: boolean
   hasFacebook: boolean
@@ -70,6 +72,104 @@ function toLabel(value: string) {
     .join(" ")
 }
 
+const CONTACT_FILTERS = [
+  { key: "hasEmail", label: "Has Email" },
+  { key: "hasSocial", label: "Has Social" },
+  { key: "hasFacebook", label: "Has Facebook" },
+  { key: "hasInstagram", label: "Has Instagram" },
+] as const
+
+function ContactFilterDropdown({
+  value,
+  onChange,
+}: {
+  value: LeadFiltersValue
+  onChange: (next: LeadFiltersValue) => void
+}) {
+  const activeCount = CONTACT_FILTERS.filter((f) => value[f.key]).length
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button type="button" variant={activeCount > 0 ? "default" : "outline"} size="sm" className="gap-1">
+          Contact Info
+          {activeCount > 0 && (
+            <Badge variant="secondary" className="ml-0.5 size-5 justify-center rounded-full p-0 text-xs">
+              {activeCount}
+            </Badge>
+          )}
+          <ChevronDown className="size-3.5 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-48 p-1">
+        {CONTACT_FILTERS.map((filter) => (
+          <label
+            key={filter.key}
+            className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
+          >
+            <Checkbox
+              checked={value[filter.key]}
+              onCheckedChange={(checked) =>
+                onChange({ ...value, [filter.key]: checked === true })
+              }
+            />
+            {filter.label}
+          </label>
+        ))}
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+function ClusterFilterDropdown({
+  value,
+  onChange,
+  clusters,
+}: {
+  value: LeadFiltersValue
+  onChange: (next: LeadFiltersValue) => void
+  clusters: ClusterOption[]
+}) {
+  const activeCount = value.clusterIds.length
+
+  function toggle(clusterId: string, checked: boolean) {
+    const next = checked
+      ? [...value.clusterIds, clusterId]
+      : value.clusterIds.filter((id) => id !== clusterId)
+    onChange({ ...value, clusterIds: next })
+  }
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button type="button" variant={activeCount > 0 ? "default" : "outline"} size="sm" className="gap-1">
+          Clusters
+          {activeCount > 0 && (
+            <Badge variant="secondary" className="ml-0.5 size-5 justify-center rounded-full p-0 text-xs">
+              {activeCount}
+            </Badge>
+          )}
+          <ChevronDown className="size-3.5 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-56 p-1">
+        {clusters.map((cluster) => (
+          <label
+            key={cluster.id}
+            className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
+          >
+            <Checkbox
+              checked={value.clusterIds.includes(cluster.id)}
+              onCheckedChange={(checked) => toggle(cluster.id, checked === true)}
+            />
+            {cluster.name}
+          </label>
+        ))}
+      </PopoverContent>
+    </Popover>
+  )
+}
+
 export function LeadFilters({ value, onChange, clusters = [] }: LeadFiltersProps) {
   const activeFilters = [
     value.status !== "all"
@@ -93,13 +193,11 @@ export function LeadFilters({ value, onChange, clusters = [] }: LeadFiltersProps
           clear: () => onChange({ ...value, source: "all" }),
         }
       : null,
-    value.clusterId !== "all"
-      ? {
-          key: "clusterId",
-          label: `Cluster: ${clusters.find((c) => c.id === value.clusterId)?.name ?? "Unknown"}`,
-          clear: () => onChange({ ...value, clusterId: "all" }),
-        }
-      : null,
+    ...value.clusterIds.map((id) => ({
+      key: `cluster-${id}`,
+      label: `Cluster: ${clusters.find((c) => c.id === id)?.name ?? "Unknown"}`,
+      clear: () => onChange({ ...value, clusterIds: value.clusterIds.filter((cid) => cid !== id) }),
+    })),
     value.hasEmail
       ? {
           key: "hasEmail",
@@ -183,53 +281,10 @@ export function LeadFilters({ value, onChange, clusters = [] }: LeadFiltersProps
         </Select>
 
         {clusters.length > 0 && (
-          <Select value={value.clusterId} onValueChange={(clusterId) => onChange({ ...value, clusterId })}>
-            <SelectTrigger className="w-[190px]">
-              <SelectValue placeholder="Cluster" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Clusters</SelectItem>
-              {clusters.map((cluster) => (
-                <SelectItem key={cluster.id} value={cluster.id}>
-                  {cluster.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <ClusterFilterDropdown value={value} onChange={onChange} clusters={clusters} />
         )}
 
-        <Button
-          type="button"
-          variant={value.hasEmail ? "default" : "outline"}
-          size="sm"
-          onClick={() => onChange({ ...value, hasEmail: !value.hasEmail })}
-        >
-          Has Email
-        </Button>
-        <Button
-          type="button"
-          variant={value.hasSocial ? "default" : "outline"}
-          size="sm"
-          onClick={() => onChange({ ...value, hasSocial: !value.hasSocial })}
-        >
-          Has Social
-        </Button>
-        <Button
-          type="button"
-          variant={value.hasFacebook ? "default" : "outline"}
-          size="sm"
-          onClick={() => onChange({ ...value, hasFacebook: !value.hasFacebook })}
-        >
-          Has Facebook
-        </Button>
-        <Button
-          type="button"
-          variant={value.hasInstagram ? "default" : "outline"}
-          size="sm"
-          onClick={() => onChange({ ...value, hasInstagram: !value.hasInstagram })}
-        >
-          Has Instagram
-        </Button>
+        <ContactFilterDropdown value={value} onChange={onChange} />
         <Button
           type="button"
           variant={value.needsFollowUp ? "default" : "outline"}
