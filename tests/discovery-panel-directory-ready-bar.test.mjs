@@ -30,6 +30,20 @@ test("indigo bar width uses directoryReady divided by total", () => {
   assert.match(cellProgressBlock, /\.total/)
 })
 
+test("indigo bar width is computed as Math.round percentage with % suffix", () => {
+  // Verify the exact formula: Math.round((directoryReady / total) * 100) + "%"
+  assert.match(
+    cellProgressBlock,
+    /Math\.round\(\s*\(\s*\(.*directoryReady.*\)\s*\/\s*cellLeadStats!\.total\s*\)\s*\*\s*100\s*\)/,
+    "width should use Math.round((directoryReady / total) * 100)"
+  )
+  assert.match(
+    cellProgressBlock,
+    /width:\s*`\$\{Math\.round\(.*\)\}%`/,
+    "width value should be a template literal ending with %"
+  )
+})
+
 // =============================================================================
 // 3. Progress bar is inside the total > 0 guard
 // =============================================================================
