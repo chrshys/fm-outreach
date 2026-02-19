@@ -268,5 +268,5 @@ export const discoveredLeadValidator = v.object({
   followUpCount: v.literal(0),
   createdAt: v.number(),
   updatedAt: v.number(),
-  discoveryCellId: v.optional(v.string()),
+  discoveryCellId: v.optional(v.id("discoveryCells")),
 });

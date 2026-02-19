@@ -128,6 +128,6 @@ test("DiscoveredLead type includes optional discoveryCellId field", () => {
   assert.match(source, /discoveryCellId\?:\s*string/);
 });
 
-test("discoveredLeadValidator includes optional discoveryCellId", () => {
-  assert.match(source, /discoveryCellId:\s*v\.optional\(v\.string\(\)\)/);
+test("discoveredLeadValidator includes optional discoveryCellId as id reference", () => {
+  assert.match(source, /discoveryCellId:\s*v\.optional\(v\.id\("discoveryCells"\)\)/);
 });
