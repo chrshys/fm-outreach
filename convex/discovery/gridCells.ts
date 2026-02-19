@@ -503,6 +503,53 @@ export const spotCheckBackfillDiscoveryCellIds = internalQuery({
   },
 });
 
+export const getCellLeadStats = query({
+  args: {
+    cellId: v.id("discoveryCells"),
+  },
+  handler: async (ctx, args) => {
+    const leads = await ctx.db
+      .query("leads")
+      .withIndex("by_discoveryCellId", (q) =>
+        q.eq("discoveryCellId", args.cellId),
+      )
+      .collect();
+
+    let locationComplete = 0;
+    let hasWebPresence = 0;
+    let directoryReady = 0;
+
+    for (const lead of leads) {
+      const isLocationComplete = !!(
+        lead.address &&
+        lead.city &&
+        (lead.province || lead.region) &&
+        lead.postalCode &&
+        lead.countryCode &&
+        lead.latitude &&
+        lead.longitude
+      );
+
+      const isWebPresence = !!(
+        lead.website ||
+        lead.socialLinks?.instagram ||
+        lead.socialLinks?.facebook
+      );
+
+      if (isLocationComplete) locationComplete++;
+      if (isWebPresence) hasWebPresence++;
+      if (isLocationComplete && isWebPresence) directoryReady++;
+    }
+
+    return {
+      total: leads.length,
+      locationComplete,
+      hasWebPresence,
+      directoryReady,
+    };
+  },
+});
+
 export const updateCellSearchResult = internalMutation({
   args: {
     cellId: v.id("discoveryCells"),
