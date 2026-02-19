@@ -49,16 +49,19 @@ test("cell progress shows result count when available", () => {
   assert.match(cellProgressBlock, /Results/)
 })
 
-test("cell progress shows leads found from selectedCell", () => {
+test("cell progress shows total leads from cellLeadStats", () => {
   const cellProgressIdx = source.indexOf("Cell Progress")
   const gridProgressIdx = source.indexOf("Grid Progress")
   const cellProgressBlock = source.slice(cellProgressIdx, gridProgressIdx)
-  assert.match(cellProgressBlock, /selectedCell\.leadsFound/)
-  assert.match(cellProgressBlock, /Leads Found/)
+  assert.match(cellProgressBlock, /cellLeadStats\?\.total/)
+  assert.match(cellProgressBlock, /Total Leads/)
 })
 
-test("cell progress leads found defaults to 0 via nullish coalescing", () => {
-  assert.match(source, /selectedCell\.leadsFound\s*\?\?\s*0/)
+test("cell progress total leads defaults to em-dash via nullish coalescing", () => {
+  const cellProgressIdx = source.indexOf("Cell Progress")
+  const gridProgressIdx = source.indexOf("Grid Progress")
+  const cellProgressBlock = source.slice(cellProgressIdx, gridProgressIdx)
+  assert.match(cellProgressBlock, /cellLeadStats\?\.total\s*\?\?/)
 })
 
 test("cell progress leads found uses green text", () => {

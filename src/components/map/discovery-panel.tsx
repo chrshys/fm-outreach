@@ -296,11 +296,33 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span>Leads Found</span>
+                        <span>Total Leads</span>
                         <span className="font-medium text-green-500">
-                          {selectedCell.leadsFound ?? 0}
+                          {cellLeadStats?.total ?? "\u2014"}
                         </span>
                       </div>
+                      {(cellLeadStats?.total ?? 0) > 0 && (
+                        <>
+                          <div className="flex justify-between">
+                            <span>Directory Ready</span>
+                            <span className="font-medium">
+                              {cellLeadStats?.directoryReady ?? "\u2014"} / {cellLeadStats?.total}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Location Complete</span>
+                            <span className="font-medium">
+                              {cellLeadStats?.locationComplete} / {cellLeadStats?.total}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Has Web/Social</span>
+                            <span className="font-medium">
+                              {cellLeadStats?.hasWebPresence} / {cellLeadStats?.total}
+                            </span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </>
                 ) : (
