@@ -1,4 +1,5 @@
 import type { StalenessLevel } from "@/lib/enrichment"
+import { getStaleness } from "@/lib/enrichment"
 
 export type CellStatus = "unsearched" | "searching" | "searched" | "saturated"
 
@@ -55,6 +56,11 @@ export const SATURATED_FRESHNESS: Record<StalenessLevel, CellColorResult> = {
   stale: { color: "#92400e", fillColor: "#92400e", fillOpacity: 0.2 },
 }
 
-export function getCellColor(status: string): CellColorResult {
+export function getCellColor(status: string, lastSearchedAt?: number): CellColorResult {
+  if (lastSearchedAt !== undefined) {
+    const staleness = getStaleness(lastSearchedAt)
+    if (status === "searched") return SEARCHED_FRESHNESS[staleness]
+    if (status === "saturated") return SATURATED_FRESHNESS[staleness]
+  }
   return CELL_COLORS[status as CellStatus] ?? DEFAULT_CELL_COLOR
 }
