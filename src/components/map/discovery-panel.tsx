@@ -183,6 +183,37 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
     setEditingField(null)
   }, [])
 
+  const handleEnrichCell = useCallback(async () => {
+    if (!persistedCell) return
+    setIsEnriching(true)
+    enrichmentSinceRef.current = Date.now()
+    toast.info("Enriching leads in cell...")
+
+    try {
+      const result = await enrichCellLeads({
+        cellId: persistedCell._id as Id<"discoveryCells">,
+      })
+      const { leadIds, succeeded, failed, skipped } = result as {
+        leadIds: string[]
+        succeeded: number
+        failed: number
+        skipped: number
+      }
+      setEnrichingLeadIds(leadIds as Id<"leads">[])
+
+      if (failed === 0) {
+        toast.success(`Enrichment complete: ${succeeded} enriched, ${skipped} skipped`)
+      } else {
+        toast.warning(`Enrichment done: ${succeeded} enriched, ${failed} failed, ${skipped} skipped`)
+      }
+    } catch {
+      toast.error("Enrichment failed. Please try again.")
+    } finally {
+      setIsEnriching(false)
+      setTimeout(() => setEnrichingLeadIds([]), 2000)
+    }
+  }, [persistedCell, enrichCellLeads])
+
   if (!open) {
     return (
       <div className="absolute left-3 top-3 z-10">
