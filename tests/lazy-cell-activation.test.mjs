@@ -11,7 +11,7 @@ const source = fs.readFileSync("src/app/map/page.tsx", "utf8")
 test("handleCellAction uses let for cell variable", () => {
   assert.match(
     source,
-    /let\s+cell\s*=\s*cells\?\s*\.find\(\(c\)\s*=>\s*c\._id\s*===\s*cellId\)/,
+    /let\s+cell\s*=\s*cells\?\s*\.find\(\(c[^)]*\)\s*=>\s*c\._id\s*===\s*cellId\)/,
   )
 })
 

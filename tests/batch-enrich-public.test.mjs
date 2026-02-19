@@ -47,7 +47,7 @@ test("enrichCellLeads accepts cellId arg with discoveryCells validator", () => {
 test("enrichCellLeads calls getCellLeadIdsForEnrichment query", () => {
   assert.match(
     source,
-    /ctx\.runQuery\(\s*internal\.discovery\.gridCells\.getCellLeadIdsForEnrichment/,
+    /ctx\.runQuery\(\s*[\s\S]*?internal\.discovery\.gridCells\.getCellLeadIdsForEnrichment/,
   );
 });
 

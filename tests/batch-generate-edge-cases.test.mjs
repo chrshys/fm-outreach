@@ -54,13 +54,13 @@ test("targetLeadIds takes priority over targetClusterId", () => {
 })
 
 test("maps cluster leads to their _id for leadIds array", () => {
-  assert.match(source, /clusterLeads\.map\(\(l\)\s*=>\s*l\._id\)/)
+  assert.match(source, /clusterLeads\.map\(\(l[^)]*\)\s*=>\s*l\._id\)/)
 })
 
 // --- Template filtering ---
 
 test("filters templates to find one with sequenceType initial", () => {
-  assert.match(source, /templates\.find\(\s*\n?\s*\(t\)\s*=>\s*t\s*!==\s*null\s*&&\s*t\.sequenceType\s*===\s*"initial"/)
+  assert.match(source, /templates\.find\(\s*\n?\s*\(t[^)]*\)\s*=>\s*t\s*!==\s*null\s*&&\s*t\.sequenceType\s*===\s*"initial"/)
 })
 
 test("fetches all campaign templates via Promise.all", () => {

@@ -2,7 +2,7 @@ import { v } from "convex/values";
 
 import { api, internal } from "../_generated/api";
 import { action, internalMutation } from "../_generated/server";
-import type { Id } from "../_generated/dataModel";
+import type { Doc, Id } from "../_generated/dataModel";
 import type { GeneratedEmail } from "./generateEmail";
 
 const DELAY_BETWEEN_LEADS_MS = 500;
@@ -68,7 +68,7 @@ export const batchGenerate = action({
       ),
     );
     const initialTemplate = templates.find(
-      (t) => t !== null && t.sequenceType === "initial",
+      (t: Doc<"emailTemplates"> | null) => t !== null && t.sequenceType === "initial",
     );
     if (!initialTemplate) {
       throw new Error("Campaign has no initial template");
@@ -82,7 +82,7 @@ export const batchGenerate = action({
       const clusterLeads = await ctx.runQuery(api.leads.listByCluster, {
         clusterId: campaign.targetClusterId,
       });
-      leadIds = clusterLeads.map((l) => l._id);
+      leadIds = clusterLeads.map((l: { _id: Id<"leads"> }) => l._id);
     } else {
       throw new Error(
         "Campaign has no target leads — set targetLeadIds or targetClusterId",

@@ -2,6 +2,7 @@ import { v } from "convex/values";
 
 import { internal } from "../_generated/api";
 import { action } from "../_generated/server";
+import type { Id } from "../_generated/dataModel";
 import type { BatchEnrichmentResult } from "./batchEnrich";
 
 const ENRICH_CHUNK_SIZE = 25;
@@ -10,8 +11,9 @@ export const enrichCellLeads = action({
   args: {
     cellId: v.id("discoveryCells"),
   },
-  handler: async (ctx, args) => {
-    const leadIds = await ctx.runQuery(
+  handler: async (ctx, args): Promise<{ leadIds: string[]; total: number; succeeded: number; failed: number; skipped: number }> => {
+    const leadIds: Id<"leads">[] = await ctx.runQuery(
+      // @ts-ignore TS2589 nondeterministic deep type instantiation in generated Convex API types
       internal.discovery.gridCells.getCellLeadIdsForEnrichment,
       { cellId: args.cellId },
     );

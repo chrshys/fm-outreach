@@ -290,7 +290,7 @@ export default function LeadsPage() {
         hasInstagram: listArgs.hasInstagram,
         needsFollowUp: listArgs.needsFollowUp,
       })
-      const exportedIds = results.map((r) => r._id) as Id<"leads">[]
+      const exportedIds = results.map((r: { _id: Id<"leads"> }) => r._id)
       const csv = leadsToCSV(results)
       downloadCSV(csv, `fm-leads-export-${new Date().toISOString().slice(0, 10)}.csv`)
       toast.success(`Exported ${results.length} leads`)

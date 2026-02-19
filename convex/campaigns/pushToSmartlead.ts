@@ -107,16 +107,16 @@ export const pushToSmartlead = action({
       campaign.templateIds.map((id: Id<"emailTemplates">) =>
         ctx.runQuery(api.emailTemplates.get, { id }),
       ),
-    );
+    ) as Array<Doc<"emailTemplates"> | null>;
     const templateMap = new Map(
       templates.filter((t): t is Doc<"emailTemplates"> => t !== null).map((t) => [t._id, t]),
     );
 
     // 4. Load leads for the approved emails
-    const leadIds = [...new Set(approvedEmails.map((e: Doc<"generatedEmails">) => e.leadId))];
+    const leadIds = [...new Set(approvedEmails.map((e: Doc<"generatedEmails">) => e.leadId))] as Id<"leads">[];
     const leads = await Promise.all(
-      leadIds.map((id: Id<"leads">) => ctx.runQuery(api.leads.get, { leadId: id })),
-    );
+      leadIds.map((id) => ctx.runQuery(api.leads.get, { leadId: id })),
+    ) as Array<Doc<"leads"> | null>;
     const leadMap = new Map(
       leads.filter((l): l is Doc<"leads"> => l !== null).map((l) => [l._id, l]),
     );

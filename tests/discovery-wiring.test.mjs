@@ -39,7 +39,7 @@ test("defines handleCellAction callback", () => {
 })
 
 test("handleCellAction looks up cell from cells", () => {
-  assert.match(pageSource, /cells\?\s*\.find\(\(c\)\s*=>\s*c\._id\s*===\s*cellId\)/)
+  assert.match(pageSource, /cells\?\s*\.find\(\(c[^)]*\)\s*=>\s*c\._id\s*===\s*cellId\)/)
 })
 
 test("handleCellAction shows info toast for searching status on search action", () => {

@@ -17,7 +17,7 @@ test("listForExport includes _id in its map projection", () => {
 test("handleExportCSV extracts IDs from export results", () => {
   assert.match(
     pageSource,
-    /const exportedIds = results\.map\(\(r\) => r\._id\)/,
+    /const exportedIds = results\.map\(\(r[^)]*\) => r\._id\)/,
     "should extract _id from each result into exportedIds",
   );
 });

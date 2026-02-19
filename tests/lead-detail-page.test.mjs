@@ -61,7 +61,7 @@ test("loads and renders activity timeline with logging controls", () => {
   assert.match(source, /<CardTitle>Follow-up Reminder<\/CardTitle>/)
   assert.match(source, /<FollowUpReminder leadId=\{leadId\} nextFollowUpAt=\{lead\.nextFollowUpAt\} \/>/)
   assert.match(source, /<CardTitle>Activity Timeline<\/CardTitle>/)
-  assert.match(source, /<ActivityTimeline[\s\S]*activities=\{activitiesPage\.activities\.map\(\(activity\) => \(\{/s)
+  assert.match(source, /<ActivityTimeline[\s\S]*activities=\{activitiesPage\.activities\.map\(\(activity[^)]*\) => \(\{/s)
   assert.match(source, /type: activity\.type/)
   assert.match(source, /description: activity\.description/)
   assert.match(source, /timestamp: activity\.createdAt/)

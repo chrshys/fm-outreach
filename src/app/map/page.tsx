@@ -208,7 +208,7 @@ export default function MapPage() {
 
   const handleCellAction = useCallback(async (cellId: string, action: CellAction) => {
     // const cell = cells?.find — use let to allow reassignment after virtual cell activation
-    let cell = cells?.find((c) => c._id === cellId)
+    let cell = cells?.find((c: { _id: string }) => c._id === cellId)
     if (!cell && selectedVirtualCell && selectedVirtualCell.key === cellId) {
       if (!globalGridId) return
       try {

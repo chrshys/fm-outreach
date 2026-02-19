@@ -48,7 +48,7 @@ test("renders template select dropdown", () => {
 })
 
 test("maps templates to SelectItem options", () => {
-  assert.match(source, /templates\?\.map\(\(template\)\s*=>/)
+  assert.match(source, /templates\?\.map\(\(template[^)]*\)\s*=>/)
   assert.match(source, /<SelectItem\s+key=\{template\._id\}\s+value=\{template\._id\}/)
 })
 
