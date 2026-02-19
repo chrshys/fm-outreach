@@ -290,9 +290,13 @@ export default function LeadsPage() {
         hasInstagram: listArgs.hasInstagram,
         needsFollowUp: listArgs.needsFollowUp,
       })
+      const exportedIds = results.map((r) => r._id) as Id<"leads">[]
       const csv = leadsToCSV(results)
       downloadCSV(csv, `fm-leads-export-${new Date().toISOString().slice(0, 10)}.csv`)
       toast.success(`Exported ${results.length} leads`)
+      if (exportedIds.length > 0) {
+        await convex.mutation(api.leads.bulkStampExported, { leadIds: exportedIds })
+      }
     } catch (error) {
       console.error("Export failed:", error)
       toast.error("Export failed")

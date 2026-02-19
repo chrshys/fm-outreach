@@ -112,6 +112,7 @@ export const listForExport = query({
         }),
       )
       .map((lead) => ({
+        _id: lead._id,
         name: lead.name,
         type: lead.type,
         farmDescription: lead.farmDescription,

@@ -90,7 +90,7 @@ test("listForExport maps output to CSV fields only", () => {
   assert.ok(mapBlock, ".map() projection should exist");
   const projection = mapBlock[0];
 
-  assert.doesNotMatch(projection, /_id:/);
+  assert.match(projection, /_id:\s*lead\._id/, "should include _id for bulk stamp after export");
   assert.doesNotMatch(projection, /status:/);
   assert.doesNotMatch(projection, /contactEmail:/);
   assert.doesNotMatch(projection, /clusterId:/);
