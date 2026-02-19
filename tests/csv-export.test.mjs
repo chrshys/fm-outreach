@@ -197,6 +197,77 @@ test("leadsToCSV joins products array with comma-space separator", () => {
   assert.ok(lines[1].includes('"tomatoes, cucumbers, lettuce"'));
 });
 
+test("leadsToCSV outputs single product unquoted", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "One Product", type: "farm", products: ["honey"] },
+  ]);
+  const lines = csv.split("\n");
+  // Single product has no comma, so should not be quoted
+  assert.ok(lines[1].endsWith(",honey"), "single product should not be quoted");
+});
+
+test("leadsToCSV outputs empty string for empty products array", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "No Products", type: "farm", products: [] },
+  ]);
+  const lines = csv.split("\n");
+  // Last column should be empty
+  assert.ok(lines[1].endsWith(",,"), "empty products array should produce empty string");
+});
+
+test("leadsToCSV handles socialLinks with only instagram", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    {
+      name: "IG Only",
+      type: "farm",
+      socialLinks: { instagram: "ig_only" },
+    },
+  ]);
+  const lines = csv.split("\n");
+  assert.ok(lines[1].includes("ig_only"), "should include instagram value");
+  // facebook column should be empty but row should still have 13 columns
+  const cols = lines[1].split(",");
+  assert.equal(cols.length, 13, "should still have 13 columns");
+  assert.equal(cols[10], "ig_only", "instagram column should have value");
+  assert.equal(cols[11], "", "facebook column should be empty");
+});
+
+test("leadsToCSV handles socialLinks with only facebook", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    {
+      name: "FB Only",
+      type: "farm",
+      socialLinks: { facebook: "fb_only" },
+    },
+  ]);
+  const lines = csv.split("\n");
+  const cols = lines[1].split(",");
+  assert.equal(cols[10], "", "instagram column should be empty");
+  assert.equal(cols[11], "fb_only", "facebook column should have value");
+});
+
+test("leadsToCSV handles product names containing commas", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    {
+      name: "Fancy Farm",
+      type: "farm",
+      products: ["jams, jellies", "honey"],
+    },
+  ]);
+  const lines = csv.split("\n");
+  // The joined string is "jams, jellies, honey" which contains commas, so the whole field gets quoted
+  const dataRow = lines[1];
+  assert.ok(
+    dataRow.includes('"jams, jellies, honey"'),
+    "products with internal commas should be properly quoted"
+  );
+});
+
 test("downloadCSV function is exported", () => {
   const mod = loadModule();
   assert.equal(typeof mod.downloadCSV, "function");
