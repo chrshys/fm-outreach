@@ -111,7 +111,8 @@ export default defineSchema({
     .index("by_clusterId", ["clusterId"])
     .index("by_city", ["city"])
     .index("by_name", ["name"])
-    .index("by_placeId", ["placeId"]),
+    .index("by_placeId", ["placeId"])
+    .index("by_discoveryCellId", ["discoveryCellId"]),
 
   clusters: defineTable({
     name: v.string(),
