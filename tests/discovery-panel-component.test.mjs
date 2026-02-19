@@ -137,7 +137,7 @@ test("legend colors match cell-colors.ts values", () => {
   assert.match(source, /#9ca3af/)  // unsearched
   assert.match(source, /#3b82f6/)  // searching
   assert.match(source, /#4ade80/)  // searched (fresh)
-  assert.match(source, /#ca8a04/)  // searched (stale)
+  assert.match(source, /#f59e0b/)  // searched (stale)
   assert.match(source, /#f97316/)  // saturated
 })
 

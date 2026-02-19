@@ -44,7 +44,7 @@ const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
   { status: "searching", color: "#3b82f6", label: "Searching" },
   { status: "searched-fresh", color: "#4ade80", label: "Searched (fresh)" },
   { status: "searched-aging", color: "#a3e635", label: "Searched (aging)" },
-  { status: "searched-stale", color: "#ca8a04", label: "Searched (stale)" },
+  { status: "searched-stale", color: "#f59e0b", label: "Searched (stale)" },
   { status: "saturated", color: "#f97316", label: "Saturated" },
 ]
 

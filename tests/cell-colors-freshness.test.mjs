@@ -35,8 +35,8 @@ test("SEARCHED_FRESHNESS has aging key with lime (#a3e635)", () => {
   assert.match(source, /SEARCHED_FRESHNESS[\s\S]*?aging:[\s\S]*?color:\s*"#a3e635"/)
 })
 
-test("SEARCHED_FRESHNESS has stale key with amber (#ca8a04)", () => {
-  assert.match(source, /SEARCHED_FRESHNESS[\s\S]*?stale:[\s\S]*?color:\s*"#ca8a04"/)
+test("SEARCHED_FRESHNESS has stale key with amber (#f59e0b)", () => {
+  assert.match(source, /SEARCHED_FRESHNESS[\s\S]*?stale:[\s\S]*?color:\s*"#f59e0b"/)
 })
 
 test("SATURATED_FRESHNESS has fresh key with orange (#f97316)", () => {
