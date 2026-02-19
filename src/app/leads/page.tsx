@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useConvex, useQuery } from "convex/react"
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
+import { ArrowDown, ArrowUp, ArrowUpDown, Download, Loader2 } from "lucide-react"
+import { toast } from "sonner"
 import type { KeyboardEvent, MouseEvent } from "react"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
@@ -17,6 +18,7 @@ import {
   type LeadType,
 } from "@/components/leads/lead-filters"
 import { LeadSearch } from "@/components/leads/lead-search"
+import { leadsToCSV, downloadCSV } from "@/lib/csv-export"
 import { useLeadsStore, type LeadSortField } from "@/lib/leads-store"
 import { AppLayout } from "@/components/layout/app-layout"
 import { Badge } from "@/components/ui/badge"
@@ -128,6 +130,7 @@ export default function LeadsPage() {
   const [reloadToken, setReloadToken] = useState(0)
   const [isLoadingLeads, setIsLoadingLeads] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [isExporting, setIsExporting] = useState(false)
   const listArgs = useMemo(
     () => ({
       status: filters.status === "all" ? undefined : filters.status,
@@ -273,6 +276,30 @@ export default function LeadsPage() {
     setSortOrder("asc")
   }
 
+  async function handleExportCSV() {
+    setIsExporting(true)
+    try {
+      const results = await convex.query(api.leads.listForExport, {
+        status: listArgs.status,
+        type: listArgs.type,
+        source: listArgs.source,
+        clusterId: listArgs.clusterId,
+        hasEmail: listArgs.hasEmail,
+        hasSocial: listArgs.hasSocial,
+        hasFacebook: listArgs.hasFacebook,
+        hasInstagram: listArgs.hasInstagram,
+        needsFollowUp: listArgs.needsFollowUp,
+      })
+      const csv = leadsToCSV(results)
+      downloadCSV(csv, `fm-leads-export-${new Date().toISOString().slice(0, 10)}.csv`)
+      toast.success(`Exported ${results.length} leads`)
+    } catch {
+      toast.error("Export failed")
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   function SortIcon({ field }: { field: LeadSortField }) {
     if (sortBy !== field) {
       return <ArrowUpDown className="size-4 text-muted-foreground" aria-hidden="true" />
@@ -304,6 +331,19 @@ export default function LeadsPage() {
 
         <LeadSearch value={searchTerm} onChange={setSearchTerm} />
         <LeadFilters value={filters} onChange={setFilters} clusters={clusterOptions} />
+        <Button variant="outline" size="sm" onClick={handleExportCSV} disabled={isExporting}>
+          {isExporting ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              Exporting...
+            </>
+          ) : (
+            <>
+              <Download className="size-4" />
+              Export CSV
+            </>
+          )}
+        </Button>
         <BulkActions
           selectedLeadIds={selectedLeadIds as Id<"leads">[]}
           clusterOptions={clusterOptions as { id: Id<"clusters">; name: string }[]}
