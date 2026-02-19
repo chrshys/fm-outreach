@@ -329,6 +329,12 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                               {cellLeadStats?.hasWebPresence} / {cellLeadStats?.total}
                             </span>
                           </div>
+                          <div className="flex justify-between">
+                            <span>Exported</span>
+                            <span className="font-medium">
+                              {cellLeadStats?.exported ?? 0} / {cellLeadStats?.total}
+                            </span>
+                          </div>
                           <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
                             <div
                               className="h-full rounded-full bg-indigo-500 transition-all"
@@ -389,6 +395,15 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                               {gridEnrichmentStats.directoryReady} / {gridEnrichmentStats.totalLeads}{" "}
                               <span className="text-muted-foreground">
                                 ({Math.round((gridEnrichmentStats.directoryReady / gridEnrichmentStats.totalLeads) * 100)}%)
+                              </span>
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Exported</span>
+                            <span className="font-medium">
+                              {gridEnrichmentStats.exported} / {gridEnrichmentStats.totalLeads}{" "}
+                              <span className="text-muted-foreground">
+                                ({Math.round((gridEnrichmentStats.exported / gridEnrichmentStats.totalLeads) * 100)}%)
                               </span>
                             </span>
                           </div>
