@@ -39,13 +39,15 @@ const buttonBlocks = extractButtonBlocks(selectedCellSection)
 // All buttons in the selected cell section use consistent base styles
 // ============================================================
 
-test("selected cell section has exactly 3 button types (Run, Split, Merge)", () => {
+test("selected cell section has exactly 4 button types (Run, Split, Merge, Enrich)", () => {
   const runButtons = buttonBlocks.filter((b) => b.includes(">Run<") || b.match(/>\s*Run\s*</))
   const splitButtons = buttonBlocks.filter((b) => b.includes("Split"))
   const mergeButtons = buttonBlocks.filter((b) => b.includes("Merge"))
+  const enrichButtons = buttonBlocks.filter((b) => b.includes("Enrich"))
   assert.ok(runButtons.length >= 1, "Should find at least one Run button")
   assert.ok(splitButtons.length === 1, "Should find exactly one Split button")
   assert.ok(mergeButtons.length === 1, "Should find exactly one Merge button")
+  assert.ok(enrichButtons.length === 1, "Should find exactly one Enrich button")
 })
 
 test("Run button has consistent base style", () => {
@@ -67,6 +69,13 @@ test("Merge button has consistent base style", () => {
   assert.ok(mergeBtn, "Should find Merge button")
   assert.ok(mergeBtn.includes(BASE_STYLE), `Merge button should include base style`)
   assert.ok(mergeBtn.includes(TRANSITION), `Merge button should include transition-colors`)
+})
+
+test("Enrich button has consistent base style", () => {
+  const enrichBtn = buttonBlocks.find((b) => b.includes("Enrich"))
+  assert.ok(enrichBtn, "Should find Enrich button")
+  assert.ok(enrichBtn.includes(BASE_STYLE), `Enrich button should include base style`)
+  assert.ok(enrichBtn.includes(TRANSITION), `Enrich button should include transition-colors`)
 })
 
 // ============================================================
@@ -91,12 +100,18 @@ test("Merge button applies disabled style when disabled", () => {
   assert.ok(mergeBtn.includes(DISABLED_STYLE), `Merge button should include disabled style`)
 })
 
+test("Enrich button applies disabled style when disabled", () => {
+  const enrichBtn = buttonBlocks.find((b) => b.includes("Enrich"))
+  assert.ok(enrichBtn, "Should find Enrich button")
+  assert.ok(enrichBtn.includes(DISABLED_STYLE), `Enrich button should include disabled style`)
+})
+
 // ============================================================
 // Enabled buttons get hover:bg-accent
 // ============================================================
 
 test("All selected-cell buttons include hover:bg-accent when enabled", () => {
-  assert.ok(buttonBlocks.length >= 3, `Should find at least 3 buttons, found ${buttonBlocks.length}`)
+  assert.ok(buttonBlocks.length >= 4, `Should find at least 4 buttons, found ${buttonBlocks.length}`)
   for (const block of buttonBlocks) {
     assert.ok(block.includes(HOVER_STYLE), `Button should include hover:bg-accent`)
   }

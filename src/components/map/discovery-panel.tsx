@@ -523,6 +523,17 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                     </button>
                   )}
                 </div>
+                <div className="flex items-center gap-1.5 pt-1">
+                  <button
+                    type="button"
+                    className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors ${isEnriching || !persistedCell || (cellLeadStats?.total ?? 0) === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"}`}
+                    disabled={isEnriching || !persistedCell || (cellLeadStats?.total ?? 0) === 0}
+                    onClick={handleEnrichCell}
+                  >
+                    <Sparkles className="size-3" />
+                    {isEnriching ? "Enriching..." : "Enrich"}
+                  </button>
+                </div>
                 {selectedCell.querySaturation && selectedCell.querySaturation.length > 0 && (
                   <div className="space-y-0.5 pt-1">
                     <span className="text-[10px] text-muted-foreground">Query Saturation</span>
