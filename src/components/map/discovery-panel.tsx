@@ -321,6 +321,14 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
                               {cellLeadStats?.hasWebPresence} / {cellLeadStats?.total}
                             </span>
                           </div>
+                          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                            <div
+                              className="h-full rounded-full bg-indigo-500 transition-all"
+                              style={{
+                                width: `${Math.round(((cellLeadStats?.directoryReady ?? 0) / cellLeadStats!.total) * 100)}%`,
+                              }}
+                            />
+                          </div>
                         </>
                       )}
                     </div>
