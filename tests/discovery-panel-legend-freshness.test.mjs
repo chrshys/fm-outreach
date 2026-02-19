@@ -20,8 +20,8 @@ test("legend replaces single Searched entry with fresh and stale variants", () =
   assert.match(panelSource, /label:\s*"Searched \(stale\)"/)
 })
 
-test("fresh variant uses green (#22c55e) and stale variant uses amber (#ca8a04)", () => {
-  assert.match(panelSource, /searched-fresh.*#22c55e|#22c55e.*searched-fresh/)
+test("fresh variant uses bright green (#4ade80) and stale variant uses amber (#ca8a04)", () => {
+  assert.match(panelSource, /searched-fresh.*#4ade80|#4ade80.*searched-fresh/)
   assert.match(panelSource, /searched-stale.*#ca8a04|#ca8a04.*searched-stale/)
 })
 

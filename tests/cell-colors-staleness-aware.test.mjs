@@ -48,3 +48,24 @@ test("searching status ignores lastSearchedAt (no freshness branch for searching
   assert.ok(fnBody, "getCellColor function found")
   assert.doesNotMatch(fnBody, /status\s*===\s*"searching"\)\s*return\s+.*FRESHNESS/)
 })
+
+test("SEARCHED_FRESHNESS fresh uses bright green #4ade80", () => {
+  assert.match(
+    source,
+    /SEARCHED_FRESHNESS[\s\S]*?fresh:\s*\{[^}]*color:\s*"#4ade80"/,
+  )
+})
+
+test("SEARCHED_FRESHNESS fresh fillColor is bright green #4ade80", () => {
+  assert.match(
+    source,
+    /SEARCHED_FRESHNESS[\s\S]*?fresh:\s*\{[^}]*fillColor:\s*"#4ade80"/,
+  )
+})
+
+test("SEARCHED_FRESHNESS fresh fillOpacity is higher than aging/stale (0.35)", () => {
+  assert.match(
+    source,
+    /SEARCHED_FRESHNESS[\s\S]*?fresh:\s*\{[^}]*fillOpacity:\s*0\.35/,
+  )
+})

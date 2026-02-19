@@ -42,7 +42,7 @@ type GridWithStats = {
 const CELL_STATUS_LEGEND: { status: string; color: string; label: string }[] = [
   { status: "unsearched", color: "#9ca3af", label: "Unsearched" },
   { status: "searching", color: "#3b82f6", label: "Searching" },
-  { status: "searched-fresh", color: "#22c55e", label: "Searched (fresh)" },
+  { status: "searched-fresh", color: "#4ade80", label: "Searched (fresh)" },
   { status: "searched-stale", color: "#ca8a04", label: "Searched (stale)" },
   { status: "saturated", color: "#f97316", label: "Saturated" },
 ]

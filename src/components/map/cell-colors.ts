@@ -45,7 +45,7 @@ export const VIRTUAL_CELL_SELECTED_STYLE = {
 }
 
 export const SEARCHED_FRESHNESS: Record<StalenessLevel, CellColorResult> = {
-  fresh: { color: "#22c55e", fillColor: "#22c55e", fillOpacity: 0.2 },
+  fresh: { color: "#4ade80", fillColor: "#4ade80", fillOpacity: 0.35 },
   aging: { color: "#a3e635", fillColor: "#a3e635", fillOpacity: 0.2 },
   stale: { color: "#ca8a04", fillColor: "#ca8a04", fillOpacity: 0.2 },
 }

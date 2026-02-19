@@ -27,8 +27,8 @@ test("SATURATED_FRESHNESS is typed as Record<StalenessLevel, CellColorResult>", 
   assert.match(source, /SATURATED_FRESHNESS:\s*Record<StalenessLevel,\s*CellColorResult>/)
 })
 
-test("SEARCHED_FRESHNESS has fresh key with green (#22c55e)", () => {
-  assert.match(source, /SEARCHED_FRESHNESS[\s\S]*?fresh:[\s\S]*?color:\s*"#22c55e"/)
+test("SEARCHED_FRESHNESS has fresh key with bright green (#4ade80)", () => {
+  assert.match(source, /SEARCHED_FRESHNESS[\s\S]*?fresh:[\s\S]*?color:\s*"#4ade80"/)
 })
 
 test("SEARCHED_FRESHNESS has aging key with lime (#a3e635)", () => {
@@ -51,12 +51,12 @@ test("SATURATED_FRESHNESS has stale key with brown (#92400e)", () => {
   assert.match(source, /SATURATED_FRESHNESS[\s\S]*?stale:[\s\S]*?color:\s*"#92400e"/)
 })
 
-test("SEARCHED_FRESHNESS fillOpacity values are between 0.15 and 0.3", () => {
+test("SEARCHED_FRESHNESS fillOpacity values are between 0.15 and 0.4", () => {
   const freshBlock = source.match(/SEARCHED_FRESHNESS[\s\S]*?\{([\s\S]*?)\}/)?.[0]
   assert.ok(freshBlock, "SEARCHED_FRESHNESS block found")
   const opacities = [...freshBlock.matchAll(/fillOpacity:\s*([\d.]+)/g)].map(m => parseFloat(m[1]))
   for (const op of opacities) {
-    assert.ok(op >= 0.15 && op <= 0.3, `fillOpacity ${op} is in range 0.15-0.3`)
+    assert.ok(op >= 0.15 && op <= 0.4, `fillOpacity ${op} is in range 0.15-0.4`)
   }
 })
 
