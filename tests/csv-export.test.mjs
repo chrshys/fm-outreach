@@ -248,6 +248,53 @@ test("Export CSV button appears between LeadFilters and Table in JSX", () => {
   );
 });
 
+test("CSV header has exactly 13 columns", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([]);
+  const header = csv.split("\n")[0];
+  const columns = header.split(",");
+  assert.equal(columns.length, 13, "should have exactly 13 columns");
+});
+
+test("CSV data rows have exactly 13 columns for a complete lead", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    {
+      name: "Test Farm",
+      type: "farm",
+      farmDescription: "Desc",
+      contactPhone: "555-0000",
+      address: "1 Main St",
+      city: "Toronto",
+      latitude: 43.65,
+      longitude: -79.38,
+      placeId: "ChIJ456",
+      website: "https://test.com",
+      socialLinks: { instagram: "ig", facebook: "fb" },
+      products: ["eggs"],
+    },
+  ]);
+  const lines = csv.split("\n");
+  const dataColumns = lines[1].split(",");
+  assert.equal(dataColumns.length, 13, "data row should have exactly 13 columns");
+});
+
+test("CSV data rows have exactly 13 columns for a minimal lead", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([{ name: "Minimal", type: "farm" }]);
+  const lines = csv.split("\n");
+  const dataColumns = lines[1].split(",");
+  assert.equal(dataColumns.length, 13, "minimal lead should still have 13 columns");
+});
+
+test("downloadCSV creates a text/csv blob", () => {
+  const source = fs.readFileSync("src/lib/csv-export.ts", "utf8");
+  assert.ok(
+    source.includes('text/csv'),
+    "downloadCSV should create blob with text/csv MIME type"
+  );
+});
+
 test("handleExportCSV sets isExporting in try/finally", () => {
   const source = fs.readFileSync("src/app/leads/page.tsx", "utf8");
   const fnStart = source.indexOf("async function handleExportCSV");
