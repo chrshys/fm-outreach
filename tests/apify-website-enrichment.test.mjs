@@ -130,3 +130,20 @@ test("scrapeContacts does not use scrapeWebsite name", () => {
     /export\s+const\s+scrapeWebsite(?:Contacts)/,
   );
 });
+
+// --- structural alignment with sonarEnrich.ts ---
+
+test("extracts parsing into a dedicated parseApifyContactItem function", () => {
+  assert.match(source, /function\s+parseApifyContactItem\(/);
+  assert.match(source, /parseApifyContactItem\(item\)/);
+});
+
+test("uses defensive .catch for error body reading", () => {
+  assert.match(source, /response\.text\(\)\.catch\(\(\)\s*=>\s*""\)/);
+});
+
+test("wraps parseApifyContactItem in try/catch returning null on failure", () => {
+  // Same pattern as parseSonarResponse in sonarEnrich.ts
+  assert.match(source, /try\s*\{\s*\n\s*return\s+parseApifyContactItem\(item\)/);
+  assert.match(source, /catch\s*\{\s*\n\s*return\s+null/);
+});

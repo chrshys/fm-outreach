@@ -49,6 +49,38 @@ function findSocialLink(
   return match ? match[0] : null;
 }
 
+function parseApifyContactItem(
+  item: Record<string, unknown>,
+): ApifyWebsiteResult {
+  // Extract emails
+  const rawEmails = Array.isArray(item.emails)
+    ? (item.emails as string[])
+    : [];
+  const emails = rawEmails
+    .filter((e): e is string => typeof e === "string")
+    .filter((e) => !isBoilerplateEmail(e));
+
+  // Extract phones
+  const phones = Array.isArray(item.phones)
+    ? (item.phones as string[]).filter(
+        (p): p is string => typeof p === "string",
+      )
+    : [];
+
+  // Extract social links
+  const facebook = findSocialLink(item, FACEBOOK_REGEX);
+  const instagram = findSocialLink(item, INSTAGRAM_REGEX);
+
+  return {
+    emails,
+    phones,
+    socialLinks: {
+      facebook,
+      instagram,
+    },
+  };
+}
+
 export const scrapeContacts = action({
   args: {
     url: v.string(),
@@ -91,9 +123,9 @@ export const scrapeContacts = action({
     }
 
     if (!response.ok) {
-      const body = await response.text();
+      const errorBody = await response.text().catch(() => "");
       throw new Error(
-        `Apify request failed: ${response.status} ${body}`,
+        `Apify request failed: ${response.status} — ${errorBody}`,
       );
     }
 
@@ -110,32 +142,10 @@ export const scrapeContacts = action({
 
     const item = items[0] as Record<string, unknown>;
 
-    // Extract emails
-    const rawEmails = Array.isArray(item.emails)
-      ? (item.emails as string[])
-      : [];
-    const emails = rawEmails
-      .filter((e): e is string => typeof e === "string")
-      .filter((e) => !isBoilerplateEmail(e));
-
-    // Extract phones
-    const phones = Array.isArray(item.phones)
-      ? (item.phones as string[]).filter(
-          (p): p is string => typeof p === "string",
-        )
-      : [];
-
-    // Extract social links
-    const facebook = findSocialLink(item, FACEBOOK_REGEX);
-    const instagram = findSocialLink(item, INSTAGRAM_REGEX);
-
-    return {
-      emails,
-      phones,
-      socialLinks: {
-        facebook,
-        instagram,
-      },
-    };
+    try {
+      return parseApifyContactItem(item);
+    } catch {
+      return null;
+    }
   },
 });
