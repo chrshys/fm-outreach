@@ -111,3 +111,28 @@ test("batchEnrich passes useSonarPro to internal batchEnrichLeads", () => {
   const matches = source.match(/useSonarPro:\s*args\.useSonarPro/g);
   assert.ok(matches && matches.length >= 2, "useSonarPro should be threaded in both enrichCellLeads and batchEnrich");
 });
+
+// --- useApify threading tests ---
+
+test("enrichCellLeads accepts useApify optional boolean arg", () => {
+  assert.match(
+    source,
+    /export\s+const\s+enrichCellLeads\s*=\s*action\(\{[\s\S]*?useApify:\s*v\.optional\(v\.boolean\(\)\)/,
+  );
+});
+
+test("enrichCellLeads passes useApify to batchEnrichLeads", () => {
+  assert.match(source, /useApify:\s*args\.useApify/);
+});
+
+test("batchEnrich accepts useApify optional boolean arg", () => {
+  assert.match(
+    source,
+    /export\s+const\s+batchEnrich\s*=\s*action\(\{[\s\S]*?useApify:\s*v\.optional\(v\.boolean\(\)\)/,
+  );
+});
+
+test("batchEnrich passes useApify to internal batchEnrichLeads", () => {
+  const matches = source.match(/useApify:\s*args\.useApify/g);
+  assert.ok(matches && matches.length >= 2, "useApify should be threaded in both enrichCellLeads and batchEnrich");
+});

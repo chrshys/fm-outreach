@@ -11,6 +11,7 @@ export const enrichCellLeads = action({
   args: {
     cellId: v.id("discoveryCells"),
     useSonarPro: v.optional(v.boolean()),
+    useApify: v.optional(v.boolean()),
   },
   handler: async (ctx, args): Promise<{ leadIds: string[]; total: number; succeeded: number; failed: number; skipped: number }> => {
     const leadIds: Id<"leads">[] = await ctx.runQuery(
@@ -31,7 +32,7 @@ export const enrichCellLeads = action({
       const chunk = leadIds.slice(i, i + ENRICH_CHUNK_SIZE);
       const result: BatchEnrichmentResult = await ctx.runAction(
         internal.enrichment.batchEnrich.batchEnrichLeads,
-        { leadIds: chunk, useSonarPro: args.useSonarPro },
+        { leadIds: chunk, useSonarPro: args.useSonarPro, useApify: args.useApify },
       );
       succeeded += result.succeeded;
       failed += result.failed;
@@ -54,6 +55,7 @@ export const batchEnrich = action({
     force: v.optional(v.boolean()),
     overwrite: v.optional(v.boolean()),
     useSonarPro: v.optional(v.boolean()),
+    useApify: v.optional(v.boolean()),
   },
   handler: async (ctx, args): Promise<BatchEnrichmentResult> => {
     return await ctx.runAction(internal.enrichment.batchEnrich.batchEnrichLeads, {
@@ -61,6 +63,7 @@ export const batchEnrich = action({
       force: args.force,
       overwrite: args.overwrite,
       useSonarPro: args.useSonarPro,
+      useApify: args.useApify,
     });
   },
 });
