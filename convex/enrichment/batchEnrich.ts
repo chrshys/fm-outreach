@@ -44,6 +44,7 @@ export const batchEnrichLeads = internalAction({
 
       try {
         const summary: EnrichmentSummary = await ctx.runAction(
+          // @ts-ignore -- Convex generated API types can trigger TS2589 in large modules
           internal.enrichment.orchestrator.enrichLead,
           { leadId, force, overwrite, useSonarPro: args.useSonarPro },
         );
