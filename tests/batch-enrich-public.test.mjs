@@ -71,7 +71,7 @@ test("enrichCellLeads chunks lead IDs into batches of 25", () => {
 test("enrichCellLeads calls batchEnrichLeads for each chunk", () => {
   assert.match(
     source,
-    /ctx\.runAction\(\s*internal\.enrichment\.batchEnrich\.batchEnrichLeads,\s*\{\s*leadIds:\s*chunk\s*\}/s,
+    /ctx\.runAction\(\s*internal\.enrichment\.batchEnrich\.batchEnrichLeads,\s*\{\s*leadIds:\s*chunk/s,
   );
 });
 
@@ -84,4 +84,30 @@ test("enrichCellLeads aggregates succeeded, failed, skipped across chunks", () =
 test("enrichCellLeads returns leadIds, total, succeeded, failed, skipped", () => {
   // Check the final return shape
   assert.match(source, /return\s*\{[^}]*leadIds[^}]*total[^}]*succeeded[^}]*failed[^}]*skipped/s);
+});
+
+// --- useSonarPro threading tests ---
+
+test("enrichCellLeads accepts useSonarPro optional boolean arg", () => {
+  assert.match(
+    source,
+    /export\s+const\s+enrichCellLeads\s*=\s*action\(\{[\s\S]*?useSonarPro:\s*v\.optional\(v\.boolean\(\)\)/,
+  );
+});
+
+test("enrichCellLeads passes useSonarPro to batchEnrichLeads", () => {
+  assert.match(source, /useSonarPro:\s*args\.useSonarPro/);
+});
+
+test("batchEnrich accepts useSonarPro optional boolean arg", () => {
+  assert.match(
+    source,
+    /export\s+const\s+batchEnrich\s*=\s*action\(\{[\s\S]*?useSonarPro:\s*v\.optional\(v\.boolean\(\)\)/,
+  );
+});
+
+test("batchEnrich passes useSonarPro to internal batchEnrichLeads", () => {
+  // Both enrichCellLeads and batchEnrich thread useSonarPro through
+  const matches = source.match(/useSonarPro:\s*args\.useSonarPro/g);
+  assert.ok(matches && matches.length >= 2, "useSonarPro should be threaded in both enrichCellLeads and batchEnrich");
 });
