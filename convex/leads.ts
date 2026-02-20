@@ -111,25 +111,34 @@ export const listForExport = query({
           now: Date.now(),
         }),
       )
-      .map((lead) => ({
-        _id: lead._id,
-        name: lead.name,
-        type: lead.type,
-        farmDescription: lead.farmDescription,
-        contactPhone: lead.contactPhone,
-        address: lead.address,
-        city: lead.city,
-        region: lead.region,
-        province: lead.province,
-        postalCode: lead.postalCode,
-        countryCode: lead.countryCode,
-        latitude: lead.latitude,
-        longitude: lead.longitude,
-        placeId: lead.placeId,
-        website: lead.website,
-        socialLinks: lead.socialLinks,
-        products: lead.products,
-      }));
+      .map((lead) => {
+        const ed = lead.enrichmentData as
+          | Record<string, unknown>
+          | undefined;
+        const sp = Array.isArray(ed?.structuredProducts)
+          ? (ed!.structuredProducts as Array<{ category?: string }>)
+          : [];
+        return {
+          _id: lead._id,
+          name: lead.name,
+          type: lead.type,
+          address: lead.address,
+          city: lead.city,
+          region: lead.region,
+          province: lead.province,
+          postalCode: lead.postalCode,
+          countryCode: lead.countryCode,
+          latitude: lead.latitude,
+          longitude: lead.longitude,
+          placeId: lead.placeId,
+          website: lead.website,
+          socialLinks: lead.socialLinks,
+          products: lead.products,
+          locationDescription: lead.locationDescription,
+          imagePrompt: lead.imagePrompt,
+          categories: [...new Set(sp.map((p) => p.category).filter(Boolean))],
+        };
+      });
   },
 });
 

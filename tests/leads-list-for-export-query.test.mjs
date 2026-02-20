@@ -61,12 +61,10 @@ test("listForExport maps output to CSV fields only", () => {
   );
   const block = exportMatch[0];
 
-  // Required CSV fields
+  // Required CSV fields (direct lead.field projections)
   const csvFields = [
     "name",
     "type",
-    "farmDescription",
-    "contactPhone",
     "address",
     "city",
     "region",
@@ -79,6 +77,8 @@ test("listForExport maps output to CSV fields only", () => {
     "website",
     "socialLinks",
     "products",
+    "locationDescription",
+    "imagePrompt",
   ];
 
   for (const field of csvFields) {
@@ -86,7 +86,7 @@ test("listForExport maps output to CSV fields only", () => {
   }
 
   // Should NOT include internal/non-CSV fields in the map output
-  const mapBlock = block.match(/\.map\(\(lead\)\s*=>\s*\(\{[\s\S]*?\}\)\)/);
+  const mapBlock = block.match(/\.map\(\(lead\)\s*=>\s*[\s\S]*?\}\)/);
   assert.ok(mapBlock, ".map() projection should exist");
   const projection = mapBlock[0];
 
@@ -95,4 +95,25 @@ test("listForExport maps output to CSV fields only", () => {
   assert.doesNotMatch(projection, /contactEmail:/);
   assert.doesNotMatch(projection, /clusterId:/);
   assert.doesNotMatch(projection, /updatedAt:/);
+
+  // Removed fields should not be in the projection
+  assert.doesNotMatch(projection, /farmDescription:/, "farmDescription should be removed from export");
+  assert.doesNotMatch(projection, /contactPhone:/, "contactPhone should be removed from export");
+});
+
+test("listForExport derives categories from enrichmentData.structuredProducts", () => {
+  const exportMatch = source.match(
+    /export\s+const\s+listForExport\s*=\s*query\(\{[\s\S]*?\n\}\);/,
+  );
+  const block = exportMatch[0];
+
+  // Should reference enrichmentData and structuredProducts
+  assert.match(block, /enrichmentData/, "should reference enrichmentData for categories");
+  assert.match(block, /structuredProducts/, "should reference structuredProducts for categories");
+  // Should extract unique categories via Set
+  assert.match(block, /new Set\(/, "should use Set to deduplicate categories");
+  // Should map to p.category
+  assert.match(block, /\.category/, "should extract category from each product");
+  // Should filter out falsy values
+  assert.match(block, /\.filter\(Boolean\)/, "should filter out falsy categories");
 });
