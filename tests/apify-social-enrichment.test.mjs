@@ -125,6 +125,35 @@ test("passes signal to fetch calls", () => {
   assert.match(source, /signal:\s*controller\.signal/);
 });
 
+// --- Error handling (aligned with sonarEnrich.ts) ---
+
+test("handles 429 rate limit for Facebook", () => {
+  assert.match(source, /response\.status\s*===\s*429/);
+  assert.match(source, /Apify Facebook rate limit/i);
+});
+
+test("handles 429 rate limit for Instagram", () => {
+  assert.match(source, /Apify Instagram rate limit/i);
+});
+
+test("throws on non-ok Facebook response with status and body", () => {
+  assert.match(source, /!response\.ok/);
+  assert.match(source, /Apify Facebook request failed/);
+});
+
+test("throws on non-ok Instagram response with status and body", () => {
+  assert.match(source, /Apify Instagram request failed/);
+});
+
+test("uses defensive .catch for error body reading", () => {
+  assert.match(source, /response\.text\(\)\.catch\(\(\)\s*=>\s*""\)/);
+});
+
+test("handles abort timeout with descriptive error", () => {
+  assert.match(source, /AbortError/);
+  assert.match(source, /timed out/i);
+});
+
 // --- Return type ---
 
 test("handler return type is ApifySocialResult | null", () => {
@@ -171,4 +200,15 @@ test("Facebook handler uses parseFacebookItem for response parsing", () => {
 
 test("Instagram handler uses parseInstagramItem for response parsing", () => {
   assert.match(source, /parseInstagramItem\(data\)/);
+});
+
+// --- structural alignment with sonarEnrich.ts ---
+
+test("declares response with let before fetch (same pattern as sonarEnrich)", () => {
+  assert.match(source, /let\s+response:\s*Response/);
+});
+
+test("uses clearTimeout in both catch and finally blocks", () => {
+  const matches = source.match(/clearTimeout\(timeout\)/g);
+  assert.ok(matches && matches.length >= 4, "should have clearTimeout in catch and finally for both platforms");
 });

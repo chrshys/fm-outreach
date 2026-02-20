@@ -80,8 +80,9 @@ export const scrapeSocialPages = action({
           APIFY_TIMEOUT_MS,
         );
 
+        let response: Response;
         try {
-          const response = await fetch(FACEBOOK_RUN_URL, {
+          response = await fetch(FACEBOOK_RUN_URL, {
             method: "POST",
             headers: {
               Authorization: `Bearer ${apiToken}`,
@@ -90,21 +91,39 @@ export const scrapeSocialPages = action({
             body: JSON.stringify({ pageUrls: [args.facebookUrl] }),
             signal: controller.signal,
           });
-
-          if (response.ok) {
-            let data: unknown;
-            try {
-              data = await response.json();
-            } catch {
-              data = null;
-            }
-            const fb = parseFacebookItem(data);
-            if (fb.email) result.email = fb.email;
-            if (fb.phone) result.phone = fb.phone;
-            if (fb.website) result.website = fb.website;
+        } catch (err) {
+          clearTimeout(timeout);
+          if (err instanceof DOMException && err.name === "AbortError") {
+            throw new Error("Apify Facebook request timed out after 30s");
           }
+          throw err;
         } finally {
           clearTimeout(timeout);
+        }
+
+        if (response.status === 429) {
+          throw new Error("Apify Facebook rate limit exceeded (429)");
+        }
+
+        if (!response.ok) {
+          const errorBody = await response.text().catch(() => "");
+          throw new Error(
+            `Apify Facebook request failed: ${response.status} — ${errorBody}`,
+          );
+        }
+
+        let data: unknown;
+        try {
+          data = await response.json();
+        } catch {
+          data = null;
+        }
+
+        if (data) {
+          const fb = parseFacebookItem(data);
+          if (fb.email) result.email = fb.email;
+          if (fb.phone) result.phone = fb.phone;
+          if (fb.website) result.website = fb.website;
         }
       } catch {
         // Facebook call failed — continue to Instagram
@@ -120,8 +139,9 @@ export const scrapeSocialPages = action({
           APIFY_TIMEOUT_MS,
         );
 
+        let response: Response;
         try {
-          const response = await fetch(INSTAGRAM_RUN_URL, {
+          response = await fetch(INSTAGRAM_RUN_URL, {
             method: "POST",
             headers: {
               Authorization: `Bearer ${apiToken}`,
@@ -130,21 +150,39 @@ export const scrapeSocialPages = action({
             body: JSON.stringify({ usernames: [args.instagramUsername] }),
             signal: controller.signal,
           });
-
-          if (response.ok) {
-            let data: unknown;
-            try {
-              data = await response.json();
-            } catch {
-              data = null;
-            }
-            const ig = parseInstagramItem(data);
-            if (ig.externalUrl) {
-              result.website = result.website ?? ig.externalUrl;
-            }
+        } catch (err) {
+          clearTimeout(timeout);
+          if (err instanceof DOMException && err.name === "AbortError") {
+            throw new Error("Apify Instagram request timed out after 30s");
           }
+          throw err;
         } finally {
           clearTimeout(timeout);
+        }
+
+        if (response.status === 429) {
+          throw new Error("Apify Instagram rate limit exceeded (429)");
+        }
+
+        if (!response.ok) {
+          const errorBody = await response.text().catch(() => "");
+          throw new Error(
+            `Apify Instagram request failed: ${response.status} — ${errorBody}`,
+          );
+        }
+
+        let data: unknown;
+        try {
+          data = await response.json();
+        } catch {
+          data = null;
+        }
+
+        if (data) {
+          const ig = parseInstagramItem(data);
+          if (ig.externalUrl) {
+            result.website = result.website ?? ig.externalUrl;
+          }
         }
       } catch {
         // Instagram call failed — return what we have
