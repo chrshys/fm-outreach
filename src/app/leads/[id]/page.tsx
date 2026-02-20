@@ -477,6 +477,12 @@ export default function LeadDetailPage() {
                       {lead.farmDescription}
                     </p>
                   ) : null}
+                  {lead.locationDescription ? (
+                    <p>
+                      <span className="font-medium">About this Location:</span>{" "}
+                      {lead.locationDescription}
+                    </p>
+                  ) : null}
                   {(lead.enrichmentData as Record<string, unknown> | undefined)?.structuredDescription ? (
                     <StructuredDescriptionDisplay
                       data={(lead.enrichmentData as Record<string, unknown>).structuredDescription as { summary: string; specialties: string[]; certifications: string[] }}
