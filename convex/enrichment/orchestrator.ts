@@ -301,11 +301,17 @@ export const enrichLead = internalAction({
       }
     }
 
-    // From Sonar — email
+    // Email — priority: apifyWebsite > apifySocial > sonar
     let bestEmail: string | null = null;
     let emailSource: string | null = null;
 
-    if (sonarResult?.contactEmail) {
+    if (apifyWebsiteResult?.emails?.[0]) {
+      bestEmail = apifyWebsiteResult.emails[0];
+      emailSource = `apify_website - ${websiteUrl}`;
+    } else if (apifySocialResult?.email) {
+      bestEmail = apifySocialResult.email;
+      emailSource = `apify_social - ${new Date().toISOString().slice(0, 10)}`;
+    } else if (sonarResult?.contactEmail) {
       bestEmail = sonarResult.contactEmail;
       emailSource = `sonar - ${lead.name} - ${new Date().toISOString().slice(0, 10)}`;
     }
@@ -321,9 +327,13 @@ export const enrichLead = internalAction({
       fieldsUpdated.push("contactName");
     }
 
-    // From Sonar — contact phone (fallback if Google Places didn't provide one)
+    // Phone — fallback: sonar, then apifySocial (after Google Places)
     if (sonarResult?.contactPhone && !patch.contactPhone && (!lead.contactPhone || overwrite)) {
       patch.contactPhone = sonarResult.contactPhone;
+      fieldsUpdated.push("contactPhone");
+    }
+    if (apifySocialResult?.phone && !patch.contactPhone && (!lead.contactPhone || overwrite)) {
+      patch.contactPhone = apifySocialResult.phone;
       fieldsUpdated.push("contactPhone");
     }
 
@@ -359,20 +369,32 @@ export const enrichLead = internalAction({
       }
     }
 
-    // From Sonar — social links
-    if (sonarResult) {
+    // Social links — priority: apifyWebsite > sonar (both fill gaps in existing)
+    {
       const existingSocial = lead.socialLinks ?? {};
       const newSocial: { instagram?: string; facebook?: string } = {};
       let socialUpdated = false;
 
-      if (sonarResult.socialLinks.facebook && (!existingSocial.facebook || overwrite)) {
+      // Sonar first (lower priority — will be overwritten by apifyWebsite if both exist)
+      if (sonarResult?.socialLinks?.facebook && (!existingSocial.facebook || overwrite)) {
         newSocial.facebook = sonarResult.socialLinks.facebook;
         socialUpdated = true;
       }
-      if (sonarResult.socialLinks.instagram && (!existingSocial.instagram || overwrite)) {
+      if (sonarResult?.socialLinks?.instagram && (!existingSocial.instagram || overwrite)) {
         newSocial.instagram = sonarResult.socialLinks.instagram;
         socialUpdated = true;
       }
+
+      // Apify website (highest priority — overwrites sonar)
+      if (apifyWebsiteResult?.socialLinks?.facebook && (!existingSocial.facebook || overwrite)) {
+        newSocial.facebook = apifyWebsiteResult.socialLinks.facebook;
+        socialUpdated = true;
+      }
+      if (apifyWebsiteResult?.socialLinks?.instagram && (!existingSocial.instagram || overwrite)) {
+        newSocial.instagram = apifyWebsiteResult.socialLinks.instagram;
+        socialUpdated = true;
+      }
+
       if (socialUpdated) {
         patch.socialLinks = {
           ...existingSocial,

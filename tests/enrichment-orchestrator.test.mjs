@@ -164,7 +164,12 @@ test("only overwrites empty fields unless forced", () => {
   assert.match(source, /!lead\.farmDescription\s*\|\|\s*overwrite/);
 });
 
-test("merges email from sonarResult", () => {
+test("email priority: apifyWebsite > apifySocial > sonar", () => {
+  // apifyWebsiteResult.emails[0] is checked first
+  assert.match(source, /apifyWebsiteResult\?\.emails\?\.\[0\]/);
+  // apifySocialResult.email is checked second
+  assert.match(source, /apifySocialResult\?\.email/);
+  // sonarResult.contactEmail is checked last
   assert.match(source, /sonarResult\?\.contactEmail/);
   assert.match(source, /bestEmail\s*=\s*sonarResult\.contactEmail/);
 });
@@ -174,8 +179,9 @@ test("merges contact name from sonarResult", () => {
   assert.match(source, /patch\.contactName\s*=\s*sonarResult\.contactName/);
 });
 
-test("merges contact phone from sonarResult as fallback", () => {
+test("merges contact phone: Google Places > sonar > apifySocial", () => {
   assert.match(source, /sonarResult\?\.contactPhone\s*&&\s*!patch\.contactPhone/);
+  assert.match(source, /apifySocialResult\?\.phone\s*&&\s*!patch\.contactPhone/);
 });
 
 test("merges website from sonarResult as fallback", () => {
@@ -187,10 +193,14 @@ test("merges products from sonarResult", () => {
   assert.match(source, /patch\.products\s*=\s*sonarResult\.products/);
 });
 
-test("merges social links from sonarResult preserving existing values", () => {
+test("merges social links with apifyWebsite > sonar priority", () => {
   assert.match(source, /existingSocial\s*=\s*lead\.socialLinks\s*\?\?\s*\{\}/);
-  assert.match(source, /sonarResult\.socialLinks\.facebook/);
-  assert.match(source, /sonarResult\.socialLinks\.instagram/);
+  // Sonar social links applied first (lower priority)
+  assert.match(source, /sonarResult\?\.socialLinks\?\.facebook/);
+  assert.match(source, /sonarResult\?\.socialLinks\?\.instagram/);
+  // Apify website social links applied second (higher priority, overwrites sonar)
+  assert.match(source, /apifyWebsiteResult\?\.socialLinks\?\.facebook/);
+  assert.match(source, /apifyWebsiteResult\?\.socialLinks\?\.instagram/);
   assert.match(source, /\.\.\.existingSocial/);
   assert.match(source, /\.\.\.newSocial/);
 });
@@ -259,9 +269,14 @@ test("only updates status for progressable statuses unless forced", () => {
 
 // --- Step 7: Consent source ---
 
-test("sets consentSource documenting where email was found", () => {
+test("sets consentSource with source-specific emailSource patterns", () => {
   assert.match(source, /consentSource/);
   assert.match(source, /emailSource/);
+  // apify_website pattern includes URL
+  assert.match(source, /apify_website - /);
+  // apify_social pattern includes date
+  assert.match(source, /apify_social - /);
+  // sonar pattern includes lead name and date
   assert.match(source, /sonar - /);
   assert.match(source, /toISOString\(\)\.slice\(0,\s*10\)/);
 });
