@@ -127,6 +127,41 @@ test("orchestrator tracks email source for consent", () => {
   assert.match(orchestratorSource, /consentSource/);
 });
 
+// --- Pipeline: email is filled from Apify Website (highest priority) ---
+
+test("orchestrator fills email from apifyWebsiteResult before sonarResult", () => {
+  assert.match(orchestratorSource, /apifyWebsiteResult\?\.emails\?\.\[0\]/);
+  assert.match(orchestratorSource, /bestEmail\s*=\s*apifyWebsiteResult\.emails\[0\]/);
+  assert.match(orchestratorSource, /emailSource\s*=\s*`apify_website/);
+});
+
+// --- Pipeline: social links are filled from Apify Website (highest priority) ---
+
+test("orchestrator fills social links from apifyWebsiteResult", () => {
+  assert.match(orchestratorSource, /apifyWebsiteResult\?\.socialLinks\?\.facebook/);
+  assert.match(orchestratorSource, /newSocial\.facebook\s*=\s*apifyWebsiteResult\.socialLinks\.facebook/);
+  assert.match(orchestratorSource, /apifyWebsiteResult\?\.socialLinks\?\.instagram/);
+  assert.match(orchestratorSource, /newSocial\.instagram\s*=\s*apifyWebsiteResult\.socialLinks\.instagram/);
+});
+
+// --- Pipeline: apifySocial provides fallback for email, phone, and website ---
+
+test("orchestrator fills email from apifySocialResult as fallback", () => {
+  assert.match(orchestratorSource, /apifySocialResult\?\.email/);
+  assert.match(orchestratorSource, /bestEmail\s*=\s*apifySocialResult\.email/);
+  assert.match(orchestratorSource, /emailSource\s*=\s*`apify_social/);
+});
+
+test("orchestrator fills phone from apifySocialResult as fallback", () => {
+  assert.match(orchestratorSource, /apifySocialResult\?\.phone\s*&&\s*!patch\.contactPhone/);
+  assert.match(orchestratorSource, /patch\.contactPhone\s*=\s*apifySocialResult\.phone/);
+});
+
+test("orchestrator fills website from apifySocialResult", () => {
+  assert.match(orchestratorSource, /apifySocialResult\.website/);
+  assert.match(orchestratorSource, /websiteUrl\s*=\s*apifySocialResult\.website/);
+});
+
 // --- Pipeline: social links are filled from Sonar ---
 
 test("orchestrator fills social links from Sonar result", () => {
