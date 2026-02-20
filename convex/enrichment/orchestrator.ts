@@ -6,7 +6,7 @@ import type { GooglePlacesResult } from "./googlePlaces";
 import type { SonarEnrichResult } from "./sonarEnrich";
 
 const COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
-const ENRICHMENT_VERSION = "1.0";
+const ENRICHMENT_VERSION = "2.0";
 
 export type EnrichmentSummary = {
   leadId: string;
