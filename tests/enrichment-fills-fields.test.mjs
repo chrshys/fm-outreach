@@ -42,8 +42,12 @@ test("DataFreshness derives hasBeenEnriched from enrichedAt prop", () => {
   assert.match(dataFreshnessSource, /hasBeenEnriched\s*=\s*enrichedAt\s*!==\s*undefined/);
 });
 
-test("DataFreshness does not force when enriching for the first time", () => {
+test("DataFreshness passes overwrite (not force) so cooldown is respected", () => {
   assert.match(dataFreshnessSource, /overwrite:\s*hasBeenEnriched\s*\?\s*true\s*:\s*undefined/);
+  // force should not be passed — re-enrich must respect the 30-day cooldown
+  const fnStart = dataFreshnessSource.indexOf("async function handleEnrich");
+  const fnBody = dataFreshnessSource.slice(fnStart, fnStart + 500);
+  assert.doesNotMatch(fnBody, /force:/);
 });
 
 test("DataFreshness calls batchEnrich with the lead ID", () => {

@@ -151,9 +151,9 @@ test("orchestrator does not use hunter.io", () => {
   assert.doesNotMatch(orchestratorSource, /hunterResult/);
 });
 
-test("orchestrator does not use websiteScraper", () => {
-  assert.doesNotMatch(orchestratorSource, /scrapeWebsite/);
-  assert.doesNotMatch(orchestratorSource, /scraperResult/);
+test("orchestrator uses websiteScraper as fallback for social links", () => {
+  assert.match(orchestratorSource, /scrapeWebsite/);
+  assert.match(orchestratorSource, /websiteScraperResult/);
 });
 
 test("orchestrator does not use claude analysis", () => {
