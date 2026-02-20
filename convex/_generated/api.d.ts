@@ -22,6 +22,7 @@ import type * as discovery_placeHelpers from "../discovery/placeHelpers.js";
 import type * as email_batchGenerate from "../email/batchGenerate.js";
 import type * as email_generateEmail from "../email/generateEmail.js";
 import type * as emailTemplates from "../emailTemplates.js";
+import type * as enrichment_apifySocial from "../enrichment/apifySocial.js";
 import type * as enrichment_apifyWebsite from "../enrichment/apifyWebsite.js";
 import type * as enrichment_batchEnrich from "../enrichment/batchEnrich.js";
 import type * as enrichment_batchEnrichPublic from "../enrichment/batchEnrichPublic.js";
@@ -84,6 +85,7 @@ declare const fullApi: ApiFromModules<{
   "email/batchGenerate": typeof email_batchGenerate;
   "email/generateEmail": typeof email_generateEmail;
   emailTemplates: typeof emailTemplates;
+  "enrichment/apifySocial": typeof enrichment_apifySocial;
   "enrichment/apifyWebsite": typeof enrichment_apifyWebsite;
   "enrichment/batchEnrich": typeof enrichment_batchEnrich;
   "enrichment/batchEnrichPublic": typeof enrichment_batchEnrichPublic;
