@@ -115,5 +115,5 @@ test("listForExport derives categories from enrichmentData.structuredProducts", 
   // Should map to p.category
   assert.match(block, /\.category/, "should extract category from each product");
   // Should filter out falsy values
-  assert.match(block, /\.filter\(Boolean\)/, "should filter out falsy categories");
+  assert.match(block, /\.filter\(.*Boolean\(c\)/, "should filter out falsy categories");
 });

@@ -136,7 +136,7 @@ export const listForExport = query({
           products: lead.products,
           locationDescription: lead.locationDescription,
           imagePrompt: lead.imagePrompt,
-          categories: [...new Set(sp.map((p) => p.category).filter(Boolean))],
+          categories: [...new Set(sp.map((p) => p.category).filter((c): c is string => Boolean(c)))],
         };
       });
   },

@@ -3,6 +3,9 @@ import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 
 const schema = readFileSync("convex/schema.ts", "utf-8");
+// Extract the leads defineTable block — slice from "leads: defineTable" to the next top-level table
+const tableStart = schema.indexOf("leads: defineTable(");
+const tableBlock = tableStart > -1 ? schema.slice(tableStart) : "";
 
 describe("leads table – locationDescription & imagePrompt fields", () => {
   test("schema includes locationDescription as optional string", () => {
@@ -22,10 +25,10 @@ describe("leads table – locationDescription & imagePrompt fields", () => {
   });
 
   test("locationDescription appears after farmDescription", () => {
-    const farmIdx = schema.indexOf("farmDescription");
-    const locIdx = schema.indexOf("locationDescription");
-    assert.ok(farmIdx > -1, "farmDescription must exist");
-    assert.ok(locIdx > -1, "locationDescription must exist");
+    const farmIdx = tableBlock.indexOf("farmDescription");
+    const locIdx = tableBlock.indexOf("locationDescription");
+    assert.ok(farmIdx > -1, "farmDescription must exist in leads table");
+    assert.ok(locIdx > -1, "locationDescription must exist in leads table");
     assert.ok(
       locIdx > farmIdx,
       "locationDescription should come after farmDescription",
@@ -33,10 +36,10 @@ describe("leads table – locationDescription & imagePrompt fields", () => {
   });
 
   test("imagePrompt appears after locationDescription", () => {
-    const locIdx = schema.indexOf("locationDescription");
-    const imgIdx = schema.indexOf("imagePrompt");
-    assert.ok(locIdx > -1, "locationDescription must exist");
-    assert.ok(imgIdx > -1, "imagePrompt must exist");
+    const locIdx = tableBlock.indexOf("locationDescription");
+    const imgIdx = tableBlock.indexOf("imagePrompt");
+    assert.ok(locIdx > -1, "locationDescription must exist in leads table");
+    assert.ok(imgIdx > -1, "imagePrompt must exist in leads table");
     assert.ok(
       imgIdx > locIdx,
       "imagePrompt should come after locationDescription",

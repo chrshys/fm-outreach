@@ -12,8 +12,7 @@ export default defineSchema({
   //  ────────────────┼──────────────────────────────┼────────────────
   //  name            │ name                         │ displayName
   //  type            │ type                         │ profileType (remapped)
-  //  farmDescription │ farmDescription              │ bio
-  //  contactPhone    │ contactPhone                 │ phone
+  //  description     │ locationDescription          │ bio
   //  address         │ address                      │ address
   //  city            │ city                         │ city
   //  state           │ province ?? region           │ state
@@ -26,6 +25,8 @@ export default defineSchema({
   //  instagram       │ socialLinks.instagram         │ instagram
   //  facebook        │ socialLinks.facebook          │ facebook
   //  products        │ products (joined with ", ")   │ products (split back)
+  //  imagePrompt     │ imagePrompt                  │ imagePrompt
+  //  categories      │ structuredProducts categories │ categories
   //
   // Type mapping (fm-outreach → FM profileType):
   //   farm → farm, farmers_market → farmersMarket,
