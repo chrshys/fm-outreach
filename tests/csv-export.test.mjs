@@ -47,9 +47,9 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
     {
       name: "Green Acres",
       type: "farm",
-      locationDescription: "Organic produce farm",
-      imagePrompt: "A scenic farm with rolling hills",
-      categories: ["produce", "organic"],
+      locationDescription: "Organic produce",
+      imagePrompt: "A farm stand with fresh produce",
+      categories: ["produce"],
       address: "123 Farm Rd",
       city: "Guelph",
       province: "ON",
@@ -70,7 +70,7 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
   assert.equal(lines.length, 2);
   assert.equal(
     lines[1],
-    'Green Acres,farm,Organic produce farm,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears",A scenic farm with rolling hills,"produce, organic"'
+    'Green Acres,farm,Organic produce,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears",A farm stand with fresh produce,produce'
   );
 });
 
