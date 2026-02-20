@@ -119,6 +119,24 @@ test("adds google_places to sources when successful", () => {
   assert.match(source, /source:\s*"google_places"/);
 });
 
+// --- Step 3b/3c: Apify enrichment ---
+
+test("calls Apify social scraper action", () => {
+  assert.match(source, /api\.enrichment\.apifySocial\.scrapeSocialPages/);
+});
+
+test("calls Apify website scraper action", () => {
+  assert.match(source, /api\.enrichment\.apifyWebsite\.scrapeContacts/);
+});
+
+test("adds apify_website to sources when successful", () => {
+  assert.match(source, /source:\s*"apify_website"/);
+});
+
+test("adds apify_social to sources when successful", () => {
+  assert.match(source, /source:\s*"apify_social"/);
+});
+
 // --- Step 4: Sonar enrichment ---
 
 test("calls Sonar enrichment action with lead details", () => {
@@ -148,7 +166,7 @@ test("stores citations in source detail when available", () => {
 test("catches and continues on Sonar enrichment failure", () => {
   const sonarBlock = source.slice(
     source.indexOf("// Step 4: Sonar enrichment"),
-    source.indexOf("// Merge results"),
+    source.indexOf("// Step 4b:"),
   );
   assert.match(sonarBlock, /try\s*\{/);
   assert.match(sonarBlock, /catch\s*\{/);
@@ -312,7 +330,7 @@ test("finished activity metadata includes sources, fieldsUpdated, emailFound, st
 test("catches and continues on Google Places failure", () => {
   const placesBlock = source.slice(
     source.indexOf("// Step 3: Google Places"),
-    source.indexOf("// Step 4:"),
+    source.indexOf("// Step 3b:"),
   );
   assert.match(placesBlock, /try\s*\{/);
   assert.match(placesBlock, /catch\s*\{/);
@@ -355,7 +373,7 @@ test("does not import removed enrichment modules", () => {
 });
 
 test("does not reference removed enrichment steps", () => {
-  assert.doesNotMatch(source, /scrapeWebsite/);
+  assert.doesNotMatch(source, /from\s+["']\.\/websiteScraper["']/);
   assert.doesNotMatch(source, /searchDomain/);
   assert.doesNotMatch(source, /analyzeWithClaude/);
   assert.doesNotMatch(source, /discoverSocialLinks/);
