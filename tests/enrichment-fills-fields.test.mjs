@@ -141,6 +141,28 @@ test("orchestrator fills website from Google Places if lead has none", () => {
   assert.match(orchestratorSource, /fieldsUpdated\.push\("website"\)/);
 });
 
+// --- Pipeline: locationDescription is filled from Sonar ---
+
+test("orchestrator fills locationDescription from Sonar result", () => {
+  assert.match(orchestratorSource, /patch\.locationDescription\s*=\s*sonarResult\.locationDescription/);
+  assert.match(orchestratorSource, /fieldsUpdated\.push\("locationDescription"\)/);
+});
+
+test("locationDescription is only filled when empty or forced", () => {
+  assert.match(orchestratorSource, /sonarResult\?\.locationDescription\s*&&\s*\(!lead\.locationDescription\s*\|\|\s*overwrite\)/);
+});
+
+// --- Pipeline: imagePrompt is filled from Sonar ---
+
+test("orchestrator fills imagePrompt from Sonar result", () => {
+  assert.match(orchestratorSource, /patch\.imagePrompt\s*=\s*sonarResult\.imagePrompt/);
+  assert.match(orchestratorSource, /fieldsUpdated\.push\("imagePrompt"\)/);
+});
+
+test("imagePrompt is only filled when empty or forced", () => {
+  assert.match(orchestratorSource, /sonarResult\?\.imagePrompt\s*&&\s*\(!lead\.imagePrompt\s*\|\|\s*overwrite\)/);
+});
+
 // --- Pipeline: structured data from Sonar ---
 
 test("orchestrator fills structured data from Sonar result", () => {
@@ -207,6 +229,14 @@ test("Sonar enrichment result includes socialLinks field", () => {
   assert.match(sonarSource, /socialLinks:\s*\{/);
   assert.match(sonarSource, /facebook:\s*string\s*\|\s*null/);
   assert.match(sonarSource, /instagram:\s*string\s*\|\s*null/);
+});
+
+test("Sonar enrichment result includes locationDescription field", () => {
+  assert.match(sonarSource, /locationDescription:\s*string/);
+});
+
+test("Sonar enrichment result includes imagePrompt field", () => {
+  assert.match(sonarSource, /imagePrompt:\s*string/);
 });
 
 // --- Google Places provides phone and website ---
