@@ -62,6 +62,8 @@ export default defineSchema({
     salesChannels: v.optional(v.array(v.string())),
     sellsOnline: v.optional(v.boolean()),
     farmDescription: v.optional(v.string()),
+    locationDescription: v.optional(v.string()),
+    imagePrompt: v.optional(v.string()),
     notes: v.optional(v.string()),
     source: v.union(
       v.literal("spreadsheet_import"),
