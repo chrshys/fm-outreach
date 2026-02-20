@@ -2,11 +2,8 @@ import { v } from "convex/values";
 
 import { api, internal } from "../_generated/api";
 import { internalAction } from "../_generated/server";
-import { discoverSocialLinks } from "./socialDiscovery";
 import type { GooglePlacesResult } from "./googlePlaces";
-import type { WebsiteScraperResult } from "./websiteScraper";
-import type { HunterResult } from "./hunter";
-import type { ClaudeAnalysisResult } from "./claudeAnalysis";
+import type { SonarEnrichResult } from "./sonarEnrich";
 
 const COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const ENRICHMENT_VERSION = "1.0";

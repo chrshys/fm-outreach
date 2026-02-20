@@ -310,12 +310,16 @@ test("applies patch using leads.update mutation", () => {
 
 // --- Imports ---
 
-test("imports from all enrichment modules", () => {
+test("imports from enrichment modules", () => {
   assert.match(source, /import.*GooglePlacesResult.*from.*googlePlaces/);
-  assert.match(source, /import.*WebsiteScraperResult.*from.*websiteScraper/);
-  assert.match(source, /import.*HunterResult.*from.*hunter/);
-  assert.match(source, /import.*ClaudeAnalysisResult.*from.*claudeAnalysis/);
-  assert.match(source, /import.*discoverSocialLinks.*from.*socialDiscovery/);
+  assert.match(source, /import.*SonarEnrichResult.*from.*sonarEnrich/);
+});
+
+test("does not import removed enrichment modules", () => {
+  assert.doesNotMatch(source, /import.*WebsiteScraperResult.*from.*websiteScraper/);
+  assert.doesNotMatch(source, /import.*HunterResult.*from.*hunter/);
+  assert.doesNotMatch(source, /import.*ClaudeAnalysisResult.*from.*claudeAnalysis/);
+  assert.doesNotMatch(source, /import.*discoverSocialLinks.*from.*socialDiscovery/);
 });
 
 test("imports internalAction from generated server", () => {
