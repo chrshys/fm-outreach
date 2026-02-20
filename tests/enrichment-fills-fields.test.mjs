@@ -171,56 +171,42 @@ test("batchEnrichPublic wraps internal batch action", () => {
   assert.match(batchEnrichPublicSource, /internal\.enrichment\.batchEnrich\.batchEnrichLeads/);
 });
 
-// --- Claude analysis extracts products and business data ---
+// --- Sonar enrichment extracts products and business data ---
 
-const claudeSource = fs.readFileSync(
-  "convex/enrichment/claudeAnalysis.ts",
+const sonarSource = fs.readFileSync(
+  "convex/enrichment/sonarEnrich.ts",
   "utf8",
 );
 
-test("Claude analysis extracts products field", () => {
-  assert.match(claudeSource, /products/);
-  assert.match(claudeSource, /ClaudeAnalysisResult/);
+test("Sonar enrichment result includes products field", () => {
+  assert.match(sonarSource, /products:\s*string\[\]/);
+  assert.match(sonarSource, /SonarEnrichResult/);
 });
 
-test("Claude analysis extracts salesChannels field", () => {
-  assert.match(claudeSource, /salesChannels/);
+test("Sonar enrichment result includes salesChannels field", () => {
+  assert.match(sonarSource, /salesChannels:\s*string\[\]/);
 });
 
-test("Claude analysis extracts sellsOnline field", () => {
-  assert.match(claudeSource, /sellsOnline/);
+test("Sonar enrichment result includes sellsOnline field", () => {
+  assert.match(sonarSource, /sellsOnline:\s*boolean/);
 });
 
-test("Claude analysis extracts businessDescription field", () => {
-  assert.match(claudeSource, /businessDescription/);
+test("Sonar enrichment result includes businessDescription field", () => {
+  assert.match(sonarSource, /businessDescription:\s*string/);
 });
 
-test("Claude analysis extracts contactName field", () => {
-  assert.match(claudeSource, /contactName/);
+test("Sonar enrichment result includes contactName field", () => {
+  assert.match(sonarSource, /contactName:\s*string\s*\|\s*null/);
 });
 
-// --- Website scraper extracts emails and social links ---
-
-const scraperSource = fs.readFileSync(
-  "convex/enrichment/websiteScraper.ts",
-  "utf8",
-);
-
-test("website scraper extracts emails from HTML", () => {
-  assert.match(scraperSource, /extractEmails/);
-  assert.match(scraperSource, /EMAIL_REGEX/);
+test("Sonar enrichment result includes contactEmail field", () => {
+  assert.match(sonarSource, /contactEmail:\s*string\s*\|\s*null/);
 });
 
-test("website scraper extracts social links from HTML", () => {
-  assert.match(scraperSource, /extractSocialLinks/);
-  assert.match(scraperSource, /FACEBOOK_REGEX/);
-  assert.match(scraperSource, /INSTAGRAM_REGEX/);
-});
-
-test("website scraper detects platform (Shopify/Square)", () => {
-  assert.match(scraperSource, /detectPlatform/);
-  assert.match(scraperSource, /shopify/);
-  assert.match(scraperSource, /square/);
+test("Sonar enrichment result includes socialLinks field", () => {
+  assert.match(sonarSource, /socialLinks:\s*\{/);
+  assert.match(sonarSource, /facebook:\s*string\s*\|\s*null/);
+  assert.match(sonarSource, /instagram:\s*string\s*\|\s*null/);
 });
 
 // --- Google Places provides phone and website ---

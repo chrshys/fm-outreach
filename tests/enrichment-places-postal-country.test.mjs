@@ -96,7 +96,7 @@ test("countryCode is only filled when empty or overwrite", () => {
 test("postalCode and countryCode patches are in the Google Places section", () => {
   const placesSection = orchestratorSource.slice(
     orchestratorSource.indexOf("// From Google Places"),
-    orchestratorSource.indexOf("// From website scraper"),
+    orchestratorSource.indexOf("// From Sonar"),
   );
   assert.match(placesSection, /patch\.postalCode/);
   assert.match(placesSection, /patch\.countryCode/);

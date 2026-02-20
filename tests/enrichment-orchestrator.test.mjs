@@ -39,6 +39,40 @@ test("EnrichmentSummary has correct fields", () => {
   assert.match(source, /fieldsUpdated:\s*string\[\]/);
 });
 
+// --- Step 0: Unsubscribe block list ---
+
+test("checks unsubscribe block list before enrichment", () => {
+  assert.match(source, /api\.smartlead\.unsubscribe\.isUnsubscribed/);
+  assert.match(source, /lead\.contactEmail/);
+});
+
+test("block list check happens before cooldown check", () => {
+  const blockListPos = source.indexOf("// Step 0:");
+  const cooldownPos = source.indexOf("// Step 1: Check cooldown");
+  assert.ok(blockListPos >= 0, "Step 0 comment should exist");
+  assert.ok(cooldownPos >= 0, "Step 1 comment should exist");
+  assert.ok(blockListPos < cooldownPos, "block list check must come before cooldown check");
+});
+
+test("returns skipped: true when lead is on block list", () => {
+  const blockListBlock = source.slice(
+    source.indexOf("// Step 0: Check if lead"),
+    source.indexOf("// Step 1:"),
+  );
+  assert.match(blockListBlock, /skipped:\s*true/);
+  assert.match(blockListBlock, /sources:\s*\[\]/);
+  assert.match(blockListBlock, /fieldsUpdated:\s*\[\]/);
+});
+
+test("logs enrichment_skipped activity when lead is on block list", () => {
+  const blockListBlock = source.slice(
+    source.indexOf("// Step 0: Check if lead"),
+    source.indexOf("// Step 1:"),
+  );
+  assert.match(blockListBlock, /enrichment_skipped/);
+  assert.match(blockListBlock, /block list/);
+});
+
 // --- Step 1: Cooldown check ---
 
 test("checks cooldown — skips if enriched within 30 days and not forced", () => {
