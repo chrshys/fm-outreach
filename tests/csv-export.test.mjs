@@ -549,3 +549,59 @@ test("handleExportCSV sets isExporting in try/finally", () => {
     "should use try/finally pattern"
   );
 });
+
+test("schema.ts CSV column mapping comment lists all CSV_COLUMNS in order", () => {
+  const schema = fs.readFileSync("convex/schema.ts", "utf8");
+  const csvSource = fs.readFileSync("src/lib/csv-export.ts", "utf8");
+
+  // Extract CSV_COLUMNS from csv-export.ts
+  const columnsMatch = csvSource.match(/CSV_COLUMNS\s*=\s*\[([\s\S]*?)\]\s*as\s*const/);
+  assert.ok(columnsMatch, "should find CSV_COLUMNS array in csv-export.ts");
+  const actualColumns = columnsMatch[1]
+    .match(/"([^"]+)"/g)
+    .map((s) => s.replace(/"/g, ""));
+
+  // Extract column names from the comment table in schema.ts
+  // Lines like: //  name            │ name                         │ displayName
+  const commentColumns = [];
+  const tableLineRegex = /\/\/\s+(\w+)\s+│/g;
+  let match;
+  while ((match = tableLineRegex.exec(schema)) !== null) {
+    const col = match[1];
+    // Skip the header row
+    if (col === "CSV") continue;
+    commentColumns.push(col);
+  }
+
+  assert.deepEqual(
+    commentColumns,
+    actualColumns,
+    "schema.ts comment columns should match CSV_COLUMNS in csv-export.ts"
+  );
+});
+
+test("schema.ts CSV column mapping comment documents correct field mappings", () => {
+  const schema = fs.readFileSync("convex/schema.ts", "utf8");
+
+  // Key mappings that must be documented in the comment
+  const requiredMappings = [
+    ["description", "locationDescription"],
+    ["state", "province"],
+    ["instagram", "socialLinks"],
+    ["facebook", "socialLinks"],
+    ["products", "joined"],
+    ["categories", "structuredProducts"],
+    ["imagePrompt", "imagePrompt"],
+  ];
+
+  for (const [csvCol, schemaRef] of requiredMappings) {
+    // Find the comment line for this CSV column
+    const lineRegex = new RegExp(`//\\s+${csvCol}\\s+│([^│]+)│`);
+    const match = schema.match(lineRegex);
+    assert.ok(match, `comment should document the '${csvCol}' column`);
+    assert.ok(
+      match[1].includes(schemaRef),
+      `'${csvCol}' mapping should reference '${schemaRef}', got: ${match[1].trim()}`
+    );
+  }
+});
