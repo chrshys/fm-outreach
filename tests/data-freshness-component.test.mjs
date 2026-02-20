@@ -67,6 +67,7 @@ test("displays enrichment source labels", () => {
   assert.match(source, /Hunter\.io/);
   assert.match(source, /Claude/);
   assert.match(source, /Website/);
+  assert.match(source, /Sonar Web Search/);
 });
 
 test("imports latestBySource from shared enrichment lib", () => {

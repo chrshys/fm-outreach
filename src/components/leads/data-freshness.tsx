@@ -17,6 +17,7 @@ const SOURCE_LABELS: Record<string, string> = {
   hunter: "Hunter.io",
   claude_analysis: "Claude",
   social_discovery: "Social Discovery",
+  sonar_enrichment: "Sonar Web Search",
 }
 
 type DataFreshnessProps = {
