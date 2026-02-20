@@ -14,6 +14,8 @@ export type ApifyWebsiteResult = {
 const APIFY_RUN_URL =
   "https://api.apify.com/v2/acts/betterdevsscrape~contact-details-extractor/run-sync-get-dataset-items";
 
+const APIFY_TIMEOUT_MS = 30_000;
+
 const FACEBOOK_REGEX =
   /https?:\/\/(?:www\.)?facebook\.com\/[a-zA-Z0-9._-]+/i;
 
@@ -57,17 +59,32 @@ export const scrapeContacts = action({
       return null;
     }
 
-    const response = await fetch(APIFY_RUN_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        startUrls: [{ url: args.url }],
-        maxDepth: 0,
-      }),
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), APIFY_TIMEOUT_MS);
+
+    let response: Response;
+    try {
+      response = await fetch(APIFY_RUN_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          startUrls: [{ url: args.url }],
+          maxDepth: 0,
+        }),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      clearTimeout(timeout);
+      if (err instanceof DOMException && err.name === "AbortError") {
+        throw new Error("Apify request timed out after 30s");
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (response.status === 429) {
       throw new Error("Apify rate limit exceeded (429)");

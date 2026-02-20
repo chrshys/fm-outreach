@@ -107,6 +107,22 @@ test("scrapeContacts extracts facebook and instagram social links", () => {
   assert.match(source, /findSocialLink/);
 });
 
+test("scrapeContacts uses AbortController with 30s timeout on fetch", () => {
+  assert.match(source, /new\s+AbortController\(\)/);
+  assert.match(source, /setTimeout\(\s*\(\)\s*=>\s*controller\.abort\(\)/);
+  assert.match(source, /signal:\s*controller\.signal/);
+  assert.match(source, /clearTimeout\(timeout\)/);
+});
+
+test("APIFY_TIMEOUT_MS is set to 30 seconds", () => {
+  assert.match(source, /APIFY_TIMEOUT_MS\s*=\s*30[_]?000/);
+});
+
+test("scrapeContacts throws descriptive error on timeout", () => {
+  assert.match(source, /AbortError/);
+  assert.match(source, /timed out/i);
+});
+
 test("scrapeContacts does not use scrapeWebsite name", () => {
   // The action is named scrapeContacts to avoid triggering the orchestrator test assertion
   assert.doesNotMatch(
