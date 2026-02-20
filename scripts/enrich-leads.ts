@@ -174,6 +174,7 @@ async function main(): Promise<void> {
     totalSkipped += result.skipped;
 
     for (const r of result.results) {
+      const leadName = batch.find((l) => l._id === r.leadId)?.name ?? r.leadId;
       if (r.status === "success") {
         if (r.summary.emailFound) {
           totalEmailsFound++;
@@ -181,8 +182,21 @@ async function main(): Promise<void> {
         if (r.summary.status === "no_email" && !r.summary.skipped) {
           totalNoEmail++;
         }
+
+        // Per-lead detail output
+        if (r.summary.skipped) {
+          console.log(`  [skip] ${leadName}`);
+        } else {
+          const sources = r.summary.sources.join(", ") || "none";
+          const fields = r.summary.fieldsUpdated.join(", ") || "none";
+          const emailTag = r.summary.emailFound ? " [email found]" : "";
+          console.log(`  [done] ${leadName}${emailTag}`);
+          console.log(`         sources: ${sources}`);
+          console.log(`         updated: ${fields}`);
+        }
       } else {
         errors.push({ leadId: r.leadId, error: r.error });
+        console.log(`  [fail] ${leadName}: ${r.error}`);
       }
     }
   }

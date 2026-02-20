@@ -140,3 +140,36 @@ test("script handles main promise rejection", () => {
   assert.match(source, /main\(\)\.catch/);
   assert.match(source, /Lead enrichment failed/);
 });
+
+// --- Per-lead detail output ---
+
+test("script resolves lead name from batch for each result", () => {
+  assert.match(source, /batch\.find\(\(l\)\s*=>\s*l\._id\s*===\s*r\.leadId\)/);
+});
+
+test("script prints [done] tag with lead name for successful enrichments", () => {
+  assert.match(source, /\[done\]/);
+  assert.match(source, /leadName/);
+});
+
+test("script prints [skip] tag for skipped leads", () => {
+  assert.match(source, /\[skip\]/);
+});
+
+test("script prints [fail] tag for errored leads", () => {
+  assert.match(source, /\[fail\]/);
+});
+
+test("script prints sources used per lead", () => {
+  assert.match(source, /r\.summary\.sources\.join/);
+  assert.match(source, /sources:/);
+});
+
+test("script prints fields updated per lead", () => {
+  assert.match(source, /r\.summary\.fieldsUpdated\.join/);
+  assert.match(source, /updated:/);
+});
+
+test("script shows email found tag when email was discovered", () => {
+  assert.match(source, /r\.summary\.emailFound\s*\?\s*".*email found.*"/);
+});
