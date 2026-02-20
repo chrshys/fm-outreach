@@ -25,6 +25,7 @@ export const enrichLead = internalAction({
     force: v.optional(v.boolean()),
     overwrite: v.optional(v.boolean()),
     useSonarPro: v.optional(v.boolean()),
+    useApify: v.optional(v.boolean()),
   },
   handler: async (ctx, args): Promise<EnrichmentSummary> => {
     // @ts-ignore -- Convex generated API types can trigger TS2589 in large modules

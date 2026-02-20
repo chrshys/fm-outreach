@@ -18,11 +18,12 @@ test("enrichLead is exported as an internalAction", () => {
   assert.match(source, /export\s+const\s+enrichLead\s*=\s*internalAction\(/);
 });
 
-test("action accepts leadId and optional force, overwrite, useSonarPro args", () => {
+test("action accepts leadId and optional force, overwrite, useSonarPro, useApify args", () => {
   assert.match(source, /leadId:\s*v\.id\("leads"\)/);
   assert.match(source, /force:\s*v\.optional\(v\.boolean\(\)\)/);
   assert.match(source, /overwrite:\s*v\.optional\(v\.boolean\(\)\)/);
   assert.match(source, /useSonarPro:\s*v\.optional\(v\.boolean\(\)\)/);
+  assert.match(source, /useApify:\s*v\.optional\(v\.boolean\(\)\)/);
 });
 
 test("action returns EnrichmentSummary type", () => {
