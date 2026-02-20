@@ -57,6 +57,15 @@ test("handleEnrichCell calls enrichCellLeads with cellId from persistedCell._id"
 })
 
 // ============================================================
+// Passes useApify: true to enrichCellLeads
+// ============================================================
+
+test("handleEnrichCell passes useApify: true to enrichCellLeads", () => {
+  const fnBody = source.slice(source.indexOf("handleEnrichCell"))
+  assert.match(fnBody, /enrichCellLeads\(\{[\s\S]*?useApify:\s*true/)
+})
+
+// ============================================================
 // Sets enrichingLeadIds from result.leadIds
 // ============================================================
 

@@ -55,6 +55,10 @@ test("discovery panel calls enrichCellLeads with cellId", () => {
   assert.match(panelSource, /enrichCellLeads\(\s*\{[\s\S]*?cellId:/);
 });
 
+test("discovery panel passes useApify: true to enrichCellLeads", () => {
+  assert.match(panelSource, /enrichCellLeads\(\s*\{[\s\S]*?useApify:\s*true/);
+});
+
 // ============================================================
 // 2. enrichCellLeads → batchEnrichLeads call chain
 // ============================================================
@@ -76,6 +80,17 @@ test("enrichCellLeads threads useSonarPro to batchEnrichLeads", () => {
     batchPublicSource.indexOf("export const batchEnrich"),
   );
   assert.match(handlerBlock, /useSonarPro:\s*args\.useSonarPro/);
+});
+
+test("enrichCellLeads threads useApify to batchEnrichLeads", () => {
+  const handlerStart = batchPublicSource.indexOf(
+    "export const enrichCellLeads",
+  );
+  const handlerBlock = batchPublicSource.slice(
+    handlerStart,
+    batchPublicSource.indexOf("export const batchEnrich"),
+  );
+  assert.match(handlerBlock, /useApify:\s*args\.useApify/);
 });
 
 // ============================================================

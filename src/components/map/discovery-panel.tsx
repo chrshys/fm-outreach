@@ -203,6 +203,7 @@ export function DiscoveryPanel({ globalGridId, cells, selectedCellId, selectedVi
     try {
       const result = await enrichCellLeads({
         cellId: persistedCell._id as Id<"discoveryCells">,
+        useApify: true,
       })
       const { succeeded, failed, skipped } = result as {
         leadIds: string[]
