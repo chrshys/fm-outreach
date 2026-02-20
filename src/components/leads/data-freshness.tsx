@@ -27,6 +27,7 @@ type DataFreshnessProps = {
 }
 
 export function DataFreshness({ leadId, enrichedAt, enrichmentSources }: DataFreshnessProps) {
+  // @ts-expect-error TS2589 — Convex generated API types trigger deep type instantiation
   const batchEnrich = useAction(api.enrichment.batchEnrichPublic.batchEnrich)
   const [isEnriching, setIsEnriching] = useState(false)
   const enrichmentSinceRef = useRef(0)
