@@ -17,15 +17,6 @@ export type EnrichmentSummary = {
   fieldsUpdated: string[];
 };
 
-function extractDomain(url: string): string | null {
-  try {
-    const parsed = new URL(url);
-    return parsed.hostname.replace(/^www\./, "");
-  } catch {
-    return null;
-  }
-}
-
 export const enrichLead = internalAction({
   args: {
     leadId: v.id("leads"),
@@ -101,7 +92,6 @@ export const enrichLead = internalAction({
 
     const sources: Array<{ source: string; detail?: string; fetchedAt: number }> = [];
     const fieldsUpdated: string[] = [];
-    let websiteHtml: string | undefined;
     let websiteUrl = lead.website;
 
     // Step 3: Google Places — search if no placeId, or fetch details if placeId exists but phone/website missing
@@ -138,119 +128,37 @@ export const enrichLead = internalAction({
       }
     }
 
-    // Step 4: Website scraper — run if website exists
-    let scraperResult: WebsiteScraperResult | null = null;
-    if (websiteUrl) {
-      try {
-        scraperResult = await ctx.runAction(
-          api.enrichment.websiteScraper.scrapeWebsite,
-          { url: websiteUrl },
-        );
-      } catch {
-        // Scraper failed — continue pipeline
-      }
-
-      if (scraperResult) {
-        sources.push({
-          source: "website_scraper",
-          detail: websiteUrl,
-          fetchedAt: Date.now(),
-        });
-      }
+    // Step 4: Sonar enrichment — web search for business information
+    let sonarResult: SonarEnrichResult | null = null;
+    try {
+      sonarResult = await ctx.runAction(
+        api.enrichment.sonarEnrich.enrichWithSonar,
+        {
+          name: lead.name,
+          address: lead.address,
+          city: lead.city,
+          province: lead.province,
+          type: lead.type,
+          website: websiteUrl ?? undefined,
+          useSonarPro: args.useSonarPro,
+        },
+      );
+    } catch {
+      // Sonar enrichment failed — continue pipeline
     }
 
-    // Step 5: Hunter.io — run if website domain found and no email yet
-    let hunterResult: HunterResult | null = null;
-    const domain = websiteUrl ? extractDomain(websiteUrl) : null;
-    const hasEmail = !!(lead.contactEmail || (scraperResult && scraperResult.emails.length > 0));
-
-    if (domain && !hasEmail) {
-      let hunterError = false;
-      try {
-        hunterResult = await ctx.runAction(
-          api.enrichment.hunter.searchDomain,
-          { domain },
-        );
-      } catch {
-        hunterError = true;
-        // Log Hunter error
-        await ctx.runMutation(internal.enrichment.orchestratorHelpers.logActivity, {
-          leadId: args.leadId,
-          type: "enrichment_source_added",
-          description: `Hunter.io error for ${domain}`,
-          metadata: {
-            source: "hunter",
-            domain,
-            emailsFound: 0,
-            hit: false,
-            error: true,
-          },
-        });
-      }
-
-      if (hunterResult && hunterResult.emails.length > 0) {
-        sources.push({
-          source: "hunter",
-          detail: domain,
-          fetchedAt: Date.now(),
-        });
-      }
-
-      // Log Hunter attempt (hit or miss) — skip if already logged as error
-      if (!hunterError) {
-        await ctx.runMutation(internal.enrichment.orchestratorHelpers.logActivity, {
-          leadId: args.leadId,
-          type: "enrichment_source_added",
-          description: hunterResult && hunterResult.emails.length > 0
-            ? `Hunter.io found ${hunterResult.emails.length} email(s) for ${domain}`
-            : `Hunter.io returned no emails for ${domain}`,
-          metadata: {
-            source: "hunter",
-            domain,
-            emailsFound: hunterResult?.emails.length ?? 0,
-            hit: !!(hunterResult && hunterResult.emails.length > 0),
-          },
-        });
-      }
-    }
-
-    // Step 6: Claude analysis — reuse raw HTML from scraper result
-    let claudeResult: ClaudeAnalysisResult | null = null;
-    if (scraperResult) {
-      websiteHtml = scraperResult.rawHtml;
-
-      if (websiteHtml) {
-        try {
-          claudeResult = await ctx.runAction(
-            api.enrichment.claudeAnalysis.analyzeWithClaude,
-            { content: websiteHtml },
-          );
-        } catch {
-          // Claude analysis failed — continue pipeline
-        }
-
-        if (claudeResult) {
-          sources.push({
-            source: "claude_analysis",
-            fetchedAt: Date.now(),
-          });
-        }
-      }
-    }
-
-    // Step 7: Social discovery
-    const socialResult = discoverSocialLinks({
-      websiteHtml,
-      googlePlacesWebsite: placesResult?.website ?? undefined,
-    });
-    if (socialResult.facebook || socialResult.instagram) {
-      sources.push({
-        source: "social_discovery",
+    if (sonarResult) {
+      const sourceEntry: { source: string; fetchedAt: number; detail?: string } = {
+        source: "sonar_enrichment",
         fetchedAt: Date.now(),
-      });
+      };
+      if (sonarResult.citations.length > 0) {
+        sourceEntry.detail = sonarResult.citations.join(", ");
+      }
+      sources.push(sourceEntry);
     }
 
-    // Step 8: Merge results — only overwrite empty fields unless forced
+    // Merge results — only overwrite empty fields unless forced
     const patch: Record<string, unknown> = {};
 
     // From Google Places
@@ -277,33 +185,13 @@ export const enrichLead = internalAction({
       }
     }
 
-    // From website scraper — pick best email
+    // From Sonar — email
     let bestEmail: string | null = null;
     let emailSource: string | null = null;
 
-    if (scraperResult && scraperResult.emails.length > 0) {
-      bestEmail = scraperResult.emails[0];
-      emailSource = `website - ${websiteUrl} - ${new Date().toISOString().slice(0, 10)}`;
-    }
-
-    // From Hunter.io — use highest confidence email if no scraper email
-    if (!bestEmail && hunterResult && hunterResult.emails.length > 0) {
-      const sorted = [...hunterResult.emails].sort(
-        (a, b) => b.confidence - a.confidence,
-      );
-      bestEmail = sorted[0].email;
-      emailSource = `hunter - ${domain} - ${new Date().toISOString().slice(0, 10)}`;
-
-      // Also grab contact name from Hunter if available
-      if ((!lead.contactName || overwrite) && sorted[0].firstName) {
-        const name = [sorted[0].firstName, sorted[0].lastName]
-          .filter(Boolean)
-          .join(" ");
-        if (name) {
-          patch.contactName = name;
-          fieldsUpdated.push("contactName");
-        }
-      }
+    if (sonarResult?.contactEmail) {
+      bestEmail = sonarResult.contactEmail;
+      emailSource = `sonar - ${lead.name} - ${new Date().toISOString().slice(0, 10)}`;
     }
 
     if (bestEmail && (!lead.contactEmail || overwrite)) {
@@ -311,80 +199,91 @@ export const enrichLead = internalAction({
       fieldsUpdated.push("contactEmail");
     }
 
-    // From Claude analysis
-    if (claudeResult) {
+    // From Sonar — contact name
+    if (sonarResult?.contactName && (!lead.contactName || overwrite)) {
+      patch.contactName = sonarResult.contactName;
+      fieldsUpdated.push("contactName");
+    }
+
+    // From Sonar — contact phone (fallback if Google Places didn't provide one)
+    if (sonarResult?.contactPhone && !patch.contactPhone && (!lead.contactPhone || overwrite)) {
+      patch.contactPhone = sonarResult.contactPhone;
+      fieldsUpdated.push("contactPhone");
+    }
+
+    // From Sonar — website (fallback if Google Places didn't provide one)
+    if (sonarResult?.website && !patch.website && (!lead.website || overwrite)) {
+      patch.website = sonarResult.website;
+      fieldsUpdated.push("website");
+    }
+
+    // From Sonar — products, sales channels, description
+    if (sonarResult) {
       if (
         (!lead.products || lead.products.length === 0 || overwrite) &&
-        claudeResult.products.length > 0
+        sonarResult.products.length > 0
       ) {
-        patch.products = claudeResult.products;
+        patch.products = sonarResult.products;
         fieldsUpdated.push("products");
       }
       if (
         (!lead.salesChannels || lead.salesChannels.length === 0 || overwrite) &&
-        claudeResult.salesChannels.length > 0
+        sonarResult.salesChannels.length > 0
       ) {
-        patch.salesChannels = claudeResult.salesChannels;
+        patch.salesChannels = sonarResult.salesChannels;
         fieldsUpdated.push("salesChannels");
       }
-      if ((lead.sellsOnline === undefined || overwrite) && claudeResult.sellsOnline !== undefined) {
-        patch.sellsOnline = claudeResult.sellsOnline;
+      if ((lead.sellsOnline === undefined || overwrite) && sonarResult.sellsOnline !== undefined) {
+        patch.sellsOnline = sonarResult.sellsOnline;
         fieldsUpdated.push("sellsOnline");
       }
-      if ((!lead.farmDescription || overwrite) && claudeResult.businessDescription) {
-        patch.farmDescription = claudeResult.businessDescription;
+      if ((!lead.farmDescription || overwrite) && sonarResult.businessDescription) {
+        patch.farmDescription = sonarResult.businessDescription;
         fieldsUpdated.push("farmDescription");
       }
-      if ((!lead.contactName || overwrite) && claudeResult.contactName) {
-        // Only set if not already set by Hunter
-        if (!patch.contactName) {
-          patch.contactName = claudeResult.contactName;
-          fieldsUpdated.push("contactName");
-        }
+    }
+
+    // From Sonar — social links
+    if (sonarResult) {
+      const existingSocial = lead.socialLinks ?? {};
+      const newSocial: { instagram?: string; facebook?: string } = {};
+      let socialUpdated = false;
+
+      if (sonarResult.socialLinks.facebook && (!existingSocial.facebook || overwrite)) {
+        newSocial.facebook = sonarResult.socialLinks.facebook;
+        socialUpdated = true;
+      }
+      if (sonarResult.socialLinks.instagram && (!existingSocial.instagram || overwrite)) {
+        newSocial.instagram = sonarResult.socialLinks.instagram;
+        socialUpdated = true;
+      }
+      if (socialUpdated) {
+        patch.socialLinks = {
+          ...existingSocial,
+          ...newSocial,
+        };
+        fieldsUpdated.push("socialLinks");
       }
     }
 
-    // From social discovery
-    const existingSocial = lead.socialLinks ?? {};
-    const newSocial: { instagram?: string; facebook?: string } = {};
-    let socialUpdated = false;
-
-    if (socialResult.facebook && (!existingSocial.facebook || overwrite)) {
-      newSocial.facebook = socialResult.facebook;
-      socialUpdated = true;
-    }
-    if (socialResult.instagram && (!existingSocial.instagram || overwrite)) {
-      newSocial.instagram = socialResult.instagram;
-      socialUpdated = true;
-    }
-    if (socialUpdated) {
-      patch.socialLinks = {
-        ...existingSocial,
-        ...newSocial,
-      };
-      fieldsUpdated.push("socialLinks");
-    }
-
-    // From Claude analysis — structured data
-    if (claudeResult) {
+    // From Sonar — structured data
+    if (sonarResult) {
       const existingData = (lead.enrichmentData as Record<string, unknown> | undefined) ?? {};
-      const hasStructuredProducts =
-        claudeResult.structuredProducts && claudeResult.structuredProducts.length > 0;
+      const hasStructuredProducts = sonarResult.structuredProducts.length > 0;
       const hasStructuredDescription =
-        claudeResult.structuredDescription &&
-        (claudeResult.structuredDescription.specialties.length > 0 ||
-          claudeResult.structuredDescription.certifications.length > 0 ||
-          claudeResult.structuredDescription.summary.length > 0);
+        sonarResult.structuredDescription.specialties.length > 0 ||
+        sonarResult.structuredDescription.certifications.length > 0 ||
+        sonarResult.structuredDescription.summary.length > 0;
 
       if (hasStructuredProducts || hasStructuredDescription) {
         patch.enrichmentData = {
           ...existingData,
           ...(patch.enrichmentData as Record<string, unknown> | undefined),
           ...(hasStructuredProducts
-            ? { structuredProducts: claudeResult.structuredProducts }
+            ? { structuredProducts: sonarResult.structuredProducts }
             : {}),
           ...(hasStructuredDescription
-            ? { structuredDescription: claudeResult.structuredDescription }
+            ? { structuredDescription: sonarResult.structuredDescription }
             : {}),
         };
         if (hasStructuredProducts) {
@@ -396,17 +295,7 @@ export const enrichLead = internalAction({
       }
     }
 
-    // From website scraper — platform detection
-    if (scraperResult?.platform && (!lead.enrichmentData?.platform || overwrite)) {
-      patch.enrichmentData = {
-        ...(lead.enrichmentData as Record<string, unknown> | undefined),
-        ...(patch.enrichmentData as Record<string, unknown> | undefined),
-        platform: scraperResult.platform,
-      };
-      fieldsUpdated.push("enrichmentData.platform");
-    }
-
-    // Step 9: Set enrichment metadata
+    // Step 5: Set enrichment metadata
     const now = Date.now();
     patch.enrichedAt = now;
     patch.enrichmentVersion = ENRICHMENT_VERSION;
@@ -415,7 +304,7 @@ export const enrichLead = internalAction({
       ...sources,
     ];
 
-    // Step 10: Set status
+    // Step 6: Set status
     const emailFound = !!(patch.contactEmail || lead.contactEmail);
     const newStatus = emailFound ? "enriched" : "no_email";
     // Only update status if it's new_lead or no_email (don't regress further-along statuses)
@@ -424,7 +313,7 @@ export const enrichLead = internalAction({
       patch.status = newStatus;
     }
 
-    // Step 11: Set consentSource
+    // Step 7: Set consentSource
     if (emailSource && (!lead.consentSource || overwrite)) {
       patch.consentSource = emailSource;
       fieldsUpdated.push("consentSource");
@@ -436,7 +325,7 @@ export const enrichLead = internalAction({
       ...patch,
     });
 
-    // Step 12: Log enrichment finished
+    // Step 8: Log enrichment finished
     await ctx.runMutation(internal.enrichment.orchestratorHelpers.logActivity, {
       leadId: args.leadId,
       type: "enrichment_finished",

@@ -84,75 +84,44 @@ test("adds google_places to sources when successful", () => {
   assert.match(source, /source:\s*"google_places"/);
 });
 
-// --- Step 4: Website scraper ---
+// --- Step 4: Sonar enrichment ---
 
-test("runs website scraper if website URL exists", () => {
-  assert.match(source, /if\s*\(websiteUrl\)/);
-  assert.match(source, /scrapeWebsite/);
-  assert.match(source, /url:\s*websiteUrl/);
+test("calls Sonar enrichment action with lead details", () => {
+  assert.match(source, /api\.enrichment\.sonarEnrich\.enrichWithSonar/);
+  assert.match(source, /name:\s*lead\.name/);
+  assert.match(source, /address:\s*lead\.address/);
+  assert.match(source, /city:\s*lead\.city/);
+  assert.match(source, /province:\s*lead\.province/);
+  assert.match(source, /type:\s*lead\.type/);
+  assert.match(source, /website:\s*websiteUrl\s*\?\?\s*undefined/);
+  assert.match(source, /useSonarPro:\s*args\.useSonarPro/);
 });
 
-test("adds website_scraper to sources when successful", () => {
-  assert.match(source, /source:\s*"website_scraper"/);
+test("stores sonarResult as SonarEnrichResult", () => {
+  assert.match(source, /let\s+sonarResult:\s*SonarEnrichResult\s*\|\s*null\s*=\s*null/);
 });
 
-// --- Step 5: Hunter.io ---
-
-test("runs Hunter.io if domain found and no email yet", () => {
-  assert.match(source, /extractDomain/);
-  assert.match(source, /domain\s*&&\s*!hasEmail/);
-  assert.match(source, /searchDomain/);
+test("adds sonar_enrichment to sources when successful", () => {
+  assert.match(source, /source:\s*"sonar_enrichment"/);
 });
 
-test("extracts domain from URL correctly", () => {
-  assert.match(source, /function\s+extractDomain\(/);
-  assert.match(source, /new\s+URL\(url\)/);
-  assert.match(source, /hostname/);
-  assert.match(source, /replace\(\/\^www\\\.\//);
+test("stores citations in source detail when available", () => {
+  assert.match(source, /sonarResult\.citations\.length\s*>\s*0/);
+  assert.match(source, /sourceEntry\.detail\s*=\s*sonarResult\.citations\.join/);
 });
 
-test("skips Hunter if scraper already found email", () => {
-  assert.match(source, /lead\.contactEmail\s*\|\|.*scraperResult.*emails\.length\s*>\s*0/);
+test("catches and continues on Sonar enrichment failure", () => {
+  const sonarBlock = source.slice(
+    source.indexOf("// Step 4: Sonar enrichment"),
+    source.indexOf("// Merge results"),
+  );
+  assert.match(sonarBlock, /try\s*\{/);
+  assert.match(sonarBlock, /catch\s*\{/);
 });
 
-test("adds hunter to sources when emails found", () => {
-  assert.match(source, /source:\s*"hunter"/);
-});
-
-// --- Step 6: Claude analysis ---
-
-test("runs Claude analysis if website content was scraped", () => {
-  assert.match(source, /if\s*\(scraperResult\)/);
-  assert.match(source, /analyzeWithClaude/);
-  assert.match(source, /content:\s*websiteHtml/);
-});
-
-test("reuses raw HTML from scraper result for Claude analysis and social discovery", () => {
-  assert.match(source, /scraperResult\.rawHtml/);
-  assert.match(source, /websiteHtml\s*=\s*scraperResult\.rawHtml/);
-});
-
-test("adds claude_analysis to sources when successful", () => {
-  assert.match(source, /source:\s*"claude_analysis"/);
-});
-
-// --- Step 7: Social discovery ---
-
-test("runs social discovery with website HTML and Google Places website", () => {
-  assert.match(source, /discoverSocialLinks\(/);
-  assert.match(source, /websiteHtml/);
-  assert.match(source, /googlePlacesWebsite:\s*placesResult\?\.website/);
-});
-
-test("adds social_discovery to sources when links found", () => {
-  assert.match(source, /source:\s*"social_discovery"/);
-  assert.match(source, /socialResult\.facebook\s*\|\|\s*socialResult\.instagram/);
-});
-
-// --- Step 8: Merge results ---
+// --- Merge results ---
 
 test("only overwrites empty fields unless forced", () => {
-  // Check that various field assignments guard on empty + overwrite
   assert.match(source, /!lead\.contactPhone\s*\|\|\s*overwrite/);
   assert.match(source, /!lead\.website\s*\|\|\s*overwrite/);
   assert.match(source, /!lead\.contactEmail\s*\|\|\s*overwrite/);
@@ -160,17 +129,42 @@ test("only overwrites empty fields unless forced", () => {
   assert.match(source, /!lead\.farmDescription\s*\|\|\s*overwrite/);
 });
 
-test("picks website scraper email first, then Hunter highest confidence", () => {
-  assert.match(source, /scraperResult\.emails\[0\]/);
-  assert.match(source, /\.sort\(/);
-  assert.match(source, /b\.confidence\s*-\s*a\.confidence/);
-  assert.match(source, /sorted\[0\]\.email/);
+test("merges email from sonarResult", () => {
+  assert.match(source, /sonarResult\?\.contactEmail/);
+  assert.match(source, /bestEmail\s*=\s*sonarResult\.contactEmail/);
 });
 
-test("merges social links preserving existing values", () => {
+test("merges contact name from sonarResult", () => {
+  assert.match(source, /sonarResult\?\.contactName/);
+  assert.match(source, /patch\.contactName\s*=\s*sonarResult\.contactName/);
+});
+
+test("merges contact phone from sonarResult as fallback", () => {
+  assert.match(source, /sonarResult\?\.contactPhone\s*&&\s*!patch\.contactPhone/);
+});
+
+test("merges website from sonarResult as fallback", () => {
+  assert.match(source, /sonarResult\?\.website\s*&&\s*!patch\.website/);
+});
+
+test("merges products from sonarResult", () => {
+  assert.match(source, /sonarResult\.products\.length\s*>\s*0/);
+  assert.match(source, /patch\.products\s*=\s*sonarResult\.products/);
+});
+
+test("merges social links from sonarResult preserving existing values", () => {
   assert.match(source, /existingSocial\s*=\s*lead\.socialLinks\s*\?\?\s*\{\}/);
+  assert.match(source, /sonarResult\.socialLinks\.facebook/);
+  assert.match(source, /sonarResult\.socialLinks\.instagram/);
   assert.match(source, /\.\.\.existingSocial/);
   assert.match(source, /\.\.\.newSocial/);
+});
+
+test("merges structured data from sonarResult", () => {
+  assert.match(source, /sonarResult\.structuredProducts\.length\s*>\s*0/);
+  assert.match(source, /sonarResult\.structuredDescription\.specialties\.length\s*>\s*0/);
+  assert.match(source, /structuredProducts:\s*sonarResult\.structuredProducts/);
+  assert.match(source, /structuredDescription:\s*sonarResult\.structuredDescription/);
 });
 
 test("tracks fieldsUpdated for each modified field", () => {
@@ -180,7 +174,7 @@ test("tracks fieldsUpdated for each modified field", () => {
   assert.match(source, /fieldsUpdated\.push\("socialLinks"\)/);
 });
 
-// --- Step 9: Enrichment metadata ---
+// --- Step 5: Enrichment metadata ---
 
 test("sets enrichedAt timestamp", () => {
   assert.match(source, /patch\.enrichedAt\s*=\s*now/);
@@ -201,7 +195,7 @@ test("appends to enrichmentSources array", () => {
   assert.match(source, /patch\.enrichmentSources/);
 });
 
-// --- Step 10: Status ---
+// --- Step 6: Status ---
 
 test("sets status to enriched if email found, no_email otherwise", () => {
   assert.match(source, /emailFound\s*\?\s*"enriched"\s*:\s*"no_email"/);
@@ -214,21 +208,17 @@ test("only updates status for progressable statuses unless forced", () => {
   assert.match(source, /progressableStatuses\.has\(lead\.status\)\s*\|\|\s*overwrite/);
 });
 
-// --- Step 11: Consent source ---
+// --- Step 7: Consent source ---
 
 test("sets consentSource documenting where email was found", () => {
   assert.match(source, /consentSource/);
   assert.match(source, /emailSource/);
-  // consentSource format: "source - detail - YYYY-MM-DD" (matches CASL spec)
-  assert.match(source, /website - /);
-  assert.match(source, /hunter - /);
+  assert.match(source, /sonar - /);
   assert.match(source, /toISOString\(\)\.slice\(0,\s*10\)/);
 });
 
 test("only sets consentSource when email is found (emailSource is non-null)", () => {
-  // emailSource is only assigned when an email is actually found
   assert.match(source, /let emailSource:\s*string\s*\|\s*null\s*=\s*null/);
-  // consentSource is only set when emailSource is truthy
   assert.match(source, /if\s*\(emailSource\s*&&/);
 });
 
@@ -236,7 +226,7 @@ test("does not overwrite existing consentSource unless forced", () => {
   assert.match(source, /!lead\.consentSource\s*\|\|\s*overwrite/);
 });
 
-// --- Step 12: Log finished ---
+// --- Step 8: Log finished ---
 
 test("logs enrichment_finished activity with summary", () => {
   assert.match(source, /enrichment_finished/);
@@ -247,7 +237,6 @@ test("logs enrichment_finished activity with summary", () => {
 });
 
 test("finished activity metadata includes sources, fieldsUpdated, emailFound, status", () => {
-  // Match the metadata object in the enrichment_finished call
   assert.match(source, /sources:\s*sources\.map/);
   assert.match(source, /fieldsUpdated/);
   assert.match(source, /emailFound/);
@@ -263,33 +252,6 @@ test("catches and continues on Google Places failure", () => {
   );
   assert.match(placesBlock, /try\s*\{/);
   assert.match(placesBlock, /catch\s*\{/);
-});
-
-test("catches and continues on website scraper failure", () => {
-  const scraperBlock = source.slice(
-    source.indexOf("// Step 4: Website scraper"),
-    source.indexOf("// Step 5:"),
-  );
-  assert.match(scraperBlock, /try\s*\{/);
-  assert.match(scraperBlock, /catch\s*\{/);
-});
-
-test("catches and continues on Hunter failure", () => {
-  const hunterBlock = source.slice(
-    source.indexOf("// Step 5: Hunter.io"),
-    source.indexOf("// Step 6:"),
-  );
-  assert.match(hunterBlock, /try\s*\{/);
-  assert.match(hunterBlock, /catch\s*\{/);
-});
-
-test("catches and continues on Claude analysis failure", () => {
-  const claudeBlock = source.slice(
-    source.indexOf("// Step 6: Claude analysis"),
-    source.indexOf("// Step 7:"),
-  );
-  assert.match(claudeBlock, /try\s*\{/);
-  assert.match(claudeBlock, /catch\s*\{/);
 });
 
 // --- Lead validation ---
@@ -324,6 +286,14 @@ test("does not import removed enrichment modules", () => {
   assert.doesNotMatch(source, /import.*HunterResult.*from.*hunter/);
   assert.doesNotMatch(source, /import.*ClaudeAnalysisResult.*from.*claudeAnalysis/);
   assert.doesNotMatch(source, /import.*discoverSocialLinks.*from.*socialDiscovery/);
+});
+
+test("does not reference removed enrichment steps", () => {
+  assert.doesNotMatch(source, /scrapeWebsite/);
+  assert.doesNotMatch(source, /searchDomain/);
+  assert.doesNotMatch(source, /analyzeWithClaude/);
+  assert.doesNotMatch(source, /discoverSocialLinks/);
+  assert.doesNotMatch(source, /extractDomain/);
 });
 
 test("imports internalAction from generated server", () => {

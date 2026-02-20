@@ -58,11 +58,11 @@ test("lead detail page renders DataFreshness in a card", () => {
   assert.match(leadDetailSource, /enrichedAt=\{lead\.enrichedAt\}/);
 });
 
-// --- Pipeline: website triggers scraping ---
+// --- Pipeline: Sonar enrichment ---
 
-test("orchestrator scrapes website when URL exists", () => {
-  assert.match(orchestratorSource, /if\s*\(websiteUrl\)/);
-  assert.match(orchestratorSource, /scrapeWebsite/);
+test("orchestrator calls Sonar enrichment with lead details", () => {
+  assert.match(orchestratorSource, /api\.enrichment\.sonarEnrich\.enrichWithSonar/);
+  assert.match(orchestratorSource, /name:\s*lead\.name/);
 });
 
 // --- Pipeline: phone is filled from Google Places ---
@@ -76,10 +76,10 @@ test("phone is only filled when empty or forced", () => {
   assert.match(orchestratorSource, /!lead\.contactPhone\s*\|\|\s*overwrite.*placesResult\.phone/s);
 });
 
-// --- Pipeline: products are filled from Claude analysis ---
+// --- Pipeline: products are filled from Sonar ---
 
-test("orchestrator fills products from Claude analysis", () => {
-  assert.match(orchestratorSource, /patch\.products\s*=\s*claudeResult\.products/);
+test("orchestrator fills products from Sonar result", () => {
+  assert.match(orchestratorSource, /patch\.products\s*=\s*sonarResult\.products/);
   assert.match(orchestratorSource, /fieldsUpdated\.push\("products"\)/);
 });
 
@@ -87,49 +87,39 @@ test("products are only filled when empty or forced", () => {
   assert.match(orchestratorSource, /!lead\.products\s*\|\|\s*lead\.products\.length\s*===\s*0\s*\|\|\s*overwrite/);
 });
 
-// --- Pipeline: salesChannels are filled from Claude analysis ---
+// --- Pipeline: salesChannels are filled from Sonar ---
 
-test("orchestrator fills salesChannels from Claude analysis", () => {
-  assert.match(orchestratorSource, /patch\.salesChannels\s*=\s*claudeResult\.salesChannels/);
+test("orchestrator fills salesChannels from Sonar result", () => {
+  assert.match(orchestratorSource, /patch\.salesChannels\s*=\s*sonarResult\.salesChannels/);
   assert.match(orchestratorSource, /fieldsUpdated\.push\("salesChannels"\)/);
 });
 
-// --- Pipeline: sellsOnline is filled from Claude analysis ---
+// --- Pipeline: sellsOnline is filled from Sonar ---
 
-test("orchestrator fills sellsOnline from Claude analysis", () => {
-  assert.match(orchestratorSource, /patch\.sellsOnline\s*=\s*claudeResult\.sellsOnline/);
+test("orchestrator fills sellsOnline from Sonar result", () => {
+  assert.match(orchestratorSource, /patch\.sellsOnline\s*=\s*sonarResult\.sellsOnline/);
   assert.match(orchestratorSource, /fieldsUpdated\.push\("sellsOnline"\)/);
 });
 
-// --- Pipeline: farmDescription is filled from Claude analysis ---
+// --- Pipeline: farmDescription is filled from Sonar ---
 
-test("orchestrator fills farmDescription from Claude analysis", () => {
-  assert.match(orchestratorSource, /patch\.farmDescription\s*=\s*claudeResult\.businessDescription/);
+test("orchestrator fills farmDescription from Sonar result", () => {
+  assert.match(orchestratorSource, /patch\.farmDescription\s*=\s*sonarResult\.businessDescription/);
   assert.match(orchestratorSource, /fieldsUpdated\.push\("farmDescription"\)/);
 });
 
-// --- Pipeline: contactName is filled from Hunter or Claude ---
+// --- Pipeline: contactName is filled from Sonar ---
 
-test("orchestrator fills contactName from Hunter result", () => {
-  assert.match(orchestratorSource, /sorted\[0\]\.firstName/);
-  assert.match(orchestratorSource, /patch\.contactName\s*=\s*name/);
+test("orchestrator fills contactName from Sonar result", () => {
+  assert.match(orchestratorSource, /sonarResult\?\.contactName/);
+  assert.match(orchestratorSource, /patch\.contactName\s*=\s*sonarResult\.contactName/);
 });
 
-test("orchestrator fills contactName from Claude as fallback", () => {
-  assert.match(orchestratorSource, /claudeResult\.contactName/);
-  assert.match(orchestratorSource, /!patch\.contactName/);
-});
+// --- Pipeline: email is filled from Sonar ---
 
-// --- Pipeline: email is filled from scraper or Hunter ---
-
-test("orchestrator fills contactEmail from website scraper first", () => {
-  assert.match(orchestratorSource, /scraperResult\.emails\[0\]/);
-  assert.match(orchestratorSource, /website - /);
-});
-
-test("orchestrator falls back to Hunter email if scraper found none", () => {
-  assert.match(orchestratorSource, /!bestEmail\s*&&\s*hunterResult/);
-  assert.match(orchestratorSource, /sorted\[0\]\.email/);
+test("orchestrator fills contactEmail from Sonar result", () => {
+  assert.match(orchestratorSource, /sonarResult\?\.contactEmail/);
+  assert.match(orchestratorSource, /sonar - /);
 });
 
 test("orchestrator tracks email source for consent", () => {
@@ -137,10 +127,10 @@ test("orchestrator tracks email source for consent", () => {
   assert.match(orchestratorSource, /consentSource/);
 });
 
-// --- Pipeline: social links are filled from discovery ---
+// --- Pipeline: social links are filled from Sonar ---
 
-test("orchestrator fills social links from social discovery", () => {
-  assert.match(orchestratorSource, /discoverSocialLinks/);
+test("orchestrator fills social links from Sonar result", () => {
+  assert.match(orchestratorSource, /sonarResult\.socialLinks\.facebook/);
   assert.match(orchestratorSource, /fieldsUpdated\.push\("socialLinks"\)/);
 });
 
@@ -151,11 +141,11 @@ test("orchestrator fills website from Google Places if lead has none", () => {
   assert.match(orchestratorSource, /fieldsUpdated\.push\("website"\)/);
 });
 
-// --- Pipeline: platform detection from scraper ---
+// --- Pipeline: structured data from Sonar ---
 
-test("orchestrator fills platform from website scraper", () => {
-  assert.match(orchestratorSource, /scraperResult\?\.platform/);
-  assert.match(orchestratorSource, /fieldsUpdated\.push\("enrichmentData\.platform"\)/);
+test("orchestrator fills structured data from Sonar result", () => {
+  assert.match(orchestratorSource, /sonarResult\.structuredProducts/);
+  assert.match(orchestratorSource, /fieldsUpdated\.push\("enrichmentData\.structuredProducts"\)/);
 });
 
 // --- Pipeline: all changes are saved via leads.update ---

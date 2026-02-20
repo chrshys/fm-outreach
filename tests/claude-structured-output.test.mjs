@@ -138,28 +138,28 @@ test("orchestrator stores structuredDescription in enrichmentData", () => {
 test("orchestrator checks for non-empty structuredProducts before storing", () => {
   assert.match(
     orchestratorSource,
-    /claudeResult\.structuredProducts.*\.length\s*>\s*0/,
+    /sonarResult\.structuredProducts\.length\s*>\s*0/,
   );
 });
 
 test("orchestrator checks for non-empty structuredDescription before storing", () => {
   assert.match(
     orchestratorSource,
-    /claudeResult\.structuredDescription/,
+    /sonarResult\.structuredDescription/,
   );
 });
 
 test("orchestrator still stores flat farmDescription field", () => {
   assert.match(
     orchestratorSource,
-    /patch\.farmDescription\s*=\s*claudeResult\.businessDescription/,
+    /patch\.farmDescription\s*=\s*sonarResult\.businessDescription/,
   );
 });
 
 test("orchestrator still stores flat products field", () => {
   assert.match(
     orchestratorSource,
-    /patch\.products\s*=\s*claudeResult\.products/,
+    /patch\.products\s*=\s*sonarResult\.products/,
   );
 });
 

@@ -53,10 +53,10 @@ test("cooldown check uses force (not overwrite)", () => {
 });
 
 test("field merge logic uses overwrite (not force)", () => {
-  // All field conditionals after Step 8 should use overwrite, not force
+  // All field conditionals after merge section should use overwrite, not force
   const mergeBlock = orchestratorSource.slice(
-    orchestratorSource.indexOf("// Step 8: Merge results"),
-    orchestratorSource.indexOf("// Step 9:"),
+    orchestratorSource.indexOf("// Merge results"),
+    orchestratorSource.indexOf("// Step 5:"),
   );
 
   // overwrite should appear in merge conditions
@@ -67,8 +67,8 @@ test("field merge logic uses overwrite (not force)", () => {
 
 test("status progression guard uses overwrite (not force)", () => {
   const statusBlock = orchestratorSource.slice(
-    orchestratorSource.indexOf("// Step 10: Set status"),
-    orchestratorSource.indexOf("// Step 11:"),
+    orchestratorSource.indexOf("// Step 6: Set status"),
+    orchestratorSource.indexOf("// Step 7:"),
   );
 
   assert.match(statusBlock, /overwrite/);
