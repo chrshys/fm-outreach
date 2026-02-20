@@ -131,6 +131,39 @@ export const enrichLead = internalAction({
       }
     }
 
+    // Step 3b: Apify Social Scraper (EARLY) — extract website from existing social links
+    const scrapedSocialUrls = new Set<string>();
+    if (
+      args.useApify !== false &&
+      !websiteUrl &&
+      (lead.socialLinks?.facebook || lead.socialLinks?.instagram)
+    ) {
+      const facebookUrl = lead.socialLinks?.facebook;
+      const igMatch = lead.socialLinks?.instagram?.match(
+        /instagram\.com\/([^/?#]+)/,
+      );
+      const instagramUsername = igMatch ? igMatch[1] : undefined;
+
+      try {
+        const socialResult: ApifySocialResult | null = await ctx.runAction(
+          api.enrichment.apifySocial.scrapeSocialPages,
+          { facebookUrl, instagramUsername },
+        );
+
+        if (socialResult) {
+          sources.push({ source: "apify_social", fetchedAt: Date.now() });
+          if (facebookUrl) scrapedSocialUrls.add(facebookUrl);
+          if (lead.socialLinks?.instagram)
+            scrapedSocialUrls.add(lead.socialLinks.instagram);
+          if (socialResult.website) {
+            websiteUrl = socialResult.website;
+          }
+        }
+      } catch {
+        // Apify social scraper failed — continue pipeline
+      }
+    }
+
     // Step 4: Sonar enrichment — web search for business information
     let sonarResult: SonarEnrichResult | null = null;
     try {
