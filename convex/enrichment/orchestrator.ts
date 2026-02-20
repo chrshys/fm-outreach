@@ -8,7 +8,7 @@ import type { ApifyWebsiteResult } from "./apifyWebsite";
 import type { SonarEnrichResult } from "./sonarEnrich";
 
 const COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
-const ENRICHMENT_VERSION = "2.0";
+const ENRICHMENT_VERSION = "3.0";
 
 export type EnrichmentSummary = {
   leadId: string;

@@ -234,8 +234,8 @@ test("sets enrichmentVersion", () => {
   assert.match(source, /patch\.enrichmentVersion\s*=\s*ENRICHMENT_VERSION/);
 });
 
-test("ENRICHMENT_VERSION is 2.0", () => {
-  assert.match(source, /const ENRICHMENT_VERSION\s*=\s*"2\.0"/);
+test("ENRICHMENT_VERSION is 3.0", () => {
+  assert.match(source, /const ENRICHMENT_VERSION\s*=\s*"3\.0"/);
 });
 
 test("appends to enrichmentSources array", () => {

@@ -239,8 +239,8 @@ test("discovery panel passes leadIds and since to EnrichmentProgress", () => {
 // 9. Enrichment version is 2.0 (sonar pipeline)
 // ============================================================
 
-test("orchestrator sets enrichmentVersion to 2.0", () => {
-  assert.match(orchestratorSource, /ENRICHMENT_VERSION\s*=\s*"2\.0"/);
+test("orchestrator sets enrichmentVersion to 3.0", () => {
+  assert.match(orchestratorSource, /ENRICHMENT_VERSION\s*=\s*"3\.0"/);
   assert.match(
     orchestratorSource,
     /patch\.enrichmentVersion\s*=\s*ENRICHMENT_VERSION/,
