@@ -164,6 +164,27 @@ export const enrichLead = internalAction({
       }
     }
 
+    // Step 3c: Apify Website Scraper — extract contacts from website
+    let apifyWebsiteResult: ApifyWebsiteResult | null = null;
+    if (args.useApify !== false && websiteUrl) {
+      try {
+        apifyWebsiteResult = await ctx.runAction(
+          api.enrichment.apifyWebsite.scrapeContacts,
+          { url: websiteUrl },
+        );
+
+        if (apifyWebsiteResult) {
+          sources.push({
+            source: "apify_website",
+            detail: websiteUrl,
+            fetchedAt: Date.now(),
+          });
+        }
+      } catch {
+        // Apify website scraper failed — continue pipeline
+      }
+    }
+
     // Step 4: Sonar enrichment — web search for business information
     let sonarResult: SonarEnrichResult | null = null;
     try {
