@@ -14,8 +14,8 @@ const helpersSource = fs.readFileSync(
 
 // =============================================================
 // The orchestrator handles: cooldown check, unsubscribe block
-// list, Google Places, merge logic, status transitions, consent
-// source, and activity logging.
+// list, Google Places, Sonar, merge logic, status transitions,
+// consent source, and activity logging.
 // =============================================================
 
 // --- 1. Cooldown check ---
@@ -92,7 +92,36 @@ test("Google Places errors are caught and pipeline continues", () => {
   assert.match(placesBlock, /catch\s*\{/);
 });
 
-// --- 4. Merge logic ---
+// --- 4. Sonar ---
+
+test("orchestrator calls Sonar enrichment with lead details", () => {
+  assert.match(source, /api\.enrichment\.sonarEnrich\.enrichWithSonar/);
+  assert.match(source, /name:\s*lead\.name/);
+  assert.match(source, /province:\s*lead\.province/);
+});
+
+test("Sonar enrichment is Step 4 — after Google Places and Apify steps", () => {
+  const sonarPos = source.indexOf("// Step 4: Sonar enrichment");
+  const placesPos = source.indexOf("// Step 3: Google Places");
+  assert.ok(sonarPos >= 0, "Step 4 comment should exist");
+  assert.ok(sonarPos > placesPos, "Sonar must come after Google Places");
+});
+
+test("Sonar errors are caught and pipeline continues", () => {
+  const sonarBlock = source.slice(
+    source.indexOf("// Step 4: Sonar enrichment"),
+    source.indexOf("// Step 4b:"),
+  );
+  assert.match(sonarBlock, /try\s*\{/);
+  assert.match(sonarBlock, /catch\s*\{/);
+});
+
+test("Sonar adds sonar_enrichment to sources with citations", () => {
+  assert.match(source, /source:\s*"sonar_enrichment"/);
+  assert.match(source, /sonarResult\.citations/);
+});
+
+// --- 5. Merge logic ---
 
 test("orchestrator only fills empty fields unless overwrite is true", () => {
   // Check key fields use the (!lead.field || overwrite) pattern
@@ -128,7 +157,7 @@ test("all field changes are applied via a single leads.update call", () => {
   assert.match(source, /\.\.\.patch/);
 });
 
-// --- 5. Status transitions ---
+// --- 6. Status transitions ---
 
 test("status is enriched when email found, no_email otherwise", () => {
   assert.match(source, /const\s+emailFound\s*=\s*!!\(patch\.contactEmail\s*\|\|\s*lead\.contactEmail\)/);
@@ -140,11 +169,16 @@ test("status only transitions from new_lead or no_email (no regressions)", () =>
   assert.match(source, /progressableStatuses\.has\(lead\.status\)\s*\|\|\s*overwrite/);
 });
 
-// --- 6. Consent source ---
+// --- 7. Consent source ---
 
-test("consentSource is set when email is discovered via Sonar", () => {
-  assert.match(source, /emailSource\s*=\s*`sonar - /);
+test("consentSource is set when email is discovered", () => {
   assert.match(source, /patch\.consentSource\s*=\s*emailSource/);
+});
+
+test("consentSource tracks all three email source patterns", () => {
+  assert.match(source, /emailSource\s*=\s*`apify_website - /);
+  assert.match(source, /emailSource\s*=\s*`apify_social - /);
+  assert.match(source, /emailSource\s*=\s*`sonar - /);
 });
 
 test("consentSource is not overwritten unless forced", () => {
@@ -155,7 +189,7 @@ test("consentSource is only set when emailSource is non-null", () => {
   assert.match(source, /if\s*\(emailSource\s*&&/);
 });
 
-// --- 7. Activity logging ---
+// --- 8. Activity logging ---
 
 test("orchestrator logs enrichment_started before API calls", () => {
   const startedPos = source.indexOf("enrichment_started");
