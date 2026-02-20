@@ -1,8 +1,9 @@
 type ExportLead = {
   name: string;
   type: string;
-  farmDescription?: string;
-  contactPhone?: string;
+  locationDescription?: string;
+  imagePrompt?: string;
+  categories?: string[];
   address?: string;
   city?: string;
   region?: string;
@@ -20,8 +21,9 @@ type ExportLead = {
 const CSV_COLUMNS = [
   "name",
   "type",
-  "farmDescription",
-  "contactPhone",
+  "locationDescription",
+  "imagePrompt",
+  "categories",
   "address",
   "city",
   "state",
@@ -50,8 +52,9 @@ export function leadsToCSV(leads: ExportLead[]): string {
     const values: string[] = [
       lead.name ?? "",
       lead.type ?? "",
-      lead.farmDescription ?? "",
-      lead.contactPhone ?? "",
+      lead.locationDescription ?? "",
+      lead.imagePrompt ?? "",
+      lead.categories ? lead.categories.join(", ") : "",
       lead.address ?? "",
       lead.city ?? "",
       lead.province ?? lead.region ?? "",

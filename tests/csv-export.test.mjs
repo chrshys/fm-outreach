@@ -37,7 +37,7 @@ test("leadsToCSV produces correct header row", () => {
   const header = csv.split("\n")[0];
   assert.equal(
     header,
-    "name,type,farmDescription,contactPhone,address,city,state,postalCode,countryCode,latitude,longitude,placeId,website,instagram,facebook,products"
+    "name,type,locationDescription,imagePrompt,categories,address,city,state,postalCode,countryCode,latitude,longitude,placeId,website,instagram,facebook,products"
   );
 });
 
@@ -47,8 +47,9 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
     {
       name: "Green Acres",
       type: "farm",
-      farmDescription: "Organic produce",
-      contactPhone: "555-0100",
+      locationDescription: "Organic produce farm",
+      imagePrompt: "A scenic farm with rolling hills",
+      categories: ["produce", "organic"],
       address: "123 Farm Rd",
       city: "Guelph",
       province: "ON",
@@ -69,7 +70,7 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
   assert.equal(lines.length, 2);
   assert.equal(
     lines[1],
-    'Green Acres,farm,Organic produce,555-0100,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears"'
+    'Green Acres,farm,Organic produce farm,A scenic farm with rolling hills,"produce, organic",123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears"'
   );
 });
 
@@ -82,7 +83,7 @@ test("leadsToCSV uses empty strings for undefined (missing) fields", () => {
     },
   ]);
   const lines = csv.split("\n");
-  assert.equal(lines[1], "Bare Farm,farm,,,,,,,,,,,,,,");
+  assert.equal(lines[1], "Bare Farm,farm,,,,,,,,,,,,,,,");
 });
 
 test("leadsToCSV uses empty strings for explicit null fields", () => {
@@ -91,8 +92,9 @@ test("leadsToCSV uses empty strings for explicit null fields", () => {
     {
       name: "Null Farm",
       type: "farm",
-      farmDescription: null,
-      contactPhone: null,
+      locationDescription: null,
+      imagePrompt: null,
+      categories: null,
       address: null,
       city: null,
       region: null,
@@ -108,7 +110,7 @@ test("leadsToCSV uses empty strings for explicit null fields", () => {
     },
   ]);
   const lines = csv.split("\n");
-  assert.equal(lines[1], "Null Farm,farm,,,,,,,,,,,,,,");
+  assert.equal(lines[1], "Null Farm,farm,,,,,,,,,,,,,,,");
 });
 
 test("leadsToCSV never outputs literal 'undefined' or 'null' strings", () => {
@@ -118,7 +120,9 @@ test("leadsToCSV never outputs literal 'undefined' or 'null' strings", () => {
     {
       name: "Nulls",
       type: "farm",
-      farmDescription: null,
+      locationDescription: null,
+      imagePrompt: null,
+      categories: null,
       latitude: null,
       socialLinks: null,
       products: null,
@@ -167,7 +171,7 @@ test("leadsToCSV escapes fields containing newlines", () => {
     {
       name: "Normal Farm",
       type: "farm",
-      farmDescription: "Line one\nLine two",
+      locationDescription: "Line one\nLine two",
     },
   ]);
   const dataRows = csv.split("\n").slice(1).join("\n");
@@ -237,9 +241,9 @@ test("leadsToCSV handles socialLinks with only instagram", () => {
   assert.ok(lines[1].includes("ig_only"), "should include instagram value");
   // facebook column should be empty but row should still have 13 columns
   const cols = lines[1].split(",");
-  assert.equal(cols.length, 16, "should still have 16 columns");
-  assert.equal(cols[13], "ig_only", "instagram column should have value");
-  assert.equal(cols[14], "", "facebook column should be empty");
+  assert.equal(cols.length, 17, "should still have 17 columns");
+  assert.equal(cols[14], "ig_only", "instagram column should have value");
+  assert.equal(cols[15], "", "facebook column should be empty");
 });
 
 test("leadsToCSV handles socialLinks with only facebook", () => {
@@ -253,8 +257,8 @@ test("leadsToCSV handles socialLinks with only facebook", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[13], "", "instagram column should be empty");
-  assert.equal(cols[14], "fb_only", "facebook column should have value");
+  assert.equal(cols[14], "", "instagram column should be empty");
+  assert.equal(cols[15], "fb_only", "facebook column should have value");
 });
 
 test("leadsToCSV handles product names containing commas", () => {
@@ -273,6 +277,51 @@ test("leadsToCSV handles product names containing commas", () => {
     dataRow.includes('"jams, jellies, honey"'),
     "products with internal commas should be properly quoted"
   );
+});
+
+test("leadsToCSV outputs locationDescription in correct column", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "Desc Farm", type: "farm", locationDescription: "Rural area near river" },
+  ]);
+  const cols = csv.split("\n")[1].split(",");
+  assert.equal(cols[2], "Rural area near river", "locationDescription should be column 2");
+});
+
+test("leadsToCSV outputs imagePrompt in correct column", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "Img Farm", type: "farm", imagePrompt: "Aerial view of barn" },
+  ]);
+  const cols = csv.split("\n")[1].split(",");
+  assert.equal(cols[3], "Aerial view of barn", "imagePrompt should be column 3");
+});
+
+test("leadsToCSV joins categories array with comma-space separator", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "Cat Farm", type: "farm", categories: ["organic", "dairy", "eggs"] },
+  ]);
+  const lines = csv.split("\n");
+  assert.ok(lines[1].includes('"organic, dairy, eggs"'), "categories should be joined and quoted");
+});
+
+test("leadsToCSV outputs single category unquoted", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "One Cat", type: "farm", categories: ["produce"] },
+  ]);
+  const cols = csv.split("\n")[1].split(",");
+  assert.equal(cols[4], "produce", "single category should not be quoted");
+});
+
+test("leadsToCSV outputs empty string for empty categories array", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "No Cats", type: "farm", categories: [] },
+  ]);
+  const cols = csv.split("\n")[1].split(",");
+  assert.equal(cols[4], "", "empty categories array should produce empty string");
 });
 
 test("downloadCSV function is exported", () => {
@@ -372,22 +421,23 @@ test("Export CSV button appears between LeadFilters and Table in JSX", () => {
   );
 });
 
-test("CSV header has exactly 16 columns", () => {
+test("CSV header has exactly 17 columns", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([]);
   const header = csv.split("\n")[0];
   const columns = header.split(",");
-  assert.equal(columns.length, 16, "should have exactly 16 columns");
+  assert.equal(columns.length, 17, "should have exactly 17 columns");
 });
 
-test("CSV data rows have exactly 16 columns for a complete lead", () => {
+test("CSV data rows have exactly 17 columns for a complete lead", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([
     {
       name: "Test Farm",
       type: "farm",
-      farmDescription: "Desc",
-      contactPhone: "555-0000",
+      locationDescription: "Desc",
+      imagePrompt: "A farm photo",
+      categories: ["dairy"],
       address: "1 Main St",
       city: "Toronto",
       province: "ON",
@@ -403,15 +453,15 @@ test("CSV data rows have exactly 16 columns for a complete lead", () => {
   ]);
   const lines = csv.split("\n");
   const dataColumns = lines[1].split(",");
-  assert.equal(dataColumns.length, 16, "data row should have exactly 16 columns");
+  assert.equal(dataColumns.length, 17, "data row should have exactly 17 columns");
 });
 
-test("CSV data rows have exactly 16 columns for a minimal lead", () => {
+test("CSV data rows have exactly 17 columns for a minimal lead", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([{ name: "Minimal", type: "farm" }]);
   const lines = csv.split("\n");
   const dataColumns = lines[1].split(",");
-  assert.equal(dataColumns.length, 16, "minimal lead should still have 16 columns");
+  assert.equal(dataColumns.length, 17, "minimal lead should still have 17 columns");
 });
 
 test("downloadCSV creates a text/csv blob", () => {
@@ -433,7 +483,7 @@ test("leadsToCSV maps province to state column", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[6], "ON", "state column should contain province value");
+  assert.equal(cols[7], "ON", "state column should contain province value");
 });
 
 test("leadsToCSV falls back to region when province is missing", () => {
@@ -447,7 +497,7 @@ test("leadsToCSV falls back to region when province is missing", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[6], "Southern Ontario", "state column should fall back to region value");
+  assert.equal(cols[7], "Southern Ontario", "state column should fall back to region value");
 });
 
 test("leadsToCSV prefers province over region for state column", () => {
@@ -462,7 +512,7 @@ test("leadsToCSV prefers province over region for state column", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[6], "ON", "state column should prefer province over region");
+  assert.equal(cols[7], "ON", "state column should prefer province over region");
 });
 
 test("leadsToCSV includes postalCode and countryCode columns", () => {
@@ -477,8 +527,8 @@ test("leadsToCSV includes postalCode and countryCode columns", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[7], "N1G 2W1", "postalCode column should have correct value");
-  assert.equal(cols[8], "CA", "countryCode column should have correct value");
+  assert.equal(cols[8], "N1G 2W1", "postalCode column should have correct value");
+  assert.equal(cols[9], "CA", "countryCode column should have correct value");
 });
 
 test("handleExportCSV sets isExporting in try/finally", () => {
