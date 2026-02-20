@@ -18,6 +18,8 @@ const SOURCE_LABELS: Record<string, string> = {
   claude_analysis: "Claude",
   social_discovery: "Social Discovery",
   sonar_enrichment: "Sonar Web Search",
+  apify_website: "Website Scraper",
+  apify_social: "Social Pages",
 }
 
 type DataFreshnessProps = {
