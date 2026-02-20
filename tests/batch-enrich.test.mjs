@@ -139,3 +139,13 @@ test("accepts optional useSonarPro arg", () => {
 test("passes useSonarPro to each enrichLead call", () => {
   assert.match(source, /useSonarPro:\s*args\.useSonarPro/);
 });
+
+// --- useApify passthrough ---
+
+test("accepts optional useApify arg", () => {
+  assert.match(source, /useApify:\s*v\.optional\(v\.boolean\(\)\)/);
+});
+
+test("passes useApify to each enrichLead call", () => {
+  assert.match(source, /useApify:\s*args\.useApify/);
+});

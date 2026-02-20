@@ -28,6 +28,7 @@ export const batchEnrichLeads = internalAction({
     force: v.optional(v.boolean()),
     overwrite: v.optional(v.boolean()),
     useSonarPro: v.optional(v.boolean()),
+    useApify: v.optional(v.boolean()),
   },
   handler: async (ctx, args): Promise<BatchEnrichmentResult> => {
     const leadIds = args.leadIds.slice(0, MAX_BATCH_SIZE);
@@ -46,7 +47,7 @@ export const batchEnrichLeads = internalAction({
         const summary: EnrichmentSummary = await ctx.runAction(
           // @ts-ignore -- Convex generated API types can trigger TS2589 in large modules
           internal.enrichment.orchestrator.enrichLead,
-          { leadId, force, overwrite, useSonarPro: args.useSonarPro },
+          { leadId, force, overwrite, useSonarPro: args.useSonarPro, useApify: args.useApify },
         );
 
         results.push({ leadId, status: "success", summary });
