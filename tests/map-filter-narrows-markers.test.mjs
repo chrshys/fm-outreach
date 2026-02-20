@@ -9,7 +9,7 @@ const filtersSource = fs.readFileSync("src/components/map/map-filters.tsx", "utf
 
 test("filterLeads excludes leads whose status is not in selected statuses", () => {
   // The function checks statuses.includes(lead.status) and returns false if not included
-  assert.match(filtersSource, /filters\.statuses\.length\s*>\s*0\s*&&\s*!filters\.statuses\.includes\(lead\.status/)
+  assert.match(filtersSource, /!filters\.statuses\.includes\(lead\.status/)
 })
 
 test("filterLeads excludes leads whose type is not in selected types", () => {
@@ -21,8 +21,9 @@ test("filterLeads excludes leads whose clusterId does not match selected cluster
 })
 
 test("filterLeads returns all leads when filters are empty (default state)", () => {
-  // With empty statuses array, length > 0 is false so the check is skipped
-  assert.match(filtersSource, /filters\.statuses\.length\s*>\s*0/)
+  // Default state has all statuses selected, so includes() passes all leads through.
+  // Types and cluster still use length > 0 / !== "all" guards.
+  assert.match(filtersSource, /filters\.statuses\.includes\(lead\.status/)
   assert.match(filtersSource, /filters\.types\.length\s*>\s*0/)
   assert.match(filtersSource, /filters\.clusterId\s*!==\s*"all"/)
 })
