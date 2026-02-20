@@ -50,10 +50,15 @@ test("sends Content-Type application/json header", () => {
   assert.match(source, /Content-Type.*application\/json/);
 });
 
-test("sends POST request with messages array containing user message", () => {
+test("sends POST request with system and user messages", () => {
   assert.match(source, /method:\s*"POST"/);
   assert.match(source, /messages:\s*\[/);
+  assert.match(source, /role:\s*"system"/);
   assert.match(source, /role:\s*"user"/);
+});
+
+test("system message contains SONAR_ENRICHMENT_PROMPT", () => {
+  assert.match(source, /role:\s*"system",\s*content:\s*SONAR_ENRICHMENT_PROMPT/);
 });
 
 test("requests JSON response format", () => {
@@ -191,4 +196,18 @@ test("prompt describes imagePrompt for AI image generation with detail", () => {
   assert.match(source, /AI image generation/);
   assert.match(source, /setting/);
   assert.match(source, /atmosphere/);
+});
+
+test("user message interpolates lead details with labeled fields", () => {
+  assert.match(source, /Search the web for information about this business/);
+  assert.match(source, /Name:\s*\$\{args\.name\}/);
+  assert.match(source, /Type:\s*\$\{args\.type\}/);
+  assert.match(source, /Address:\s*\$\{args\.address\}/);
+  assert.match(source, /City:\s*\$\{args\.city\}/);
+  assert.match(source, /Province:\s*\$\{args\.province\}/);
+});
+
+test("user message appends Website line only when website is provided", () => {
+  assert.match(source, /if\s*\(args\.website\)/);
+  assert.match(source, /Website:\s*\$\{args\.website\}/);
 });

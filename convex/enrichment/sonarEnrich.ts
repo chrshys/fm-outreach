@@ -187,11 +187,11 @@ export const enrichWithSonar = action({
       ? "perplexity/sonar-pro"
       : "perplexity/sonar";
 
-    const websiteContext = args.website
-      ? ` Their website is ${args.website}.`
-      : "";
+    let userMessage = `Search the web for information about this business:\n\nName: ${args.name}\nType: ${args.type}\nAddress: ${args.address}\nCity: ${args.city}\nProvince: ${args.province}`;
 
-    const userMessage = `${SONAR_ENRICHMENT_PROMPT}\n\nBusiness: ${args.name}\nType: ${args.type}\nAddress: ${args.address}, ${args.city}, ${args.province}${websiteContext}`;
+    if (args.website) {
+      userMessage += `\nWebsite: ${args.website}`;
+    }
 
     const response = await fetch(AI_GATEWAY_URL, {
       method: "POST",
@@ -201,7 +201,10 @@ export const enrichWithSonar = action({
       },
       body: JSON.stringify({
         model,
-        messages: [{ role: "user", content: userMessage }],
+        messages: [
+          { role: "system", content: SONAR_ENRICHMENT_PROMPT },
+          { role: "user", content: userMessage },
+        ],
         response_format: { type: "json_object" },
       }),
     });
