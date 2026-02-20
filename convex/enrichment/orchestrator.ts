@@ -132,6 +132,7 @@ export const enrichLead = internalAction({
     }
 
     // Step 3b: Apify Social Scraper (EARLY) — extract website from existing social links
+    let apifySocialResult: ApifySocialResult | null = null;
     const scrapedSocialUrls = new Set<string>();
     if (
       args.useApify !== false &&
@@ -145,18 +146,18 @@ export const enrichLead = internalAction({
       const instagramUsername = igMatch ? igMatch[1] : undefined;
 
       try {
-        const socialResult: ApifySocialResult | null = await ctx.runAction(
+        apifySocialResult = await ctx.runAction(
           api.enrichment.apifySocial.scrapeSocialPages,
           { facebookUrl, instagramUsername },
         );
 
-        if (socialResult) {
+        if (apifySocialResult) {
           sources.push({ source: "apify_social", fetchedAt: Date.now() });
           if (facebookUrl) scrapedSocialUrls.add(facebookUrl);
           if (lead.socialLinks?.instagram)
             scrapedSocialUrls.add(lead.socialLinks.instagram);
-          if (socialResult.website) {
-            websiteUrl = socialResult.website;
+          if (apifySocialResult.website) {
+            websiteUrl = apifySocialResult.website;
           }
         }
       } catch {
@@ -213,6 +214,64 @@ export const enrichLead = internalAction({
         sourceEntry.detail = sonarResult.citations.join(", ");
       }
       sources.push(sourceEntry);
+    }
+
+    // Step 4b: Apify Social Scraper (LATE) — retry with newly discovered social URLs
+    if (
+      args.useApify !== false &&
+      !lead.contactEmail &&
+      !(apifyWebsiteResult?.emails?.length) &&
+      !sonarResult?.contactEmail &&
+      !apifySocialResult?.email
+    ) {
+      // Collect known FB/IG URLs from all sources, excluding already-scraped ones
+      const allFacebookUrls = [
+        apifyWebsiteResult?.socialLinks?.facebook,
+        sonarResult?.socialLinks?.facebook,
+        lead.socialLinks?.facebook,
+      ].filter((url): url is string => !!url && !scrapedSocialUrls.has(url));
+
+      const allInstagramUrls = [
+        apifyWebsiteResult?.socialLinks?.instagram,
+        sonarResult?.socialLinks?.instagram,
+        lead.socialLinks?.instagram,
+      ].filter((url): url is string => !!url && !scrapedSocialUrls.has(url));
+
+      const lateFacebookUrl = allFacebookUrls[0];
+      const lateIgMatch = allInstagramUrls[0]?.match(
+        /instagram\.com\/([^/?#]+)/,
+      );
+      const lateInstagramUsername = lateIgMatch ? lateIgMatch[1] : undefined;
+
+      if (lateFacebookUrl || lateInstagramUsername) {
+        try {
+          const lateResult: ApifySocialResult | null = await ctx.runAction(
+            api.enrichment.apifySocial.scrapeSocialPages,
+            { facebookUrl: lateFacebookUrl, instagramUsername: lateInstagramUsername },
+          );
+
+          if (lateResult) {
+            // Merge into apifySocialResult — fill gaps only
+            if (!apifySocialResult) {
+              apifySocialResult = lateResult;
+            } else {
+              if (!apifySocialResult.email && lateResult.email)
+                apifySocialResult.email = lateResult.email;
+              if (!apifySocialResult.phone && lateResult.phone)
+                apifySocialResult.phone = lateResult.phone;
+              if (!apifySocialResult.website && lateResult.website)
+                apifySocialResult.website = lateResult.website;
+            }
+
+            // Add apify_social to sources if not already present
+            if (!sources.some((s) => s.source === "apify_social")) {
+              sources.push({ source: "apify_social", fetchedAt: Date.now() });
+            }
+          }
+        } catch {
+          // Late Apify social scraper failed — continue pipeline
+        }
+      }
     }
 
     // Merge results — only overwrite empty fields unless forced

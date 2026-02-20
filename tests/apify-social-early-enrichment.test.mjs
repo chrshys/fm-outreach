@@ -106,8 +106,8 @@ test("updates websiteUrl if social result has website", () => {
     source.indexOf("// Step 3b:"),
     source.indexOf("// Step 4:"),
   );
-  assert.match(step3bBlock, /socialResult\.website/);
-  assert.match(step3bBlock, /websiteUrl\s*=\s*socialResult\.website/);
+  assert.match(step3bBlock, /apifySocialResult\.website/);
+  assert.match(step3bBlock, /websiteUrl\s*=\s*apifySocialResult\.website/);
 });
 
 // --- Source tracking ---
