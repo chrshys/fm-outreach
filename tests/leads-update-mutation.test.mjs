@@ -10,6 +10,8 @@ test("exports update mutation with lead id and optional patchable fields", () =>
   assert.match(source, /name:\s*v\.optional\(v\.string\(\)\)/)
   assert.match(source, /notes:\s*v\.optional\(v\.string\(\)\)/)
   assert.match(source, /socialLinks:\s*v\.optional\(\s*v\.object\(/s)
+  assert.match(source, /locationDescription:\s*v\.optional\(v\.string\(\)\)/)
+  assert.match(source, /imagePrompt:\s*v\.optional\(v\.string\(\)\)/)
 })
 
 test("update mutation merges partial payload and always sets updatedAt", () => {
