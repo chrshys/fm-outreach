@@ -4,15 +4,8 @@ export type SocialDiscoveryResult = {
 };
 
 export type SocialDiscoveryInput = {
-  websiteHtml?: string;
   googlePlacesWebsite?: string;
 };
-
-const FACEBOOK_URL_REGEX =
-  /https?:\/\/(?:www\.)?facebook\.com\/([a-zA-Z0-9._-]+)\/?/gi;
-
-const INSTAGRAM_URL_REGEX =
-  /https?:\/\/(?:www\.)?instagram\.com\/([a-zA-Z0-9._-]+)\/?/gi;
 
 const FACEBOOK_HOMEPAGE_SLUGS = new Set([
   "",
@@ -71,20 +64,6 @@ function isValidInstagramPage(url: string): boolean {
   return !INSTAGRAM_HOMEPAGE_SLUGS.has(slug);
 }
 
-function extractFacebookUrls(text: string): string[] {
-  const matches = text.match(FACEBOOK_URL_REGEX) ?? [];
-  return [...new Set(matches)]
-    .map((url) => url.replace(/\/$/, ""))
-    .filter(isValidFacebookPage);
-}
-
-function extractInstagramUrls(text: string): string[] {
-  const matches = text.match(INSTAGRAM_URL_REGEX) ?? [];
-  return [...new Set(matches)]
-    .map((url) => url.replace(/\/$/, ""))
-    .filter(isValidInstagramPage);
-}
-
 function extractFromGooglePlacesWebsite(
   website: string,
 ): SocialDiscoveryResult {
@@ -110,33 +89,9 @@ function extractFromGooglePlacesWebsite(
 export function discoverSocialLinks(
   input: SocialDiscoveryInput,
 ): SocialDiscoveryResult {
-  const result: SocialDiscoveryResult = {};
-
-  if (input.websiteHtml) {
-    const fbUrls = extractFacebookUrls(input.websiteHtml);
-    if (fbUrls.length > 0) {
-      result.facebook = fbUrls[0];
-    }
-
-    const igUrls = extractInstagramUrls(input.websiteHtml);
-    if (igUrls.length > 0) {
-      result.instagram = igUrls[0];
-    }
-  }
-
   if (input.googlePlacesWebsite) {
-    const placesResult = extractFromGooglePlacesWebsite(
-      input.googlePlacesWebsite,
-    );
-
-    if (placesResult.facebook && !result.facebook) {
-      result.facebook = placesResult.facebook;
-    }
-
-    if (placesResult.instagram && !result.instagram) {
-      result.instagram = placesResult.instagram;
-    }
+    return extractFromGooglePlacesWebsite(input.googlePlacesWebsite);
   }
 
-  return result;
+  return {};
 }
