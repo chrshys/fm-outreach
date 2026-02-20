@@ -3,6 +3,8 @@ import { v } from "convex/values";
 import { api, internal } from "../_generated/api";
 import { internalAction } from "../_generated/server";
 import type { GooglePlacesResult } from "./googlePlaces";
+import type { ApifySocialResult } from "./apifySocial";
+import type { ApifyWebsiteResult } from "./apifyWebsite";
 import type { SonarEnrichResult } from "./sonarEnrich";
 
 const COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000; // 30 days

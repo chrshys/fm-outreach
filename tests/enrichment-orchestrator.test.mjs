@@ -327,6 +327,8 @@ test("applies patch using leads.update mutation", () => {
 test("imports from enrichment modules", () => {
   assert.match(source, /import.*GooglePlacesResult.*from.*googlePlaces/);
   assert.match(source, /import.*SonarEnrichResult.*from.*sonarEnrich/);
+  assert.match(source, /import.*ApifyWebsiteResult.*from.*apifyWebsite/);
+  assert.match(source, /import.*ApifySocialResult.*from.*apifySocial/);
 });
 
 test("does not import removed enrichment modules", () => {
