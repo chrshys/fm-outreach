@@ -28,21 +28,40 @@ export type SonarEnrichResult = {
   citations: string[];
 };
 
-const ENRICHMENT_PROMPT = `You are a business research assistant. Given a farm or agricultural business, research and return structured JSON with the following fields:
+const SONAR_ENRICHMENT_PROMPT = `You are a business research assistant. Search the web for the given farm or agricultural business and return structured information as JSON.
 
-- "contactEmail": email address if found, otherwise null
-- "contactName": owner or contact person name if found, otherwise null
-- "contactPhone": phone number if found, otherwise null
-- "website": official website URL if found, otherwise null
-- "socialLinks": object with "facebook" (URL or null) and "instagram" (URL or null)
-- "products": array of specific products the business sells (e.g. ["organic tomatoes", "honey"]). Empty array if none found.
-- "structuredProducts": array of objects with "name" and "category" (one of: "produce", "dairy", "meat", "eggs", "honey", "baked goods", "preserves", "beverages", "flowers", "nursery", "value-added", "other"). Empty array if none found.
-- "salesChannels": array of sales channels (e.g. ["farmers market", "online store", "wholesale"]). Empty array if none found.
-- "sellsOnline": boolean — true if the business sells products online
-- "businessDescription": 1-2 sentence description of the business
-- "structuredDescription": object with "summary" (1-2 sentences), "specialties" (array of what makes this business unique), and "certifications" (array of certifications). Empty arrays if none found.
-- "locationDescription": 1 sentence describing the business location and surrounding area
-- "imagePrompt": a short visual description prompt suitable for generating an image of this business
+For each business, find and return:
+
+1. **Verified contact information:**
+   - "contactEmail": verified email address, or null if not found
+   - "contactPhone": verified phone number, or null if not found
+   - "contactName": owner or primary contact person name, or null if not found
+   - "website": official website URL, or null if not found
+
+2. **Social media profiles:**
+   - "socialLinks": object with "facebook" (profile URL or null) and "instagram" (profile URL or null)
+
+3. **Products sold** — identify specific products and categorize them:
+   - "products": array of specific product names (e.g. ["organic tomatoes", "raw honey", "free-range eggs"])
+   - "structuredProducts": array of objects with "name" and "category" where category is one of: "produce", "dairy", "meat", "eggs", "honey", "baked goods", "preserves", "beverages", "flowers", "nursery", "value-added", "other"
+
+4. **Sales channels and online presence:**
+   - "salesChannels": array of how they sell (e.g. ["farmers market", "farm stand", "online store", "wholesale", "CSA"])
+   - "sellsOnline": boolean — true if the business sells products online
+
+5. **Business description:**
+   - "businessDescription": 1-2 sentence description of what the business does and what they are known for
+
+6. **Specialties and certifications:**
+   - "structuredDescription": object with "summary" (1-2 sentences), "specialties" (array of what makes this business unique), and "certifications" (array of certifications like "USDA Organic", "Certified Naturally Grown", etc.). Use empty arrays if none found.
+
+7. **Location description:**
+   - "locationDescription": 2-3 sentences describing the place as if for a marketplace listing. What makes it special? What can visitors expect? Capture the character and setting of the location.
+
+8. **Image prompt:**
+   - "imagePrompt": a detailed visual description suitable for AI image generation. Describe the setting, products on display, atmosphere, lighting, and visual style. Be specific and evocative.
+
+Only include information you can verify from web sources. Return null for any field you cannot confirm. Never fabricate email addresses, phone numbers, or URLs.
 
 Respond ONLY with valid JSON matching this exact shape. No markdown, no explanation.`;
 
@@ -172,7 +191,7 @@ export const enrichWithSonar = action({
       ? ` Their website is ${args.website}.`
       : "";
 
-    const userMessage = `${ENRICHMENT_PROMPT}\n\nBusiness: ${args.name}\nType: ${args.type}\nAddress: ${args.address}, ${args.city}, ${args.province}${websiteContext}`;
+    const userMessage = `${SONAR_ENRICHMENT_PROMPT}\n\nBusiness: ${args.name}\nType: ${args.type}\nAddress: ${args.address}, ${args.city}, ${args.province}${websiteContext}`;
 
     const response = await fetch(AI_GATEWAY_URL, {
       method: "POST",

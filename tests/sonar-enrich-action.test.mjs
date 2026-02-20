@@ -136,3 +136,59 @@ test("sends enrichment prompt requesting all SonarEnrichResult fields", () => {
   assert.match(source, /imagePrompt/);
   assert.match(source, /Respond ONLY with valid JSON/);
 });
+
+test("prompt is exported as SONAR_ENRICHMENT_PROMPT const", () => {
+  assert.match(source, /const\s+SONAR_ENRICHMENT_PROMPT\s*=/);
+});
+
+test("prompt instructs to search the web for the business", () => {
+  assert.match(source, /[Ss]earch the web/);
+});
+
+test("prompt includes verification warning against fabrication", () => {
+  assert.match(
+    source,
+    /Only include information you can verify from web sources/
+  );
+  assert.match(
+    source,
+    /Return null for any field you cannot confirm/
+  );
+  assert.match(
+    source,
+    /Never fabricate email addresses, phone numbers, or URLs/
+  );
+});
+
+test("prompt lists all product categories", () => {
+  const categories = [
+    "produce",
+    "dairy",
+    "meat",
+    "eggs",
+    "honey",
+    "baked goods",
+    "preserves",
+    "beverages",
+    "flowers",
+    "nursery",
+    "value-added",
+    "other",
+  ];
+  for (const cat of categories) {
+    assert.match(source, new RegExp(`"${cat}"`), `missing category: ${cat}`);
+  }
+});
+
+test("prompt describes locationDescription as 2-3 sentences for marketplace listing", () => {
+  assert.match(source, /locationDescription/);
+  assert.match(source, /2-3 sentences/);
+  assert.match(source, /marketplace listing/);
+});
+
+test("prompt describes imagePrompt for AI image generation with detail", () => {
+  assert.match(source, /imagePrompt/);
+  assert.match(source, /AI image generation/);
+  assert.match(source, /setting/);
+  assert.match(source, /atmosphere/);
+});
