@@ -43,7 +43,16 @@ test("script validates status values against known set", () => {
   assert.match(source, /enriched/);
 });
 
-test("script treats non-status input as cluster name", () => {
+test("script parses name: prefix filters", () => {
+  assert.match(source, /input\.startsWith\("name:"\)/);
+  assert.match(source, /input\.slice\("name:"\.length\)/);
+});
+
+test("script validates name: filter is not empty", () => {
+  assert.match(source, /name: filter requires a lead name/);
+});
+
+test("script treats non-prefixed input as cluster name", () => {
   assert.match(source, /type:\s*"cluster"/);
   assert.match(source, /name:\s*input/);
 });
@@ -74,6 +83,10 @@ test("script filters leads by clusterId for cluster filter", () => {
 
 test("script filters leads by status for status filter", () => {
   assert.match(source, /l\.status\s*===\s*filter\.status/);
+});
+
+test("script filters leads by name for name filter", () => {
+  assert.match(source, /l\.name\.toLowerCase\(\)\s*===\s*filter\.name\.toLowerCase\(\)/);
 });
 
 // --- Batch enrichment ---

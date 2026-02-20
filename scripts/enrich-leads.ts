@@ -7,6 +7,7 @@
  *   npx tsx scripts/enrich-leads.ts Niagara
  *   npx tsx scripts/enrich-leads.ts "status:new_lead"
  *   npx tsx scripts/enrich-leads.ts "status:no_email" --force
+ *   npx tsx scripts/enrich-leads.ts "name:Grimsby Farmer's Market" --force
  */
 import { ConvexHttpClient } from "convex/browser";
 
@@ -65,7 +66,7 @@ const VALID_STATUSES = new Set([
   "no_email",
 ]);
 
-function parseFilter(input: string): { type: "cluster"; name: string } | { type: "status"; status: string } {
+function parseFilter(input: string): { type: "cluster"; name: string } | { type: "status"; status: string } | { type: "name"; name: string } {
   if (input.startsWith("status:")) {
     const status = input.slice("status:".length);
     if (!VALID_STATUSES.has(status)) {
@@ -75,17 +76,25 @@ function parseFilter(input: string): { type: "cluster"; name: string } | { type:
     }
     return { type: "status", status };
   }
+  if (input.startsWith("name:")) {
+    const name = input.slice("name:".length);
+    if (!name) {
+      throw new Error('name: filter requires a lead name (e.g. "name:Grimsby Farmer\'s Market")');
+    }
+    return { type: "name", name };
+  }
   return { type: "cluster", name: input };
 }
 
 async function main(): Promise<void> {
   const filterArg = process.argv[2];
   if (!filterArg) {
-    console.error("Usage: npx tsx scripts/enrich-leads.ts <cluster-name | status:value> [--force]");
+    console.error("Usage: npx tsx scripts/enrich-leads.ts <cluster-name | status:value | name:lead-name> [--force]");
     console.error('Examples:');
     console.error('  npx tsx scripts/enrich-leads.ts Niagara');
     console.error('  npx tsx scripts/enrich-leads.ts "status:new_lead"');
     console.error('  npx tsx scripts/enrich-leads.ts "status:no_email" --force');
+    console.error('  npx tsx scripts/enrich-leads.ts "name:Grimsby Farmer\'s Market" --force');
     process.exitCode = 1;
     return;
   }
@@ -98,7 +107,14 @@ async function main(): Promise<void> {
   let leads: LeadSummary[];
   let filterDescription: string;
 
-  if (filter.type === "cluster") {
+  if (filter.type === "name") {
+    filterDescription = `name "${filter.name}"`;
+
+    leads = await convex.query(api.leads.listAllSummary, {});
+    leads = leads.filter(
+      (l) => l.name.toLowerCase() === filter.name.toLowerCase(),
+    );
+  } else if (filter.type === "cluster") {
     // Look up cluster by name
     const clusters: Array<{ _id: string; name: string; leadCount: number }> = await convex.query(api.clusters.list, {});
     const match = clusters.find(
