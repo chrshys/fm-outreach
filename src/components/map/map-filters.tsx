@@ -30,7 +30,7 @@ export type MapFiltersValue = {
 }
 
 export const defaultMapFilters: MapFiltersValue = {
-  statuses: [],
+  statuses: [...LEAD_STATUSES],
   types: [],
   clusterId: "all",
 }
@@ -103,7 +103,7 @@ export function MapFilters({ value, onChange, clusters }: MapFiltersProps) {
 
   const activeCount = useMemo(() => {
     let count = 0
-    if (value.statuses.length > 0) count++
+    if (value.statuses.length < LEAD_STATUSES.length) count++
     if (value.types.length > 0) count++
     if (value.clusterId !== "all") count++
     return count
@@ -111,11 +111,12 @@ export function MapFilters({ value, onChange, clusters }: MapFiltersProps) {
 
   const activeFilters = useMemo(() => {
     const filters: { key: string; label: string; clear: () => void }[] = []
-    if (value.statuses.length > 0) {
+    if (value.statuses.length < LEAD_STATUSES.length) {
+      const hidden = LEAD_STATUSES.length - value.statuses.length
       filters.push({
         key: "statuses",
-        label: `Status (${value.statuses.length})`,
-        clear: () => onChange({ ...value, statuses: [] }),
+        label: `${hidden} hidden`,
+        clear: () => onChange({ ...value, statuses: [...LEAD_STATUSES] }),
       })
     }
     if (value.types.length > 0) {
@@ -184,21 +185,24 @@ export function MapFilters({ value, onChange, clusters }: MapFiltersProps) {
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Status</Label>
-              <MultiSelectPopover
-                label="Select statuses"
-                options={LEAD_STATUSES}
-                selected={value.statuses}
-                onToggle={toggleStatus}
-                renderOption={(status) => (
-                  <span className="flex items-center gap-2">
+              <div className="space-y-1">
+                {LEAD_STATUSES.map((status) => (
+                  <label
+                    key={status}
+                    className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
+                  >
+                    <Checkbox
+                      checked={value.statuses.includes(status)}
+                      onCheckedChange={() => toggleStatus(status)}
+                    />
                     <span
                       className="inline-block size-2.5 rounded-full"
                       style={{ backgroundColor: getStatusColor(status) }}
                     />
                     {toLabel(status)}
-                  </span>
-                )}
-              />
+                  </label>
+                ))}
+              </div>
             </div>
 
             <div className="space-y-1.5">
@@ -259,7 +263,7 @@ export function filterLeads<
   T extends { status: string; type: string; clusterId?: string },
 >(leads: T[], filters: MapFiltersValue): T[] {
   return leads.filter((lead) => {
-    if (filters.statuses.length > 0 && !filters.statuses.includes(lead.status as LeadStatus)) {
+    if (!filters.statuses.includes(lead.status as LeadStatus)) {
       return false
     }
     if (filters.types.length > 0 && !filters.types.includes(lead.type as LeadType)) {

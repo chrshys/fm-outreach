@@ -54,16 +54,16 @@ export const useMapStore = create<MapState & MapActions>()(
       storage: {
         getItem: (name) => {
           if (typeof window === "undefined") return null
-          const str = sessionStorage.getItem(name)
+          const str = localStorage.getItem(name)
           return str ? JSON.parse(str) : null
         },
         setItem: (name, value) => {
           if (typeof window === "undefined") return
-          sessionStorage.setItem(name, JSON.stringify(value))
+          localStorage.setItem(name, JSON.stringify(value))
         },
         removeItem: (name) => {
           if (typeof window === "undefined") return
-          sessionStorage.removeItem(name)
+          localStorage.removeItem(name)
         },
       },
       partialize: (state) =>

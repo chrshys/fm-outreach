@@ -23,24 +23,22 @@ test("MapFiltersValue includes statuses, types, and clusterId fields", () => {
   assert.match(source, /clusterId:\s*string\s*\|\s*"all"/)
 })
 
-test("defaultMapFilters has empty statuses, empty types, and clusterId 'all'", () => {
-  assert.match(source, /statuses:\s*\[\]/)
+test("defaultMapFilters has all statuses checked, empty types, and clusterId 'all'", () => {
+  assert.match(source, /statuses:\s*\[\.\.\.LEAD_STATUSES\]/)
   assert.match(source, /types:\s*\[\]/)
   assert.match(source, /clusterId:\s*"all"/)
 })
 
-// --- Multi-select popover for Status ---
+// --- Inline status checkboxes ---
 
-test("renders Status multi-select with Popover and Checkbox", () => {
-  assert.match(source, /from\s+"@\/components\/ui\/popover"/)
+test("renders inline status checkboxes with Checkbox component", () => {
   assert.match(source, /from\s+"@\/components\/ui\/checkbox"/)
-  assert.match(source, /<MultiSelectPopover/)
+  assert.match(source, /LEAD_STATUSES\.map\(\(status\)/)
 })
 
-test("Status multi-select passes LEAD_STATUSES as options", () => {
-  assert.match(source, /options=\{LEAD_STATUSES\}/)
-  assert.match(source, /selected=\{value\.statuses\}/)
-  assert.match(source, /onToggle=\{toggleStatus\}/)
+test("Status checkboxes toggle via toggleStatus and reflect selected state", () => {
+  assert.match(source, /value\.statuses\.includes\(status\)/)
+  assert.match(source, /toggleStatus\(status\)/)
 })
 
 test("Status options render color dot from getStatusColor", () => {
@@ -99,9 +97,9 @@ test("panel can collapse to a filter button", () => {
 
 // --- filterLeads function ---
 
-test("filterLeads returns all leads when no filters are set", () => {
+test("filterLeads checks all filter dimensions", () => {
   assert.match(source, /export function filterLeads/)
-  assert.match(source, /filters\.statuses\.length\s*>\s*0/)
+  assert.match(source, /filters\.statuses\.includes\(lead\.status/)
   assert.match(source, /filters\.types\.length\s*>\s*0/)
   assert.match(source, /filters\.clusterId\s*!==\s*"all"/)
 })
