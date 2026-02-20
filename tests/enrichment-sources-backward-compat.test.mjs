@@ -35,6 +35,14 @@ describe("enrichment sources backward compat – legacy sources display correctl
     assert.match(freshness, /sonar_enrichment:\s*"Sonar Web Search"/);
   });
 
+  test("SOURCE_LABELS includes apify_website source", () => {
+    assert.match(freshness, /apify_website:\s*"Website Scraper"/);
+  });
+
+  test("SOURCE_LABELS includes apify_social source", () => {
+    assert.match(freshness, /apify_social:\s*"Social Pages"/);
+  });
+
   test("unknown sources fall back to raw source string via nullish coalescing", () => {
     // Pattern: SOURCE_LABELS[entry.source] ?? entry.source
     assert.match(
@@ -67,6 +75,19 @@ describe("enrichment sources backward compat – orchestrator preserves old sour
 
   test("handles leads with no prior enrichmentSources (nullish coalescing to empty array)", () => {
     assert.match(orchestrator, /lead\.enrichmentSources\s*\?\?\s*\[\]/);
+  });
+
+  test("Apify social step is guarded by useApify flag (won't run for old-pipeline re-enrichments if disabled)", () => {
+    assert.match(
+      orchestrator,
+      /args\.useApify\s*!==\s*false/,
+    );
+  });
+
+  test("Apify sources push to the same sources array that gets appended to old entries", () => {
+    // apify_social and apify_website both push to the same `sources` array
+    assert.match(orchestrator, /sources\.push\(\{\s*source:\s*"apify_social"/);
+    assert.match(orchestrator, /source:\s*"apify_website"/);
   });
 });
 
