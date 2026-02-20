@@ -266,6 +266,18 @@ export const enrichLead = internalAction({
       }
     }
 
+    // From Sonar — location description
+    if (sonarResult?.locationDescription && (!lead.locationDescription || overwrite)) {
+      patch.locationDescription = sonarResult.locationDescription;
+      fieldsUpdated.push("locationDescription");
+    }
+
+    // From Sonar — image prompt
+    if (sonarResult?.imagePrompt && (!lead.imagePrompt || overwrite)) {
+      patch.imagePrompt = sonarResult.imagePrompt;
+      fieldsUpdated.push("imagePrompt");
+    }
+
     // From Sonar — structured data
     if (sonarResult) {
       const existingData = (lead.enrichmentData as Record<string, unknown> | undefined) ?? {};

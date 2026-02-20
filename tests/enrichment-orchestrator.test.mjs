@@ -160,6 +160,20 @@ test("merges social links from sonarResult preserving existing values", () => {
   assert.match(source, /\.\.\.newSocial/);
 });
 
+test("merges locationDescription from sonarResult", () => {
+  assert.match(source, /sonarResult\?\.locationDescription/);
+  assert.match(source, /patch\.locationDescription\s*=\s*sonarResult\.locationDescription/);
+  assert.match(source, /!lead\.locationDescription\s*\|\|\s*overwrite/);
+  assert.match(source, /fieldsUpdated\.push\("locationDescription"\)/);
+});
+
+test("merges imagePrompt from sonarResult", () => {
+  assert.match(source, /sonarResult\?\.imagePrompt/);
+  assert.match(source, /patch\.imagePrompt\s*=\s*sonarResult\.imagePrompt/);
+  assert.match(source, /!lead\.imagePrompt\s*\|\|\s*overwrite/);
+  assert.match(source, /fieldsUpdated\.push\("imagePrompt"\)/);
+});
+
 test("merges structured data from sonarResult", () => {
   assert.match(source, /sonarResult\.structuredProducts\.length\s*>\s*0/);
   assert.match(source, /sonarResult\.structuredDescription\.specialties\.length\s*>\s*0/);
