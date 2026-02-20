@@ -1,6 +1,6 @@
 "use client"
 
-import { Facebook, Instagram, MapPin } from "lucide-react"
+import { Check, Copy, Facebook, Instagram, MapPin } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useMutation, useQuery } from "convex/react"
@@ -229,6 +229,38 @@ function StructuredProductsDisplay({
         </p>
       ))}
     </div>
+  )
+}
+
+function ImagePromptBlock({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false)
+
+  function handleCopy() {
+    void navigator.clipboard.writeText(value).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <details className="mt-2">
+      <summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+        Image Generation Prompt
+      </summary>
+      <div className="relative mt-2">
+        <pre className="whitespace-pre-wrap rounded-md border bg-muted p-3 pr-10 font-mono text-xs">
+          {value}
+        </pre>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="absolute right-2 top-2 rounded-md p-1 text-muted-foreground hover:bg-background hover:text-foreground"
+          aria-label="Copy image prompt"
+        >
+          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+        </button>
+      </div>
+    </details>
   )
 }
 
@@ -513,6 +545,9 @@ export default function LeadDetailPage() {
                       onSave={(value) => updateField("sourceDetail", value)}
                     />
                   </p>
+                  {lead.imagePrompt ? (
+                    <ImagePromptBlock value={lead.imagePrompt} />
+                  ) : null}
                 </CardContent>
               </Card>
             </div>
