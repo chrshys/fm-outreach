@@ -37,7 +37,7 @@ test("leadsToCSV produces correct header row", () => {
   const header = csv.split("\n")[0];
   assert.equal(
     header,
-    "name,type,locationDescription,imagePrompt,categories,address,city,state,postalCode,countryCode,latitude,longitude,placeId,website,instagram,facebook,products"
+    "name,type,description,address,city,state,postalCode,countryCode,latitude,longitude,placeId,website,instagram,facebook,products,imagePrompt,categories"
   );
 });
 
@@ -70,7 +70,7 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
   assert.equal(lines.length, 2);
   assert.equal(
     lines[1],
-    'Green Acres,farm,Organic produce farm,A scenic farm with rolling hills,"produce, organic",123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears"'
+    'Green Acres,farm,Organic produce farm,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears",A scenic farm with rolling hills,"produce, organic"'
   );
 });
 
@@ -214,8 +214,9 @@ test("leadsToCSV outputs single product unquoted", () => {
     { name: "One Product", type: "farm", products: ["honey"] },
   ]);
   const lines = csv.split("\n");
+  const cols = lines[1].split(",");
   // Single product has no comma, so should not be quoted
-  assert.ok(lines[1].endsWith(",honey"), "single product should not be quoted");
+  assert.equal(cols[14], "honey", "single product should not be quoted");
 });
 
 test("leadsToCSV outputs empty string for empty products array", () => {
@@ -224,8 +225,8 @@ test("leadsToCSV outputs empty string for empty products array", () => {
     { name: "No Products", type: "farm", products: [] },
   ]);
   const lines = csv.split("\n");
-  // Last column should be empty
-  assert.ok(lines[1].endsWith(",,"), "empty products array should produce empty string");
+  const cols = lines[1].split(",");
+  assert.equal(cols[14], "", "empty products array should produce empty string");
 });
 
 test("leadsToCSV handles socialLinks with only instagram", () => {
@@ -242,8 +243,8 @@ test("leadsToCSV handles socialLinks with only instagram", () => {
   // facebook column should be empty but row should still have 13 columns
   const cols = lines[1].split(",");
   assert.equal(cols.length, 17, "should still have 17 columns");
-  assert.equal(cols[14], "ig_only", "instagram column should have value");
-  assert.equal(cols[15], "", "facebook column should be empty");
+  assert.equal(cols[12], "ig_only", "instagram column should have value");
+  assert.equal(cols[13], "", "facebook column should be empty");
 });
 
 test("leadsToCSV handles socialLinks with only facebook", () => {
@@ -257,8 +258,8 @@ test("leadsToCSV handles socialLinks with only facebook", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[14], "", "instagram column should be empty");
-  assert.equal(cols[15], "fb_only", "facebook column should have value");
+  assert.equal(cols[12], "", "instagram column should be empty");
+  assert.equal(cols[13], "fb_only", "facebook column should have value");
 });
 
 test("leadsToCSV handles product names containing commas", () => {
@@ -279,13 +280,13 @@ test("leadsToCSV handles product names containing commas", () => {
   );
 });
 
-test("leadsToCSV outputs locationDescription in correct column", () => {
+test("leadsToCSV outputs description in correct column", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([
     { name: "Desc Farm", type: "farm", locationDescription: "Rural area near river" },
   ]);
   const cols = csv.split("\n")[1].split(",");
-  assert.equal(cols[2], "Rural area near river", "locationDescription should be column 2");
+  assert.equal(cols[2], "Rural area near river", "description should be column 2");
 });
 
 test("leadsToCSV outputs imagePrompt in correct column", () => {
@@ -294,7 +295,7 @@ test("leadsToCSV outputs imagePrompt in correct column", () => {
     { name: "Img Farm", type: "farm", imagePrompt: "Aerial view of barn" },
   ]);
   const cols = csv.split("\n")[1].split(",");
-  assert.equal(cols[3], "Aerial view of barn", "imagePrompt should be column 3");
+  assert.equal(cols[15], "Aerial view of barn", "imagePrompt should be column 15");
 });
 
 test("leadsToCSV joins categories array with comma-space separator", () => {
@@ -312,7 +313,7 @@ test("leadsToCSV outputs single category unquoted", () => {
     { name: "One Cat", type: "farm", categories: ["produce"] },
   ]);
   const cols = csv.split("\n")[1].split(",");
-  assert.equal(cols[4], "produce", "single category should not be quoted");
+  assert.equal(cols[16], "produce", "single category should not be quoted");
 });
 
 test("leadsToCSV outputs empty string for empty categories array", () => {
@@ -321,7 +322,7 @@ test("leadsToCSV outputs empty string for empty categories array", () => {
     { name: "No Cats", type: "farm", categories: [] },
   ]);
   const cols = csv.split("\n")[1].split(",");
-  assert.equal(cols[4], "", "empty categories array should produce empty string");
+  assert.equal(cols[16], "", "empty categories array should produce empty string");
 });
 
 test("downloadCSV function is exported", () => {
@@ -483,7 +484,7 @@ test("leadsToCSV maps province to state column", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[7], "ON", "state column should contain province value");
+  assert.equal(cols[5], "ON", "state column should contain province value");
 });
 
 test("leadsToCSV falls back to region when province is missing", () => {
@@ -497,7 +498,7 @@ test("leadsToCSV falls back to region when province is missing", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[7], "Southern Ontario", "state column should fall back to region value");
+  assert.equal(cols[5], "Southern Ontario", "state column should fall back to region value");
 });
 
 test("leadsToCSV prefers province over region for state column", () => {
@@ -512,7 +513,7 @@ test("leadsToCSV prefers province over region for state column", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[7], "ON", "state column should prefer province over region");
+  assert.equal(cols[5], "ON", "state column should prefer province over region");
 });
 
 test("leadsToCSV includes postalCode and countryCode columns", () => {
@@ -527,8 +528,8 @@ test("leadsToCSV includes postalCode and countryCode columns", () => {
   ]);
   const lines = csv.split("\n");
   const cols = lines[1].split(",");
-  assert.equal(cols[8], "N1G 2W1", "postalCode column should have correct value");
-  assert.equal(cols[9], "CA", "countryCode column should have correct value");
+  assert.equal(cols[6], "N1G 2W1", "postalCode column should have correct value");
+  assert.equal(cols[7], "CA", "countryCode column should have correct value");
 });
 
 test("handleExportCSV sets isExporting in try/finally", () => {

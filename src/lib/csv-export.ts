@@ -21,9 +21,7 @@ type ExportLead = {
 const CSV_COLUMNS = [
   "name",
   "type",
-  "locationDescription",
-  "imagePrompt",
-  "categories",
+  "description",
   "address",
   "city",
   "state",
@@ -36,6 +34,8 @@ const CSV_COLUMNS = [
   "instagram",
   "facebook",
   "products",
+  "imagePrompt",
+  "categories",
 ] as const;
 
 function escapeField(value: string): string {
@@ -53,8 +53,6 @@ export function leadsToCSV(leads: ExportLead[]): string {
       lead.name ?? "",
       lead.type ?? "",
       lead.locationDescription ?? "",
-      lead.imagePrompt ?? "",
-      lead.categories ? lead.categories.join(", ") : "",
       lead.address ?? "",
       lead.city ?? "",
       lead.province ?? lead.region ?? "",
@@ -67,6 +65,8 @@ export function leadsToCSV(leads: ExportLead[]): string {
       lead.socialLinks?.instagram ?? "",
       lead.socialLinks?.facebook ?? "",
       lead.products ? lead.products.join(", ") : "",
+      lead.imagePrompt ?? "",
+      lead.categories ? lead.categories.join(", ") : "",
     ];
     return values.map(escapeField).join(",");
   });
