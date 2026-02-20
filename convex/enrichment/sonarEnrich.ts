@@ -126,7 +126,9 @@ function parseSocialLinks(
 }
 
 function parseSonarResponse(text: string): SonarEnrichResult {
-  const parsed = JSON.parse(text) as Record<string, unknown>;
+  // Strip markdown fences if model wraps JSON in ```json blocks
+  const cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+  const parsed = JSON.parse(cleaned) as Record<string, unknown>;
 
   const businessDescription =
     typeof parsed.businessDescription === "string"
@@ -193,20 +195,21 @@ export const enrichWithSonar = action({
       userMessage += `\nWebsite: ${args.website}`;
     }
 
+    const requestBody = {
+      model,
+      messages: [
+        { role: "system", content: SONAR_ENRICHMENT_PROMPT },
+        { role: "user", content: userMessage },
+      ],
+    };
+
     const response = await fetch(AI_GATEWAY_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: SONAR_ENRICHMENT_PROMPT },
-          { role: "user", content: userMessage },
-        ],
-        response_format: { type: "json_object" },
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (response.status === 429) {
@@ -214,7 +217,8 @@ export const enrichWithSonar = action({
     }
 
     if (!response.ok) {
-      throw new Error(`Sonar API error: ${response.status}`);
+      const errorBody = await response.text().catch(() => "");
+      throw new Error(`Sonar API error: ${response.status} — ${errorBody}`);
     }
 
     const data = (await response.json()) as OpenAIChatResponse;

@@ -61,8 +61,8 @@ test("system message contains SONAR_ENRICHMENT_PROMPT", () => {
   assert.match(source, /role:\s*"system",\s*content:\s*SONAR_ENRICHMENT_PROMPT/);
 });
 
-test("requests JSON response format", () => {
-  assert.match(source, /response_format:\s*\{\s*type:\s*"json_object"\s*\}/);
+test("strips markdown fences from response before JSON parsing", () => {
+  assert.match(source, /replace.*```/);
 });
 
 test("handles rate limits (HTTP 429) with descriptive error", () => {
@@ -87,7 +87,7 @@ test("returns null when response has no content", () => {
 
 test("parses JSON response with defensive type checking", () => {
   assert.match(source, /function\s+parseSonarResponse\(/);
-  assert.match(source, /JSON\.parse\(text\)/);
+  assert.match(source, /JSON\.parse\(cleaned\)/);
   assert.match(source, /typeof\s+parsed\.contactEmail\s*===\s*"string"/);
   assert.match(source, /typeof\s+parsed\.contactName\s*===\s*"string"/);
   assert.match(source, /typeof\s+parsed\.contactPhone\s*===\s*"string"/);

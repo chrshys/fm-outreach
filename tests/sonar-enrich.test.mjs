@@ -32,8 +32,8 @@ test("uses perplexity/sonar-pro when useSonarPro is true", () => {
   assert.match(source, /"perplexity\/sonar-pro"/);
 });
 
-test("uses response_format for structured output", () => {
-  assert.match(source, /response_format:\s*\{\s*type:\s*"json_object"\s*\}/);
+test("strips markdown fences from response before parsing", () => {
+  assert.match(source, /replace.*```/);
 });
 
 test("handles 429 rate limit", () => {
