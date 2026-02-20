@@ -26,7 +26,7 @@ export default defineSchema({
   //  facebook        │ socialLinks.facebook          │ facebook
   //  products        │ products (joined with ", ")   │ products (split back)
   //  imagePrompt     │ imagePrompt                  │ imagePrompt
-  //  categories      │ structuredProducts categories │ categories
+  //  categories      │ enrichmentData.structuredProducts │ categories
   //
   // Type mapping (fm-outreach → FM profileType):
   //   farm → farm, farmers_market → farmersMarket,

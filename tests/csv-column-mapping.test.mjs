@@ -63,3 +63,25 @@ test("csv-export maps province/region to state column", () => {
     "csv-export should map province ?? region to the state column",
   );
 });
+
+test("schema comment documents categories from enrichmentData.structuredProducts", () => {
+  assert.match(
+    schemaSource,
+    /categories\s+│\s+enrichmentData\.structuredProducts/,
+    "categories row should reference enrichmentData.structuredProducts",
+  );
+});
+
+test("schema comment does not reference removed farmDescription or contactPhone", () => {
+  const commentBlock = schemaSource.match(
+    /\/\/ CSV Export Column Mapping[\s\S]*?(?=\n {2}leads: defineTable)/,
+  )[0];
+  assert.ok(
+    !commentBlock.includes("farmDescription"),
+    "comment should not reference farmDescription",
+  );
+  assert.ok(
+    !commentBlock.includes("contactPhone"),
+    "comment should not reference contactPhone",
+  );
+});
