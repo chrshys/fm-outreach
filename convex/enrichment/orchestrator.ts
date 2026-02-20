@@ -337,7 +337,13 @@ export const enrichLead = internalAction({
       fieldsUpdated.push("contactPhone");
     }
 
-    // From Sonar — website (fallback if Google Places didn't provide one)
+    // From Apify Social — website discovered from social profiles
+    if (apifySocialResult?.website && !patch.website && (!lead.website || overwrite)) {
+      patch.website = apifySocialResult.website;
+      fieldsUpdated.push("website");
+    }
+
+    // From Sonar — website (fallback if Google Places and Apify Social didn't provide one)
     if (sonarResult?.website && !patch.website && (!lead.website || overwrite)) {
       patch.website = sonarResult.website;
       fieldsUpdated.push("website");

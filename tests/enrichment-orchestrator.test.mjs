@@ -202,6 +202,11 @@ test("merges contact phone: Google Places > sonar > apifySocial", () => {
   assert.match(source, /apifySocialResult\?\.phone\s*&&\s*!patch\.contactPhone/);
 });
 
+test("merges website from apifySocialResult before sonarResult", () => {
+  assert.match(source, /apifySocialResult\?\.website\s*&&\s*!patch\.website/);
+  assert.match(source, /patch\.website\s*=\s*apifySocialResult\.website/);
+});
+
 test("merges website from sonarResult as fallback", () => {
   assert.match(source, /sonarResult\?\.website\s*&&\s*!patch\.website/);
 });

@@ -157,9 +157,13 @@ test("orchestrator fills phone from apifySocialResult as fallback", () => {
   assert.match(orchestratorSource, /patch\.contactPhone\s*=\s*apifySocialResult\.phone/);
 });
 
-test("orchestrator fills website from apifySocialResult", () => {
+test("orchestrator fills website from apifySocialResult in pipeline flow", () => {
   assert.match(orchestratorSource, /apifySocialResult\.website/);
   assert.match(orchestratorSource, /websiteUrl\s*=\s*apifySocialResult\.website/);
+});
+
+test("orchestrator persists apifySocialResult website to patch.website", () => {
+  assert.match(orchestratorSource, /patch\.website\s*=\s*apifySocialResult\.website/);
 });
 
 // --- Pipeline: social links are filled from Sonar ---
