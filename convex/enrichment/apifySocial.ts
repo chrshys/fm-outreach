@@ -16,6 +16,40 @@ const INSTAGRAM_RUN_URL =
 
 const APIFY_TIMEOUT_MS = 30_000;
 
+function parseFacebookItem(data: unknown): {
+  email: string | null;
+  phone: string | null;
+  website: string | null;
+} {
+  const empty = { email: null, phone: null, website: null };
+  if (!Array.isArray(data) || data.length === 0) return empty;
+
+  const item = data[0];
+  if (typeof item !== "object" || item === null) return empty;
+
+  const obj = item as Record<string, unknown>;
+  return {
+    email: typeof obj.email === "string" && obj.email ? obj.email : null,
+    phone: typeof obj.phone === "string" && obj.phone ? obj.phone : null,
+    website: typeof obj.website === "string" && obj.website ? obj.website : null,
+  };
+}
+
+function parseInstagramItem(data: unknown): { externalUrl: string | null } {
+  if (!Array.isArray(data) || data.length === 0) return { externalUrl: null };
+
+  const item = data[0];
+  if (typeof item !== "object" || item === null) return { externalUrl: null };
+
+  const obj = item as Record<string, unknown>;
+  return {
+    externalUrl:
+      typeof obj.externalUrl === "string" && obj.externalUrl
+        ? obj.externalUrl
+        : null,
+  };
+}
+
 export const scrapeSocialPages = action({
   args: {
     facebookUrl: v.optional(v.string()),
@@ -58,19 +92,16 @@ export const scrapeSocialPages = action({
           });
 
           if (response.ok) {
-            const items = (await response.json()) as Record<string, unknown>[];
-            if (Array.isArray(items) && items.length > 0) {
-              const item = items[0];
-              if (typeof item.email === "string" && item.email) {
-                result.email = item.email;
-              }
-              if (typeof item.phone === "string" && item.phone) {
-                result.phone = item.phone;
-              }
-              if (typeof item.website === "string" && item.website) {
-                result.website = item.website;
-              }
+            let data: unknown;
+            try {
+              data = await response.json();
+            } catch {
+              data = null;
             }
+            const fb = parseFacebookItem(data);
+            if (fb.email) result.email = fb.email;
+            if (fb.phone) result.phone = fb.phone;
+            if (fb.website) result.website = fb.website;
           }
         } finally {
           clearTimeout(timeout);
@@ -101,13 +132,15 @@ export const scrapeSocialPages = action({
           });
 
           if (response.ok) {
-            const items = (await response.json()) as Record<string, unknown>[];
-            if (Array.isArray(items) && items.length > 0) {
-              const item = items[0];
-              // Extract website from external URL or bio
-              if (typeof item.externalUrl === "string" && item.externalUrl) {
-                result.website = result.website ?? item.externalUrl;
-              }
+            let data: unknown;
+            try {
+              data = await response.json();
+            } catch {
+              data = null;
+            }
+            const ig = parseInstagramItem(data);
+            if (ig.externalUrl) {
+              result.website = result.website ?? ig.externalUrl;
             }
           }
         } finally {

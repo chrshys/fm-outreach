@@ -130,3 +130,45 @@ test("passes signal to fetch calls", () => {
 test("handler return type is ApifySocialResult | null", () => {
   assert.match(source, /Promise<ApifySocialResult\s*\|\s*null>/);
 });
+
+// --- Defensive parsing functions ---
+
+test("has parseFacebookItem function for defensive response parsing", () => {
+  assert.match(source, /function\s+parseFacebookItem\(data:\s*unknown\)/);
+});
+
+test("parseFacebookItem validates data is an array", () => {
+  assert.match(source, /!Array\.isArray\(data\)\s*\|\|\s*data\.length\s*===\s*0/);
+});
+
+test("parseFacebookItem checks first item is an object", () => {
+  assert.match(source, /typeof\s+item\s*!==\s*"object"\s*\|\|\s*item\s*===\s*null/);
+});
+
+test("parseFacebookItem validates field types with typeof checks", () => {
+  assert.match(source, /typeof\s+obj\.email\s*===\s*"string"/);
+  assert.match(source, /typeof\s+obj\.phone\s*===\s*"string"/);
+  assert.match(source, /typeof\s+obj\.website\s*===\s*"string"/);
+});
+
+test("has parseInstagramItem function for defensive response parsing", () => {
+  assert.match(source, /function\s+parseInstagramItem\(data:\s*unknown\)/);
+});
+
+test("parseInstagramItem validates data is an array", () => {
+  // Both parseFacebookItem and parseInstagramItem share this pattern
+  const matches = source.match(/!Array\.isArray\(data\)/g);
+  assert.ok(matches && matches.length >= 2, "both parsers validate array");
+});
+
+test("parseInstagramItem validates externalUrl field type", () => {
+  assert.match(source, /typeof\s+obj\.externalUrl\s*===\s*"string"/);
+});
+
+test("Facebook handler uses parseFacebookItem for response parsing", () => {
+  assert.match(source, /parseFacebookItem\(data\)/);
+});
+
+test("Instagram handler uses parseInstagramItem for response parsing", () => {
+  assert.match(source, /parseInstagramItem\(data\)/);
+});

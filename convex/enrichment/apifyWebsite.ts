@@ -53,18 +53,14 @@ function parseApifyContactItem(
   item: Record<string, unknown>,
 ): ApifyWebsiteResult {
   // Extract emails
-  const rawEmails = Array.isArray(item.emails)
-    ? (item.emails as string[])
-    : [];
+  const rawEmails = Array.isArray(item.emails) ? item.emails : [];
   const emails = rawEmails
     .filter((e): e is string => typeof e === "string")
     .filter((e) => !isBoilerplateEmail(e));
 
   // Extract phones
   const phones = Array.isArray(item.phones)
-    ? (item.phones as string[]).filter(
-        (p): p is string => typeof p === "string",
-      )
+    ? item.phones.filter((p): p is string => typeof p === "string")
     : [];
 
   // Extract social links
@@ -79,6 +75,19 @@ function parseApifyContactItem(
       instagram,
     },
   };
+}
+
+function parseApifyWebsiteResponse(data: unknown): ApifyWebsiteResult | null {
+  if (!Array.isArray(data) || data.length === 0) {
+    return null;
+  }
+
+  const first = data[0];
+  if (typeof first !== "object" || first === null) {
+    return null;
+  }
+
+  return parseApifyContactItem(first as Record<string, unknown>);
 }
 
 export const scrapeContacts = action({
@@ -129,21 +138,15 @@ export const scrapeContacts = action({
       );
     }
 
-    let items: unknown[];
+    let data: unknown;
     try {
-      items = (await response.json()) as unknown[];
+      data = await response.json();
     } catch {
       return null;
     }
 
-    if (!Array.isArray(items) || items.length === 0) {
-      return null;
-    }
-
-    const item = items[0] as Record<string, unknown>;
-
     try {
-      return parseApifyContactItem(item);
+      return parseApifyWebsiteResponse(data);
     } catch {
       return null;
     }

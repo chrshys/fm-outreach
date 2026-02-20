@@ -135,15 +135,24 @@ test("scrapeContacts does not use scrapeWebsite name", () => {
 
 test("extracts parsing into a dedicated parseApifyContactItem function", () => {
   assert.match(source, /function\s+parseApifyContactItem\(/);
-  assert.match(source, /parseApifyContactItem\(item\)/);
 });
 
 test("uses defensive .catch for error body reading", () => {
   assert.match(source, /response\.text\(\)\.catch\(\(\)\s*=>\s*""\)/);
 });
 
-test("wraps parseApifyContactItem in try/catch returning null on failure", () => {
-  // Same pattern as parseSonarResponse in sonarEnrich.ts
-  assert.match(source, /try\s*\{\s*\n\s*return\s+parseApifyContactItem\(item\)/);
+test("wraps parseApifyWebsiteResponse in try/catch returning null on failure", () => {
+  assert.match(source, /try\s*\{\s*\n\s*return\s+parseApifyWebsiteResponse\(data\)/);
   assert.match(source, /catch\s*\{\s*\n\s*return\s+null/);
+});
+
+// --- defensive parsing (parseApifyWebsiteResponse) ---
+
+test("parseApifyWebsiteResponse validates data is an array", () => {
+  assert.match(source, /function\s+parseApifyWebsiteResponse\(/);
+  assert.match(source, /!Array\.isArray\(data\)/);
+});
+
+test("parseApifyWebsiteResponse checks first item is an object", () => {
+  assert.match(source, /typeof\s+first\s*!==\s*"object"\s*\|\|\s*first\s*===\s*null/);
 });
