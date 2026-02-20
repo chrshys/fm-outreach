@@ -27,6 +27,7 @@ export const batchEnrichLeads = internalAction({
     leadIds: v.array(v.id("leads")),
     force: v.optional(v.boolean()),
     overwrite: v.optional(v.boolean()),
+    useSonarPro: v.optional(v.boolean()),
   },
   handler: async (ctx, args): Promise<BatchEnrichmentResult> => {
     const leadIds = args.leadIds.slice(0, MAX_BATCH_SIZE);
@@ -44,7 +45,7 @@ export const batchEnrichLeads = internalAction({
       try {
         const summary: EnrichmentSummary = await ctx.runAction(
           internal.enrichment.orchestrator.enrichLead,
-          { leadId, force, overwrite },
+          { leadId, force, overwrite, useSonarPro: args.useSonarPro },
         );
 
         results.push({ leadId, status: "success", summary });

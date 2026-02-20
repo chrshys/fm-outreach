@@ -129,3 +129,13 @@ test("imports EnrichmentSummary type from orchestrator", () => {
 test("passes force flag to each enrichLead call", () => {
   assert.match(source, /force\s*=\s*args\.force\s*\?\?\s*false/);
 });
+
+// --- useSonarPro passthrough ---
+
+test("accepts optional useSonarPro arg", () => {
+  assert.match(source, /useSonarPro:\s*v\.optional\(v\.boolean\(\)\)/);
+});
+
+test("passes useSonarPro to each enrichLead call", () => {
+  assert.match(source, /useSonarPro:\s*args\.useSonarPro/);
+});
