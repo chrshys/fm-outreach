@@ -117,7 +117,7 @@ export const listForExport = query({
           | Record<string, unknown>
           | undefined;
         const sp = Array.isArray(ed?.structuredProducts)
-          ? (ed!.structuredProducts as Array<{ category?: string }>)
+          ? (ed!.structuredProducts as Array<{ name?: string; category?: string }>)
           : [];
         return {
           _id: lead._id,
@@ -134,7 +134,7 @@ export const listForExport = query({
           placeId: lead.placeId,
           website: lead.website,
           socialLinks: lead.socialLinks,
-          products: lead.products,
+          products: sp.map((p) => p.name).filter((n): n is string => typeof n === "string" && n.length > 0),
           locationDescription: lead.locationDescription,
           imagePrompt: lead.imagePrompt,
           categories: [...new Set(sp.map((p) => normalizeCategoryKey(p.category ?? "")).filter((c): c is NonNullable<typeof c> => c !== undefined))],

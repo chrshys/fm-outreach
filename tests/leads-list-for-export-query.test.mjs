@@ -76,7 +76,6 @@ test("listForExport maps output to CSV fields only", () => {
     "placeId",
     "website",
     "socialLinks",
-    "products",
     "locationDescription",
     "imagePrompt",
   ];
@@ -84,6 +83,9 @@ test("listForExport maps output to CSV fields only", () => {
   for (const field of csvFields) {
     assert.match(block, new RegExp(`${field}:\\s*lead\\.${field}`), `should project field: ${field}`);
   }
+
+  // products is derived from structuredProducts, not lead.products
+  assert.match(block, /products:/, "should include products field in projection");
 
   // Should NOT include internal/non-CSV fields in the map output
   const mapBlock = block.match(/\.map\(\(lead\)\s*=>\s*[\s\S]*?\}\)/);
@@ -141,5 +143,42 @@ test("listForExport applies normalizeCategoryKey when deriving categories", () =
     block,
     /normalizeCategoryKey\(p\.category\s*\?\?\s*""\)/,
     "should call normalizeCategoryKey(p.category ?? \"\") for each product",
+  );
+});
+
+test("listForExport derives products from structuredProducts names, not lead.products", () => {
+  const exportMatch = source.match(
+    /export\s+const\s+listForExport\s*=\s*query\(\{[\s\S]*?\n\}\);/,
+  );
+  const block = exportMatch[0];
+
+  // products should be derived from sp (structuredProducts), not lead.products
+  assert.doesNotMatch(
+    block,
+    /products:\s*lead\.products/,
+    "should NOT use lead.products directly — products are derived from structuredProducts",
+  );
+  assert.match(
+    block,
+    /products:\s*sp\.map\(/,
+    "should derive products from sp.map()",
+  );
+  assert.match(
+    block,
+    /p\.name/,
+    "should extract the name field from each structured product",
+  );
+});
+
+test("listForExport structuredProducts type assertion includes name field", () => {
+  const exportMatch = source.match(
+    /export\s+const\s+listForExport\s*=\s*query\(\{[\s\S]*?\n\}\);/,
+  );
+  const block = exportMatch[0];
+
+  assert.match(
+    block,
+    /name\?:\s*string/,
+    "structuredProducts type should include optional name field",
   );
 });
