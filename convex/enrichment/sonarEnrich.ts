@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 
 import { action } from "../_generated/server";
+import { normalizeCategoryKey } from "./categories";
 
 const AI_GATEWAY_URL = "https://ai-gateway.vercel.sh/v1/chat/completions";
 
@@ -43,7 +44,19 @@ For each business, find and return:
 
 3. **Products sold** — identify specific products and categorize them:
    - "products": array of specific product names (e.g. ["organic tomatoes", "raw honey", "free-range eggs"])
-   - "structuredProducts": array of objects with "name" and "category" where category is one of: "produce", "dairy", "meat", "eggs", "honey", "baked goods", "preserves", "beverages", "flowers", "nursery", "value-added", "other"
+   - "structuredProducts": array of objects with "name" and "category" where category is one of:
+     - "produce" (vegetables, fruits, herbs, mushrooms, microgreens, nuts)
+     - "eggs_dairy" (chicken/duck/quail eggs, milk, cheese, butter, yogurt)
+     - "meat_poultry" (beef, pork, lamb, goat, venison, chicken, turkey, duck, sausage, jerky)
+     - "seafood" (crab, oysters, clams, fish, shrimp, smoked fish)
+     - "baked_goods" (bread, pies, pastries, cookies, muffins, cakes)
+     - "pantry" (honey, jams, preserves, pickles, sauces, maple syrup, dried beans, grains, flour, spices)
+     - "plants" (seedlings, houseplants, cut flowers, trees, shrubs, succulents, seeds)
+     - "handmade" (soap, candles, pottery, textiles, woodwork, jewelry)
+     - "wellness" (herbal tea, salves, tinctures, essential oils, bath products)
+     - "beverages" (juice, cider, coffee, kombucha, wine, beer)
+     - "prepared" (ready-to-eat meals, frozen meals, dips, spreads, snacks, pet food)
+     Pick the best matching category for each product. Do not use "other" — every product should fit one of these categories.
 
 4. **Sales channels and online presence:**
    - "salesChannels": array of how they sell (e.g. ["farmers market", "farm stand", "online store", "wholesale", "CSA"])
@@ -59,7 +72,7 @@ For each business, find and return:
    - "locationDescription": 2-3 sentences describing the place as if for a marketplace listing. What makes it special? What can visitors expect? Capture the character and setting of the location.
 
 8. **Image prompt:**
-   - "imagePrompt": a detailed visual description suitable for AI image generation. Describe the setting, products on display, atmosphere, lighting, and visual style. Be specific and evocative.
+   - "imagePrompt": a short, generic visual description suitable for AI image generation. Describe a typical scene for this type of business (e.g. a farm stand, a butcher shop, a market stall) and the general categories of products they sell. Do NOT include the business name, owner names, location, or specific branded details. Keep it generic and representative — the image should convey what kind of merchant this is, not depict the actual business.
 
 Only include information you can verify from web sources. Return null for any field you cannot confirm. Never fabricate email addresses, phone numbers, or URLs.
 
@@ -83,11 +96,14 @@ function parseStructuredProducts(
       (item): item is Record<string, unknown> =>
         typeof item === "object" && item !== null,
     )
-    .map((item) => ({
-      name: typeof item.name === "string" ? item.name : "",
-      category: typeof item.category === "string" ? item.category : "other",
-    }))
-    .filter((item) => item.name.length > 0);
+    .map((item) => {
+      const name = typeof item.name === "string" ? item.name : "";
+      const rawCategory =
+        typeof item.category === "string" ? item.category : "";
+      const category = normalizeCategoryKey(rawCategory);
+      return { name, category: category ?? "" };
+    })
+    .filter((item) => item.name.length > 0 && item.category.length > 0);
 }
 
 function parseStructuredDescription(

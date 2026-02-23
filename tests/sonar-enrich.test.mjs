@@ -44,3 +44,81 @@ test("handles 429 rate limit", () => {
 test('prompt contains "Never fabricate" instruction', () => {
   assert.match(source, /Never fabricate/);
 });
+
+// --- New category prompt tests ---
+
+test("prompt contains all 11 FM category keys", () => {
+  const categories = [
+    "produce",
+    "eggs_dairy",
+    "meat_poultry",
+    "seafood",
+    "baked_goods",
+    "pantry",
+    "plants",
+    "handmade",
+    "wellness",
+    "beverages",
+    "prepared",
+  ];
+  for (const cat of categories) {
+    assert.ok(
+      source.includes(`"${cat}"`),
+      `prompt should contain "${cat}"`,
+    );
+  }
+});
+
+test("prompt does not contain legacy category keys", () => {
+  // These old categories should not appear as category options in the prompt
+  const legacyInPrompt = [
+    '"dairy"',
+    '"eggs"',
+    '"meat"',
+    '"honey"',
+    '"baked goods"',
+    '"preserves"',
+    '"flowers"',
+    '"nursery"',
+    '"value-added"',
+  ];
+  // Extract just the prompt portion
+  const promptStart = source.indexOf("SONAR_ENRICHMENT_PROMPT");
+  const promptSection = source.slice(promptStart, source.indexOf("`;", promptStart));
+  for (const legacy of legacyInPrompt) {
+    assert.ok(
+      !promptSection.includes(`- ${legacy}`),
+      `prompt should not list ${legacy} as a category option`,
+    );
+  }
+});
+
+test('prompt does not offer "other" as a category', () => {
+  const promptStart = source.indexOf("SONAR_ENRICHMENT_PROMPT");
+  const promptSection = source.slice(promptStart, source.indexOf("`;", promptStart));
+  assert.ok(
+    !promptSection.includes('- "other"'),
+    'prompt should not list "other" as a category option',
+  );
+});
+
+test("prompt includes product examples for each category", () => {
+  // Spot-check a few product examples from the prompt
+  assert.ok(source.includes("vegetables, fruits, herbs"), "produce examples");
+  assert.ok(source.includes("chicken/duck/quail eggs"), "eggs_dairy examples");
+  assert.ok(source.includes("crab, oysters, clams"), "seafood examples");
+  assert.ok(source.includes("honey, jams, preserves"), "pantry examples");
+  assert.ok(source.includes("soap, candles, pottery"), "handmade examples");
+});
+
+test("imports normalizeCategoryKey from categories module", () => {
+  assert.match(source, /import\s*\{[^}]*normalizeCategoryKey[^}]*\}\s*from\s*["']\.\/categories["']/);
+});
+
+test("parseStructuredProducts uses normalizeCategoryKey", () => {
+  assert.match(source, /normalizeCategoryKey\(rawCategory\)/);
+});
+
+test("parseStructuredProducts filters out products with empty category", () => {
+  assert.match(source, /item\.category\.length\s*>\s*0/);
+});
