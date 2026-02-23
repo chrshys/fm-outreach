@@ -56,14 +56,26 @@ test("extraction prompt requests structuredProducts with name and category", () 
   assert.ok(claudeSource.includes('"category"'));
 });
 
-test("extraction prompt lists valid product categories", () => {
-  assert.ok(claudeSource.includes("produce"));
-  assert.ok(claudeSource.includes("dairy"));
-  assert.ok(claudeSource.includes("meat"));
-  assert.ok(claudeSource.includes("honey"));
-  assert.ok(claudeSource.includes("baked goods"));
-  assert.ok(claudeSource.includes("preserves"));
-  assert.ok(claudeSource.includes("value-added"));
+test("extraction prompt lists all 11 FM category keys", () => {
+  const expectedCategories = [
+    "produce",
+    "eggs_dairy",
+    "meat_poultry",
+    "seafood",
+    "baked_goods",
+    "pantry",
+    "plants",
+    "handmade",
+    "wellness",
+    "beverages",
+    "prepared",
+  ];
+  for (const cat of expectedCategories) {
+    assert.ok(
+      claudeSource.includes(`"${cat}"`),
+      `EXTRACTION_PROMPT should include "${cat}"`,
+    );
+  }
 });
 
 test("extraction prompt requests structuredDescription with summary, specialties, certifications", () => {
@@ -83,8 +95,10 @@ test("parseStructuredProducts filters out invalid items", () => {
   assert.match(claudeSource, /item\.name\.length\s*>\s*0/);
 });
 
-test("parseStructuredProducts defaults category to 'other' for missing categories", () => {
-  assert.match(claudeSource, /category:.*"other"/);
+test("parseStructuredProducts normalizes categories via normalizeCategoryKey", () => {
+  assert.match(claudeSource, /normalizeCategoryKey\(rawCategory\)/);
+  // Falls back to empty string (not "other") when normalization returns undefined
+  assert.match(claudeSource, /category:\s*category\s*\?\?\s*""/);
 });
 
 test("parseStructuredDescription falls back to businessDescription for summary", () => {

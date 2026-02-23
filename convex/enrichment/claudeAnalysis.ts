@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 
 import { action } from "../_generated/server";
+import { normalizeCategoryKey } from "./categories";
 
 const ANTHROPIC_MESSAGES_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-haiku-4-5-20251001";
@@ -30,7 +31,20 @@ export type ClaudeAnalysisResult = {
 const EXTRACTION_PROMPT = `You are analyzing scraped website content for a farm or agricultural business. Extract the following fields as JSON:
 
 - "products": array of specific products or product categories the business sells (e.g. ["organic tomatoes", "honey", "jams"]). Empty array if none found.
-- "structuredProducts": array of objects with "name" (specific product) and "category" (one of: "produce", "dairy", "meat", "eggs", "honey", "baked goods", "preserves", "beverages", "flowers", "nursery", "value-added", "other"). E.g. [{"name": "organic tomatoes", "category": "produce"}, {"name": "raw honey", "category": "honey"}]. Empty array if none found.
+- "structuredProducts": array of objects with "name" (specific product) and "category" where category is one of:
+     - "produce" (vegetables, fruits, herbs, mushrooms, microgreens, nuts)
+     - "eggs_dairy" (chicken/duck/quail eggs, milk, cheese, butter, yogurt)
+     - "meat_poultry" (beef, pork, lamb, goat, venison, chicken, turkey, duck, sausage, jerky)
+     - "seafood" (crab, oysters, clams, fish, shrimp, smoked fish)
+     - "baked_goods" (bread, pies, pastries, cookies, muffins, cakes)
+     - "pantry" (honey, jams, preserves, pickles, sauces, maple syrup, dried beans, grains, flour, spices)
+     - "plants" (seedlings, houseplants, cut flowers, trees, shrubs, succulents, seeds)
+     - "handmade" (soap, candles, pottery, textiles, woodwork, jewelry)
+     - "wellness" (herbal tea, salves, tinctures, essential oils, bath products)
+     - "beverages" (juice, cider, coffee, kombucha, wine, beer)
+     - "prepared" (ready-to-eat meals, frozen meals, dips, spreads, snacks, pet food)
+     Pick the best matching category for each product. Do not use "other" — every product should fit one of these categories.
+     E.g. [{"name": "organic tomatoes", "category": "produce"}, {"name": "raw honey", "category": "pantry"}]. Empty array if none found.
 - "salesChannels": array of sales channels (e.g. ["farmers market", "online store", "wholesale", "retail storefront", "CSA"]). Empty array if none found.
 - "sellsOnline": boolean — true if the business appears to sell products online (has a shop/store/cart, accepts online orders, etc.)
 - "businessDescription": 1-2 sentence description of what this business does
@@ -81,11 +95,14 @@ function parseStructuredProducts(raw: unknown): StructuredProduct[] {
       (item): item is Record<string, unknown> =>
         typeof item === "object" && item !== null,
     )
-    .map((item) => ({
-      name: typeof item.name === "string" ? item.name : "",
-      category: typeof item.category === "string" ? item.category : "other",
-    }))
-    .filter((item) => item.name.length > 0);
+    .map((item) => {
+      const name = typeof item.name === "string" ? item.name : "";
+      const rawCategory =
+        typeof item.category === "string" ? item.category : "";
+      const category = normalizeCategoryKey(rawCategory);
+      return { name, category: category ?? "" };
+    })
+    .filter((item) => item.name.length > 0 && item.category.length > 0);
 }
 
 function parseStructuredDescription(
