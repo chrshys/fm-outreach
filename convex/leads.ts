@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
+import { normalizeCategoryKey } from "./enrichment/categories";
 import { listLeadsPage, matchesFilters } from "./lib/leadsList";
 import { searchLeads } from "./lib/searchLeads";
 
@@ -136,7 +137,7 @@ export const listForExport = query({
           products: lead.products,
           locationDescription: lead.locationDescription,
           imagePrompt: lead.imagePrompt,
-          categories: [...new Set(sp.map((p) => p.category).filter((c): c is string => Boolean(c)))],
+          categories: [...new Set(sp.map((p) => normalizeCategoryKey(p.category ?? "")).filter((c): c is NonNullable<typeof c> => c !== undefined))],
         };
       });
   },

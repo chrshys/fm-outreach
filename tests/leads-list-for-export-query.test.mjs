@@ -114,6 +114,32 @@ test("listForExport derives categories from enrichmentData.structuredProducts", 
   assert.match(block, /new Set\(/, "should use Set to deduplicate categories");
   // Should map to p.category
   assert.match(block, /\.category/, "should extract category from each product");
-  // Should filter out falsy values
-  assert.match(block, /\.filter\(.*Boolean\(c\)/, "should filter out falsy categories");
+  // Should filter out undefined values
+  assert.match(block, /\.filter\(/, "should filter out undefined categories");
+});
+
+test("listForExport imports normalizeCategoryKey from enrichment/categories", () => {
+  assert.match(
+    source,
+    /import\s+\{[^}]*normalizeCategoryKey[^}]*\}\s+from\s+["']\.\/enrichment\/categories["']/,
+    "should import normalizeCategoryKey from ./enrichment/categories",
+  );
+});
+
+test("listForExport applies normalizeCategoryKey when deriving categories", () => {
+  const exportMatch = source.match(
+    /export\s+const\s+listForExport\s*=\s*query\(\{[\s\S]*?\n\}\);/,
+  );
+  const block = exportMatch[0];
+
+  assert.match(
+    block,
+    /normalizeCategoryKey\(/,
+    "should call normalizeCategoryKey in the categories derivation",
+  );
+  assert.match(
+    block,
+    /normalizeCategoryKey\(p\.category\s*\?\?\s*""\)/,
+    "should call normalizeCategoryKey(p.category ?? \"\") for each product",
+  );
 });
