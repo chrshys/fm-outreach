@@ -47,6 +47,30 @@ test("imagePrompt appears before categories in new profile insert", () => {
   );
 });
 
+test("importCsvRows new profile insert includes hours field", () => {
+  assert.match(
+    source,
+    /ctx\.db\.insert\("profiles",\s*\{[\s\S]*?hours:\s*row\.hours/,
+    "db.insert('profiles', ...) should include hours: row.hours"
+  );
+});
+
+test("hours appears after products in new profile insert", () => {
+  const insertMatch = source.match(
+    /ctx\.db\.insert\("profiles",\s*\{([\s\S]*?)\}\)/
+  );
+  assert.ok(insertMatch, "should find profiles insert block");
+  const insertBody = insertMatch[1];
+  const productsIdx = insertBody.indexOf("products:");
+  const hoursIdx = insertBody.indexOf("hours: row.hours");
+  assert.ok(productsIdx > -1, "products should exist in insert");
+  assert.ok(hoursIdx > -1, "hours should exist in insert");
+  assert.ok(
+    hoursIdx > productsIdx,
+    "hours should appear after products in insert"
+  );
+});
+
 test("categories in searchText builder comes after displayName", () => {
   const searchTextMatch = source.match(
     /const searchText = \[([\s\S]*?)\]\s*\n\s*\.filter/
