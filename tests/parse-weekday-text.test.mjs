@@ -11,6 +11,10 @@ test("parseWeekdayText is exported as a named function", () => {
   );
 });
 
+test("StructuredHour type is exported", () => {
+  assert.match(source, /export\s+type\s+StructuredHour\s*=/);
+});
+
 test("DAY_NAME_TO_NUMBER maps all seven days with correct numbers", () => {
   assert.match(source, /sunday:\s*0/);
   assert.match(source, /monday:\s*1/);
