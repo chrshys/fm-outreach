@@ -43,13 +43,19 @@ test("overwrite defaults to force when not explicitly provided", () => {
   );
 });
 
-test("cooldown check uses force (not overwrite)", () => {
-  const cooldownBlock = orchestratorSource.slice(
-    orchestratorSource.indexOf("// Step 1: Check cooldown"),
-    orchestratorSource.indexOf("// Step 2:"),
-  );
-  assert.match(cooldownBlock, /!force\s*&&/);
-  assert.doesNotMatch(cooldownBlock, /!overwrite/);
+// TODO: re-enable when cooldown is restored
+// test("cooldown check uses force (not overwrite)", () => {
+//   const cooldownBlock = orchestratorSource.slice(
+//     orchestratorSource.indexOf("// Step 1: Check cooldown"),
+//     orchestratorSource.indexOf("// Step 2:"),
+//   );
+//   assert.match(cooldownBlock, /!force\s*&&/);
+//   assert.doesNotMatch(cooldownBlock, /!overwrite/);
+// });
+
+test("cooldown is currently disabled (commented out)", () => {
+  assert.match(orchestratorSource, /\/\/\s*const\s+COOLDOWN_MS/);
+  assert.match(orchestratorSource, /Step 1: Cooldown disabled/);
 });
 
 test("field merge logic uses overwrite (not force)", () => {
@@ -122,12 +128,13 @@ test("batchEnrichLeads passes overwrite to enrichLead", () => {
 
 // --- Backward compatibility: force still works as before ---
 
-test("force:true still bypasses cooldown (for programmatic/admin use)", () => {
-  assert.match(
-    orchestratorSource,
-    /!force\s*&&\s*lead\.enrichedAt\s*&&\s*Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/,
-  );
-});
+// TODO: re-enable when cooldown is restored
+// test("force:true still bypasses cooldown (for programmatic/admin use)", () => {
+//   assert.match(
+//     orchestratorSource,
+//     /!force\s*&&\s*lead\.enrichedAt\s*&&\s*Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/,
+//   );
+// });
 
 test("force:true implies overwrite:true when overwrite is not set", () => {
   // overwrite defaults to force, so force:true without overwrite still overwrites fields

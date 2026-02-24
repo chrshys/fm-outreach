@@ -9,7 +9,8 @@ import type { ApifyWebsiteResult } from "./apifyWebsite";
 import type { SonarEnrichResult } from "./sonarEnrich";
 import type { WebsiteScraperResult } from "./websiteScraper";
 
-const COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+// TODO: re-enable cooldown later
+// const COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const ENRICHMENT_VERSION = "3.0";
 
 export type EnrichmentSummary = {
@@ -65,28 +66,28 @@ export const enrichLead = internalAction({
       }
     }
 
-    // Step 1: Check cooldown
-    if (
-      !force &&
-      lead.enrichedAt &&
-      Date.now() - lead.enrichedAt < COOLDOWN_MS
-    ) {
-      await ctx.runMutation(internal.enrichment.orchestratorHelpers.logActivity, {
-        leadId: args.leadId,
-        type: "enrichment_skipped",
-        description: "Enrichment skipped — enriched within last 30 days",
-        metadata: { enrichedAt: lead.enrichedAt },
-      });
-
-      return {
-        leadId: args.leadId,
-        skipped: true,
-        sources: [],
-        emailFound: !!lead.contactEmail,
-        status: lead.contactEmail ? "enriched" : "no_email",
-        fieldsUpdated: [],
-      };
-    }
+    // Step 1: Cooldown disabled — re-enable later
+    // if (
+    //   !force &&
+    //   lead.enrichedAt &&
+    //   Date.now() - lead.enrichedAt < COOLDOWN_MS
+    // ) {
+    //   await ctx.runMutation(internal.enrichment.orchestratorHelpers.logActivity, {
+    //     leadId: args.leadId,
+    //     type: "enrichment_skipped",
+    //     description: "Enrichment skipped — enriched within last 30 days",
+    //     metadata: { enrichedAt: lead.enrichedAt },
+    //   });
+    //
+    //   return {
+    //     leadId: args.leadId,
+    //     skipped: true,
+    //     sources: [],
+    //     emailFound: !!lead.contactEmail,
+    //     status: lead.contactEmail ? "enriched" : "no_email",
+    //     fieldsUpdated: [],
+    //   };
+    // }
 
     // Step 2: Log enrichment started
     await ctx.runMutation(internal.enrichment.orchestratorHelpers.logActivity, {

@@ -196,15 +196,15 @@ test("enrichment orchestrator imports isUnsubscribed check", () => {
   assert.match(orchestratorSource, /smartlead\.unsubscribe\.isUnsubscribed/);
 });
 
-test("enrichment orchestrator checks block list before enrichment", () => {
-  // The block list check should happen before the cooldown check
+test("enrichment orchestrator checks block list before cooldown step", () => {
+  // The block list check should happen before the cooldown step (currently disabled)
   const blockListCheckPos = orchestratorSource.indexOf("isUnsubscribed");
-  const cooldownCheckPos = orchestratorSource.indexOf("Check cooldown");
+  const cooldownStepPos = orchestratorSource.indexOf("Cooldown disabled");
   assert.ok(blockListCheckPos !== -1, "Should reference isUnsubscribed");
-  assert.ok(cooldownCheckPos !== -1, "Should have cooldown check");
+  assert.ok(cooldownStepPos !== -1, "Should have cooldown step comment");
   assert.ok(
-    blockListCheckPos < cooldownCheckPos,
-    "Block list check should come before cooldown check",
+    blockListCheckPos < cooldownStepPos,
+    "Block list check should come before cooldown step",
   );
 });
 

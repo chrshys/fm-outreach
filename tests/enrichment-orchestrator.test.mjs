@@ -47,12 +47,12 @@ test("checks unsubscribe block list before enrichment", () => {
   assert.match(source, /lead\.contactEmail/);
 });
 
-test("block list check happens before cooldown check", () => {
+test("block list check happens before cooldown step", () => {
   const blockListPos = source.indexOf("// Step 0:");
-  const cooldownPos = source.indexOf("// Step 1: Check cooldown");
+  const cooldownPos = source.indexOf("// Step 1:");
   assert.ok(blockListPos >= 0, "Step 0 comment should exist");
   assert.ok(cooldownPos >= 0, "Step 1 comment should exist");
-  assert.ok(blockListPos < cooldownPos, "block list check must come before cooldown check");
+  assert.ok(blockListPos < cooldownPos, "block list check must come before cooldown step");
 });
 
 test("returns skipped: true when lead is on block list", () => {
@@ -74,22 +74,28 @@ test("logs enrichment_skipped activity when lead is on block list", () => {
   assert.match(blockListBlock, /block list/);
 });
 
-// --- Step 1: Cooldown check ---
+// --- Step 1: Cooldown check (currently disabled) ---
 
-test("checks cooldown — skips if enriched within 30 days and not forced", () => {
-  assert.match(source, /COOLDOWN_MS/);
-  assert.match(source, /30\s*\*\s*24\s*\*\s*60\s*\*\s*60\s*\*\s*1000/);
-  assert.match(source, /lead\.enrichedAt/);
-  assert.match(source, /Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/);
-  assert.match(source, /!force/);
+// TODO: re-enable when cooldown is restored
+// test("checks cooldown — skips if enriched within 30 days and not forced", () => {
+//   assert.match(source, /COOLDOWN_MS/);
+//   assert.match(source, /30\s*\*\s*24\s*\*\s*60\s*\*\s*60\s*\*\s*1000/);
+//   assert.match(source, /lead\.enrichedAt/);
+//   assert.match(source, /Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/);
+//   assert.match(source, /!force/);
+// });
+
+test("cooldown is currently disabled (commented out)", () => {
+  assert.match(source, /TODO:?\s*re-enable cooldown/i);
+  assert.match(source, /\/\/\s*const\s+COOLDOWN_MS/);
 });
 
-test("logs enrichment_skipped activity when cooldown applies", () => {
+test("logs enrichment_skipped activity for block list", () => {
   assert.match(source, /enrichment_skipped/);
   assert.match(source, /Enrichment skipped/);
 });
 
-test("returns skipped: true when cooldown applies", () => {
+test("returns skipped: true for block list", () => {
   assert.match(source, /skipped:\s*true/);
 });
 

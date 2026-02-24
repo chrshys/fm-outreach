@@ -33,107 +33,108 @@ const bulkActionsSource = fs.readFileSync(
 // making any external API calls.
 // =============================================================
 
-// --- Cooldown constant ---
+// --- Cooldown is currently DISABLED ---
+// All cooldown-specific orchestrator tests are commented out.
+// The cooldown code in orchestrator.ts is commented out with a TODO to re-enable later.
 
-test("COOLDOWN_MS is defined as exactly 30 days in milliseconds", () => {
-  assert.match(
-    orchestratorSource,
-    /const\s+COOLDOWN_MS\s*=\s*30\s*\*\s*24\s*\*\s*60\s*\*\s*60\s*\*\s*1000/,
-  );
+test("cooldown is currently disabled (commented out)", () => {
+  assert.match(orchestratorSource, /\/\/\s*const\s+COOLDOWN_MS/);
+  assert.match(orchestratorSource, /Step 1: Cooldown disabled/);
 });
 
-// --- Cooldown check runs before any enrichment steps ---
+// TODO: re-enable when cooldown is restored
+// test("COOLDOWN_MS is defined as exactly 30 days in milliseconds", () => {
+//   assert.match(
+//     orchestratorSource,
+//     /const\s+COOLDOWN_MS\s*=\s*30\s*\*\s*24\s*\*\s*60\s*\*\s*60\s*\*\s*1000/,
+//   );
+// });
 
-test("cooldown check is Step 1 — before any external API calls", () => {
-  const cooldownIndex = orchestratorSource.indexOf("// Step 1: Check cooldown");
-  const step2Index = orchestratorSource.indexOf("// Step 2: Log enrichment started");
-  const placesIndex = orchestratorSource.indexOf("// Step 3: Google Places");
+// TODO: re-enable when cooldown is restored
+// test("cooldown check is Step 1 — before any external API calls", () => {
+//   const cooldownIndex = orchestratorSource.indexOf("// Step 1: Check cooldown");
+//   const step2Index = orchestratorSource.indexOf("// Step 2: Log enrichment started");
+//   const placesIndex = orchestratorSource.indexOf("// Step 3: Google Places");
+//
+//   assert.ok(cooldownIndex >= 0, "Step 1 cooldown comment should exist");
+//   assert.ok(step2Index >= 0, "Step 2 comment should exist");
+//   assert.ok(placesIndex >= 0, "Step 3 comment should exist");
+//   assert.ok(cooldownIndex < step2Index, "Cooldown check must come before enrichment start log");
+//   assert.ok(cooldownIndex < placesIndex, "Cooldown check must come before Google Places call");
+// });
 
-  assert.ok(cooldownIndex >= 0, "Step 1 cooldown comment should exist");
-  assert.ok(step2Index >= 0, "Step 2 comment should exist");
-  assert.ok(placesIndex >= 0, "Step 3 comment should exist");
-  assert.ok(cooldownIndex < step2Index, "Cooldown check must come before enrichment start log");
-  assert.ok(cooldownIndex < placesIndex, "Cooldown check must come before Google Places call");
-});
+// TODO: re-enable when cooldown is restored
+// test("cooldown guard checks enrichedAt exists and is within 30 days", () => {
+//   assert.match(orchestratorSource, /lead\.enrichedAt/);
+//   assert.match(
+//     orchestratorSource,
+//     /Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/,
+//   );
+// });
 
-// --- Cooldown guard logic ---
+// TODO: re-enable when cooldown is restored
+// test("cooldown guard is bypassed when force is true", () => {
+//   assert.match(
+//     orchestratorSource,
+//     /!force\s*&&\s*lead\.enrichedAt\s*&&\s*Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/,
+//   );
+// });
 
-test("cooldown guard checks enrichedAt exists and is within 30 days", () => {
-  assert.match(orchestratorSource, /lead\.enrichedAt/);
-  assert.match(
-    orchestratorSource,
-    /Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/,
-  );
-});
+// TODO: re-enable when cooldown is restored
+// test("cooldown guard does NOT skip when enrichedAt is undefined (never enriched)", () => {
+//   assert.match(orchestratorSource, /lead\.enrichedAt\s*&&/);
+// });
 
-test("cooldown guard is bypassed when force is true", () => {
-  // The condition must include !force as the first check
-  assert.match(
-    orchestratorSource,
-    /!force\s*&&\s*lead\.enrichedAt\s*&&\s*Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/,
-  );
-});
+// TODO: re-enable when cooldown is restored
+// test("returns skipped: true with empty sources and fieldsUpdated when cooldown applies", () => {
+//   const cooldownBlock = orchestratorSource.slice(
+//     orchestratorSource.indexOf("// Step 1: Check cooldown"),
+//     orchestratorSource.indexOf("// Step 2:"),
+//   );
+//   assert.match(cooldownBlock, /skipped:\s*true/);
+//   assert.match(cooldownBlock, /sources:\s*\[\]/);
+//   assert.match(cooldownBlock, /fieldsUpdated:\s*\[\]/);
+// });
 
-test("cooldown guard does NOT skip when enrichedAt is undefined (never enriched)", () => {
-  // The condition requires lead.enrichedAt to be truthy
-  assert.match(orchestratorSource, /lead\.enrichedAt\s*&&/);
-});
+// TODO: re-enable when cooldown is restored
+// test("skipped return includes correct status based on existing email", () => {
+//   const cooldownBlock = orchestratorSource.slice(
+//     orchestratorSource.indexOf("// Step 1: Check cooldown"),
+//     orchestratorSource.indexOf("// Step 2:"),
+//   );
+//   assert.match(
+//     cooldownBlock,
+//     /status:\s*lead\.contactEmail\s*\?\s*"enriched"\s*:\s*"no_email"/,
+//   );
+// });
 
-// --- Skip behavior: early return ---
+// TODO: re-enable when cooldown is restored
+// test("skipped return includes emailFound based on existing contactEmail", () => {
+//   const cooldownBlock = orchestratorSource.slice(
+//     orchestratorSource.indexOf("// Step 1: Check cooldown"),
+//     orchestratorSource.indexOf("// Step 2:"),
+//   );
+//   assert.match(cooldownBlock, /emailFound:\s*!!lead\.contactEmail/);
+// });
 
-test("returns skipped: true with empty sources and fieldsUpdated when cooldown applies", () => {
-  // Find the cooldown skip return block
-  const cooldownBlock = orchestratorSource.slice(
-    orchestratorSource.indexOf("// Step 1: Check cooldown"),
-    orchestratorSource.indexOf("// Step 2:"),
-  );
+// TODO: re-enable when cooldown is restored
+// test("logs enrichment_skipped activity when cooldown applies", () => {
+//   const cooldownBlock = orchestratorSource.slice(
+//     orchestratorSource.indexOf("// Step 1: Check cooldown"),
+//     orchestratorSource.indexOf("// Step 2:"),
+//   );
+//   assert.match(cooldownBlock, /enrichment_skipped/);
+//   assert.match(cooldownBlock, /enriched within last 30 days/);
+// });
 
-  assert.match(cooldownBlock, /skipped:\s*true/);
-  assert.match(cooldownBlock, /sources:\s*\[\]/);
-  assert.match(cooldownBlock, /fieldsUpdated:\s*\[\]/);
-});
-
-test("skipped return includes correct status based on existing email", () => {
-  const cooldownBlock = orchestratorSource.slice(
-    orchestratorSource.indexOf("// Step 1: Check cooldown"),
-    orchestratorSource.indexOf("// Step 2:"),
-  );
-
-  assert.match(
-    cooldownBlock,
-    /status:\s*lead\.contactEmail\s*\?\s*"enriched"\s*:\s*"no_email"/,
-  );
-});
-
-test("skipped return includes emailFound based on existing contactEmail", () => {
-  const cooldownBlock = orchestratorSource.slice(
-    orchestratorSource.indexOf("// Step 1: Check cooldown"),
-    orchestratorSource.indexOf("// Step 2:"),
-  );
-
-  assert.match(cooldownBlock, /emailFound:\s*!!lead\.contactEmail/);
-});
-
-// --- Activity logging for skipped enrichment ---
-
-test("logs enrichment_skipped activity when cooldown applies", () => {
-  const cooldownBlock = orchestratorSource.slice(
-    orchestratorSource.indexOf("// Step 1: Check cooldown"),
-    orchestratorSource.indexOf("// Step 2:"),
-  );
-
-  assert.match(cooldownBlock, /enrichment_skipped/);
-  assert.match(cooldownBlock, /enriched within last 30 days/);
-});
-
-test("enrichment_skipped activity includes enrichedAt in metadata", () => {
-  const cooldownBlock = orchestratorSource.slice(
-    orchestratorSource.indexOf("// Step 1: Check cooldown"),
-    orchestratorSource.indexOf("// Step 2:"),
-  );
-
-  assert.match(cooldownBlock, /metadata:\s*\{\s*enrichedAt:\s*lead\.enrichedAt\s*\}/);
-});
+// TODO: re-enable when cooldown is restored
+// test("enrichment_skipped activity includes enrichedAt in metadata", () => {
+//   const cooldownBlock = orchestratorSource.slice(
+//     orchestratorSource.indexOf("// Step 1: Check cooldown"),
+//     orchestratorSource.indexOf("// Step 2:"),
+//   );
+//   assert.match(cooldownBlock, /metadata:\s*\{\s*enrichedAt:\s*lead\.enrichedAt\s*\}/);
+// });
 
 test("enrichment_skipped is a valid activity type in orchestratorHelpers", () => {
   assert.match(helpersSource, /v\.literal\("enrichment_skipped"\)/);

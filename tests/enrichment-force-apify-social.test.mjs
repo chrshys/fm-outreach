@@ -29,11 +29,16 @@ test("force flag defaults overwrite to true", () => {
   );
 });
 
-test("force bypasses 30-day cooldown check", () => {
-  assert.match(
-    orchestratorSource,
-    /!force\s*&&\s*lead\.enrichedAt\s*&&\s*Date\.now\(\)/,
-  );
+// TODO: re-enable when cooldown is restored
+// test("force bypasses 30-day cooldown check", () => {
+//   assert.match(
+//     orchestratorSource,
+//     /!force\s*&&\s*lead\.enrichedAt\s*&&\s*Date\.now\(\)/,
+//   );
+// });
+
+test("cooldown is currently disabled (commented out)", () => {
+  assert.match(orchestratorSource, /\/\/\s*const\s+COOLDOWN_MS/);
 });
 
 // --- Apify website scraper runs when websiteUrl exists ---

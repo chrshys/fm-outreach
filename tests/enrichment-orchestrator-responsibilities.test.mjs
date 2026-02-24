@@ -18,24 +18,32 @@ const helpersSource = fs.readFileSync(
 // consent source, and activity logging.
 // =============================================================
 
-// --- 1. Cooldown check ---
+// --- 1. Cooldown check (currently disabled) ---
 
-test("orchestrator checks 30-day cooldown before enriching", () => {
-  assert.match(source, /COOLDOWN_MS/);
-  assert.match(source, /Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/);
-});
+// TODO: re-enable when cooldown is restored
+// test("orchestrator checks 30-day cooldown before enriching", () => {
+//   assert.match(source, /COOLDOWN_MS/);
+//   assert.match(source, /Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/);
+// });
 
-test("cooldown is bypassed with force flag", () => {
-  assert.match(source, /!force\s*&&\s*lead\.enrichedAt/);
-});
+// TODO: re-enable when cooldown is restored
+// test("cooldown is bypassed with force flag", () => {
+//   assert.match(source, /!force\s*&&\s*lead\.enrichedAt/);
+// });
 
-test("cooldown skip returns early without calling external APIs", () => {
-  const cooldownBlock = source.slice(
-    source.indexOf("// Step 1: Check cooldown"),
-    source.indexOf("// Step 2:"),
-  );
-  assert.match(cooldownBlock, /return\s*\{/);
-  assert.match(cooldownBlock, /skipped:\s*true/);
+// TODO: re-enable when cooldown is restored
+// test("cooldown skip returns early without calling external APIs", () => {
+//   const cooldownBlock = source.slice(
+//     source.indexOf("// Step 1: Check cooldown"),
+//     source.indexOf("// Step 2:"),
+//   );
+//   assert.match(cooldownBlock, /return\s*\{/);
+//   assert.match(cooldownBlock, /skipped:\s*true/);
+// });
+
+test("cooldown is currently disabled (commented out)", () => {
+  assert.match(source, /\/\/\s*const\s+COOLDOWN_MS/);
+  assert.match(source, /Step 1: Cooldown disabled/);
 });
 
 // --- 2. Unsubscribe block list ---
@@ -207,10 +215,10 @@ test("orchestrator logs enrichment_finished with summary metadata", () => {
   assert.match(source, /status:\s*newStatus/);
 });
 
-test("orchestrator logs enrichment_skipped for cooldown and block list", () => {
-  // Count occurrences of enrichment_skipped — should be at least 2 (block list + cooldown)
+test("orchestrator logs enrichment_skipped for block list", () => {
+  // Block list skip is active; cooldown skip is currently commented out but still present in source
   const matches = source.match(/enrichment_skipped/g);
-  assert.ok(matches && matches.length >= 2, "should have at least 2 enrichment_skipped logs");
+  assert.ok(matches && matches.length >= 1, "should have at least 1 enrichment_skipped log");
 });
 
 test("activity logging uses orchestratorHelpers.logActivity", () => {

@@ -59,13 +59,18 @@ test("script passes force flag to batchEnrich action", () => {
   assert.match(callBlock, /force/);
 });
 
-// --- Orchestrator: force bypasses cooldown ---
+// --- Orchestrator: cooldown currently disabled ---
 
-test("force:true bypasses 30-day cooldown in orchestrator", () => {
-  assert.match(
-    orchestratorSource,
-    /!force\s*&&\s*lead\.enrichedAt\s*&&\s*Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/,
-  );
+// TODO: re-enable when cooldown is restored
+// test("force:true bypasses 30-day cooldown in orchestrator", () => {
+//   assert.match(
+//     orchestratorSource,
+//     /!force\s*&&\s*lead\.enrichedAt\s*&&\s*Date\.now\(\)\s*-\s*lead\.enrichedAt\s*<\s*COOLDOWN_MS/,
+//   );
+// });
+
+test("cooldown is currently disabled (commented out)", () => {
+  assert.match(orchestratorSource, /\/\/\s*const\s+COOLDOWN_MS/);
 });
 
 // --- Orchestrator: force implies overwrite ---
