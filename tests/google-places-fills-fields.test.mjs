@@ -139,6 +139,10 @@ test("orchestrator patches hours from Google Places result", () => {
   assert.match(orchestratorSource, /fieldsUpdated\.push\("hours"\)/);
 });
 
+test("orchestrator only fills hours when empty or forced", () => {
+  assert.match(orchestratorSource, /!lead\.hours\s*\|\|.*overwrite.*placesResult\.hours/s);
+});
+
 // --- Sources tracking ---
 
 test("orchestrator adds google_places to sources when Places result is available", () => {
