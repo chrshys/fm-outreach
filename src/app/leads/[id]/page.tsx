@@ -545,6 +545,16 @@ export default function LeadDetailPage() {
                       <span className="font-medium">Hours:</span> Not available
                     </p>
                   )}
+                  {lead.isSeasonal === true ? (
+                    <p>
+                      <span className="font-medium">Seasonality:</span>{" "}
+                      Seasonal{lead.seasonalNote ? ` — ${lead.seasonalNote}` : ""}
+                    </p>
+                  ) : lead.isSeasonal === false ? (
+                    <p>
+                      <span className="font-medium">Seasonality:</span> Year-round
+                    </p>
+                  ) : null}
                   {lead.farmDescription ? (
                     <p>
                       <span className="font-medium">Description:</span>{" "}
