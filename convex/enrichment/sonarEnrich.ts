@@ -26,6 +26,8 @@ export type SonarEnrichResult = {
   };
   locationDescription: string;
   imagePrompt: string;
+  isSeasonal: boolean | null;
+  seasonalNote: string | null;
   citations: string[];
 };
 
@@ -72,7 +74,11 @@ For each business, find and return:
    - "locationDescription": 2-3 sentences describing the place as if for a marketplace listing. What makes it special? What can visitors expect? Capture the character and setting of the location.
 
 8. **Image prompt:**
-   - "imagePrompt": a short, generic visual description suitable for AI image generation. Describe a typical scene for this type of business (e.g. a farm stand, a butcher shop, a market stall) and the general categories of products they sell. Do NOT include the business name, owner names, location, or specific branded details. Keep it generic and representative — the image should convey what kind of merchant this is, not depict the actual business.
+   - "imagePrompt": a short visual description suitable for AI image generation. Describe a close-up arrangement or display of the specific types of products this business sells — like a cornucopia, flat lay, or styled product grouping. Focus only on the food and goods themselves. Do NOT include storefronts, buildings, interiors, people, shopping scenes, signage, or environmental settings. Do NOT include the business name or location. The image should look like a curated product photo, not a scene.
+
+9. **Seasonality:**
+   - "isSeasonal": boolean or null — true if the business operates only part of the year (e.g. seasonal farm stand, summer-only market), false if year-round, null if unknown
+   - "seasonalNote": a short note describing the operating season if seasonal (e.g. "Open May through October"), or null if not seasonal or unknown
 
 Only include information you can verify from web sources. Return null for any field you cannot confirm. Never fabricate email addresses, phone numbers, or URLs.
 
@@ -180,6 +186,10 @@ function parseSonarResponse(text: string): SonarEnrichResult {
         : "",
     imagePrompt:
       typeof parsed.imagePrompt === "string" ? parsed.imagePrompt : "",
+    isSeasonal:
+      typeof parsed.isSeasonal === "boolean" ? parsed.isSeasonal : null,
+    seasonalNote:
+      typeof parsed.seasonalNote === "string" ? parsed.seasonalNote : null,
     citations: [],
   };
 }

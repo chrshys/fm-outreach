@@ -98,6 +98,14 @@ test("parses JSON response with defensive type checking", () => {
   assert.match(source, /Array\.isArray\(parsed\.salesChannels\)/);
 });
 
+test("parses isSeasonal with defensive type checking", () => {
+  assert.match(source, /typeof\s+parsed\.isSeasonal\s*===\s*"boolean"/);
+});
+
+test("parses seasonalNote with defensive type checking", () => {
+  assert.match(source, /typeof\s+parsed\.seasonalNote\s*===\s*"string"/);
+});
+
 test("parses structuredProducts with defensive validation", () => {
   assert.match(source, /function\s+parseStructuredProducts\(/);
   assert.match(source, /typeof\s+item\.name\s*===\s*"string"/);
@@ -139,6 +147,8 @@ test("sends enrichment prompt requesting all SonarEnrichResult fields", () => {
   assert.match(source, /structuredDescription/);
   assert.match(source, /locationDescription/);
   assert.match(source, /imagePrompt/);
+  assert.match(source, /isSeasonal/);
+  assert.match(source, /seasonalNote/);
   assert.match(source, /Respond ONLY with valid JSON/);
 });
 
@@ -168,17 +178,16 @@ test("prompt includes verification warning against fabrication", () => {
 test("prompt lists all product categories", () => {
   const categories = [
     "produce",
-    "dairy",
-    "meat",
-    "eggs",
-    "honey",
-    "baked goods",
-    "preserves",
+    "eggs_dairy",
+    "meat_poultry",
+    "seafood",
+    "baked_goods",
+    "pantry",
+    "plants",
+    "handmade",
+    "wellness",
     "beverages",
-    "flowers",
-    "nursery",
-    "value-added",
-    "other",
+    "prepared",
   ];
   for (const cat of categories) {
     assert.match(source, new RegExp(`"${cat}"`), `missing category: ${cat}`);
@@ -191,11 +200,11 @@ test("prompt describes locationDescription as 2-3 sentences for marketplace list
   assert.match(source, /marketplace listing/);
 });
 
-test("prompt describes imagePrompt for AI image generation with detail", () => {
+test("prompt describes imagePrompt for AI image generation with product-focused style", () => {
   assert.match(source, /imagePrompt/);
   assert.match(source, /AI image generation/);
-  assert.match(source, /setting/);
-  assert.match(source, /atmosphere/);
+  assert.match(source, /close-up/);
+  assert.match(source, /Do NOT include.*business name/);
 });
 
 test("user message interpolates lead details with labeled fields", () => {

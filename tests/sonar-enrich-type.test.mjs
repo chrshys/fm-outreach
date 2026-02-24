@@ -65,6 +65,14 @@ test("SonarEnrichResult has imagePrompt as string", () => {
   assert.match(source, /imagePrompt:\s*string/);
 });
 
+test("SonarEnrichResult has isSeasonal as boolean | null", () => {
+  assert.match(source, /isSeasonal:\s*boolean\s*\|\s*null/);
+});
+
+test("SonarEnrichResult has seasonalNote as string | null", () => {
+  assert.match(source, /seasonalNote:\s*string\s*\|\s*null/);
+});
+
 test("SonarEnrichResult has citations as string[]", () => {
   assert.match(source, /citations:\s*string\[\]/);
 });
