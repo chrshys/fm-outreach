@@ -111,6 +111,68 @@ test("prompt includes product examples for each category", () => {
   assert.ok(source.includes("soap, candles, pottery"), "handmade examples");
 });
 
+// --- Seasonality prompt tests ---
+
+test("prompt contains Seasonality section as section 9", () => {
+  assert.match(source, /9\.\s+\*\*Seasonality:\*\*/);
+});
+
+test("prompt describes isSeasonal as boolean for part-of-year businesses", () => {
+  assert.ok(
+    source.includes('"isSeasonal": boolean'),
+    'prompt should contain "isSeasonal": boolean',
+  );
+  assert.ok(
+    source.includes("seasonal farm stand, summer-only farmers market"),
+    "prompt should mention seasonal farm stand and summer-only farmers market examples",
+  );
+  assert.ok(
+    source.includes("false if open year-round"),
+    "prompt should say false if open year-round",
+  );
+});
+
+test("prompt describes seasonalNote with examples and null guidance", () => {
+  assert.ok(
+    source.includes('"seasonalNote": a short note describing their operating season'),
+    'prompt should describe seasonalNote field',
+  );
+  assert.ok(
+    source.includes("Open May through October"),
+    "prompt should include May-October example",
+  );
+  assert.ok(
+    source.includes("Saturdays, June to September"),
+    "prompt should include June-September example",
+  );
+  assert.ok(
+    source.includes("Return null if year-round or unknown"),
+    "prompt should instruct to return null if year-round or unknown",
+  );
+});
+
+test("prompt Seasonality section appears after imagePrompt section", () => {
+  const imagePromptIdx = source.indexOf("8. **Image prompt:**");
+  const seasonalityIdx = source.indexOf("9. **Seasonality:**");
+  assert.ok(imagePromptIdx > -1, "imagePrompt section should exist");
+  assert.ok(seasonalityIdx > -1, "Seasonality section should exist");
+  assert.ok(
+    seasonalityIdx > imagePromptIdx,
+    "Seasonality section should come after imagePrompt section",
+  );
+});
+
+test("prompt Seasonality section appears before 'Only include information' line", () => {
+  const seasonalityIdx = source.indexOf("9. **Seasonality:**");
+  const onlyIncludeIdx = source.indexOf("Only include information you can verify");
+  assert.ok(seasonalityIdx > -1, "Seasonality section should exist");
+  assert.ok(onlyIncludeIdx > -1, "'Only include information' line should exist");
+  assert.ok(
+    seasonalityIdx < onlyIncludeIdx,
+    "Seasonality section should come before 'Only include information' line",
+  );
+});
+
 test("imports normalizeCategoryKey from categories module", () => {
   assert.match(source, /import\s*\{[^}]*normalizeCategoryKey[^}]*\}\s*from\s*["']\.\/categories["']/);
 });

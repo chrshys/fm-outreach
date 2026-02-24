@@ -77,8 +77,8 @@ For each business, find and return:
    - "imagePrompt": a short visual description suitable for AI image generation. Describe a close-up arrangement or display of the specific types of products this business sells — like a cornucopia, flat lay, or styled product grouping. Focus only on the food and goods themselves. Do NOT include storefronts, buildings, interiors, people, shopping scenes, signage, or environmental settings. Do NOT include the business name or location. The image should look like a curated product photo, not a scene.
 
 9. **Seasonality:**
-   - "isSeasonal": boolean or null — true if the business operates only part of the year (e.g. seasonal farm stand, summer-only market), false if year-round, null if unknown
-   - "seasonalNote": a short note describing the operating season if seasonal (e.g. "Open May through October"), or null if not seasonal or unknown
+   - "isSeasonal": boolean — true if the business operates only part of the year (e.g., seasonal farm stand, summer-only farmers market), false if open year-round
+   - "seasonalNote": a short note describing their operating season if seasonal (e.g., "Open May through October", "Saturdays, June to September"). Return null if year-round or unknown.
 
 Only include information you can verify from web sources. Return null for any field you cannot confirm. Never fabricate email addresses, phone numbers, or URLs.
 
