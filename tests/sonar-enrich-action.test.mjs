@@ -226,6 +226,11 @@ test("user message interpolates lead details with labeled fields", () => {
   assert.match(source, /Province:\s*\$\{args\.province\}/);
 });
 
+test("SonarEnrichResult type includes seasonality fields", () => {
+  assert.match(source, /isSeasonal:\s*boolean\s*\|\s*null/);
+  assert.match(source, /seasonalNote:\s*string\s*\|\s*null/);
+});
+
 test("user message appends Website line only when website is provided", () => {
   assert.match(source, /if\s*\(args\.website\)/);
   assert.match(source, /Website:\s*\$\{args\.website\}/);
