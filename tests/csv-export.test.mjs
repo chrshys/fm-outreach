@@ -668,6 +668,21 @@ test("leadsToCSV outputs empty string when isSeasonal is undefined", () => {
   assert.equal(cols[19], "", "seasonalNote column should be empty when undefined");
 });
 
+test("leadsToCSV outputs isSeasonal as string boolean", () => {
+  const { leadsToCSV } = loadModule();
+  const csvTrue = leadsToCSV([
+    { name: "Seasonal", type: "farm", isSeasonal: true },
+  ]);
+  const colsTrue = csvTrue.split("\n")[1].split(",");
+  assert.equal(colsTrue[18], "true", "isSeasonal true should produce string 'true' at index 18");
+
+  const csvFalse = leadsToCSV([
+    { name: "Year-Round", type: "farm", isSeasonal: false },
+  ]);
+  const colsFalse = csvFalse.split("\n")[1].split(",");
+  assert.equal(colsFalse[18], "false", "isSeasonal false should produce string 'false' at index 18");
+});
+
 test("ExportLead type includes isSeasonal and seasonalNote fields", () => {
   const source = fs.readFileSync("src/lib/csv-export.ts", "utf8");
   assert.ok(source.includes("isSeasonal?: boolean"), "ExportLead should have isSeasonal field");
