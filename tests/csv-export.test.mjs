@@ -37,7 +37,7 @@ test("leadsToCSV produces correct header row", () => {
   const header = csv.split("\n")[0];
   assert.equal(
     header,
-    "name,type,description,address,city,state,postalCode,countryCode,latitude,longitude,placeId,website,instagram,facebook,products,imagePrompt,categories"
+    "name,type,description,address,city,state,postalCode,countryCode,latitude,longitude,placeId,website,instagram,facebook,products,imagePrompt,categories,hours"
   );
 });
 
@@ -70,7 +70,7 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
   assert.equal(lines.length, 2);
   assert.equal(
     lines[1],
-    'Green Acres,farm,Organic produce,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears",A farm stand with fresh produce,produce'
+    'Green Acres,farm,Organic produce,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears",A farm stand with fresh produce,produce,'
   );
 });
 
@@ -83,7 +83,7 @@ test("leadsToCSV uses empty strings for undefined (missing) fields", () => {
     },
   ]);
   const lines = csv.split("\n");
-  assert.equal(lines[1], "Bare Farm,farm,,,,,,,,,,,,,,,");
+  assert.equal(lines[1], "Bare Farm,farm,,,,,,,,,,,,,,,,");
 });
 
 test("leadsToCSV uses empty strings for explicit null fields", () => {
@@ -110,7 +110,7 @@ test("leadsToCSV uses empty strings for explicit null fields", () => {
     },
   ]);
   const lines = csv.split("\n");
-  assert.equal(lines[1], "Null Farm,farm,,,,,,,,,,,,,,,");
+  assert.equal(lines[1], "Null Farm,farm,,,,,,,,,,,,,,,,");
 });
 
 test("leadsToCSV never outputs literal 'undefined' or 'null' strings", () => {
@@ -242,7 +242,7 @@ test("leadsToCSV handles socialLinks with only instagram", () => {
   assert.ok(lines[1].includes("ig_only"), "should include instagram value");
   // facebook column should be empty but row should still have 13 columns
   const cols = lines[1].split(",");
-  assert.equal(cols.length, 17, "should still have 17 columns");
+  assert.equal(cols.length, 18, "should still have 18 columns");
   assert.equal(cols[12], "ig_only", "instagram column should have value");
   assert.equal(cols[13], "", "facebook column should be empty");
 });
@@ -422,15 +422,15 @@ test("Export CSV button appears between LeadFilters and Table in JSX", () => {
   );
 });
 
-test("CSV header has exactly 17 columns", () => {
+test("CSV header has exactly 18 columns", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([]);
   const header = csv.split("\n")[0];
   const columns = header.split(",");
-  assert.equal(columns.length, 17, "should have exactly 17 columns");
+  assert.equal(columns.length, 18, "should have exactly 18 columns");
 });
 
-test("CSV data rows have exactly 17 columns for a complete lead", () => {
+test("CSV data rows have exactly 18 columns for a complete lead", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([
     {
@@ -454,15 +454,15 @@ test("CSV data rows have exactly 17 columns for a complete lead", () => {
   ]);
   const lines = csv.split("\n");
   const dataColumns = lines[1].split(",");
-  assert.equal(dataColumns.length, 17, "data row should have exactly 17 columns");
+  assert.equal(dataColumns.length, 18, "data row should have exactly 18 columns");
 });
 
-test("CSV data rows have exactly 17 columns for a minimal lead", () => {
+test("CSV data rows have exactly 18 columns for a minimal lead", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([{ name: "Minimal", type: "farm" }]);
   const lines = csv.split("\n");
   const dataColumns = lines[1].split(",");
-  assert.equal(dataColumns.length, 17, "minimal lead should still have 17 columns");
+  assert.equal(dataColumns.length, 18, "minimal lead should still have 18 columns");
 });
 
 test("downloadCSV creates a text/csv blob", () => {
@@ -591,6 +591,7 @@ test("schema.ts CSV column mapping comment documents correct field mappings", ()
     ["facebook", "socialLinks"],
     ["products", "joined"],
     ["categories", "structuredProducts"],
+    ["hours", "hours"],
     ["imagePrompt", "imagePrompt"],
   ];
 
@@ -604,4 +605,26 @@ test("schema.ts CSV column mapping comment documents correct field mappings", ()
       `'${csvCol}' mapping should reference '${schemaRef}', got: ${match[1].trim()}`
     );
   }
+});
+
+test("leadsToCSV serializes hours as JSON string", () => {
+  const { leadsToCSV } = loadModule();
+  const hours = [
+    { day: 1, open: "09:00", close: "17:00", isClosed: false },
+  ];
+  const csv = leadsToCSV([
+    { name: "Hours Farm", type: "farm", hours },
+  ]);
+  const lines = csv.split("\n");
+  const dataRow = lines[1];
+  // JSON contains commas and quotes, so CSV escaping doubles quotes and wraps in quotes
+  const escaped = JSON.stringify(hours).replace(/"/g, '""');
+  assert.ok(dataRow.includes(escaped), "hours should be serialized as escaped JSON");
+});
+
+test("leadsToCSV outputs empty string when hours is undefined", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([{ name: "No Hours", type: "farm" }]);
+  const cols = csv.split("\n")[1].split(",");
+  assert.equal(cols[17], "", "hours column should be empty when undefined");
 });

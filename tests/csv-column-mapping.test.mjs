@@ -72,6 +72,14 @@ test("schema comment documents categories from enrichmentData.structuredProducts
   );
 });
 
+test("schema comment documents hours from hours (JSON)", () => {
+  assert.match(
+    schemaSource,
+    /hours\s+│\s+hours \(JSON\)/,
+    "hours row should reference hours (JSON)",
+  );
+});
+
 test("schema comment does not reference removed farmDescription or contactPhone", () => {
   const commentBlock = schemaSource.match(
     /\/\/ CSV Export Column Mapping[\s\S]*?(?=\n {2}leads: defineTable)/,

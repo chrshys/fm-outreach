@@ -138,6 +138,7 @@ export const listForExport = query({
           locationDescription: lead.locationDescription,
           imagePrompt: lead.imagePrompt,
           categories: [...new Set(sp.map((p) => normalizeCategoryKey(p.category ?? "")).filter((c): c is NonNullable<typeof c> => c !== undefined))],
+          hours: lead.hours,
         };
       });
   },

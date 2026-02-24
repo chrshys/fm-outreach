@@ -27,6 +27,7 @@ export default defineSchema({
   //  products        │ products (joined with ", ")   │ products (split back)
   //  imagePrompt     │ imagePrompt                  │ imagePrompt
   //  categories      │ enrichmentData.structuredProducts │ categories
+  //  hours           │ hours (JSON)                     │ hours
   //
   // Type mapping (fm-outreach → FM profileType):
   //   farm → farm, farmers_market → farmersMarket,
