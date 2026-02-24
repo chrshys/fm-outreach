@@ -170,6 +170,22 @@ test("listForExport derives products from structuredProducts names, not lead.pro
   );
 });
 
+test("listForExport includes hours field in projection", () => {
+  const exportMatch = source.match(
+    /export\s+const\s+listForExport\s*=\s*query\(\{[\s\S]*?\n\}\);/,
+  );
+  const block = exportMatch[0];
+  const mapBlock = block.match(/\.map\(\(lead\)\s*=>\s*[\s\S]*?\}\)/);
+  assert.ok(mapBlock, ".map() projection should exist");
+  const projection = mapBlock[0];
+
+  assert.match(
+    projection,
+    /hours:\s*lead\.hours/,
+    "should project hours field from lead",
+  );
+});
+
 test("listForExport structuredProducts type assertion includes name field", () => {
   const exportMatch = source.match(
     /export\s+const\s+listForExport\s*=\s*query\(\{[\s\S]*?\n\}\);/,
