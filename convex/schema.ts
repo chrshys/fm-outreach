@@ -49,6 +49,16 @@ export default defineSchema({
     placeId: v.optional(v.string()),
     postalCode: v.optional(v.string()),
     countryCode: v.optional(v.string()),
+    hours: v.optional(
+      v.array(
+        v.object({
+          day: v.number(),
+          open: v.string(),
+          close: v.string(),
+          isClosed: v.boolean(),
+        }),
+      ),
+    ),
     contactName: v.optional(v.string()),
     contactEmail: v.optional(v.string()),
     contactPhone: v.optional(v.string()),
