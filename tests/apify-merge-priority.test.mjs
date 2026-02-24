@@ -72,29 +72,34 @@ test("emailSource for sonar includes lead name and date", () => {
   assert.match(source, /emailSource\s*=\s*`sonar - \$\{lead\.name\} - \$\{new Date\(\)\.toISOString\(\)\.slice\(0,\s*10\)\}`/);
 });
 
-// --- Social links priority: apifyWebsite > sonar ---
+// --- Social links priority: apifyWebsite > websiteScraper > sonar ---
 
-test("social links block merges sonar first, then apifyWebsite (higher priority)", () => {
+test("social links block merges sonar first, then websiteScraper, then apifyWebsite (highest priority)", () => {
   const socialBlock = mergeBlock.slice(
     mergeBlock.indexOf("// Social links"),
     mergeBlock.indexOf("// From Sonar — location description"),
   );
   const sonarFbPos = socialBlock.indexOf("sonarResult?.socialLinks?.facebook");
+  const scraperFbPos = socialBlock.indexOf("websiteScraperResult?.socialLinks?.facebook");
   const apifyFbPos = socialBlock.indexOf("apifyWebsiteResult?.socialLinks?.facebook");
   assert.ok(sonarFbPos >= 0, "sonar facebook check should exist in social block");
+  assert.ok(scraperFbPos >= 0, "websiteScraper facebook check should exist in social block");
   assert.ok(apifyFbPos >= 0, "apifyWebsite facebook check should exist in social block");
-  assert.ok(sonarFbPos < apifyFbPos, "sonar facebook applied first, apifyWebsite overwrites");
+  assert.ok(sonarFbPos < scraperFbPos, "sonar facebook applied first");
+  assert.ok(scraperFbPos < apifyFbPos, "websiteScraper applied before apifyWebsite");
 });
 
-test("apifyWebsite social links can overwrite sonar social links", () => {
+test("apifyWebsite social links can overwrite websiteScraper and sonar social links", () => {
   const socialBlock = mergeBlock.slice(
     mergeBlock.indexOf("// Social links"),
     mergeBlock.indexOf("// From Sonar — location description"),
   );
-  // Both sources write to the same newSocial object — apifyWebsite second means it wins
+  // All three sources write to the same newSocial object — apifyWebsite last means it wins
   assert.match(socialBlock, /newSocial\.facebook\s*=\s*sonarResult.*facebook/);
+  assert.match(socialBlock, /newSocial\.facebook\s*=\s*websiteScraperResult.*facebook/);
   assert.match(socialBlock, /newSocial\.facebook\s*=\s*apifyWebsiteResult.*facebook/);
   assert.match(socialBlock, /newSocial\.instagram\s*=\s*sonarResult.*instagram/);
+  assert.match(socialBlock, /newSocial\.instagram\s*=\s*websiteScraperResult.*instagram/);
   assert.match(socialBlock, /newSocial\.instagram\s*=\s*apifyWebsiteResult.*instagram/);
 });
 

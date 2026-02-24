@@ -26,6 +26,7 @@ import type * as enrichment_apifySocial from "../enrichment/apifySocial.js";
 import type * as enrichment_apifyWebsite from "../enrichment/apifyWebsite.js";
 import type * as enrichment_batchEnrich from "../enrichment/batchEnrich.js";
 import type * as enrichment_batchEnrichPublic from "../enrichment/batchEnrichPublic.js";
+import type * as enrichment_categories from "../enrichment/categories.js";
 import type * as enrichment_claudeAnalysis from "../enrichment/claudeAnalysis.js";
 import type * as enrichment_googlePlaces from "../enrichment/googlePlaces.js";
 import type * as enrichment_hunter from "../enrichment/hunter.js";
@@ -89,6 +90,7 @@ declare const fullApi: ApiFromModules<{
   "enrichment/apifyWebsite": typeof enrichment_apifyWebsite;
   "enrichment/batchEnrich": typeof enrichment_batchEnrich;
   "enrichment/batchEnrichPublic": typeof enrichment_batchEnrichPublic;
+  "enrichment/categories": typeof enrichment_categories;
   "enrichment/claudeAnalysis": typeof enrichment_claudeAnalysis;
   "enrichment/googlePlaces": typeof enrichment_googlePlaces;
   "enrichment/hunter": typeof enrichment_hunter;

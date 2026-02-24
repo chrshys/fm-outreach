@@ -189,6 +189,8 @@ export const update = mutation({
         }),
       ),
     ),
+    isSeasonal: v.optional(v.boolean()),
+    seasonalNote: v.optional(v.string()),
     contactName: v.optional(v.string()),
     contactEmail: v.optional(v.string()),
     contactPhone: v.optional(v.string()),
