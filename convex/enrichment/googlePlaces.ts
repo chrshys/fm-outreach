@@ -7,6 +7,63 @@ const PLACES_TEXT_SEARCH_URL =
 const PLACE_DETAILS_URL =
   "https://maps.googleapis.com/maps/api/place/details/json";
 
+export type GooglePlacesResult = {
+  placeId: string;
+  phone: string | null;
+  website: string | null;
+  hours: string[] | null;
+  rating: number | null;
+  formattedAddress: string | null;
+  postalCode: string | null;
+  countryCode: string | null;
+};
+
+type TextSearchCandidate = {
+  place_id: string;
+  name: string;
+  formatted_address?: string;
+};
+
+function normalizeForComparison(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function nameSimilarity(a: string, b: string): number {
+  const normA = normalizeForComparison(a);
+  const normB = normalizeForComparison(b);
+
+  if (normA === normB) return 1;
+
+  const wordsA = normA.split(" ");
+  const wordsB = normB.split(" ");
+  const allWords = new Set([...wordsA, ...wordsB]);
+  const sharedWords = wordsA.filter((w) => wordsB.includes(w));
+
+  return allWords.size > 0 ? sharedWords.length / allWords.size : 0;
+}
+
+function pickBestMatch(
+  candidates: TextSearchCandidate[],
+  targetName: string,
+): TextSearchCandidate {
+  let best = candidates[0];
+  let bestScore = nameSimilarity(best.name, targetName);
+
+  for (let i = 1; i < candidates.length; i++) {
+    const score = nameSimilarity(candidates[i].name, targetName);
+    if (score > bestScore) {
+      best = candidates[i];
+      bestScore = score;
+    }
+  }
+
+  return best;
+}
+
 export type StructuredHour = {
   day: number;
   open: string;
@@ -69,63 +126,6 @@ export function parseWeekdayText(weekdayText: string[]): StructuredHour[] {
   }
 
   return results;
-}
-
-export type GooglePlacesResult = {
-  placeId: string;
-  phone: string | null;
-  website: string | null;
-  hours: string[] | null;
-  rating: number | null;
-  formattedAddress: string | null;
-  postalCode: string | null;
-  countryCode: string | null;
-};
-
-type TextSearchCandidate = {
-  place_id: string;
-  name: string;
-  formatted_address?: string;
-};
-
-function normalizeForComparison(str: string): string {
-  return str
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function nameSimilarity(a: string, b: string): number {
-  const normA = normalizeForComparison(a);
-  const normB = normalizeForComparison(b);
-
-  if (normA === normB) return 1;
-
-  const wordsA = normA.split(" ");
-  const wordsB = normB.split(" ");
-  const allWords = new Set([...wordsA, ...wordsB]);
-  const sharedWords = wordsA.filter((w) => wordsB.includes(w));
-
-  return allWords.size > 0 ? sharedWords.length / allWords.size : 0;
-}
-
-function pickBestMatch(
-  candidates: TextSearchCandidate[],
-  targetName: string,
-): TextSearchCandidate {
-  let best = candidates[0];
-  let bestScore = nameSimilarity(best.name, targetName);
-
-  for (let i = 1; i < candidates.length; i++) {
-    const score = nameSimilarity(candidates[i].name, targetName);
-    if (score > bestScore) {
-      best = candidates[i];
-      bestScore = score;
-    }
-  }
-
-  return best;
 }
 
 async function textSearch(
