@@ -111,6 +111,8 @@ test("leadsToCSV uses empty strings for explicit null fields", () => {
       socialLinks: null,
       products: null,
       hours: null,
+      isSeasonal: null,
+      seasonalNote: null,
     },
   ]);
   const lines = csv.split("\n");
