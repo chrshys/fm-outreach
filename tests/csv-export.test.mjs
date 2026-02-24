@@ -683,6 +683,15 @@ test("leadsToCSV outputs isSeasonal as string boolean", () => {
   assert.equal(colsFalse[18], "false", "isSeasonal false should produce string 'false' at index 18");
 });
 
+test("leadsToCSV outputs seasonalNote in correct column", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "Note Farm", type: "farm", isSeasonal: true, seasonalNote: "Open weekends May through October" },
+  ]);
+  const cols = csv.split("\n")[1].split(",");
+  assert.equal(cols[19], "Open weekends May through October", "seasonalNote should be in column 19");
+});
+
 test("ExportLead type includes isSeasonal and seasonalNote fields", () => {
   const source = fs.readFileSync("src/lib/csv-export.ts", "utf8");
   assert.ok(source.includes("isSeasonal?: boolean"), "ExportLead should have isSeasonal field");
