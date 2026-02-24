@@ -139,6 +139,8 @@ export const listForExport = query({
           imagePrompt: lead.imagePrompt,
           categories: [...new Set(sp.map((p) => normalizeCategoryKey(p.category ?? "")).filter((c): c is NonNullable<typeof c> => c !== undefined))],
           hours: lead.hours,
+          isSeasonal: lead.isSeasonal,
+          seasonalNote: lead.seasonalNote,
         };
       });
   },
@@ -177,6 +179,16 @@ export const update = mutation({
     placeId: v.optional(v.string()),
     postalCode: v.optional(v.string()),
     countryCode: v.optional(v.string()),
+    hours: v.optional(
+      v.array(
+        v.object({
+          day: v.number(),
+          open: v.string(),
+          close: v.string(),
+          isClosed: v.boolean(),
+        }),
+      ),
+    ),
     contactName: v.optional(v.string()),
     contactEmail: v.optional(v.string()),
     contactPhone: v.optional(v.string()),
