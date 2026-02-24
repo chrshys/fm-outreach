@@ -78,11 +78,14 @@ test("listForExport maps output to CSV fields only", () => {
     "socialLinks",
     "locationDescription",
     "imagePrompt",
+    "hours",
   ];
 
   for (const field of csvFields) {
     assert.match(block, new RegExp(`${field}:\\s*lead\\.${field}`), `should project field: ${field}`);
   }
+
+  assert.match(block, /hours:\s*lead\.hours/, "should project hours field from lead");
 
   // products is derived from structuredProducts, not lead.products
   assert.match(block, /products:/, "should include products field in projection");
