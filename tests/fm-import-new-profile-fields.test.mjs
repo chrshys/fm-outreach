@@ -103,6 +103,22 @@ test("hours diff check appears after products diff check in enrich block", () =>
   );
 });
 
+test("importCsvRows new profile insert includes isSeasonal field", () => {
+  assert.match(
+    source,
+    /ctx\.db\.insert\("profiles",\s*\{[\s\S]*?isSeasonal:\s*row\.isSeasonal/,
+    "db.insert('profiles', ...) should include isSeasonal: row.isSeasonal"
+  );
+});
+
+test("importCsvRows new profile insert includes seasonalNote field", () => {
+  assert.match(
+    source,
+    /ctx\.db\.insert\("profiles",\s*\{[\s\S]*?seasonalNote:\s*row\.seasonalNote/,
+    "db.insert('profiles', ...) should include seasonalNote: row.seasonalNote"
+  );
+});
+
 test("categories in searchText builder comes after displayName", () => {
   const searchTextMatch = source.match(
     /const searchText = \[([\s\S]*?)\]\s*\n\s*\.filter/
