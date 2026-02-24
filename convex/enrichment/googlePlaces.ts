@@ -7,6 +7,13 @@ const PLACES_TEXT_SEARCH_URL =
 const PLACE_DETAILS_URL =
   "https://maps.googleapis.com/maps/api/place/details/json";
 
+export type StructuredHour = {
+  day: number;
+  open: string;
+  close: string;
+  isClosed: boolean;
+};
+
 export type GooglePlacesResult = {
   placeId: string;
   phone: string | null;
