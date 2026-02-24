@@ -119,6 +119,22 @@ test("importCsvRows new profile insert includes seasonalNote field", () => {
   );
 });
 
+test("importCsvRows enrich block includes isSeasonal diff check", () => {
+  assert.match(
+    source,
+    /row\.isSeasonal != null && row\.isSeasonal !== existing\.isSeasonal/,
+    "enrich block should check row.isSeasonal != null && row.isSeasonal !== existing.isSeasonal"
+  );
+});
+
+test("importCsvRows enrich block includes seasonalNote diff check", () => {
+  assert.match(
+    source,
+    /row\.seasonalNote && row\.seasonalNote !== existing\.seasonalNote/,
+    "enrich block should check row.seasonalNote && row.seasonalNote !== existing.seasonalNote"
+  );
+});
+
 test("categories in searchText builder comes after displayName", () => {
   const searchTextMatch = source.match(
     /const searchText = \[([\s\S]*?)\]\s*\n\s*\.filter/
