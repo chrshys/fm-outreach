@@ -602,6 +602,8 @@ test("schema.ts CSV column mapping comment documents correct field mappings", ()
     ["categories", "structuredProducts"],
     ["hours", "hours"],
     ["imagePrompt", "imagePrompt"],
+    ["isSeasonal", "isSeasonal"],
+    ["seasonalNote", "seasonalNote"],
   ];
 
   for (const [csvCol, schemaRef] of requiredMappings) {
