@@ -128,6 +128,7 @@ test("leadsToCSV never outputs literal 'undefined' or 'null' strings", () => {
       latitude: null,
       socialLinks: null,
       products: null,
+      hours: null,
     },
     {
       name: "Partial Social",
