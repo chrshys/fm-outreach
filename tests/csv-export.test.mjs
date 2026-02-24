@@ -37,7 +37,7 @@ test("leadsToCSV produces correct header row", () => {
   const header = csv.split("\n")[0];
   assert.equal(
     header,
-    "name,type,description,address,city,state,postalCode,countryCode,latitude,longitude,placeId,website,instagram,facebook,products,imagePrompt,categories,hours"
+    "name,type,description,address,city,state,postalCode,countryCode,latitude,longitude,placeId,website,instagram,facebook,products,imagePrompt,categories,hours,isSeasonal,seasonalNote"
   );
 });
 
@@ -71,7 +71,7 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
   assert.equal(lines.length, 2);
   assert.equal(
     lines[1],
-    'Green Acres,farm,Organic produce,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears",A farm stand with fresh produce,produce,"[{""day"":1,""open"":""09:00"",""close"":""17:00"",""isClosed"":false}]"'
+    'Green Acres,farm,Organic produce,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears",A farm stand with fresh produce,produce,"[{""day"":1,""open"":""09:00"",""close"":""17:00"",""isClosed"":false}]",,'
   );
 });
 
@@ -84,7 +84,7 @@ test("leadsToCSV uses empty strings for undefined (missing) fields", () => {
     },
   ]);
   const lines = csv.split("\n");
-  assert.equal(lines[1], "Bare Farm,farm,,,,,,,,,,,,,,,,");
+  assert.equal(lines[1], "Bare Farm,farm,,,,,,,,,,,,,,,,,,");
 });
 
 test("leadsToCSV uses empty strings for explicit null fields", () => {
@@ -112,7 +112,7 @@ test("leadsToCSV uses empty strings for explicit null fields", () => {
     },
   ]);
   const lines = csv.split("\n");
-  assert.equal(lines[1], "Null Farm,farm,,,,,,,,,,,,,,,,");
+  assert.equal(lines[1], "Null Farm,farm,,,,,,,,,,,,,,,,,,");
 });
 
 test("leadsToCSV never outputs literal 'undefined' or 'null' strings", () => {
@@ -245,7 +245,7 @@ test("leadsToCSV handles socialLinks with only instagram", () => {
   assert.ok(lines[1].includes("ig_only"), "should include instagram value");
   // facebook column should be empty but row should still have 13 columns
   const cols = lines[1].split(",");
-  assert.equal(cols.length, 18, "should still have 18 columns");
+  assert.equal(cols.length, 20, "should still have 20 columns");
   assert.equal(cols[12], "ig_only", "instagram column should have value");
   assert.equal(cols[13], "", "facebook column should be empty");
 });
@@ -425,15 +425,15 @@ test("Export CSV button appears between LeadFilters and Table in JSX", () => {
   );
 });
 
-test("CSV header has exactly 18 columns", () => {
+test("CSV header has exactly 20 columns", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([]);
   const header = csv.split("\n")[0];
   const columns = header.split(",");
-  assert.equal(columns.length, 18, "should have exactly 18 columns");
+  assert.equal(columns.length, 20, "should have exactly 20 columns");
 });
 
-test("CSV data rows have exactly 18 columns for a complete lead", () => {
+test("CSV data rows have exactly 20 columns for a complete lead", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([
     {
@@ -457,15 +457,15 @@ test("CSV data rows have exactly 18 columns for a complete lead", () => {
   ]);
   const lines = csv.split("\n");
   const dataColumns = lines[1].split(",");
-  assert.equal(dataColumns.length, 18, "data row should have exactly 18 columns");
+  assert.equal(dataColumns.length, 20, "data row should have exactly 20 columns");
 });
 
-test("CSV data rows have exactly 18 columns for a minimal lead", () => {
+test("CSV data rows have exactly 20 columns for a minimal lead", () => {
   const { leadsToCSV } = loadModule();
   const csv = leadsToCSV([{ name: "Minimal", type: "farm" }]);
   const lines = csv.split("\n");
   const dataColumns = lines[1].split(",");
-  assert.equal(dataColumns.length, 18, "minimal lead should still have 18 columns");
+  assert.equal(dataColumns.length, 20, "minimal lead should still have 20 columns");
 });
 
 test("downloadCSV creates a text/csv blob", () => {

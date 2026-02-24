@@ -17,6 +17,8 @@ type ExportLead = {
   socialLinks?: { instagram?: string; facebook?: string };
   products?: string[];
   hours?: { day: number; open: string; close: string; isClosed: boolean }[];
+  isSeasonal?: boolean;
+  seasonalNote?: string;
 };
 
 const CSV_COLUMNS = [
@@ -38,6 +40,8 @@ const CSV_COLUMNS = [
   "imagePrompt",
   "categories",
   "hours",
+  "isSeasonal",
+  "seasonalNote",
 ] as const;
 
 function escapeField(value: string): string {
@@ -70,6 +74,8 @@ export function leadsToCSV(leads: ExportLead[]): string {
       lead.imagePrompt ?? "",
       lead.categories ? lead.categories.join(", ") : "",
       lead.hours ? JSON.stringify(lead.hours) : "",
+      lead.isSeasonal != null ? String(lead.isSeasonal) : "",
+      lead.seasonalNote ?? "",
     ];
     return values.map(escapeField).join(",");
   });

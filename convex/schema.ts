@@ -28,6 +28,8 @@ export default defineSchema({
   //  imagePrompt     │ imagePrompt                  │ imagePrompt
   //  categories      │ enrichmentData.structuredProducts │ categories
   //  hours           │ hours (JSON)                     │ hours
+  //  isSeasonal      │ isSeasonal                       │ isSeasonal
+  //  seasonalNote    │ seasonalNote                     │ seasonalNote
   //
   // Type mapping (fm-outreach → FM profileType):
   //   farm → farm, farmers_market → farmersMarket,
