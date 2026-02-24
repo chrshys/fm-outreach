@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useMutation, useQuery } from "convex/react"
 import type { KeyboardEvent } from "react"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import { api } from "../../../../convex/_generated/api"
@@ -228,6 +228,41 @@ function StructuredProductsDisplay({
           {items.join(", ")}
         </p>
       ))}
+    </div>
+  )
+}
+
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
+function formatTime(time: string): string {
+  const [hStr, mStr] = time.split(":")
+  const h = parseInt(hStr, 10)
+  const suffix = h >= 12 ? "PM" : "AM"
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h
+  return mStr === "00" ? `${h12} ${suffix}` : `${h12}:${mStr} ${suffix}`
+}
+
+function HoursDisplay({
+  hours,
+}: {
+  hours: Array<{ day: number; open: string; close: string; isClosed: boolean }>
+}) {
+  const sorted = [...hours].sort((a, b) => a.day - b.day)
+  return (
+    <div>
+      <span className="font-medium">Hours:</span>
+      <div className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-sm">
+        {sorted.map((entry) => (
+          <Fragment key={entry.day}>
+            <span className="text-muted-foreground">{DAY_NAMES[entry.day]}</span>
+            <span>
+              {entry.isClosed
+                ? "Closed"
+                : `${formatTime(entry.open)} – ${formatTime(entry.close)}`}
+            </span>
+          </Fragment>
+        ))}
+      </div>
     </div>
   )
 }
@@ -503,6 +538,13 @@ export default function LeadDetailPage() {
                     <span className="font-medium">Province:</span>{" "}
                     <InlineEditableValue value={lead.province} onSave={(value) => updateField("province", value)} />
                   </p>
+                  {lead.hours?.length ? (
+                    <HoursDisplay hours={lead.hours} />
+                  ) : (
+                    <p>
+                      <span className="font-medium">Hours:</span> Not available
+                    </p>
+                  )}
                   {lead.farmDescription ? (
                     <p>
                       <span className="font-medium">Description:</span>{" "}
