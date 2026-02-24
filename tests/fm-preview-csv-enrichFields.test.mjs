@@ -87,6 +87,55 @@ test("hours check appears before location check", () => {
   );
 });
 
+test("previewCsvImport has isSeasonal diff check", () => {
+  assert.match(
+    previewBlock,
+    /if \(row\.isSeasonal != null && row\.isSeasonal !== existing\.isSeasonal\)\s*\{\s*enrichFields\.push\("isSeasonal"\)/,
+    "previewCsvImport should check row.isSeasonal != null and diff before pushing enrichField"
+  );
+});
+
+test("previewCsvImport has seasonalNote diff check", () => {
+  assert.match(
+    previewBlock,
+    /if \(row\.seasonalNote && row\.seasonalNote !== existing\.seasonalNote\)\s*\{\s*enrichFields\.push\("seasonalNote"\)/,
+    "previewCsvImport should check row.seasonalNote diff before pushing enrichField"
+  );
+});
+
+test("isSeasonal check appears after hours check", () => {
+  const hoursIdx = previewBlock.indexOf('enrichFields.push("hours")');
+  const isSeasonalIdx = previewBlock.indexOf('enrichFields.push("isSeasonal")');
+  assert.ok(hoursIdx > -1, "hours enrichField push should exist");
+  assert.ok(isSeasonalIdx > -1, "isSeasonal enrichField push should exist");
+  assert.ok(
+    isSeasonalIdx > hoursIdx,
+    "isSeasonal check should appear after hours check"
+  );
+});
+
+test("seasonalNote check appears after isSeasonal check", () => {
+  const isSeasonalIdx = previewBlock.indexOf('enrichFields.push("isSeasonal")');
+  const seasonalNoteIdx = previewBlock.indexOf('enrichFields.push("seasonalNote")');
+  assert.ok(isSeasonalIdx > -1, "isSeasonal enrichField push should exist");
+  assert.ok(seasonalNoteIdx > -1, "seasonalNote enrichField push should exist");
+  assert.ok(
+    seasonalNoteIdx > isSeasonalIdx,
+    "seasonalNote check should appear after isSeasonal check"
+  );
+});
+
+test("seasonalNote check appears before location check", () => {
+  const seasonalNoteIdx = previewBlock.indexOf('enrichFields.push("seasonalNote")');
+  const locationIdx = previewBlock.indexOf('enrichFields.push("location")');
+  assert.ok(seasonalNoteIdx > -1, "seasonalNote enrichField push should exist");
+  assert.ok(locationIdx > -1, "location enrichField push should exist");
+  assert.ok(
+    seasonalNoteIdx < locationIdx,
+    "seasonalNote check should appear before location check"
+  );
+});
+
 test("imagePrompt and categories checks appear before location check", () => {
   const imagePromptIdx = previewBlock.indexOf('enrichFields.push("imagePrompt")');
   const categoriesIdx = previewBlock.indexOf('enrichFields.push("categories")');
