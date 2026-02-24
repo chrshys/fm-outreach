@@ -86,6 +86,8 @@ test("listForExport maps output to CSV fields only", () => {
   }
 
   assert.match(block, /hours:\s*lead\.hours/, "should project hours field from lead");
+  assert.match(block, /isSeasonal:\s*lead\.isSeasonal/, "should project isSeasonal field from lead");
+  assert.match(block, /seasonalNote:\s*lead\.seasonalNote/, "should project seasonalNote field from lead");
 
   // products is derived from structuredProducts, not lead.products
   assert.match(block, /products:/, "should include products field in projection");
