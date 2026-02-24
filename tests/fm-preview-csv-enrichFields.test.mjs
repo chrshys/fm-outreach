@@ -57,6 +57,36 @@ test("imagePrompt and categories checks appear after profileType check", () => {
   );
 });
 
+test("previewCsvImport has hours diff check", () => {
+  assert.match(
+    previewBlock,
+    /if \(row\.hours\?\.length && JSON\.stringify\(row\.hours\) !== JSON\.stringify\(existing\.hours\)\)\s*\{\s*enrichFields\.push\("hours"\)/,
+    "previewCsvImport should check row.hours?.length and JSON.stringify diff before pushing enrichField"
+  );
+});
+
+test("hours check appears after products check", () => {
+  const productsIdx = previewBlock.indexOf('enrichFields.push("products")');
+  const hoursIdx = previewBlock.indexOf('enrichFields.push("hours")');
+  assert.ok(productsIdx > -1, "products enrichField push should exist");
+  assert.ok(hoursIdx > -1, "hours enrichField push should exist");
+  assert.ok(
+    hoursIdx > productsIdx,
+    "hours check should appear after products check"
+  );
+});
+
+test("hours check appears before location check", () => {
+  const hoursIdx = previewBlock.indexOf('enrichFields.push("hours")');
+  const locationIdx = previewBlock.indexOf('enrichFields.push("location")');
+  assert.ok(hoursIdx > -1, "hours enrichField push should exist");
+  assert.ok(locationIdx > -1, "location enrichField push should exist");
+  assert.ok(
+    hoursIdx < locationIdx,
+    "hours check should appear before location check"
+  );
+});
+
 test("imagePrompt and categories checks appear before location check", () => {
   const imagePromptIdx = previewBlock.indexOf('enrichFields.push("imagePrompt")');
   const categoriesIdx = previewBlock.indexOf('enrichFields.push("categories")');

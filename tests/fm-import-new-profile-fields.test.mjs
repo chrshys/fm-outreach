@@ -88,9 +88,13 @@ test("importCsvRows enrich block sets patch.hours from row.hours", () => {
 });
 
 test("hours diff check appears after products diff check in enrich block", () => {
-  // Both checks are in the enrich block; hours should come after products
-  const productsCheckIdx = source.indexOf("JSON.stringify(row.products) !== JSON.stringify(existing.products)");
-  const hoursCheckIdx = source.indexOf("JSON.stringify(row.hours) !== JSON.stringify(existing.hours)");
+  // Scope to importCsvRows handler to avoid matching previewCsvImport
+  const importBlock = source.match(
+    /export const importCsvRows = mutation\(\{[\s\S]*?handler: async \(ctx, args\) => \{([\s\S]*?)\n  },\n\}\);/
+  )?.[1] ?? "";
+  assert.ok(importBlock.length > 0, "should find importCsvRows handler body");
+  const productsCheckIdx = importBlock.indexOf("JSON.stringify(row.products) !== JSON.stringify(existing.products)");
+  const hoursCheckIdx = importBlock.indexOf("JSON.stringify(row.hours) !== JSON.stringify(existing.hours)");
   assert.ok(productsCheckIdx > -1, "products diff check should exist in enrich block");
   assert.ok(hoursCheckIdx > -1, "hours diff check should exist in enrich block");
   assert.ok(
