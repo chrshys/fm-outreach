@@ -71,6 +71,34 @@ test("hours appears after products in new profile insert", () => {
   );
 });
 
+test("importCsvRows enrich block includes hours diff check", () => {
+  assert.match(
+    source,
+    /row\.hours\s*&&\s*\n?\s*row\.hours\.length\s*>\s*0\s*&&\s*\n?\s*JSON\.stringify\(row\.hours\)\s*!==\s*JSON\.stringify\(existing\.hours\)/,
+    "enrich block should check row.hours && row.hours.length > 0 && JSON.stringify(row.hours) !== JSON.stringify(existing.hours)"
+  );
+});
+
+test("importCsvRows enrich block sets patch.hours from row.hours", () => {
+  assert.match(
+    source,
+    /patch\.hours\s*=\s*row\.hours/,
+    "enrich block should set patch.hours = row.hours"
+  );
+});
+
+test("hours diff check appears after products diff check in enrich block", () => {
+  // Both checks are in the enrich block; hours should come after products
+  const productsCheckIdx = source.indexOf("JSON.stringify(row.products) !== JSON.stringify(existing.products)");
+  const hoursCheckIdx = source.indexOf("JSON.stringify(row.hours) !== JSON.stringify(existing.hours)");
+  assert.ok(productsCheckIdx > -1, "products diff check should exist in enrich block");
+  assert.ok(hoursCheckIdx > -1, "hours diff check should exist in enrich block");
+  assert.ok(
+    hoursCheckIdx > productsCheckIdx,
+    "hours diff check should appear after products diff check"
+  );
+});
+
 test("categories in searchText builder comes after displayName", () => {
   const searchTextMatch = source.match(
     /const searchText = \[([\s\S]*?)\]\s*\n\s*\.filter/
