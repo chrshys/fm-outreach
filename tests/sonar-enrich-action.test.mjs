@@ -200,6 +200,11 @@ test("prompt describes locationDescription as 2-3 sentences for marketplace list
   assert.match(source, /marketplace listing/);
 });
 
+test("prompt requests isSeasonal and seasonalNote fields", () => {
+  assert.match(source, /isSeasonal/);
+  assert.match(source, /seasonalNote/);
+});
+
 test("prompt describes imagePrompt for AI image generation with product-focused style", () => {
   assert.match(source, /imagePrompt/);
   assert.match(source, /AI image generation/);
