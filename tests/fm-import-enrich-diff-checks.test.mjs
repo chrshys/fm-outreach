@@ -26,32 +26,32 @@ test("enrich block has imagePrompt diff check", () => {
 test("enrich block has categories diff check with JSON.stringify", () => {
   assert.match(
     enrichBlock,
-    /if \(\s*row\.categories &&\s*JSON\.stringify\(row\.categories\) !== JSON\.stringify\(existing\.categories\)\s*\)\s*\{\s*patch\.categories = row\.categories;/,
-    "enrich block should compare categories via JSON.stringify before patching"
+    /validCategories\.length > 0 &&\s*JSON\.stringify\(validCategories\) !== JSON\.stringify\(existing\.categories\)/,
+    "enrich block should compare validCategories via JSON.stringify before patching"
   );
 });
 
-test("enrich block searchText rebuild includes categories", () => {
-  // The searchText array in the enrich block should include categories
+test("enrich block searchText rebuild includes categories via categoryAndProductSearchTerms", () => {
+  // The searchText array in the enrich block should use categoryAndProductSearchTerms
   assert.match(
     enrichBlock,
-    /patch\.searchText = \[[\s\S]*?categories[\s\S]*?\]\s*\n\s*\.filter\(Boolean\)\s*\n\s*\.join\(" "\)/,
-    "enrich searchText rebuild should include categories in the array"
+    /patch\.searchText = \[[\s\S]*?categoryAndProductSearchTerms\(patchedCategories,\s*patchedProducts\)[\s\S]*?\]\s*\n\s*\.filter\(Boolean\)\s*\n\s*\.join\(" "\)/,
+    "enrich searchText rebuild should include categoryAndProductSearchTerms(patchedCategories, patchedProducts)"
   );
 });
 
-test("enrich block categories variable uses patched or existing categories", () => {
-  // The categories variable should fall back to existing.categories
+test("enrich block patchedCategories variable uses patched or existing categories", () => {
+  // The patchedCategories variable should fall back to existing.categories
   assert.match(
     enrichBlock,
-    /const categories = \(\s*\(patch\.categories as string\[\] \| undefined\)\s*\?\?\s*existing\.categories\s*\?\?\s*\[\]\s*\)\.join\(" "\)/,
-    "categories variable should use patch.categories ?? existing.categories ?? []"
+    /const patchedCategories = \(patch\.categories as string\[\] \| undefined\)\s*\?\?\s*\n?\s*existing\.categories\s*\?\?\s*\n?\s*\[\]/,
+    "patchedCategories variable should use patch.categories ?? existing.categories ?? []"
   );
 });
 
 test("imagePrompt diff check appears before categories diff check in enrich block", () => {
   const imagePromptIdx = enrichBlock.indexOf("patch.imagePrompt = row.imagePrompt");
-  const categoriesIdx = enrichBlock.indexOf("patch.categories = row.categories");
+  const categoriesIdx = enrichBlock.indexOf("patch.categories = validCategories");
   assert.ok(imagePromptIdx > -1, "imagePrompt patch should exist in enrich block");
   assert.ok(categoriesIdx > -1, "categories patch should exist in enrich block");
   assert.ok(
