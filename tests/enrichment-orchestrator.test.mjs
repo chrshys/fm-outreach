@@ -216,12 +216,15 @@ test("merges products from sonarResult", () => {
   assert.match(source, /patch\.products\s*=\s*sonarResult\.products/);
 });
 
-test("merges social links with apifyWebsite > sonar priority", () => {
+test("merges social links with apifyWebsite > websiteScraper > sonar priority", () => {
   assert.match(source, /existingSocial\s*=\s*lead\.socialLinks\s*\?\?\s*\{\}/);
-  // Sonar social links applied first (lower priority)
+  // Sonar social links applied first (lowest priority)
   assert.match(source, /sonarResult\?\.socialLinks\?\.facebook/);
   assert.match(source, /sonarResult\?\.socialLinks\?\.instagram/);
-  // Apify website social links applied second (higher priority, overwrites sonar)
+  // Website scraper fallback applied second (medium priority)
+  assert.match(source, /websiteScraperResult\?\.socialLinks\?\.facebook\?\.\[0\]/);
+  assert.match(source, /websiteScraperResult\?\.socialLinks\?\.instagram\?\.\[0\]/);
+  // Apify website social links applied last (highest priority, overwrites all)
   assert.match(source, /apifyWebsiteResult\?\.socialLinks\?\.facebook/);
   assert.match(source, /apifyWebsiteResult\?\.socialLinks\?\.instagram/);
   assert.match(source, /\.\.\.existingSocial/);
@@ -368,17 +371,20 @@ test("imports from enrichment modules", () => {
   assert.match(source, /import.*SonarEnrichResult.*from.*sonarEnrich/);
   assert.match(source, /import.*ApifyWebsiteResult.*from.*apifyWebsite/);
   assert.match(source, /import.*ApifySocialResult.*from.*apifySocial/);
+  assert.match(source, /import.*WebsiteScraperResult.*from.*websiteScraper/);
+});
+
+test("imports parseWeekdayText from googlePlaces", () => {
+  assert.match(source, /import\s*\{[^}]*parseWeekdayText[^}]*\}\s*from\s*["']\.\/googlePlaces["']/);
 });
 
 test("does not import removed enrichment modules", () => {
-  assert.doesNotMatch(source, /import.*WebsiteScraperResult.*from.*websiteScraper/);
   assert.doesNotMatch(source, /import.*HunterResult.*from.*hunter/);
   assert.doesNotMatch(source, /import.*ClaudeAnalysisResult.*from.*claudeAnalysis/);
   assert.doesNotMatch(source, /import.*discoverSocialLinks.*from.*socialDiscovery/);
 });
 
 test("does not reference removed enrichment steps", () => {
-  assert.doesNotMatch(source, /from\s+["']\.\/websiteScraper["']/);
   assert.doesNotMatch(source, /searchDomain/);
   assert.doesNotMatch(source, /analyzeWithClaude/);
   assert.doesNotMatch(source, /discoverSocialLinks/);

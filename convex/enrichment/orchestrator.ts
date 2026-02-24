@@ -2,10 +2,12 @@ import { v } from "convex/values";
 
 import { api, internal } from "../_generated/api";
 import { internalAction } from "../_generated/server";
+import { parseWeekdayText } from "./googlePlaces";
 import type { GooglePlacesResult } from "./googlePlaces";
 import type { ApifySocialResult } from "./apifySocial";
 import type { ApifyWebsiteResult } from "./apifyWebsite";
 import type { SonarEnrichResult } from "./sonarEnrich";
+import type { WebsiteScraperResult } from "./websiteScraper";
 
 const COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const ENRICHMENT_VERSION = "3.0";
@@ -183,6 +185,35 @@ export const enrichLead = internalAction({
         }
       } catch {
         // Apify website scraper failed — continue pipeline
+      }
+    }
+
+    // Step 3d: Website Scraper fallback — direct HTML fetch for social links
+    let websiteScraperResult: WebsiteScraperResult | null = null;
+    if (
+      websiteUrl &&
+      (!apifyWebsiteResult?.socialLinks?.facebook ||
+        !apifyWebsiteResult?.socialLinks?.instagram)
+    ) {
+      try {
+        websiteScraperResult = await ctx.runAction(
+          api.enrichment.websiteScraper.scrapeWebsite,
+          { url: websiteUrl },
+        );
+
+        if (
+          websiteScraperResult &&
+          (websiteScraperResult.socialLinks.facebook.length > 0 ||
+            websiteScraperResult.socialLinks.instagram.length > 0)
+        ) {
+          sources.push({
+            source: "website_scraper",
+            detail: websiteUrl,
+            fetchedAt: Date.now(),
+          });
+        }
+      } catch {
+        // Website scraper failed — continue pipeline
       }
     }
 
@@ -375,13 +406,13 @@ export const enrichLead = internalAction({
       }
     }
 
-    // Social links — priority: apifyWebsite > sonar (both fill gaps in existing)
+    // Social links — priority: apifyWebsite > websiteScraper > sonar
     {
       const existingSocial = lead.socialLinks ?? {};
       const newSocial: { instagram?: string; facebook?: string } = {};
       let socialUpdated = false;
 
-      // Sonar first (lower priority — will be overwritten by apifyWebsite if both exist)
+      // Sonar (lowest priority)
       if (sonarResult?.socialLinks?.facebook && (!existingSocial.facebook || overwrite)) {
         newSocial.facebook = sonarResult.socialLinks.facebook;
         socialUpdated = true;
@@ -391,7 +422,17 @@ export const enrichLead = internalAction({
         socialUpdated = true;
       }
 
-      // Apify website (highest priority — overwrites sonar)
+      // Website scraper fallback (medium priority — overwrites sonar)
+      if (websiteScraperResult?.socialLinks?.facebook?.[0] && (!existingSocial.facebook || overwrite)) {
+        newSocial.facebook = websiteScraperResult.socialLinks.facebook[0];
+        socialUpdated = true;
+      }
+      if (websiteScraperResult?.socialLinks?.instagram?.[0] && (!existingSocial.instagram || overwrite)) {
+        newSocial.instagram = websiteScraperResult.socialLinks.instagram[0];
+        socialUpdated = true;
+      }
+
+      // Apify website (highest priority — overwrites all)
       if (apifyWebsiteResult?.socialLinks?.facebook && (!existingSocial.facebook || overwrite)) {
         newSocial.facebook = apifyWebsiteResult.socialLinks.facebook;
         socialUpdated = true;
