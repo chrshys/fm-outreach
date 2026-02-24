@@ -14,6 +14,63 @@ export type StructuredHour = {
   isClosed: boolean;
 };
 
+const DAY_NAME_TO_NUMBER: Record<string, number> = {
+  sunday: 0,
+  monday: 1,
+  tuesday: 2,
+  wednesday: 3,
+  thursday: 4,
+  friday: 5,
+  saturday: 6,
+};
+
+function convertTo24h(time12h: string): string {
+  const match = time12h.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return "";
+  let hours = parseInt(match[1], 10);
+  const minutes = match[2];
+  const period = match[3].toUpperCase();
+
+  if (period === "AM" && hours === 12) {
+    hours = 0;
+  } else if (period === "PM" && hours !== 12) {
+    hours += 12;
+  }
+
+  return `${String(hours).padStart(2, "0")}:${minutes}`;
+}
+
+export function parseWeekdayText(weekdayText: string[]): StructuredHour[] {
+  const results: StructuredHour[] = [];
+
+  for (const line of weekdayText) {
+    const colonIdx = line.indexOf(": ");
+    if (colonIdx === -1) continue;
+
+    const dayName = line.slice(0, colonIdx).trim().toLowerCase();
+    const day = DAY_NAME_TO_NUMBER[dayName];
+    if (day === undefined) continue;
+
+    const timePart = line.slice(colonIdx + 2).trim();
+
+    if (timePart.toLowerCase() === "closed") {
+      results.push({ day, open: "", close: "", isClosed: true });
+      continue;
+    }
+
+    const times = timePart.split(/\s+[–-]\s+/);
+    if (times.length !== 2) continue;
+
+    const open = convertTo24h(times[0]);
+    const close = convertTo24h(times[1]);
+    if (!open || !close) continue;
+
+    results.push({ day, open, close, isClosed: false });
+  }
+
+  return results;
+}
+
 export type GooglePlacesResult = {
   placeId: string;
   phone: string | null;
