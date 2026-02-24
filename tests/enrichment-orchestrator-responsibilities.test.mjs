@@ -165,6 +165,31 @@ test("all field changes are applied via a single leads.update call", () => {
   assert.match(source, /\.\.\.patch/);
 });
 
+test("orchestrator merges isSeasonal from Sonar", () => {
+  assert.match(source, /sonarResult\?\.isSeasonal\s*!=\s*null/);
+  assert.match(source, /patch\.isSeasonal\s*=\s*sonarResult\.isSeasonal/);
+  assert.match(source, /lead\.isSeasonal\s*===\s*undefined\s*\|\|\s*overwrite/);
+  assert.match(source, /fieldsUpdated\.push\("isSeasonal"\)/);
+});
+
+test("orchestrator merges seasonalNote from Sonar", () => {
+  assert.match(source, /sonarResult\?\.seasonalNote/);
+  assert.match(source, /patch\.seasonalNote\s*=\s*sonarResult\.seasonalNote/);
+  assert.match(source, /!lead\.seasonalNote\s*\|\|\s*overwrite/);
+  assert.match(source, /fieldsUpdated\.push\("seasonalNote"\)/);
+});
+
+test("seasonality merge is after imagePrompt and before structured data", () => {
+  const imagePromptPos = source.indexOf('fieldsUpdated.push("imagePrompt")');
+  const isSeasonalPos = source.indexOf('fieldsUpdated.push("isSeasonal")');
+  const structuredPos = source.indexOf("// From Sonar — structured data");
+  assert.ok(imagePromptPos >= 0, "imagePrompt fieldsUpdated should exist");
+  assert.ok(isSeasonalPos >= 0, "isSeasonal fieldsUpdated should exist");
+  assert.ok(structuredPos >= 0, "structured data comment should exist");
+  assert.ok(isSeasonalPos > imagePromptPos, "seasonality must come after imagePrompt");
+  assert.ok(isSeasonalPos < structuredPos, "seasonality must come before structured data");
+});
+
 // --- 6. Status transitions ---
 
 test("status is enriched when email found, no_email otherwise", () => {

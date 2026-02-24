@@ -471,6 +471,16 @@ export const enrichLead = internalAction({
       fieldsUpdated.push("imagePrompt");
     }
 
+    // From Sonar — seasonality
+    if (sonarResult?.isSeasonal != null && (lead.isSeasonal === undefined || overwrite)) {
+      patch.isSeasonal = sonarResult.isSeasonal;
+      fieldsUpdated.push("isSeasonal");
+    }
+    if (sonarResult?.seasonalNote && (!lead.seasonalNote || overwrite)) {
+      patch.seasonalNote = sonarResult.seasonalNote;
+      fieldsUpdated.push("seasonalNote");
+    }
+
     // From Sonar — structured data
     if (sonarResult) {
       const existingData = (lead.enrichmentData as Record<string, unknown> | undefined) ?? {};

@@ -273,6 +273,20 @@ test("merges imagePrompt from sonarResult", () => {
   assert.match(source, /fieldsUpdated\.push\("imagePrompt"\)/);
 });
 
+test("merges isSeasonal from sonarResult", () => {
+  assert.match(source, /sonarResult\?\.isSeasonal\s*!=\s*null/);
+  assert.match(source, /patch\.isSeasonal\s*=\s*sonarResult\.isSeasonal/);
+  assert.match(source, /lead\.isSeasonal\s*===\s*undefined\s*\|\|\s*overwrite/);
+  assert.match(source, /fieldsUpdated\.push\("isSeasonal"\)/);
+});
+
+test("merges seasonalNote from sonarResult", () => {
+  assert.match(source, /sonarResult\?\.seasonalNote/);
+  assert.match(source, /patch\.seasonalNote\s*=\s*sonarResult\.seasonalNote/);
+  assert.match(source, /!lead\.seasonalNote\s*\|\|\s*overwrite/);
+  assert.match(source, /fieldsUpdated\.push\("seasonalNote"\)/);
+});
+
 test("merges structured data from sonarResult", () => {
   assert.match(source, /sonarResult\.structuredProducts\.length\s*>\s*0/);
   assert.match(source, /sonarResult\.structuredDescription\.specialties\.length\s*>\s*0/);
