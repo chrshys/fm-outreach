@@ -631,3 +631,52 @@ test("leadsToCSV outputs empty string when hours is undefined", () => {
   const cols = csv.split("\n")[1].split(",");
   assert.equal(cols[17], "", "hours column should be empty when undefined");
 });
+
+test("leadsToCSV outputs isSeasonal as string in correct column", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "Seasonal Farm", type: "farm", isSeasonal: true, seasonalNote: "Open May-Oct" },
+  ]);
+  const cols = csv.split("\n")[1].split(",");
+  assert.equal(cols[18], "true", "isSeasonal column should contain 'true'");
+  assert.equal(cols[19], "Open May-Oct", "seasonalNote column should contain the note");
+});
+
+test("leadsToCSV outputs false isSeasonal correctly", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([
+    { name: "Year-Round Farm", type: "farm", isSeasonal: false },
+  ]);
+  const cols = csv.split("\n")[1].split(",");
+  assert.equal(cols[18], "false", "isSeasonal column should contain 'false'");
+  assert.equal(cols[19], "", "seasonalNote column should be empty when not provided");
+});
+
+test("leadsToCSV outputs empty string when isSeasonal is undefined", () => {
+  const { leadsToCSV } = loadModule();
+  const csv = leadsToCSV([{ name: "Unknown Farm", type: "farm" }]);
+  const cols = csv.split("\n")[1].split(",");
+  assert.equal(cols[18], "", "isSeasonal column should be empty when undefined");
+  assert.equal(cols[19], "", "seasonalNote column should be empty when undefined");
+});
+
+test("ExportLead type includes isSeasonal and seasonalNote fields", () => {
+  const source = fs.readFileSync("src/lib/csv-export.ts", "utf8");
+  assert.ok(source.includes("isSeasonal?: boolean"), "ExportLead should have isSeasonal field");
+  assert.ok(source.includes("seasonalNote?: string"), "ExportLead should have seasonalNote field");
+});
+
+test("CSV_COLUMNS includes isSeasonal and seasonalNote", () => {
+  const source = fs.readFileSync("src/lib/csv-export.ts", "utf8");
+  const columnsMatch = source.match(/CSV_COLUMNS\s*=\s*\[([\s\S]*?)\]\s*as\s*const/);
+  assert.ok(columnsMatch, "should find CSV_COLUMNS array");
+  const columns = columnsMatch[1].match(/"([^"]+)"/g).map((s) => s.replace(/"/g, ""));
+  assert.ok(columns.includes("isSeasonal"), "CSV_COLUMNS should include isSeasonal");
+  assert.ok(columns.includes("seasonalNote"), "CSV_COLUMNS should include seasonalNote");
+  // isSeasonal should come after hours
+  const hoursIdx = columns.indexOf("hours");
+  const seasonalIdx = columns.indexOf("isSeasonal");
+  const noteIdx = columns.indexOf("seasonalNote");
+  assert.ok(seasonalIdx === hoursIdx + 1, "isSeasonal should immediately follow hours");
+  assert.ok(noteIdx === seasonalIdx + 1, "seasonalNote should immediately follow isSeasonal");
+});
