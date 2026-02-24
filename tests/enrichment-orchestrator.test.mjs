@@ -182,6 +182,28 @@ test("only overwrites empty fields unless forced", () => {
   assert.match(source, /!lead\.farmDescription\s*\|\|\s*overwrite/);
 });
 
+test("merges hours from Google Places using parseWeekdayText", () => {
+  // Checks that hours merge is guarded by empty/overwrite
+  assert.match(source, /!lead\.hours\s*\|\|\s*lead\.hours\.length\s*===\s*0\s*\|\|\s*overwrite/);
+  // Parses raw weekday_text via parseWeekdayText
+  assert.match(source, /parseWeekdayText\(placesResult\.hours\)/);
+  // Only patches when parsed array is non-empty
+  assert.match(source, /parsed\.length\s*>\s*0/);
+  // Sets patch.hours to parsed result
+  assert.match(source, /patch\.hours\s*=\s*parsed/);
+  // Tracks fieldsUpdated
+  assert.match(source, /fieldsUpdated\.push\("hours"\)/);
+});
+
+test("hours merge is inside the Google Places merge block", () => {
+  const gpMergeStart = source.indexOf("// From Google Places");
+  const gpMergeEnd = source.indexOf("// Email");
+  assert.ok(gpMergeStart >= 0, "Google Places merge comment should exist");
+  assert.ok(gpMergeEnd >= 0, "Email merge comment should exist");
+  const gpBlock = source.slice(gpMergeStart, gpMergeEnd);
+  assert.match(gpBlock, /patch\.hours\s*=\s*parsed/);
+});
+
 test("email priority: apifyWebsite > apifySocial > sonar", () => {
   // apifyWebsiteResult.emails[0] is checked first
   assert.match(source, /apifyWebsiteResult\?\.emails\?\.\[0\]/);

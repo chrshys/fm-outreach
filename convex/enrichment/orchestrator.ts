@@ -330,6 +330,13 @@ export const enrichLead = internalAction({
         patch.countryCode = placesResult.countryCode;
         fieldsUpdated.push("countryCode");
       }
+      if ((!lead.hours || lead.hours.length === 0 || overwrite) && placesResult.hours) {
+        const parsed = parseWeekdayText(placesResult.hours);
+        if (parsed.length > 0) {
+          patch.hours = parsed;
+          fieldsUpdated.push("hours");
+        }
+      }
     }
 
     // Email — priority: apifyWebsite > apifySocial > sonar
