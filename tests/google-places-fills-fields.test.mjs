@@ -132,6 +132,13 @@ test("orchestrator imports parseWeekdayText from googlePlaces", () => {
   assert.match(orchestratorSource, /import\s*\{[^}]*parseWeekdayText[^}]*\}\s*from\s*["']\.\/googlePlaces["']/);
 });
 
+// --- Orchestrator: hours from Google Places ---
+
+test("orchestrator patches hours from Google Places result", () => {
+  assert.match(orchestratorSource, /patch\.hours\s*=/);
+  assert.match(orchestratorSource, /fieldsUpdated\.push\("hours"\)/);
+});
+
 // --- Sources tracking ---
 
 test("orchestrator adds google_places to sources when Places result is available", () => {
