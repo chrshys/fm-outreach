@@ -126,6 +126,12 @@ test("Google Places result maps formatted_phone_number to phone", () => {
   assert.match(placesSource, /phone:\s*r\.formatted_phone_number\s*\?\?\s*null/);
 });
 
+// --- Orchestrator: parseWeekdayText import ---
+
+test("orchestrator imports parseWeekdayText from googlePlaces", () => {
+  assert.match(orchestratorSource, /import\s*\{[^}]*parseWeekdayText[^}]*\}\s*from\s*["']\.\/googlePlaces["']/);
+});
+
 // --- Sources tracking ---
 
 test("orchestrator adds google_places to sources when Places result is available", () => {
