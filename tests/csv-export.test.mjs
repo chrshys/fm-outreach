@@ -64,13 +64,14 @@ test("leadsToCSV outputs correct values for a complete lead", () => {
         facebook: "greenacres_fb",
       },
       products: ["apples", "pears"],
+      hours: [{ day: 1, open: "09:00", close: "17:00", isClosed: false }],
     },
   ]);
   const lines = csv.split("\n");
   assert.equal(lines.length, 2);
   assert.equal(
     lines[1],
-    'Green Acres,farm,Organic produce,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears",A farm stand with fresh produce,produce,'
+    'Green Acres,farm,Organic produce,123 Farm Rd,Guelph,ON,N1G 2W1,CA,43.55,-80.25,ChIJ123,https://greenacres.com,greenacres_ig,greenacres_fb,"apples, pears",A farm stand with fresh produce,produce,"[{""day"":1,""open"":""09:00"",""close"":""17:00"",""isClosed"":false}]"'
   );
 });
 
