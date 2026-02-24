@@ -106,6 +106,11 @@ test("parses seasonalNote with defensive type checking", () => {
   assert.match(source, /typeof\s+parsed\.seasonalNote\s*===\s*"string"/);
 });
 
+test("parseSonarResponse handles isSeasonal with defensive type checking", () => {
+  assert.match(source, /typeof\s+parsed\.isSeasonal\s*===\s*"boolean"/);
+  assert.match(source, /typeof\s+parsed\.seasonalNote\s*===\s*"string"/);
+});
+
 test("parses structuredProducts with defensive validation", () => {
   assert.match(source, /function\s+parseStructuredProducts\(/);
   assert.match(source, /typeof\s+item\.name\s*===\s*"string"/);
